@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { sounds } from '../utils/audio';
 import { MUSCLE_LABELS } from './BodyMap';
+import { MediaViewer } from './MediaViewer';
 
 export function ActiveWorkoutModal({ 
   routine, 
@@ -276,15 +277,13 @@ export function ActiveWorkoutModal({
         {/* Left Column: Visual & Guidance */}
         <section className="stage-info-col">
           <div className="exercise-spotlight-card">
-            {currentExercise.illustration && (
-              <div className="spotlight-media-frame">
-                <img 
-                  src={currentExercise.illustration} 
-                  alt={currentExercise.name} 
-                  className="spotlight-illustration"
-                />
-              </div>
-            )}
+            <div className="spotlight-media-container">
+              <MediaViewer 
+                src={currentExercise.illustration}
+                alt={currentExercise.name}
+                className="spotlight-media-frame"
+              />
+            </div>
 
             <div className="spotlight-meta-block">
               <div className="spotlight-tag-row">
