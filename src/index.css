@@ -35,6 +35,31 @@
   --radius-full: 999px;
 }
 
+/* Light Theme Tokens */
+[data-theme="light"] {
+  --page: #F6F5F2;
+  --raised: #FFFFFF;
+  --raised2: #ECEAE4;
+  --raised3: #E0DDD5;
+  
+  --border: #E2DFD8;
+  --border-hi: #CEC9BF;
+  --border-active: #C87A54;
+
+  --text: #161514;
+  --dim: #595652;
+  --faint: #8A867F;
+
+  --clay: #C87A54;
+  --clay-hover: #B56742;
+  --clay-soft: rgba(200, 122, 84, 0.12);
+  --clay-glow: rgba(200, 122, 84, 0.22);
+
+  --brass: #9E7457;
+  --sage: #6B8452;
+  --danger: #DC2626;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;

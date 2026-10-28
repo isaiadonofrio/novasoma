@@ -122,7 +122,28 @@
 .nav-right-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+}
+
+.theme-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--raised2);
+  border: 1px solid var(--border-hi);
+  color: var(--dim);
+  transition: all 0.2s var(--ease);
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  color: var(--text);
+  border-color: var(--clay);
+  background: var(--raised3);
+  transform: scale(1.05);
 }
 
 .streak-badge {
@@ -1769,7 +1790,106 @@
   display: block;
 }
 
-/* RESPONSIVENESS */
+/* ========================================= */
+/* TEMA CHIARO (LIGHT MODE) OVERRIDES        */
+/* ========================================= */
+[data-theme="light"] body {
+  background-color: var(--page);
+  color: var(--text);
+}
+
+[data-theme="light"] .gymmane-nav-header {
+  background: rgba(246, 245, 242, 0.92);
+}
+
+/* Invert white GymMane illustrations into crisp dark charcoal sketches */
+[data-theme="light"] .media-img-el {
+  filter: invert(1) brightness(0.18) contrast(1.1);
+}
+
+/* Body SVG in light mode */
+[data-theme="light"] .body-base path {
+  fill: #D8D4CC;
+}
+
+[data-theme="light"] .body-lite path {
+  fill: #E4E0D6;
+}
+
+[data-theme="light"] .muscle path {
+  fill: #BEB7AA;
+}
+
+[data-theme="light"] .muscle:hover path {
+  fill: var(--clay-hover);
+}
+
+[data-theme="light"] .muscle.on path {
+  fill: var(--clay) !important;
+}
+
+/* Surfaces and cards in light mode */
+[data-theme="light"] .routine-clean-card,
+[data-theme="light"] .overview-hero-card,
+[data-theme="light"] .overview-exercise-row-card,
+[data-theme="light"] .exercise-spotlight-card,
+[data-theme="light"] .cues-container-card,
+[data-theme="light"] .gymmane-timer-box,
+[data-theme="light"] .gymmane-editor-modal,
+[data-theme="light"] .summary-modal-card {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .routine-clean-card:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
+  border-color: var(--border-hi);
+}
+
+[data-theme="light"] .spotlight-media-container,
+[data-theme="light"] .row-media-container {
+  background: #ECEAE4;
+}
+
+[data-theme="light"] .routine-muscle-chip {
+  background: var(--raised2);
+  color: #242220;
+  border-color: #CEC9BF;
+  font-weight: 600;
+}
+
+[data-theme="light"] .stage-controls-col {
+  background: #ECEAE4;
+}
+
+[data-theme="light"] .gymmane-cta-btn,
+[data-theme="light"] .btn-card-primary,
+[data-theme="light"] .btn-gymmane-primary,
+[data-theme="light"] .category-chip.active,
+[data-theme="light"] .live-pill {
+  color: #FFFFFF;
+}
+
+[data-theme="light"] .btn-card-secondary {
+  background: var(--raised2);
+  color: var(--text);
+  border-color: var(--border-hi);
+}
+
+[data-theme="light"] .btn-card-secondary:hover {
+  background: var(--raised3);
+}
+
+[data-theme="light"] .gymmane-check-pill.checked {
+  color: #FFFFFF;
+}
+
+[data-theme="light"] .gymmane-next-btn.finish-mode {
+  color: #FFFFFF;
+}
+
+/* ========================================= */
+/* MOBILE RESPONSIVENESS & TOUCH OPTIMIZATION*/
+/* ========================================= */
 @media (max-width: 900px) {
   .hero-clean-header-row {
     flex-direction: column;
@@ -1780,7 +1900,7 @@
   }
   .gymmane-stage-grid {
     grid-template-columns: 1fr;
-    height: auto;
+    height: calc(100vh - 60px - 3px);
     overflow-y: auto;
   }
   .stage-info-col {
@@ -1794,16 +1914,229 @@
   .gymmane-pres-footer {
     display: none;
   }
-  .overview-exercise-row-card {
+}
+
+@media (max-width: 768px) {
+  .gymmane-wrap {
+    padding: 0 16px;
+  }
+
+  .nav-container {
+    padding: 0 16px;
+    gap: 8px;
+  }
+
+  /* Horizontal swipeable routine tabs on mobile */
+  .nav-routine-tabs {
+    flex: 1;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    max-width: calc(100vw - 200px);
+    padding: 3px;
+  }
+  .nav-routine-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-tab-btn {
+    white-space: nowrap;
+    padding: 5px 10px;
+    font-size: 0.72rem;
+  }
+
+  .streak-badge {
+    display: none; /* Hide on mobile navbar to preserve space */
+  }
+
+  .gymmane-cta-btn {
+    padding: 7px 11px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  /* Home View Mobile */
+  .home-clean-hero {
+    padding: 24px 0 20px;
+  }
+  .home-title-loud {
+    font-size: 2.2rem;
+  }
+  .toolbar-controls-grid {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .search-box-home {
+    max-width: 100%;
+  }
+  .category-chips-list {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .category-chips-list::-webkit-scrollbar {
+    display: none;
+  }
+  .category-chip {
+    white-space: nowrap;
+  }
+
+  /* Overview View Mobile */
+  .overview-hero-card {
+    padding: 20px 16px;
+    margin-bottom: 24px;
+  }
+  .overview-title-loud {
+    font-size: 1.85rem;
+  }
+  .overview-title-actions-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .overview-main-cta-group {
+    width: 100%;
+  }
+  .overview-main-cta-group .big-cta {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+  }
+  .overview-timeline-heading-row {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
+  }
+  .overview-timeline-heading-row .btn-gymmane-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Overview Exercise Card on Mobile */
+  .overview-exercise-row-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+  .row-order-index {
+    font-size: 1.1rem;
+    width: 24px;
   }
   .row-media-container {
-    width: 100%;
-    height: 140px;
+    width: 76px;
+    height: 76px;
+    flex-shrink: 0;
+  }
+  .row-exercise-name {
+    font-size: 1.15rem;
+  }
+  .row-specs-strip {
+    flex-wrap: wrap;
+    gap: 6px;
   }
   .row-actions-group {
     width: 100%;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-play-from-here {
+    flex: 1;
+    margin-left: 12px;
+    justify-content: center;
+    padding: 8px 12px;
+  }
+
+  /* Live Presentation Mode on Mobile */
+  .gymmane-pres-header {
+    height: 52px;
+    padding: 0 12px;
+  }
+  .live-pill {
+    display: none;
+  }
+  .routine-name-pill {
+    font-size: 0.8rem;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .stepper-text {
+    font-size: 0.775rem;
+  }
+  .stepper-arrow-btn {
+    width: 26px;
+    height: 26px;
+  }
+  .gymmane-finish-btn span {
+    display: none;
+  }
+  .gymmane-finish-btn {
+    padding: 6px 10px;
+  }
+
+  .stage-info-col {
+    padding: 16px 14px;
+  }
+  .exercise-spotlight-card {
+    padding: 16px;
+  }
+  .spotlight-media-container {
+    height: 200px;
+  }
+  .spotlight-title {
+    font-size: 1.5rem;
+  }
+  .stage-controls-col {
+    padding: 16px 14px;
+  }
+  .digits-val {
+    font-size: 3.2rem;
+  }
+  .gymmane-table-input {
+    height: 40px;
+    font-size: 0.95rem;
+  }
+  .gymmane-check-pill {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Modal on Mobile */
+  .modal-backdrop {
+    padding: 10px;
+  }
+  .gymmane-editor-modal {
+    max-width: 100%;
+    max-height: 94vh;
+  }
+  .editor-modal-body {
+    padding: 16px;
+  }
+  .editor-row-2col, .editor-row-3col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-tag {
+    display: none;
+  }
+  .brand-logo-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .brand-main {
+    font-size: 1.05rem;
+  }
+  .routine-card-actions-bar {
+    grid-template-columns: 1fr;
   }
 }

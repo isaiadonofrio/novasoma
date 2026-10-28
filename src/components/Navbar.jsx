@@ -1,10 +1,12 @@
 import React from 'react';
-import { Play, Dumbbell, Award, Flame, Sparkles } from 'lucide-react';
+import { Play, Dumbbell, Award, Flame, Sparkles, Sun, Moon } from 'lucide-react';
 
 export function Navbar({ 
   routines, 
   currentView = 'home',
   activeRoutineId, 
+  theme = 'dark',
+  onToggleTheme,
   onNavigateHome,
   onSelectRoutine, 
   onStartPresentation,
@@ -54,6 +56,18 @@ export function Navbar({
 
         {/* Right CTA */}
         <div className="nav-right-actions">
+          {onToggleTheme && (
+            <button
+              type="button"
+              className="theme-toggle-btn"
+              onClick={onToggleTheme}
+              title={theme === 'dark' ? "Passa a Tema Chiaro" : "Passa a Tema Scuro"}
+              aria-label="Cambia tema chiaro/scuro"
+            >
+              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            </button>
+          )}
+
           {totalWorkoutsCompleted > 0 && (
             <div className="streak-badge" title="Sessioni completate">
               <Sparkles size={14} color="#D9A184" />

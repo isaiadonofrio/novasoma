@@ -51,6 +51,24 @@ export function App() {
     return INITIAL_ROUTINES;
   });
 
+  // Theme state: 'dark' | 'light'
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('corpo_theme') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('corpo_theme', theme);
+    const metaTheme = document.getElementById('meta-theme-color');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', theme === 'dark' ? '#0A0908' : '#F6F5F2');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
   // Current view: 'home' | 'overview'
   const [currentView, setCurrentView] = useState('home');
   const [activeRoutineId, setActiveRoutineId] = useState(routines[0]?.id || 'legs-power');
@@ -136,6 +154,8 @@ export function App() {
         routines={routines}
         currentView={currentView}
         activeRoutineId={activeRoutineId}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         onNavigateHome={() => setCurrentView('home')}
         onSelectRoutine={(id) => {
           setActiveRoutineId(id);
@@ -174,6 +194,8 @@ export function App() {
         <ActiveWorkoutModal 
           routine={liveRoutine}
           initialIndex={startExerciseIndex}
+          theme={theme}
+          onToggleTheme={toggleTheme}
           onClose={() => setIsPresentationActive(false)}
           onCompleteWorkout={handleWorkoutComplete}
         />

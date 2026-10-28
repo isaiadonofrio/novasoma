@@ -12,10 +12,12 @@ import {
   Dumbbell, 
   Clock, 
   Trophy, 
-  Wind,
-  AlertTriangle,
-  Flame,
-  ArrowRight
+  Wind, 
+  AlertTriangle, 
+  Flame, 
+  ArrowRight,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { sounds } from '../utils/audio';
 import { MUSCLE_LABELS } from './BodyMap';
@@ -24,6 +26,8 @@ import { MediaViewer } from './MediaViewer';
 export function ActiveWorkoutModal({ 
   routine, 
   initialIndex = 0, 
+  theme = 'dark',
+  onToggleTheme,
   onClose, 
   onCompleteWorkout 
 }) {
@@ -239,6 +243,17 @@ export function ActiveWorkoutModal({
         </div>
 
         <div className="pres-top-actions">
+          {onToggleTheme && (
+            <button 
+              type="button"
+              className="icon-action-btn"
+              onClick={onToggleTheme}
+              title={theme === 'dark' ? "Passa a Tema Chiaro" : "Passa a Tema Scuro"}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+          )}
+
           <button 
             type="button"
             className="icon-action-btn"
