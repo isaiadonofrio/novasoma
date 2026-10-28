@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Sparkles, Dumbbell, Calendar, SlidersHorizontal } from 'lucide-react';
+import { Play, Dumbbell, Award, Flame, Sparkles } from 'lucide-react';
 
 export function Navbar({ 
   routines, 
@@ -8,55 +8,52 @@ export function Navbar({
   onStartPresentation,
   totalWorkoutsCompleted = 0
 }) {
-  const current = routines.find(r => r.id === activeRoutineId) || routines[0];
-
   return (
-    <header className="app-navbar">
-      <div className="navbar-left">
-        <div className="app-brand-badge">
-          <div className="brand-icon-box">
-            <Dumbbell size={20} color="#FFFFFF" />
+    <header className="gymmane-nav-header">
+      <div className="nav-container">
+        {/* Brand */}
+        <div className="gymmane-brand">
+          <div className="brand-logo-icon">
+            <Dumbbell size={20} color="#0A0908" />
           </div>
-          <div className="brand-text">
-            <span className="brand-title">CORPO</span>
-            <span className="brand-sub">PRECISION WORKOUT GUIDE</span>
+          <div className="brand-titles">
+            <span className="brand-main">CORPO</span>
+            <span className="brand-tag">DIARIO DI ALLENAMENTO</span>
           </div>
         </div>
-      </div>
 
-      <div className="navbar-routines-pills">
-        {routines.map(r => (
+        {/* Routine Pills */}
+        <div className="nav-routine-tabs">
+          {routines.map(r => (
+            <button
+              key={r.id}
+              type="button"
+              className={`nav-tab-btn ${r.id === activeRoutineId ? 'active' : ''}`}
+              onClick={() => onSelectRoutine(r.id)}
+            >
+              <span>{r.shortTitle || r.title}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Right CTA */}
+        <div className="nav-right-actions">
+          {totalWorkoutsCompleted > 0 && (
+            <div className="streak-badge" title="Sessioni completate">
+              <Sparkles size={14} color="#D9A184" />
+              <span>{totalWorkoutsCompleted} {totalWorkoutsCompleted === 1 ? 'allenamento' : 'allenamenti'}</span>
+            </div>
+          )}
+
           <button
-            key={r.id}
             type="button"
-            className={`routine-pill-btn ${r.id === activeRoutineId ? 'active' : ''}`}
-            onClick={() => onSelectRoutine(r.id)}
+            className="gymmane-cta-btn"
+            onClick={() => onStartPresentation(0)}
           >
-            <span 
-              className="pill-dot" 
-              style={{ backgroundColor: r.accentColor || '#10B981' }}
-            />
-            <span className="pill-title">{r.title.split('•')[0].trim()}</span>
+            <Play size={15} fill="currentColor" />
+            <span>ALLENATI ORA</span>
           </button>
-        ))}
-      </div>
-
-      <div className="navbar-right">
-        {totalWorkoutsCompleted > 0 && (
-          <div className="sessions-counter-badge" title="Allenamenti completati con successo">
-            <Sparkles size={14} color="#F59E0B" />
-            <span>{totalWorkoutsCompleted} {totalWorkoutsCompleted === 1 ? 'completato' : 'completati'}</span>
-          </div>
-        )}
-
-        <button
-          type="button"
-          className="start-workout-nav-cta"
-          onClick={() => onStartPresentation(0)}
-        >
-          <Play size={16} fill="currentColor" />
-          <span>Segui Allenamento Live</span>
-        </button>
+        </div>
       </div>
     </header>
   );

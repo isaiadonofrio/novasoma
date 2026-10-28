@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   ChevronLeft, 
@@ -10,15 +10,15 @@ import {
   Volume2, 
   VolumeX, 
   Dumbbell, 
-  Flame, 
   Clock, 
   Trophy, 
-  Maximize2,
   Wind,
-  AlertTriangle
+  AlertTriangle,
+  Flame,
+  ArrowRight
 } from 'lucide-react';
 import { sounds } from '../utils/audio';
-import { MuscleDiagram } from './MuscleDiagram';
+import { MUSCLE_LABELS } from './BodyMap';
 
 export function ActiveWorkoutModal({ 
   routine, 
@@ -29,16 +29,18 @@ export function ActiveWorkoutModal({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Active workout timer
+  // Overall workout time
   const [workoutElapsedSeconds, setWorkoutElapsedSeconds] = useState(0);
 
-  // Rest Timer state
+  // Current exercise
   const currentExercise = routine.exercises[currentIndex];
+
+  // Rest Timer state
   const [restSecondsLeft, setRestSecondsLeft] = useState(currentExercise.defaultRestSeconds);
   const [restInitialSeconds, setRestInitialSeconds] = useState(currentExercise.defaultRestSeconds);
   const [isResting, setIsResting] = useState(false);
 
-  // Sets tracking state: { [exerciseId]: [ { completed: bool, reps: number|string, weight: number|string } ] }
+  // Logged sets state
   const [loggedSets, setLoggedSets] = useState(() => {
     const initial = {};
     routine.exercises.forEach(ex => {
@@ -48,7 +50,8 @@ export function ActiveWorkoutModal({
           setNum: s,
           completed: false,
           reps: ex.defaultReps.split('-')[0]?.trim() || '10',
-          weight: ''
+          weight: '',
+          prev: ex.lastRecord ? ex.lastRecord.split('·')[0]?.trim() : '-'
         });
       }
       initial[ex.id] = setsArr;
@@ -56,10 +59,9 @@ export function ActiveWorkoutModal({
     return initial;
   });
 
-  // Presentation view active tab inside exercise: 'guide' | 'anatomy' | 'tips'
-  const [slideTab, setSlideTab] = useState('guide');
+  const [activeTab, setActiveTab] = useState('cues'); // 'cues' | 'mistakes'
 
-  // Elapsed workout timer effect
+  // Stopwatch interval
   useEffect(() => {
     const interval = setInterval(() => {
       setWorkoutElapsedSeconds(prev => prev + 1);
@@ -67,14 +69,14 @@ export function ActiveWorkoutModal({
     return () => clearInterval(interval);
   }, []);
 
-  // Update rest initial when exercise changes
+  // Update rest on exercise switch
   useEffect(() => {
     setRestInitialSeconds(currentExercise.defaultRestSeconds);
     setRestSecondsLeft(currentExercise.defaultRestSeconds);
     setIsResting(false);
   }, [currentIndex, currentExercise]);
 
-  // Rest countdown interval
+  // Rest countdown
   useEffect(() => {
     let timer = null;
     if (isResting && restSecondsLeft > 0) {
@@ -95,7 +97,7 @@ export function ActiveWorkoutModal({
     return () => clearInterval(timer);
   }, [isResting, restSecondsLeft, soundEnabled]);
 
-  // Keyboard navigation shortcuts
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -158,7 +160,6 @@ export function ActiveWorkoutModal({
 
     if (targetSet.completed) {
       if (soundEnabled) sounds.playSetComplete();
-      // Auto-start rest timer
       resetRestTimer(currentExercise.defaultRestSeconds);
       setIsResting(true);
     }
@@ -183,68 +184,63 @@ export function ActiveWorkoutModal({
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
-  // Completion calculation
   const totalSetsAcrossWorkout = routine.exercises.reduce((acc, ex) => acc + ex.defaultSets, 0);
   const completedSetsCount = Object.values(loggedSets).flat().filter(s => s.completed).length;
   const progressPercent = Math.round((completedSetsCount / totalSetsAcrossWorkout) * 100);
 
   const currentExerciseSets = loggedSets[currentExercise.id] || [];
+  const primaryMuscleName = MUSCLE_LABELS[currentExercise.muscleKey] || currentExercise.muscleKey;
 
   return (
-    <div className="active-presentation-overlay">
-      {/* Top Presentation Bar */}
-      <header className="presentation-header">
-        <div className="pres-left-info">
-          <span className="live-indicator">
-            <span className="live-dot"></span>
-            WORKOUT LIVE
-          </span>
-          <span className="pres-routine-title">{routine.title}</span>
-          <div className="workout-stopwatch">
-            <Clock size={14} />
+    <div className="gymmane-active-overlay">
+      {/* Top Header Bar */}
+      <header className="gymmane-pres-header">
+        <div className="pres-brand-group">
+          <span className="live-pill">LIVE SESSION</span>
+          <span className="routine-name-pill">{routine.shortTitle || routine.title}</span>
+          <div className="live-clock">
+            <Clock size={13} />
             <span>{formatTime(workoutElapsedSeconds)}</span>
           </div>
         </div>
 
-        <div className="pres-center-nav">
+        <div className="pres-stepper">
           <button 
             type="button" 
-            className="pres-nav-btn"
+            className="stepper-arrow-btn"
             onClick={goToPrev}
             disabled={currentIndex === 0}
-            title="Esercizio precedente (Freccia Sinistra)"
+            title="Esercizio precedente"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={16} />
           </button>
-          <div className="pres-slide-tracker">
-            <span>{currentIndex + 1}</span>
-            <span className="tracker-slash">/</span>
-            <span>{routine.exercises.length}</span>
-          </div>
+          <span className="stepper-text">
+            <b>{currentIndex + 1}</b> / {routine.exercises.length}
+          </span>
           <button 
             type="button" 
-            className="pres-nav-btn"
+            className="stepper-arrow-btn"
             onClick={goToNext}
             disabled={currentIndex === routine.exercises.length - 1}
-            title="Prossimo esercizio (Freccia Destra)"
+            title="Prossimo esercizio"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={16} />
           </button>
         </div>
 
-        <div className="pres-right-actions">
+        <div className="pres-top-actions">
           <button 
             type="button"
-            className="sound-toggle-btn"
+            className="icon-action-btn"
             onClick={() => setSoundEnabled(prev => !prev)}
-            title={soundEnabled ? "Disattiva audio" : "Attiva audio"}
+            title={soundEnabled ? "Silenzia audio" : "Attiva audio"}
           >
-            {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
 
           <button 
             type="button"
-            className="finish-workout-btn"
+            className="gymmane-finish-btn"
             onClick={() => onCompleteWorkout({
               durationSeconds: workoutElapsedSeconds,
               completedSets: completedSetsCount,
@@ -252,168 +248,139 @@ export function ActiveWorkoutModal({
               loggedSets
             })}
           >
-            <Trophy size={16} />
-            <span>Termina Workout</span>
+            <Trophy size={14} />
+            <span>TERMINA</span>
           </button>
 
           <button 
             type="button" 
-            className="close-pres-btn"
+            className="icon-action-btn close-x"
             onClick={onClose}
-            title="Esci da modalità presentazione (Esc)"
+            title="Chiudi sessione (Esc)"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
       </header>
 
-      {/* Global Progress Bar */}
-      <div className="pres-global-progress-bar">
+      {/* Progress Strip */}
+      <div className="gymmane-progress-track">
         <div 
-          className="progress-fill" 
-          style={{ width: `${progressPercent}%`, backgroundColor: routine.accentColor || '#10B981' }}
+          className="gymmane-progress-bar"
+          style={{ width: `${progressPercent}%` }}
         />
       </div>
 
-      {/* Main Presentation Stage */}
-      <main className="presentation-stage">
-        {/* Left Column: Exercise Visual, Cues & Info */}
-        <section className="stage-left-content">
-          <div className="slide-exercise-header">
-            <div className="slide-meta-row">
-              <span className="slide-badge-num">Esercizio {currentIndex + 1} di {routine.exercises.length}</span>
-              <span className="slide-equipment">
-                <Dumbbell size={14} />
-                {currentExercise.equipment}
-              </span>
-              <span className="slide-rpe-badge">RPE {currentExercise.rpe}</span>
-            </div>
-
-            <h1 className="slide-title">{currentExercise.name}</h1>
-            <p className="slide-subtitle">{currentExercise.subtitle}</p>
-
-            <div className="slide-muscles-chips">
-              {currentExercise.targetMuscles.primary.map((m, i) => (
-                <span key={i} className="slide-chip primary-chip">
-                  <Flame size={13} />
-                  {m}
-                </span>
-              ))}
-              {currentExercise.targetMuscles.secondary.map((m, i) => (
-                <span key={i} className="slide-chip secondary-chip">
-                  {m}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Slide Tab Controls */}
-          <div className="slide-tab-nav">
-            <button 
-              type="button" 
-              className={`slide-tab-btn ${slideTab === 'guide' ? 'active' : ''}`}
-              onClick={() => setSlideTab('guide')}
-            >
-              Guida Esecuzione
-            </button>
-            <button 
-              type="button" 
-              className={`slide-tab-btn ${slideTab === 'anatomy' ? 'active' : ''}`}
-              onClick={() => setSlideTab('anatomy')}
-            >
-              Mappa Muscolare
-            </button>
-            <button 
-              type="button" 
-              className={`slide-tab-btn ${slideTab === 'tips' ? 'active' : ''}`}
-              onClick={() => setSlideTab('tips')}
-            >
-              Focus & Errori
-            </button>
-          </div>
-
-          {/* Tab Views */}
-          <div className="slide-tab-body">
-            {slideTab === 'guide' && (
-              <div className="slide-guide-scroll">
-                <div className="presentation-cue-card">
-                  <div className="cue-number-tag">Fase 1</div>
-                  <div className="cue-body">
-                    <h4>Setup & Posizionamento</h4>
-                    <p>{currentExercise.execution.setup}</p>
-                  </div>
-                </div>
-
-                <div className="presentation-cue-card">
-                  <div className="cue-number-tag">Fase 2</div>
-                  <div className="cue-body">
-                    <h4>Discesa & Controllo (Fase Eccentrica)</h4>
-                    <p>{currentExercise.execution.eccentric}</p>
-                  </div>
-                </div>
-
-                <div className="presentation-cue-card">
-                  <div className="cue-number-tag">Fase 3</div>
-                  <div className="cue-body">
-                    <h4>Spinta & Esplosività (Fase Concentrica)</h4>
-                    <p>{currentExercise.execution.concentric}</p>
-                  </div>
-                </div>
-
-                <div className="presentation-breathing-bar">
-                  <Wind size={18} />
-                  <div>
-                    <strong>Respirazione Ideale:</strong> {currentExercise.execution.breathing}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {slideTab === 'anatomy' && (
-              <div className="slide-anatomy-wrapper">
-                <MuscleDiagram 
-                  primary={currentExercise.targetMuscles.primary}
-                  secondary={currentExercise.targetMuscles.secondary}
-                  svgType={currentExercise.svgType}
+      {/* Main Grid View */}
+      <main className="gymmane-stage-grid">
+        {/* Left Column: Visual & Guidance */}
+        <section className="stage-info-col">
+          <div className="exercise-spotlight-card">
+            {currentExercise.illustration && (
+              <div className="spotlight-media-frame">
+                <img 
+                  src={currentExercise.illustration} 
+                  alt={currentExercise.name} 
+                  className="spotlight-illustration"
                 />
               </div>
             )}
 
-            {slideTab === 'tips' && (
-              <div className="slide-tips-scroll">
-                <div className="slide-mistakes-box">
-                  <h3>
-                    <AlertTriangle size={18} color="#EF4444" />
-                    Cosa NON Fare:
-                  </h3>
-                  <ul>
-                    {currentExercise.execution.commonMistakes.map((err, i) => (
-                      <li key={i}>{err}</li>
-                    ))}
-                  </ul>
+            <div className="spotlight-meta-block">
+              <div className="spotlight-tag-row">
+                <span className="spotlight-muscle">{primaryMuscleName}</span>
+                <span className="spotlight-kit">
+                  <Dumbbell size={13} />
+                  {currentExercise.equipment}
+                </span>
+                <span className="spotlight-rpe">RPE {currentExercise.rpe}</span>
+              </div>
+              <h2 className="spotlight-title">{currentExercise.name}</h2>
+              <p className="spotlight-subtitle">{currentExercise.subtitle}</p>
+            </div>
+          </div>
+
+          {/* Form Cues & Breathing */}
+          <div className="cues-container-card">
+            <div className="cues-nav-bar">
+              <button 
+                type="button" 
+                className={`cue-nav-btn ${activeTab === 'cues' ? 'active' : ''}`}
+                onClick={() => setActiveTab('cues')}
+              >
+                Biomeccanica & Fasi
+              </button>
+              <button 
+                type="button" 
+                className={`cue-nav-btn ${activeTab === 'mistakes' ? 'active' : ''}`}
+                onClick={() => setActiveTab('mistakes')}
+              >
+                Cosa Evitare
+              </button>
+            </div>
+
+            {activeTab === 'cues' ? (
+              <div className="cues-list">
+                <div className="cue-row">
+                  <span className="cue-num">1</span>
+                  <div>
+                    <strong>Assetto & Setup:</strong>
+                    <p>{currentExercise.execution.setup}</p>
+                  </div>
                 </div>
 
-                <div className="slide-pro-tip-box">
-                  <div className="tip-badge">Consiglio del Coach</div>
-                  <p>{currentExercise.execution.proTip}</p>
+                <div className="cue-row">
+                  <span className="cue-num">2</span>
+                  <div>
+                    <strong>Discesa Controllata:</strong>
+                    <p>{currentExercise.execution.eccentric}</p>
+                  </div>
+                </div>
+
+                <div className="cue-row">
+                  <span className="cue-num">3</span>
+                  <div>
+                    <strong>Spinta / Trazione:</strong>
+                    <p>{currentExercise.execution.concentric}</p>
+                  </div>
+                </div>
+
+                <div className="cues-breathing-pill">
+                  <Wind size={15} color="#D9A184" />
+                  <span><strong>Respirazione:</strong> {currentExercise.execution.breathing}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="mistakes-pane-inner">
+                <div className="mistakes-heading">
+                  <AlertTriangle size={15} color="#EF4444" />
+                  <span>Errori Comuni:</span>
+                </div>
+                <ul>
+                  {currentExercise.execution.commonMistakes.map((err, i) => (
+                    <li key={i}>{err}</li>
+                  ))}
+                </ul>
+                <div className="pro-tip-footer">
+                  <strong>Pro Tip:</strong> {currentExercise.execution.proTip}
                 </div>
               </div>
             )}
           </div>
         </section>
 
-        {/* Right Column: Rest Timer & Set Logger */}
-        <section className="stage-right-controls">
+        {/* Right Column: Timer & Logger */}
+        <section className="stage-controls-col">
           {/* Rest Timer Widget */}
-          <div className={`rest-timer-card ${isResting ? 'timer-active' : ''}`}>
-            <div className="timer-header">
-              <span className="timer-title">TIMER DI RECUPERO</span>
-              <div className="timer-quick-presets">
+          <div className={`gymmane-timer-box ${isResting ? 'active-timer' : ''}`}>
+            <div className="timer-top-line">
+              <span className="timer-label">RECUPERO</span>
+              <div className="timer-presets">
                 {[60, 90, 120].map(s => (
                   <button 
                     key={s}
-                    type="button"
-                    className={`preset-pill ${restInitialSeconds === s ? 'selected' : ''}`}
+                    type="button" 
+                    className={`preset-btn ${restInitialSeconds === s ? 'on' : ''}`}
                     onClick={() => resetRestTimer(s)}
                   >
                     {s}s
@@ -422,131 +389,124 @@ export function ActiveWorkoutModal({
               </div>
             </div>
 
-            <div className="timer-display-huge">
-              <span className="timer-digits">{formatTime(restSecondsLeft)}</span>
-              {isResting && <span className="timer-status-pulse">In pausa...</span>}
+            <div className="timer-digits-display">
+              <span className="digits-val">{formatTime(restSecondsLeft)}</span>
+              {isResting && <span className="timer-countdown-tag">CONTO ALLA ROVESCIA</span>}
             </div>
 
-            <div className="timer-action-buttons">
+            <div className="timer-btns-row">
               <button 
                 type="button" 
-                className="timer-adjust-btn"
+                className="btn-timer-adj"
                 onClick={() => adjustRestTime(-15)}
-                title="-15 secondi"
               >
                 -15s
               </button>
 
               <button 
                 type="button" 
-                className={`timer-main-btn ${isResting ? 'pause-mode' : 'play-mode'}`}
+                className={`btn-timer-main ${isResting ? 'resting-now' : ''}`}
                 onClick={toggleRestTimer}
               >
                 {isResting ? (
                   <>
-                    <Pause size={18} />
-                    <span>Pausa Timer</span>
+                    <Pause size={16} />
+                    <span>METTI IN PAUSA</span>
                   </>
                 ) : (
                   <>
-                    <Play size={18} fill="currentColor" />
-                    <span>{restSecondsLeft === 0 ? 'Riavvia Timer' : 'Avvia Recupero'}</span>
+                    <Play size={16} fill="currentColor" />
+                    <span>{restSecondsLeft === 0 ? 'RIAVVIA' : 'RECUPERA'}</span>
                   </>
                 )}
               </button>
 
               <button 
                 type="button" 
-                className="timer-adjust-btn"
+                className="btn-timer-adj"
                 onClick={() => adjustRestTime(+15)}
-                title="+15 secondi"
               >
                 +15s
               </button>
 
               <button 
                 type="button" 
-                className="timer-reset-icon-btn"
+                className="btn-timer-reset"
                 onClick={() => resetRestTimer(currentExercise.defaultRestSeconds)}
-                title="Resetta timer"
+                title="Resetta tempo"
               >
-                <RotateCcw size={16} />
+                <RotateCcw size={15} />
               </button>
             </div>
           </div>
 
-          {/* Sets Tracker Widget */}
-          <div className="set-logger-card">
-            <div className="set-logger-header">
-              <h3>Registro Serie ({currentExercise.defaultSets} previste)</h3>
-              <span className="set-hint">Clicca sulla spunta per registrare la serie</span>
+          {/* Sets Logger */}
+          <div className="gymmane-logger-box">
+            <div className="logger-title-line">
+              <h3>SERIE & CARICHI</h3>
+              <span className="logger-hint">Spunta per registrare la serie</span>
             </div>
 
-            <div className="sets-table-header">
-              <span className="col-num">SET</span>
-              <span className="col-input">PESO (KG)</span>
-              <span className="col-input">REPS</span>
-              <span className="col-check">FATTO</span>
+            <div className="sets-grid-header">
+              <span className="h-col num">SET</span>
+              <span className="h-col prev">PREC</span>
+              <span className="h-col weight">KG</span>
+              <span className="h-col reps">REPS</span>
+              <span className="h-col check">OK</span>
             </div>
 
-            <div className="sets-table-body">
+            <div className="sets-rows-list">
               {currentExerciseSets.map((set, sIdx) => (
                 <div 
-                  key={sIdx} 
-                  className={`set-row ${set.completed ? 'set-done' : ''}`}
+                  key={sIdx}
+                  className={`set-item-row ${set.completed ? 'completed' : ''}`}
                 >
-                  <div className="set-num-cell">
-                    <span>#{set.setNum}</span>
-                  </div>
-
-                  <div className="set-input-cell">
+                  <span className="set-index-cell">#{set.setNum}</span>
+                  <span className="set-prev-cell">{currentExercise.lastRecord ? currentExercise.lastRecord.split('·')[0].trim() : '-'}</span>
+                  <div className="set-input-wrap">
                     <input 
                       type="number"
                       placeholder="0"
                       value={set.weight}
                       onChange={(e) => updateSetInput(sIdx, 'weight', e.target.value)}
-                      className="table-input"
+                      className="gymmane-table-input"
                     />
                   </div>
-
-                  <div className="set-input-cell">
+                  <div className="set-input-wrap">
                     <input 
                       type="text"
                       placeholder={currentExercise.defaultReps}
                       value={set.reps}
                       onChange={(e) => updateSetInput(sIdx, 'reps', e.target.value)}
-                      className="table-input"
+                      className="gymmane-table-input"
                     />
                   </div>
-
-                  <div className="set-check-cell">
-                    <button 
-                      type="button" 
-                      className={`check-btn ${set.completed ? 'checked' : ''}`}
-                      onClick={() => toggleSetComplete(sIdx)}
-                    >
-                      <Check size={16} strokeWidth={set.completed ? 3 : 2} />
-                    </button>
-                  </div>
+                  <button 
+                    type="button"
+                    className={`gymmane-check-pill ${set.completed ? 'checked' : ''}`}
+                    onClick={() => toggleSetComplete(sIdx)}
+                  >
+                    <Check size={16} strokeWidth={set.completed ? 3.5 : 2} />
+                  </button>
                 </div>
               ))}
             </div>
 
-            {/* Quick Next Exercise Prompt */}
-            <div className="stage-next-prompt">
+            {/* Next exercise banner */}
+            <div className="next-prompt-area">
               {currentIndex < routine.exercises.length - 1 ? (
                 <button 
                   type="button" 
-                  className="next-exercise-banner-btn"
+                  className="gymmane-next-btn"
                   onClick={goToNext}
                 >
-                  <span>Prossimo: {routine.exercises[currentIndex + 1].name}</span>
-                  <ChevronRight size={18} />
+                  <span>PROSSIMO: {routine.exercises[currentIndex + 1].name}</span>
+                  <ArrowRight size={16} />
                 </button>
               ) : (
                 <button 
                   type="button" 
-                  className="next-exercise-banner-btn complete-cta"
+                  className="gymmane-next-btn finish-mode"
                   onClick={() => onCompleteWorkout({
                     durationSeconds: workoutElapsedSeconds,
                     completedSets: completedSetsCount,
@@ -554,8 +514,8 @@ export function ActiveWorkoutModal({
                     loggedSets
                   })}
                 >
-                  <Trophy size={18} />
-                  <span>Hai finito tutti gli esercizi! Termina</span>
+                  <Trophy size={16} />
+                  <span>HAI FINITO! TERMINA SESSIONE</span>
                 </button>
               )}
             </div>
@@ -563,12 +523,12 @@ export function ActiveWorkoutModal({
         </section>
       </main>
 
-      {/* Keyboard Shortcuts Hint Bar */}
-      <footer className="presentation-footer-hints">
-        <span>Scorciatoie da tastiera:</span>
-        <span className="shortcut-badge"><kbd>←</kbd> / <kbd>→</kbd> Esercizio Prec / Succ</span>
-        <span className="shortcut-badge"><kbd>Spazio</kbd> Avvia/Pausa Timer</span>
-        <span className="shortcut-badge"><kbd>Esc</kbd> Esci</span>
+      {/* Keyboard hints bottom */}
+      <footer className="gymmane-pres-footer">
+        <span>Scorciatoie:</span>
+        <code>← / →</code> <span>Esercizio Prec / Succ</span>
+        <code>Spazio</code> <span>Avvia / Ferma Recupero</span>
+        <code>Esc</code> <span>Esci</span>
       </footer>
     </div>
   );

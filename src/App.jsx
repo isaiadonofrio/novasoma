@@ -2,20 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { 
   Play, 
   Search, 
-  Filter, 
   Clock, 
   Flame, 
   Layers, 
-  Plus, 
-  ChevronRight, 
-  BookOpen,
   Info,
-  Calendar,
-  Sparkles,
-  Award
+  Dumbbell,
+  CheckCircle2,
+  Trophy
 } from 'lucide-react';
-import { INITIAL_ROUTINES, MUSCLE_GROUPS } from './data/workouts';
+import { INITIAL_ROUTINES } from './data/workouts';
 import { Navbar } from './components/Navbar';
+import { BodyMap, MUSCLE_LABELS } from './components/BodyMap';
 import { ExerciseCard } from './components/ExerciseCard';
 import { ActiveWorkoutModal } from './components/ActiveWorkoutModal';
 import { WorkoutSummaryModal } from './components/WorkoutSummaryModal';
@@ -31,7 +28,7 @@ export function App() {
   });
 
   const [activeRoutineId, setActiveRoutineId] = useState(routines[0]?.id || 'legs-power');
-  const [selectedMuscle, setSelectedMuscle] = useState('Tutti');
+  const [selectedMuscles, setSelectedMuscles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Active workout presentation modal state
@@ -60,20 +57,49 @@ export function App() {
 
   const activeRoutine = routines.find(r => r.id === activeRoutineId) || routines[0];
 
-  // Filter exercises
-  const filteredExercises = activeRoutine.exercises.filter(ex => {
-    const matchesSearch = 
-      ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.equipment.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ex.targetMuscles.primary.some(m => m.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Toggle muscle selection on the body map
+  const handleToggleMuscle = (muscleKey) => {
+    setSelectedMuscles(prev => {
+      if (prev.includes(muscleKey)) {
+        return prev.filter(m => m !== muscleKey);
+      } else {
+        return [...prev, muscleKey];
+      }
+    });
+  };
 
-    const matchesMuscle = 
-      selectedMuscle === 'Tutti' ||
-      ex.targetMuscles.primary.some(m => m.toLowerCase().includes(selectedMuscle.toLowerCase())) ||
-      ex.targetMuscles.secondary.some(m => m.toLowerCase().includes(selectedMuscle.toLowerCase()));
+  const handleClearMuscles = () => {
+    setSelectedMuscles([]);
+  };
 
-    return matchesSearch && matchesMuscle;
+  // Combine exercises based on routine or muscle selection
+  let baseExercises = activeRoutine.exercises;
+  
+  // If user selected muscles on the body map, look across all routines for matching exercises!
+  if (selectedMuscles.length > 0) {
+    const allExercises = routines.flatMap(r => r.exercises);
+    // remove duplicates by id
+    const uniqueMap = new Map();
+    allExercises.forEach(ex => uniqueMap.set(ex.id, ex));
+    const allUnique = Array.from(uniqueMap.values());
+
+    baseExercises = allUnique.filter(ex => {
+      const matchPrimary = selectedMuscles.includes(ex.muscleKey);
+      const matchSecondary = ex.secondaryKeys && ex.secondaryKeys.some(k => selectedMuscles.includes(k));
+      return matchPrimary || matchSecondary;
+    });
+  }
+
+  // Filter exercises with search input
+  const filteredExercises = baseExercises.filter(ex => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      ex.name.toLowerCase().includes(q) ||
+      ex.subtitle.toLowerCase().includes(q) ||
+      ex.equipment.toLowerCase().includes(q) ||
+      (MUSCLE_LABELS[ex.muscleKey] && MUSCLE_LABELS[ex.muscleKey].toLowerCase().includes(q))
+    );
   });
 
   const handleStartPresentation = (index = 0) => {
@@ -99,132 +125,138 @@ export function App() {
   };
 
   return (
-    <div className="corpo-app">
-      {/* Top Navigation */}
+    <div className="gymmane-app">
+      {/* Navbar */}
       <Navbar 
         routines={routines}
         activeRoutineId={activeRoutineId}
         onSelectRoutine={(id) => {
           setActiveRoutineId(id);
-          setSelectedMuscle('Tutti');
+          setSelectedMuscles([]);
           setSearchQuery('');
         }}
         onStartPresentation={() => handleStartPresentation(0)}
         totalWorkoutsCompleted={workoutHistory.length}
       />
 
-      {/* Routine Hero Showcase */}
-      <section className="routine-hero-section">
-        <div className="hero-container">
-          <div className="hero-badge-tag" style={{ borderColor: activeRoutine.accentColor || '#10B981' }}>
-            <span className="dot" style={{ backgroundColor: activeRoutine.accentColor || '#10B981' }}></span>
-            <span>{activeRoutine.category} • {activeRoutine.difficulty}</span>
+      {/* Hero Showcase (GymMane Inspired) */}
+      <section className="gymmane-hero-section">
+        <div className="gymmane-wrap hero-inner-grid">
+          <div className="hero-typography-col">
+            <div className="hero-streak-pill">
+              <span className="dot-clay"></span>
+              <span>100% LOCALE • NESSUN ACCOUNT • NESSUNA DISTRAZIONE</span>
+            </div>
+
+            <h1 className="hero-loud-title">
+              <span>ALLENATI.</span>
+              <span>ANNOTATI.</span>
+              <span className="clay-highlight">PROGRESSIONE.</span>
+            </h1>
+
+            <p className="hero-lead-text">
+              La tua guida precisa all'allenamento: seleziona i muscoli direttamente sulla mappa corporea, 
+              segui la routine con timer integrato e monitora i tuoi carichi serie dopo serie.
+            </p>
+
+            <div className="hero-buttons-row">
+              <button 
+                type="button" 
+                className="btn-gymmane-primary"
+                onClick={() => handleStartPresentation(0)}
+              >
+                <Play size={16} fill="currentColor" />
+                <span>AVVIA SESSIONE LIVE</span>
+              </button>
+            </div>
+
+            <div className="hero-specs-row">
+              <div className="hero-spec">
+                <Clock size={15} color="#D9A184" />
+                <span>~{activeRoutine.durationMinutes} min previsti</span>
+              </div>
+              <div className="hero-spec">
+                <Layers size={15} color="#D9A184" />
+                <span>{activeRoutine.exercises.length} esercizi</span>
+              </div>
+              <div className="hero-spec">
+                <Dumbbell size={15} color="#D9A184" />
+                <span>{activeRoutine.difficulty}</span>
+              </div>
+            </div>
           </div>
 
-          <h1 className="hero-title">{activeRoutine.title}</h1>
-          <p className="hero-description">{activeRoutine.description}</p>
-
-          <div className="hero-meta-row">
-            <div className="hero-meta-item">
-              <Clock size={16} />
-              <span>~{activeRoutine.durationMinutes} minuti</span>
-            </div>
-            <div className="hero-meta-item">
-              <Layers size={16} />
-              <span>{activeRoutine.exercises.length} Esercizi Guidati</span>
-            </div>
-            <div className="hero-meta-item">
-              <Flame size={16} />
-              <span>Alta Efficacia</span>
-            </div>
-          </div>
-
-          <div className="hero-cta-group">
-            <button
-              type="button"
-              className="hero-primary-btn"
-              onClick={() => handleStartPresentation(0)}
-            >
-              <Play size={18} fill="currentColor" />
-              <span>Avvia Presentazione Workout</span>
-            </button>
-            <span className="hero-subtext">
-              Include timer di recupero, mappa muscolare e guida passo-passo per ogni ripetizione.
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Filter and Search Bar */}
-      <section className="controls-bar-section">
-        <div className="controls-container">
-          <div className="search-input-wrapper">
-            <Search size={16} className="search-icon" />
-            <input 
-              type="text"
-              placeholder="Cerca esercizio, attrezzo o muscolo..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
+          {/* Interactive Body Map on Hero Stage */}
+          <div className="hero-bodymap-col">
+            <BodyMap 
+              selectedMuscles={selectedMuscles}
+              onToggleMuscle={handleToggleMuscle}
+              onClearMuscles={handleClearMuscles}
             />
           </div>
-
-          <div className="muscle-filter-chips">
-            {MUSCLE_GROUPS.map(muscle => (
-              <button
-                key={muscle}
-                type="button"
-                className={`filter-chip ${selectedMuscle === muscle ? 'active' : ''}`}
-                onClick={() => setSelectedMuscle(muscle)}
-              >
-                {muscle}
-              </button>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* Exercise Cards Main Content */}
-      <main className="exercises-main-container">
-        <div className="section-title-row">
-          <div>
-            <h2 className="section-heading">Scheda Esercizi Dettagliata</h2>
-            <p className="section-subheading">
-              Mostra la biomeccanica, la corretta respirazione e gli errori tipici da prevenire.
-            </p>
-          </div>
-          <span className="results-count">
-            {filteredExercises.length} di {activeRoutine.exercises.length} esercizi
-          </span>
-        </div>
+      {/* Exercises Section */}
+      <section className="exercises-section-wrap">
+        <div className="gymmane-wrap">
+          <div className="section-toolbar-row">
+            <div>
+              <h2 className="section-title-oswald">
+                {selectedMuscles.length > 0 
+                  ? `ESERCIZI PER I MUSCOLI SELEZIONATI (${filteredExercises.length})`
+                  : `${activeRoutine.title} (${filteredExercises.length})`
+                }
+              </h2>
+              <p className="section-subtitle">
+                {selectedMuscles.length > 0 
+                  ? 'Filtrati toccando la mappa corporea. Clicca sui muscoli per aggiungere o rimuovere.'
+                  : 'Scheda completa strutturata con biomeccanica, respirazione e storico carichi.'
+                }
+              </p>
+            </div>
 
-        {filteredExercises.length === 0 ? (
-          <div className="empty-results-box">
-            <Info size={32} />
-            <p>Nessun esercizio trovato per i filtri selezionati.</p>
-            <button 
-              type="button" 
-              className="reset-filter-btn"
-              onClick={() => { setSelectedMuscle('Tutti'); setSearchQuery(''); }}
-            >
-              Azzera filtri
-            </button>
-          </div>
-        ) : (
-          <div className="exercises-cards-grid">
-            {filteredExercises.map((exercise, idx) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                index={idx}
-                onStartAtThisExercise={() => handleStartPresentation(idx)}
+            <div className="search-bar-gymmane">
+              <Search size={15} className="search-ic" />
+              <input 
+                type="text"
+                placeholder="Cerca esercizio o attrezzo..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-text-input"
               />
-            ))}
+            </div>
           </div>
-        )}
-      </main>
 
-      {/* Presentation Fullscreen Mode */}
+          {/* Exercise Cards */}
+          {filteredExercises.length === 0 ? (
+            <div className="empty-state-gymmane">
+              <Info size={36} color="#D9A184" />
+              <p>Nessun esercizio corrisponde alla ricerca o ai muscoli selezionati.</p>
+              <button 
+                type="button" 
+                className="btn-gymmane-secondary"
+                onClick={() => { setSelectedMuscles([]); setSearchQuery(''); }}
+              >
+                Azzera filtri
+              </button>
+            </div>
+          ) : (
+            <div className="exercise-cards-list">
+              {filteredExercises.map((exercise, idx) => (
+                <ExerciseCard 
+                  key={exercise.id}
+                  exercise={exercise}
+                  index={idx}
+                  onStartAtThisExercise={() => handleStartPresentation(idx)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Live Active Workout Presentation Modal */}
       {isPresentationActive && (
         <ActiveWorkoutModal
           routine={activeRoutine}
@@ -248,15 +280,15 @@ export function App() {
       )}
 
       {/* Footer */}
-      <footer className="corpo-footer">
-        <div className="footer-content">
-          <div className="footer-left">
-            <span className="footer-logo">CORPO</span>
-            <p>Guida intelligente all'allenamento senza improvvisazione.</p>
+      <footer className="gymmane-footer">
+        <div className="gymmane-wrap footer-inner">
+          <div>
+            <span className="footer-brand-title">CORPO</span>
+            <p>Ispirato al design e all'etica open-source di GymMane.</p>
           </div>
-          <div className="footer-right">
-            <span>Dati salvati in locale su questo dispositivo • Pronto per l'allenamento quotidiano</span>
-          </div>
+          <span className="footer-right-note">
+            Tutti i tuoi dati rimangono privati sul tuo browser • Zero account • Zero pubblicità
+          </span>
         </div>
       </footer>
     </div>
