@@ -62,6 +62,15 @@ export function ActiveWorkoutModal({
 
   const [activeTab, setActiveTab] = useState('cues'); // 'cues' | 'mistakes'
 
+  // Lock background scroll when modal is open
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   // Stopwatch interval
   useEffect(() => {
     const interval = setInterval(() => {
@@ -277,14 +286,6 @@ export function ActiveWorkoutModal({
         {/* Left Column: Visual & Guidance */}
         <section className="stage-info-col">
           <div className="exercise-spotlight-card">
-            <div className="spotlight-media-container">
-              <MediaViewer 
-                src={currentExercise.illustration}
-                alt={currentExercise.name}
-                className="spotlight-media-frame"
-              />
-            </div>
-
             <div className="spotlight-meta-block">
               <div className="spotlight-tag-row">
                 <span className="spotlight-muscle">{primaryMuscleName}</span>
@@ -293,9 +294,20 @@ export function ActiveWorkoutModal({
                   {currentExercise.equipment}
                 </span>
                 <span className="spotlight-rpe">RPE {currentExercise.rpe}</span>
+                {currentExercise.lastRecord && (
+                  <span className="spotlight-record">Record: <b>{currentExercise.lastRecord}</b></span>
+                )}
               </div>
               <h2 className="spotlight-title">{currentExercise.name}</h2>
               <p className="spotlight-subtitle">{currentExercise.subtitle}</p>
+            </div>
+
+            <div className="spotlight-media-container">
+              <MediaViewer 
+                src={currentExercise.illustration}
+                alt={currentExercise.name}
+                className="spotlight-media-frame"
+              />
             </div>
           </div>
 

@@ -169,9 +169,21 @@ export function HomeView({
           ) : (
             <div className="routines-cards-grid">
               {filteredRoutines.map((routine) => {
-                // Get unique muscle labels for this routine
+                // Get unique muscle labels for this routine safely
                 const muscleNames = Array.from(
-                  new Set(routine.exercises.map(ex => MUSCLE_LABELS[ex.muscleKey] || ex.muscleKey))
+                  new Set(
+                    routine.exercises
+                      .map(ex => {
+                        if (ex.muscleKey && MUSCLE_LABELS[ex.muscleKey]) {
+                          return MUSCLE_LABELS[ex.muscleKey];
+                        }
+                        if (ex.targetMuscles?.primary?.[0]) {
+                          return ex.targetMuscles.primary[0];
+                        }
+                        return ex.muscleKey || null;
+                      })
+                      .filter(Boolean)
+                  )
                 ).slice(0, 3);
 
                 return (

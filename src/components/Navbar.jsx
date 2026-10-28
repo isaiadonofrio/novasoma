@@ -3,7 +3,9 @@ import { Play, Dumbbell, Award, Flame, Sparkles } from 'lucide-react';
 
 export function Navbar({ 
   routines, 
+  currentView = 'home',
   activeRoutineId, 
+  onNavigateHome,
   onSelectRoutine, 
   onStartPresentation,
   totalWorkoutsCompleted = 0
@@ -12,7 +14,14 @@ export function Navbar({
     <header className="gymmane-nav-header">
       <div className="nav-container">
         {/* Brand */}
-        <div className="gymmane-brand">
+        <div 
+          className="gymmane-brand"
+          onClick={onNavigateHome}
+          role="button"
+          tabIndex={0}
+          title="Torna alla Libreria Schede"
+          onKeyDown={(e) => e.key === 'Enter' && onNavigateHome && onNavigateHome()}
+        >
           <div className="brand-logo-icon">
             <Dumbbell size={20} color="#0A0908" />
           </div>
@@ -24,11 +33,18 @@ export function Navbar({
 
         {/* Routine Pills */}
         <div className="nav-routine-tabs">
+          <button
+            type="button"
+            className={`nav-tab-btn ${currentView === 'home' ? 'active' : ''}`}
+            onClick={onNavigateHome}
+          >
+            <span>LIBRERIA</span>
+          </button>
           {routines.map(r => (
             <button
               key={r.id}
               type="button"
-              className={`nav-tab-btn ${r.id === activeRoutineId ? 'active' : ''}`}
+              className={`nav-tab-btn ${currentView === 'overview' && r.id === activeRoutineId ? 'active' : ''}`}
               onClick={() => onSelectRoutine(r.id)}
             >
               <span>{r.shortTitle || r.title}</span>

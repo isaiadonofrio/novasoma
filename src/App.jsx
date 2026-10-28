@@ -7,12 +7,46 @@ import { ActiveWorkoutModal } from './components/ActiveWorkoutModal';
 import { WorkoutSummaryModal } from './components/WorkoutSummaryModal';
 import './App.css';
 
+// Hydrate routines to ensure official GymMane illustrations and muscle keys are preserved
+function hydrateRoutines(savedList) {
+  if (!Array.isArray(savedList) || savedList.length === 0) {
+    return INITIAL_ROUTINES;
+  }
+  return savedList.map(routine => {
+    const defaultRoutine = INITIAL_ROUTINES.find(r => r.id === routine.id);
+    const exercises = (routine.exercises || []).map(ex => {
+      const defaultEx = defaultRoutine?.exercises?.find(e => e.id === ex.id);
+      return {
+        ...ex,
+        muscleKey: ex.muscleKey || defaultEx?.muscleKey || 'quads',
+        secondaryKeys: ex.secondaryKeys || defaultEx?.secondaryKeys || [],
+        illustration: (ex.illustration && ex.illustration.trim()) ? ex.illustration : (defaultEx?.illustration || '/ex/quads.webp'),
+        execution: {
+          setup: ex.execution?.setup || defaultEx?.execution?.setup || '',
+          eccentric: ex.execution?.eccentric || defaultEx?.execution?.eccentric || '',
+          concentric: ex.execution?.concentric || defaultEx?.execution?.concentric || '',
+          breathing: ex.execution?.breathing || defaultEx?.execution?.breathing || '',
+          commonMistakes: ex.execution?.commonMistakes?.length ? ex.execution.commonMistakes : (defaultEx?.execution?.commonMistakes || []),
+          proTip: ex.execution?.proTip || defaultEx?.execution?.proTip || ''
+        }
+      };
+    });
+    return {
+      ...routine,
+      exercises
+    };
+  });
+}
+
 export function App() {
   // Saved routines in localStorage or fallback to defaults
   const [routines, setRoutines] = useState(() => {
     const saved = localStorage.getItem('corpo_routines');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* fallback */ }
+      try { 
+        const parsed = JSON.parse(saved);
+        return hydrateRoutines(parsed);
+      } catch (e) { /* fallback */ }
     }
     return INITIAL_ROUTINES;
   });
@@ -100,7 +134,9 @@ export function App() {
       {/* Top Navbar */}
       <Navbar 
         routines={routines}
+        currentView={currentView}
         activeRoutineId={activeRoutineId}
+        onNavigateHome={() => setCurrentView('home')}
         onSelectRoutine={(id) => {
           setActiveRoutineId(id);
           setCurrentView('overview');

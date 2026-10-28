@@ -74,7 +74,7 @@ export function WorkoutSummaryModal({ summary, routine, onClose, onRestart }) {
         </button>
 
         <div className="summary-trophy-badge">
-          <Trophy size={48} color="#10B981" />
+          <Trophy size={48} color="#D9A184" />
         </div>
 
         <h2 className="summary-title">Allenamento Completato!</h2>
@@ -85,19 +85,19 @@ export function WorkoutSummaryModal({ summary, routine, onClose, onRestart }) {
 
         <div className="summary-stats-grid">
           <div className="summary-stat-box">
-            <Clock size={20} color="#06B6D4" />
+            <Clock size={20} color="#D9A184" />
             <div className="stat-value">{formatMinutes(summary.durationSeconds)}</div>
             <div className="stat-caption">Tempo Totale</div>
           </div>
 
           <div className="summary-stat-box">
-            <CheckCircle size={20} color="#10B981" />
+            <CheckCircle size={20} color="#8FA377" />
             <div className="stat-value">{summary.completedSets} / {summary.totalSets}</div>
             <div className="stat-caption">Serie Completate</div>
           </div>
 
           <div className="summary-stat-box">
-            <Dumbbell size={20} color="#F59E0B" />
+            <Dumbbell size={20} color="#B98F72" />
             <div className="stat-value">{totalVolumeKg > 0 ? `${totalVolumeKg} kg` : 'Completato'}</div>
             <div className="stat-caption">Volume Sollevato</div>
           </div>

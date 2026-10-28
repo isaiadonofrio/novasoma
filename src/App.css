@@ -47,6 +47,13 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s var(--ease);
+  user-select: none;
+}
+
+.gymmane-brand:hover {
+  opacity: 0.85;
 }
 
 .brand-logo-icon {
@@ -433,15 +440,20 @@
 
 .routine-muscle-chip {
   font-size: 0.75rem;
-  color: var(--faint);
+  font-weight: 500;
+  color: #D4D4D4;
   background: var(--raised2);
-  border: 1px solid var(--border);
-  padding: 2px 8px;
-  border-radius: 4px;
+  border: 1px solid var(--border-hi);
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
 }
 
 .routine-muscle-chip.more {
   color: var(--clay);
+  border-color: rgba(217, 161, 132, 0.3);
+  background: var(--clay-soft);
 }
 
 .routine-footer-meta {
@@ -1052,8 +1064,13 @@
 /* ======================================================== */
 .gymmane-active-overlay {
   position: fixed;
-  inset: 0;
-  z-index: 100;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 200;
   background: var(--page);
   display: flex;
   flex-direction: column;
@@ -1209,22 +1226,25 @@
 
 .exercise-spotlight-card {
   display: flex;
-  gap: 24px;
-  align-items: center;
+  flex-direction: column;
+  gap: 18px;
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 24px;
 }
 
 .spotlight-media-container {
-  width: 150px;
-  height: 150px;
-  background: var(--raised2);
+  width: 100%;
+  height: 280px;
+  background: #0D0C0B;
   border: 1px solid var(--border-hi);
   border-radius: var(--radius-md);
   overflow: hidden;
-  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .spotlight-media-frame {
@@ -1233,14 +1253,27 @@
 }
 
 .spotlight-meta-block {
-  flex: 1;
+  width: 100%;
 }
 
 .spotlight-tag-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.spotlight-record {
+  font-family: var(--display);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--clay);
+  background: var(--clay-soft);
+  border: 1px solid rgba(217, 161, 132, 0.25);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: auto;
 }
 
 .spotlight-muscle {
