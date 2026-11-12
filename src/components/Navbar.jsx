@@ -1,5 +1,6 @@
 import React from 'react';
-import { Play, Dumbbell, Sun, Moon, BookOpen, Home } from 'lucide-react';
+import { Play, Sun, Moon, BookOpen, Home } from 'lucide-react';
+import logoImg from '../assets/logo nova soma.jpg';
 
 export function Navbar({
   currentView = 'home',
@@ -22,8 +23,8 @@ export function Navbar({
           title="Back to Home"
           onKeyDown={(e) => e.key === 'Enter' && onNavigateHome && onNavigateHome()}
         >
-          <div className="brand-logo-icon">
-            <Dumbbell size={17} />
+          <div className="brand-logo-frame">
+            <img src={logoImg} alt="Nova Soma Logo" className="brand-logo-img" />
           </div>
           <span className="brand-main">Nova Soma</span>
         </div>

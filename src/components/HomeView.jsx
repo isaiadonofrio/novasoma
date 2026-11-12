@@ -17,6 +17,7 @@ import { WorkoutEditorModal } from './WorkoutEditorModal';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
 import { calculateOverviewDashboardStats } from '../utils/analytics';
 import { formatVolumeCompact } from '../utils/formatting';
+import logoImg from '../assets/logo nova soma.jpg';
 
 export function HomeView({
   routines = [],
@@ -87,7 +88,10 @@ export function HomeView({
       <section className="home-clean-hero">
         <div className="gymmane-wrap">
           <div className="hero-clean-header-row">
-            <div>
+            <div className="hero-brand-date-box">
+              <div className="hero-logo-frame" title="Nova Soma Ouroboros Spine">
+                <img src={logoImg} alt="Nova Soma" className="hero-logo-img" />
+              </div>
               <span className="home-date-kicker">TODAY · {todayDisplay}</span>
             </div>
 

@@ -1,4 +1,4 @@
-/* GymMane Essential Design System (Ember + Clay + Sage Triad) */
+/* GymMane Essential Design System (Teal + Bronze Dual Signature) */
 :root {
   /* Obsidian Warm Matte Dark Palette */
   --page: #0A0908;
@@ -9,7 +9,7 @@
 
   --border: rgba(255, 255, 255, 0.08);
   --border-hi: rgba(255, 255, 255, 0.16);
-  --border-active: #D9A184;
+  --border-active: #C28E52;
 
   --text: #FFFFFF;
   --dim: #9A9A9A;
@@ -28,23 +28,26 @@
   --accent-soft: rgba(255, 255, 255, 0.10);
   --accent-glow: rgba(255, 255, 255, 0.18);
 
-  /* Clay: Brand Identity & Muscle Highlight */
-  --clay: #D9A184;
-  --clay-hover: #E4B297;
-  --clay-soft: rgba(217, 161, 132, 0.16);
-  --clay-glow: rgba(217, 161, 132, 0.26);
+  /* Bronze: Brand Identity, Vertebrae Core & Primary Agonist Highlights */
+  --bronze: #C28E52;
+  --clay: #C28E52;
+  --clay-hover: #D4A064;
+  --clay-soft: rgba(194, 142, 82, 0.16);
+  --clay-glow: rgba(194, 142, 82, 0.28);
   --on-clay: #141210;
-  --brass: #B98F72;
+  --brass: #A8763E;
 
-  /* Sage: Active Session, Progress & Completed Sets */
-  --sage: #8FA377;
-  --sage-soft: rgba(143, 163, 119, 0.18);
-  --sage-glow: rgba(143, 163, 119, 0.28);
-  --signal: #8FA377;
+  /* Teal: Brand Ouroboros, Synergist Muscles & Training Circuits */
+  --teal: #219B9D;
+  --teal-deep: #135355;
+  --sage: #219B9D;
+  --sage-soft: rgba(33, 155, 157, 0.18);
+  --sage-glow: rgba(33, 155, 157, 0.30);
+  --signal: #219B9D;
 
   /* Semantic Status */
-  --info: #7FA8C9;
-  --warn: #E0B15A;
+  --info: #219B9D;
+  --warn: #C28E52;
   --danger: #E5674C;
 
   /* Folder-Stack Pastel Routine Tabs */
@@ -69,7 +72,7 @@
 
 /* Warm Linen Light Palette */
 [data-theme="light"] {
-  --page: #F7F4F0;
+  --page: #F7F5F0;
   --bg: #FFFEFD;
   --raised: #FFFFFF;
   --raised2: #ECE8E3;
@@ -77,37 +80,42 @@
 
   --border: #E0DBD5;
   --border-hi: #CFC8BF;
-  --border-active: #9E4E27;
+  --border-active: #9B6C34;
 
-  --text: #1A1713;
-  --dim: #5F574F;
-  --faint: #8A8179;
-  --dot-grid: rgba(26, 23, 20, 0.055);
+  --text: #171E1E;
+  --dim: #546060;
+  --faint: #818D8D;
+  --dot-grid: rgba(22, 107, 109, 0.05);
 
-  --ember: #1A1713;
-  --ember-hover: #000000;
+  --ember: #135355;
+  --ember-hover: #0E3E40;
   --on-ember: #FFFFFF;
 
   --accent: var(--ember);
   --accent-hover: var(--ember-hover);
   --accent-fg: var(--on-ember);
-  --accent-soft: rgba(26, 23, 19, 0.08);
-  --accent-glow: rgba(26, 23, 19, 0.16);
+  --accent-soft: rgba(19, 83, 85, 0.08);
+  --accent-glow: rgba(19, 83, 85, 0.16);
 
-  --clay: #9E4E27;
-  --clay-hover: #833F1E;
-  --clay-soft: rgba(158, 78, 39, 0.12);
-  --clay-glow: rgba(158, 78, 39, 0.22);
+  /* Bronze */
+  --bronze: #9B6C34;
+  --clay: #9B6C34;
+  --clay-hover: #835B29;
+  --clay-soft: rgba(155, 108, 52, 0.13);
+  --clay-glow: rgba(155, 108, 52, 0.22);
   --on-clay: #FFFFFF;
-  --brass: #8A6B41;
+  --brass: #825A27;
 
-  --sage: #3D7A52;
-  --sage-soft: rgba(61, 122, 82, 0.14);
-  --sage-glow: rgba(61, 122, 82, 0.24);
-  --signal: #3D7A52;
+  /* Teal */
+  --teal: #166B6D;
+  --teal-deep: #0E4244;
+  --sage: #166B6D;
+  --sage-soft: rgba(22, 107, 109, 0.14);
+  --sage-glow: rgba(22, 107, 109, 0.24);
+  --signal: #166B6D;
 
-  --info: #3268A0;
-  --warn: #9A6A12;
+  --info: #166B6D;
+  --warn: #9B6C34;
   --danger: #C0392B;
 
   --tab-1: #C2D8E6;
