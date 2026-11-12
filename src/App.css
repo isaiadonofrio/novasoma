@@ -4275,7 +4275,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 13px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
   background: var(--raised2);
   border: 1px solid var(--border);
@@ -4283,11 +4283,25 @@
   font-size: 0.8rem;
   font-weight: 700;
   margin-bottom: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease), transform 0.12s var(--ease);
 }
 
 .db-back-btn:hover {
   color: var(--text);
+  background: var(--raised3);
+  border-color: var(--clay);
+  transform: translateX(-2px);
+}
+
+[data-theme="light"] .db-back-btn {
+  background: var(--raised);
   border-color: var(--border-hi);
+}
+
+[data-theme="light"] .db-back-btn:hover {
+  background: var(--raised2);
+  border-color: var(--clay);
 }
 
 .db-view-title-row {
@@ -4304,14 +4318,15 @@
   flex: 1;
 }
 
+.db-kicker,
 .db-kinesiology-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-family: var(--mono);
   font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--clay);
   margin-bottom: 6px;
@@ -4335,13 +4350,17 @@
 }
 
 .db-toolbar-box {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   background: var(--raised2);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  overflow: hidden;
 }
 
 .db-search-input-wrap {
@@ -4392,24 +4411,28 @@
 }
 
 .db-filters-stack {
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .db-filter-row {
+  width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .db-filter-label {
   font-family: var(--mono);
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--dim);
-  min-width: 112px;
+  min-width: 100px;
   flex-shrink: 0;
 }
 
@@ -4418,13 +4441,25 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
+  min-width: 0;
   flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 2px 2px 4px;
+}
+
+.db-chips-scroll::-webkit-scrollbar,
+.db-muscle-pills-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .db-chip,
 .db-muscle-pill {
-  padding: 5px 12px;
+  padding: 6px 13px;
   border-radius: var(--radius-full);
   background: var(--raised);
   border: 1px solid var(--border);
@@ -4432,12 +4467,16 @@
   font-size: 0.78rem;
   font-weight: 700;
   white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 0.14s var(--ease), border-color 0.14s var(--ease), color 0.14s var(--ease), transform 0.12s var(--ease);
 }
 
 .db-chip:hover,
 .db-muscle-pill:hover {
   color: var(--text);
   border-color: var(--border-hi);
+  transform: translateY(-1px);
 }
 
 .db-chip.active,
@@ -4445,6 +4484,7 @@
   background: var(--ember);
   color: var(--on-ember);
   border-color: var(--ember);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .db-view-main {

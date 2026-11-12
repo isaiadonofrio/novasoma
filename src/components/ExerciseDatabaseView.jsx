@@ -101,11 +101,11 @@ export function ExerciseDatabaseView({
           <div className="db-top-nav-row">
             <button
               type="button"
-              className="btn-back-clean"
+              className="db-back-btn"
               onClick={onBack}
               title="Return to Home Overview"
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={15} />
               <span>Back to Home</span>
             </button>
           </div>
@@ -203,11 +203,23 @@ export function ExerciseDatabaseView({
             )}
           </div>
 
-          {exercisesList.length === 0 ? (
+          {filteredExercises.length === 0 ? (
             <div className="db-empty-box">
               <Dumbbell size={48} color="var(--clay)" />
-              <h3>Your Exercise Library Is Ready</h3>
-              <p>No exercises match your current filters.</p>
+              <h3>No Movements Found</h3>
+              <p>No exercises match your current search or filter combination.</p>
+              <button
+                type="button"
+                className="btn-gymmane-primary"
+                style={{ marginTop: '12px' }}
+                onClick={() => {
+                  setSelectedMuscle('All');
+                  setSelectedEquipment('All');
+                  setSearchQuery('');
+                }}
+              >
+                Reset all filters
+              </button>
             </div>
           ) : (
             <div className="db-catalog-grid">
