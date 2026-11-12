@@ -1959,7 +1959,228 @@
 }
 
 .overview-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
   margin-bottom: 16px;
+}
+
+.overview-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.save-toast-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  background: var(--sage-soft);
+  border: 1px solid color-mix(in srgb, var(--sage) 45%, transparent);
+  color: var(--sage);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.btn-enter-edit-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px;
+  border-radius: var(--radius-full);
+  background: var(--clay);
+  border: 1px solid var(--clay);
+  color: #FFFFFF;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(199, 110, 78, 0.22);
+  transition: all 0.16s var(--ease);
+}
+
+.btn-enter-edit-mode:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(199, 110, 78, 0.32);
+}
+
+.btn-enter-edit-mode.outline {
+  background: var(--raised2);
+  border-color: var(--clay);
+  color: var(--clay);
+  box-shadow: none;
+}
+
+.btn-enter-edit-mode.outline:hover {
+  background: var(--clay-soft);
+}
+
+/* Edit Mode Sticky Action Strip */
+.workout-editor-action-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1.5px solid var(--clay);
+  box-shadow: 0 4px 18px rgba(199, 110, 78, 0.16);
+  margin-bottom: 18px;
+}
+
+[data-theme="light"] .workout-editor-action-strip {
+  background: #FFFFFF;
+}
+
+.editor-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.editor-back-pill {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+}
+
+.editor-back-pill:hover {
+  color: var(--text);
+  border-color: var(--border-hi);
+}
+
+.editor-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--clay);
+  color: #FFFFFF;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.editor-unsaved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--ember);
+}
+
+.unsaved-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ember);
+  box-shadow: 0 0 0 3px rgba(229, 103, 76, 0.25);
+  animation: pulseDot 1.4s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+.editor-synced-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+
+.editor-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-discard-workout-edits {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border-hi);
+  color: var(--dim);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+}
+
+.btn-discard-workout-edits:hover {
+  background: rgba(229, 103, 76, 0.12);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-save-workout-edits {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  background: var(--sage);
+  border: 1.5px solid var(--sage);
+  color: #FFFFFF;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(143, 163, 119, 0.32);
+  transition: all 0.16s var(--ease);
+}
+
+.btn-save-workout-edits:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(143, 163, 119, 0.42);
+}
+
+.btn-save-workout-edits:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  filter: grayscale(0.5);
+}
+
+.hero-editing-tag {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(217, 161, 132, 0.2);
+  color: var(--clay);
+  border: 1px solid var(--clay);
+}
+
+.overview-hero-cta-box {
+  display: flex;
+  align-items: center;
 }
 
 .overview-back-btn {
@@ -2982,6 +3203,81 @@
   font-style: italic;
   text-align: center;
   padding: 6px 0;
+}
+
+.indepth-sets-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-spec-tag {
+  font-size: 0.78rem;
+  color: var(--dim);
+  background: var(--raised2);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+}
+
+.preview-spec-tag b {
+  color: var(--text);
+  font-family: var(--mono);
+}
+
+.hub-preview-summary-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hub-preview-val {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.hub-preview-val b {
+  font-family: var(--mono);
+  color: var(--clay);
+}
+
+.timer-state-badge {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.timer-state-badge.on {
+  background: var(--clay-soft);
+  color: var(--clay);
+  border: 1px solid color-mix(in srgb, var(--clay) 35%, transparent);
+}
+
+.timer-state-badge.off {
+  background: var(--raised2);
+  color: var(--faint);
+  border: 1px dashed var(--border-hi);
+}
+
+.preview-edit-mode-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px dashed var(--border-hi);
+  font-size: 0.74rem;
+  color: var(--dim);
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.preview-edit-mode-hint b {
+  color: var(--text);
 }
 
 .row-actions-group {
