@@ -6,6 +6,7 @@ import {
   getSupersetInfoMap,
   toggleSupersetLinkWithNext,
   unlinkExerciseFromSuperset,
+  unlinkSupersetGroup,
   suggestDropSetWeight,
   parseExerciseTargetSeconds,
   buildInitialExerciseSets,
@@ -53,6 +54,15 @@ test('superset helpers link adjacent same-phase exercises and normalize singleto
   // Unlink m1 from original pair clears both m1 and m2
   const cleared = toggleSupersetLinkWithNext(paired, 1);
   assert.equal(getSupersetInfoMap(cleared).size, 0);
+
+  // Unlink entire superset group directly
+  const pairedAgain = toggleSupersetLinkWithNext(initial, 1);
+  const groupId = pairedAgain[1].supersetGroup;
+  assert.ok(groupId);
+  const dissolved = unlinkSupersetGroup(pairedAgain, groupId);
+  assert.equal(getSupersetInfoMap(dissolved).size, 0);
+  assert.equal(dissolved[1].supersetGroup, undefined);
+  assert.equal(dissolved[2].supersetGroup, undefined);
 });
 
 test('suggestDropSetWeight reduces working load ~20% to nearest 0.5kg and handles blanks', () => {

@@ -20,7 +20,9 @@ import {
   SlidersHorizontal,
   Trophy,
   Check,
-  RotateCcw
+  RotateCcw,
+  Unlink,
+  ArrowDownUp
 } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
 import {
@@ -29,7 +31,8 @@ import {
   insertExerciseByPhase,
   normalizeSupersetGroups,
   toggleSupersetLinkWithNext,
-  unlinkExerciseFromSuperset
+  unlinkExerciseFromSuperset,
+  unlinkSupersetGroup
 } from '../utils/workoutSets';
 import { MiniBodyMap } from './MiniBodyMap';
 import { ExerciseDetailModal } from './ExerciseDetailModal';
@@ -38,7 +41,6 @@ import { WorkoutEditorModal } from './WorkoutEditorModal';
 import { ConfirmModal } from './ConfirmModal';
 
 const REP_PRESETS = ['6-8', '8-10', '10-12', '12-15', '15-20', '30s', '45s', '60s'];
-const TIMER_PRESETS = [30, 45, 60, 90, 120, 180];
 
 export function WorkoutOverviewView({ 
   workout, 
@@ -71,6 +73,45 @@ export function WorkoutOverviewView({
 
   const activeWorkout = isEditMode ? draftWorkout : workout;
   const supersetMap = getSupersetInfoMap(activeWorkout.exercises || []);
+
+  const timelineGroups = useMemo(() => {
+    const groups = [];
+    const exercises = activeWorkout.exercises || [];
+    let i = 0;
+    while (i < exercises.length) {
+      const ex = exercises[i];
+      const ssInfo = supersetMap.get(i);
+      if (ssInfo && ssInfo.isFirst) {
+        const groupId = ssInfo.groupId;
+        const members = [];
+        while (i < exercises.length && exercises[i]?.supersetGroup === groupId) {
+          members.push({
+            exercise: exercises[i],
+            index: i,
+            ssInfo: supersetMap.get(i)
+          });
+          i++;
+        }
+        groups.push({
+          type: 'superset',
+          groupId,
+          letter: ssInfo.letter,
+          label: ssInfo.label,
+          isWarmup: Boolean(ex.isWarmup),
+          members
+        });
+      } else {
+        groups.push({
+          type: 'single',
+          exercise: ex,
+          index: i,
+          isWarmup: Boolean(ex.isWarmup)
+        });
+        i++;
+      }
+    }
+    return groups;
+  }, [activeWorkout.exercises, supersetMap]);
 
   const allExerciseKeys = (activeWorkout.exercises || []).map((ex, i) => ex.id || `ex-${i}`);
   const allExpanded = allExerciseKeys.length > 0 && allExerciseKeys.every((k) => expandedIds.has(k));
@@ -175,6 +216,13 @@ export function WorkoutOverviewView({
     }));
   };
 
+  const handleBreakCircuit = (groupId) => {
+    setDraftWorkout(prev => ({
+      ...prev,
+      exercises: unlinkSupersetGroup(prev.exercises, groupId)
+    }));
+  };
+
   const handleUpdateExerciseSets = (index, nextSets) => {
     const clamped = Math.max(1, Math.min(10, Number(nextSets) || 3));
     setDraftWorkout(prev => ({
@@ -190,16 +238,6 @@ export function WorkoutOverviewView({
       ...prev,
       exercises: prev.exercises.map((ex, i) =>
         i === index ? { ...ex, defaultReps: repsValue } : ex
-      )
-    }));
-  };
-
-  const handleSetRestSeconds = (index, seconds) => {
-    const val = Math.max(15, Math.min(300, Number(seconds) || 60));
-    setDraftWorkout(prev => ({
-      ...prev,
-      exercises: prev.exercises.map((ex, i) =>
-        i === index ? { ...ex, defaultRestSeconds: val, timerEnabled: true } : ex
       )
     }));
   };
@@ -327,6 +365,515 @@ export function WorkoutOverviewView({
       return `${num} reps/side`;
     }
     return `${str} reps`;
+  };
+
+  const renderExerciseCard = (exercise, idx, ssInfo = null) => {
+    const primaryMuscle = MUSCLE_LABELS[exercise.muscleKey] || exercise.muscleKey;
+    const nextEx = activeWorkout.exercises[idx + 1];
+    const canLinkWithNext = Boolean(nextEx) && Boolean(nextEx.isWarmup) === Boolean(exercise.isWarmup);
+    const timerOn = isRestTimerEnabledForExercise(exercise);
+    const dropCount = parseInt(exercise.defaultDropSets, 10) || 0;
+    const exerciseKey = exercise.id || `ex-${idx}`;
+    const isExpanded = expandedIds.has(exerciseKey);
+    const isItemDragging = draggedIdx === idx;
+    const isDropTargetAbove = dragOverIdx === idx && draggedIdx !== null && draggedIdx > idx;
+    const isDropTargetBelow = dragOverIdx === idx && draggedIdx !== null && draggedIdx < idx;
+
+    let restSummaryText;
+    if (ssInfo && !ssInfo.isLast) {
+      restSummaryText = '0s Transition';
+    } else if (ssInfo && ssInfo.isLast) {
+      restSummaryText = `${exercise.defaultRestSeconds || 90}s Round Rest`;
+    } else {
+      restSummaryText = timerOn ? `${exercise.defaultRestSeconds || 60}s Rest` : 'Untimed';
+    }
+
+    return (
+      <div
+        key={exerciseKey}
+        className={`overview-exercise-row-card clean-text-card ${exercise.isWarmup ? 'warmup-row' : ''} ${ssInfo ? 'in-superset' : ''} ${isExpanded ? 'is-expanded' : ''} ${isEditMode ? 'in-edit-mode' : ''} ${isItemDragging ? 'is-dragging' : ''} ${isDropTargetAbove ? 'drag-target-above' : ''} ${isDropTargetBelow ? 'drag-target-below' : ''}`}
+        draggable={isEditMode}
+        onDragStart={(e) => {
+          if (!isEditMode) return;
+          e.dataTransfer.setData('text/plain', String(idx));
+          e.dataTransfer.effectAllowed = 'move';
+          setDraggedIdx(idx);
+        }}
+        onDragOver={(e) => {
+          if (!isEditMode) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          if (dragOverIdx !== idx) {
+            setDragOverIdx(idx);
+          }
+        }}
+        onDrop={(e) => {
+          if (!isEditMode) return;
+          e.preventDefault();
+          handleDropExercise(draggedIdx, idx);
+          setDraggedIdx(null);
+          setDragOverIdx(null);
+        }}
+        onDragEnd={() => {
+          setDraggedIdx(null);
+          setDragOverIdx(null);
+        }}
+      >
+        {/* Main Row Line */}
+        <div className="row-card-main-line">
+          {/* Left: Order index & Drag Hub (in Edit Mode) */}
+          <div 
+            className={`row-order-index ${isEditMode ? 'editable-drag-hub' : ''}`}
+            title={isEditMode ? "Drag to reorder or tap arrows" : undefined}
+          >
+            {isEditMode ? (
+              <div className="drag-index-unit">
+                <button
+                  type="button"
+                  disabled={idx === 0}
+                  onClick={(e) => { e.stopPropagation(); moveExercise(idx, -1); }}
+                  className="btn-left-mini-reorder up"
+                  title="Move up"
+                  aria-label="Move up"
+                >
+                  <ArrowUp size={11} />
+                </button>
+
+                <div className="drag-handle-badge">
+                  <GripVertical size={12} className="drag-grip-icon" />
+                  <span className="order-num-text">{ssInfo ? ssInfo.code : String(idx + 1).padStart(2, '0')}</span>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={idx === activeWorkout.exercises.length - 1}
+                  onClick={(e) => { e.stopPropagation(); moveExercise(idx, 1); }}
+                  className="btn-left-mini-reorder down"
+                  title="Move down"
+                  aria-label="Move down"
+                >
+                  <ArrowDown size={11} />
+                </button>
+              </div>
+            ) : (
+              <span>{ssInfo ? ssInfo.code : String(idx + 1).padStart(2, '0')}</span>
+            )}
+          </div>
+
+          {(exercise.illustration || exercise.customVideoUrl) && (
+            <div 
+              className="row-media-thumb" 
+              onClick={() => setViewingExerciseGuide(exercise)}
+              title="View movement guide"
+            >
+              {exercise.illustration ? (
+                <img 
+                  src={exercise.illustration} 
+                  alt={exercise.name} 
+                  className="row-thumb-img" 
+                  loading="lazy" 
+                />
+              ) : (
+                <div className="row-thumb-placeholder has-video">
+                  <Video size={16} color="var(--clay)" />
+                  <span className="thumb-add-hint">VIDEO</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="row-exercise-content">
+            <div className="row-title-line">
+              {ssInfo && (
+                <span className="row-superset-pill">
+                  <Link2 size={11} />
+                  <span>#{ssInfo.code}</span>
+                </span>
+              )}
+              {exercise.isWarmup && (
+                <span className="row-warmup-pill">Warm-Up</span>
+              )}
+              <span className="row-muscle-pill">{primaryMuscle}</span>
+              <span className="row-equipment-text">
+                <Dumbbell size={12} />
+                {exercise.equipment}
+              </span>
+            </div>
+
+            <h3 
+              className="row-exercise-name clickable-guide-title"
+              onClick={() => setViewingExerciseGuide(exercise)}
+              title="Click to view form guide and biomechanical cues"
+            >
+              <span>{exercise.name}</span>
+            </h3>
+            <p className="row-exercise-sub">{exercise.subtitle || exercise.scientificName}</p>
+
+            {/* Clean High-Level Summary Badges Strip */}
+            <div className="row-clean-summary-strip">
+              <div className="summary-pill volume-pill" title="Planned Sets and Target Reps">
+                <Layers size={13} className="summary-pill-icon" />
+                <span><b>{exercise.defaultSets || 3} Sets</b> × {formatRepsSummary(exercise.defaultReps)}</span>
+              </div>
+
+              <div className={`summary-pill rest-pill ${ssInfo && !ssInfo.isLast ? 'superset-transition-pill' : (!timerOn ? 'untimed' : '')}`} title="Target Recovery Rest Interval / Transition">
+                {ssInfo && !ssInfo.isLast ? (
+                  <ArrowDownUp size={13} className="summary-pill-icon" />
+                ) : (
+                  <Clock size={13} className="summary-pill-icon" />
+                )}
+                <span><b>{restSummaryText}</b></span>
+              </div>
+
+              {dropCount > 0 && (
+                <div className="summary-pill dropset-pill" title={`${dropCount} Planned Drop Set(s)`}>
+                  <Flame size={13} className="summary-pill-icon" />
+                  <span>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</span>
+                </div>
+              )}
+
+              {exercise.lastRecord && (
+                <div className="summary-pill record-pill" title="Personal Record">
+                  <Trophy size={13} className="summary-pill-icon" />
+                  <span>Record: <b>{exercise.lastRecord}</b></span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="row-actions-group">
+            <button
+              type="button"
+              className={`btn-indepth-pill ${isExpanded ? 'active' : ''}`}
+              onClick={() => toggleExpandExercise(exerciseKey)}
+              title={isExpanded ? 'Collapse in-depth workout prescription' : 'Expand in-depth sets, timing & drop sets'}
+              aria-expanded={isExpanded}
+            >
+              <SlidersHorizontal size={13} />
+              <span>In-Depth</span>
+              {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+            </button>
+
+            {/* In Edit Mode: Pair with next or unpair button */}
+            {isEditMode && !ssInfo && canLinkWithNext && (
+              <button
+                type="button"
+                className="btn-row-pair-superset"
+                onClick={() => handleToggleSupersetWithNext(idx)}
+                title={`Pair with ${nextEx?.name} as Superset Circuit`}
+              >
+                <Link2 size={13} />
+                <span>Pair Superset</span>
+              </button>
+            )}
+
+            {isEditMode && ssInfo && (
+              <button
+                type="button"
+                className="btn-row-unpair-superset"
+                onClick={() => handleUnlinkSuperset(idx)}
+                title="Unlink from superset"
+              >
+                <Unlink size={13} />
+                <span>Unpair</span>
+              </button>
+            )}
+
+            {/* Edit Mode Delete Button */}
+            {isEditMode && (
+              <button 
+                type="button"
+                className="row-action-icon-btn delete-btn animate-fade"
+                onClick={() => removeExercise(idx)}
+                title="Remove exercise from workout"
+              >
+                <Trash2 size={15} />
+              </button>
+            )}
+
+            {/* Preview Mode Start Button */}
+            {!isEditMode && (
+              <button 
+                type="button"
+                className="btn-play-from-here"
+                onClick={() => onStartLive(idx)}
+                title="Start workout from this exercise"
+              >
+                <Play size={13} fill="currentColor" />
+                <span>Start</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Expandable In-Depth Training Architecture Sheet */}
+        {isExpanded && (
+          <div className="row-indepth-panel animate-fade">
+            {/* Section 1: Sets Architecture & Presets with Integrated Toolbar */}
+            <div className="indepth-sets-section">
+              <div className="indepth-section-header">
+                <div className="indepth-section-title">
+                  <Layers size={15} color="var(--clay)" />
+                  <h4>Sets Architecture &amp; Target Reps</h4>
+                  <button
+                    type="button"
+                    className="btn-indepth-guide-link"
+                    onClick={() => setViewingExerciseGuide(exercise)}
+                    title="Open full movement guide, anatomy and cues"
+                  >
+                    <BookOpen size={12} />
+                    <span>Movement Guide</span>
+                  </button>
+                </div>
+
+                {/* Integrated Controls in Edit Mode */}
+                {isEditMode ? (
+                  <div className="indepth-integrated-toolbar animate-fade">
+                    {/* 1. Sets Stepper */}
+                    <div className="toolbar-control-box">
+                      <span className="control-label">Sets:</span>
+                      <div className="compact-stepper-unit">
+                        <button
+                          type="button"
+                          className="indepth-step-btn"
+                          disabled={(exercise.defaultSets || 3) <= 1}
+                          onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) - 1)}
+                          title="Remove 1 set"
+                        >−</button>
+                        <span className="indepth-step-count"><b>{exercise.defaultSets || 3}</b></span>
+                        <button
+                          type="button"
+                          className="indepth-step-btn"
+                          disabled={(exercise.defaultSets || 3) >= 10}
+                          onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) + 1)}
+                          title="Add 1 set"
+                        >+</button>
+                      </div>
+                    </div>
+
+                    {/* 2. Rest Stepper & Toggle */}
+                    <div className="toolbar-control-box">
+                      <span className="control-label">
+                        {ssInfo && !ssInfo.isLast ? 'Round Rest:' : 'Rest Interval:'}
+                      </span>
+                      <div className="compact-stepper-unit rest-unit">
+                        <button
+                          type="button"
+                          className="indepth-step-btn"
+                          disabled={!timerOn || (exercise.defaultRestSeconds || 60) <= 15}
+                          onClick={() => handleStepRestSeconds(idx, -15)}
+                          title="Decrease rest by 15s"
+                        >−15s</button>
+                        <span className="indepth-step-count rest-val-text">
+                          <b>{timerOn ? `${exercise.defaultRestSeconds || 60}s` : 'Untimed'}</b>
+                        </span>
+                        <button
+                          type="button"
+                          className="indepth-step-btn"
+                          disabled={!timerOn || (exercise.defaultRestSeconds || 60) >= 300}
+                          onClick={() => handleStepRestSeconds(idx, 15)}
+                          title="Increase rest by 15s"
+                        >+15s</button>
+                        <button
+                          type="button"
+                          className={`btn-timer-pill-toggle ${timerOn ? 'on' : 'off'}`}
+                          onClick={() => handleToggleTimer(idx)}
+                          title={timerOn ? 'Disable timer (Untimed)' : 'Enable rest timer'}
+                        >
+                          <Clock size={11} />
+                          <span>{timerOn ? 'Timer' : 'Untimed'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 3. Drop Sets Stepper / Add */}
+                    <div className="toolbar-control-box">
+                      <span className="control-label">Drop Sets:</span>
+                      {dropCount === 0 ? (
+                        <button
+                          type="button"
+                          className="btn-toolbar-add-dropset"
+                          onClick={() => handleUpdateExerciseDropSets(idx, 1)}
+                          title="Add immediate drop set post final set"
+                        >
+                          <Flame size={12} color="var(--ember)" />
+                          <span>+ Add Drop</span>
+                        </button>
+                      ) : (
+                        <div className="compact-stepper-unit dropset-active-unit">
+                          <button
+                            type="button"
+                            className="indepth-step-btn"
+                            onClick={() => handleUpdateExerciseDropSets(idx, dropCount - 1)}
+                            title="Decrease drop sets"
+                          >−</button>
+                          <span className="indepth-step-count dropset-val-text">
+                            <Flame size={12} color="var(--ember)" />
+                            <b>+{dropCount}</b>
+                          </span>
+                          <button
+                            type="button"
+                            className="indepth-step-btn"
+                            disabled={dropCount >= 3}
+                            onClick={() => handleUpdateExerciseDropSets(idx, dropCount + 1)}
+                            title="Increase drop sets"
+                          >+</button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 4. Target Reps Presets */}
+                    <div className="toolbar-control-box reps-box">
+                      <span className="control-label">Target Reps:</span>
+                      <div className="rep-presets-chips">
+                        {REP_PRESETS.map((repOption) => {
+                          const isSelected = String(exercise.defaultReps || '').trim() === repOption;
+                          return (
+                            <button
+                              key={repOption}
+                              type="button"
+                              className={`rep-preset-chip ${isSelected ? 'active' : ''}`}
+                              onClick={() => handleSetExerciseReps(idx, repOption)}
+                              title={`Set target reps to ${repOption}`}
+                            >
+                              {repOption}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="indepth-sets-preview-badge">
+                    <span className="preview-spec-tag">
+                      <b>{exercise.defaultSets || 3} Sets</b> planned · <b>{formatRepsSummary(exercise.defaultReps)}</b>
+                      {ssInfo && !ssInfo.isLast ? (
+                        <span className="preview-rest-tag"> · <b>0s Transition</b> to #{ssInfo.letter}2</span>
+                      ) : (
+                        <span className="preview-rest-tag"> · <b>{timerOn ? `${exercise.defaultRestSeconds || 60}s Rest` : 'Untimed'}</b></span>
+                      )}
+                      {dropCount > 0 && (
+                        <span className="preview-drop-tag"> · <b>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</b></span>
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Sets Architecture Table */}
+              <div className="indepth-sets-table-wrap">
+                <table className="indepth-sets-table">
+                  <thead>
+                    <tr>
+                      <th className="col-set">SET</th>
+                      <th className="col-phase">TYPE / PHASE</th>
+                      <th className="col-target">TARGET WORK</th>
+                      <th className="col-rest">RECOVERY REST</th>
+                      <th className="col-intent">LOAD INTENT &amp; RPE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: exercise.defaultSets || 3 }).map((_, sIdx) => {
+                      const setNum = sIdx + 1;
+                      const isFinalSet = setNum === (exercise.defaultSets || 3);
+                      const setPhaseName = exercise.isWarmup
+                        ? 'Warm-Up & Prime'
+                        : setNum === 1
+                        ? 'Working Set (Baseline)'
+                        : isFinalSet
+                        ? 'Working Set (Peak Output)'
+                        : 'Working Set (Progressive)';
+                      const setIntent = exercise.isWarmup
+                        ? 'RPE 5-6 · Establish neuromuscular motor pattern'
+                        : setNum === 1
+                        ? 'RPE 7-8 · Clean form & crisp bar velocity'
+                        : isFinalSet
+                        ? 'RPE 9-9.5 · Push near technical breakdown'
+                        : 'RPE 8-8.5 · Controlled eccentric cadence';
+
+                      let restDisplay;
+                      if (ssInfo && !ssInfo.isLast) {
+                        restDisplay = (
+                          <span className="table-rest-cell superset-transition">
+                            <ArrowDownUp size={11} />
+                            <b>0s (Transition to #{ssInfo.letter}2)</b>
+                          </span>
+                        );
+                      } else if (ssInfo && ssInfo.isLast) {
+                        restDisplay = (
+                          <span className="table-rest-cell superset-round-rest">
+                            <Clock size={11} />
+                            <b>{timerOn ? `${exercise.defaultRestSeconds || 90}s` : 'Untimed'} (Circuit Rest)</b>
+                          </span>
+                        );
+                      } else {
+                        restDisplay = (
+                          <span className="table-rest-cell">
+                            <Clock size={12} />
+                            {timerOn ? `${exercise.defaultRestSeconds || 60}s` : 'Untimed'}
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <tr key={`set-${setNum}`} className="set-table-row">
+                          <td className="col-set">
+                            <span className="set-index-badge">#{String(setNum).padStart(2, '0')}</span>
+                          </td>
+                          <td className="col-phase">
+                            <span className="set-type-tag">{setPhaseName}</span>
+                          </td>
+                          <td className="col-target">
+                            <strong>{formatRepsSummary(exercise.defaultReps)}</strong>
+                          </td>
+                          <td className="col-rest">
+                            {restDisplay}
+                          </td>
+                          <td className="col-intent">
+                            <span className="table-intent-text">{setIntent}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    {/* Drop Set Rows */}
+                    {Array.from({ length: dropCount }).map((_, dIdx) => {
+                      const dropNum = dIdx + 1;
+                      const stripPct = dropNum === 1 ? '20%' : `${dropNum * 20}%`;
+                      return (
+                        <tr key={`drop-${dropNum}`} className="set-table-row dropset-row">
+                          <td className="col-set">
+                            <span className="set-index-badge dropset">
+                              <Flame size={11} /> DROP #{dropNum}
+                            </span>
+                          </td>
+                          <td className="col-phase">
+                            <span className="set-type-tag dropset">Drop Set (Immediate AMRAP)</span>
+                          </td>
+                          <td className="col-target">
+                            <strong className="dropset-target-text">To Technical Failure</strong>
+                          </td>
+                          <td className="col-rest">
+                            <span className="table-rest-cell dropset">
+                              <b>0s Rest</b> (Strip −{stripPct} load)
+                            </span>
+                          </td>
+                          <td className="col-intent">
+                            <span className="table-intent-text dropset">
+                              Hypertrophic metabolic stress &amp; recruitment of high-threshold motor units
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -573,661 +1120,103 @@ export function WorkoutOverviewView({
           </div>
         ) : (
           <div className="overview-exercises-timeline">
-            {activeWorkout.exercises.map((exercise, idx) => {
-              const primaryMuscle = MUSCLE_LABELS[exercise.muscleKey] || exercise.muscleKey;
-              const isFirstWarmup = idx === 0 && exercise.isWarmup;
-              const isFirstMain = !exercise.isWarmup && (idx === 0 || activeWorkout.exercises[idx - 1]?.isWarmup);
-              const ssInfo = supersetMap.get(idx);
-              const nextEx = activeWorkout.exercises[idx + 1];
-              const canLinkWithNext = Boolean(nextEx) && Boolean(nextEx.isWarmup) === Boolean(exercise.isWarmup);
-              const isLinkedWithNext = Boolean(
-                canLinkWithNext &&
-                exercise.supersetGroup &&
-                exercise.supersetGroup === nextEx?.supersetGroup
-              );
-              const timerOn = isRestTimerEnabledForExercise(exercise);
-              const dropCount = parseInt(exercise.defaultDropSets, 10) || 0;
-              const hasAnyTechniqueActive = dropCount > 0 || Boolean(ssInfo);
-              const pairedPartner = activeWorkout.exercises.find(
-                (ex, i) => i !== idx && exercise.supersetGroup && ex.supersetGroup === exercise.supersetGroup
-              );
-              const pairedPartnerName = pairedPartner?.name || nextEx?.name || 'Partner exercise';
-              const exerciseKey = exercise.id || `ex-${idx}`;
-              const isExpanded = expandedIds.has(exerciseKey);
-              const isItemDragging = draggedIdx === idx;
-              const isDropTargetAbove = dragOverIdx === idx && draggedIdx !== null && draggedIdx > idx;
-              const isDropTargetBelow = dragOverIdx === idx && draggedIdx !== null && draggedIdx < idx;
+            {timelineGroups.map((group, groupIdx) => {
+              const isFirstWarmup = groupIdx === 0 && group.isWarmup;
+              const isFirstMain = !group.isWarmup && (groupIdx === 0 || timelineGroups[groupIdx - 1]?.isWarmup);
+
+              if (group.type === 'single') {
+                return (
+                  <React.Fragment key={group.exercise.id || `single-${group.index}`}>
+                    {isFirstWarmup && (
+                      <div className="workout-phase-divider warmup">
+                        <span className="phase-pill">Warm-Up &amp; Activation</span>
+                      </div>
+                    )}
+                    {isFirstMain && (
+                      <div className="workout-phase-divider main">
+                        <span className="phase-pill">Main Workout</span>
+                      </div>
+                    )}
+                    {renderExerciseCard(group.exercise, group.index, null)}
+                  </React.Fragment>
+                );
+              }
+
+              // Superset Circuit Capsule (Option A)
+              const lastMember = group.members[group.members.length - 1];
+              const circuitRestSecs = lastMember?.exercise?.defaultRestSeconds || 90;
 
               return (
-                <React.Fragment key={exerciseKey}>
+                <React.Fragment key={`capsule-${group.groupId}`}>
                   {isFirstWarmup && (
                     <div className="workout-phase-divider warmup">
                       <span className="phase-pill">Warm-Up &amp; Activation</span>
                     </div>
                   )}
-
                   {isFirstMain && (
                     <div className="workout-phase-divider main">
                       <span className="phase-pill">Main Workout</span>
                     </div>
                   )}
 
-                  <div
-                    className={`overview-exercise-row-card clean-text-card ${exercise.isWarmup ? 'warmup-row' : ''} ${ssInfo ? 'in-superset' : ''} ${ssInfo?.isFirst ? 'superset-start' : ''} ${ssInfo?.isLast ? 'superset-end' : ''} ${isExpanded ? 'is-expanded' : ''} ${isEditMode ? 'in-edit-mode' : ''} ${isItemDragging ? 'is-dragging' : ''} ${isDropTargetAbove ? 'drag-target-above' : ''} ${isDropTargetBelow ? 'drag-target-below' : ''}`}
-                    draggable={isEditMode}
-                    onDragStart={(e) => {
-                      if (!isEditMode) return;
-                      e.dataTransfer.setData('text/plain', String(idx));
-                      e.dataTransfer.effectAllowed = 'move';
-                      setDraggedIdx(idx);
-                    }}
-                    onDragOver={(e) => {
-                      if (!isEditMode) return;
-                      e.preventDefault();
-                      e.dataTransfer.dropEffect = 'move';
-                      if (dragOverIdx !== idx) {
-                        setDragOverIdx(idx);
-                      }
-                    }}
-                    onDrop={(e) => {
-                      if (!isEditMode) return;
-                      e.preventDefault();
-                      handleDropExercise(draggedIdx, idx);
-                      setDraggedIdx(null);
-                      setDragOverIdx(null);
-                    }}
-                    onDragEnd={() => {
-                      setDraggedIdx(null);
-                      setDragOverIdx(null);
-                    }}
-                  >
-                    {/* Main Row Line */}
-                    <div className="row-card-main-line">
-                      {/* Left: Order index & Drag Hub (in Edit Mode) */}
-                      <div 
-                        className={`row-order-index ${isEditMode ? 'editable-drag-hub' : ''}`}
-                        title={isEditMode ? "Drag to reorder or tap arrows" : undefined}
-                      >
-                        {isEditMode ? (
-                          <div className="drag-index-unit">
-                            <button
-                              type="button"
-                              disabled={idx === 0}
-                              onClick={(e) => { e.stopPropagation(); moveExercise(idx, -1); }}
-                              className="btn-left-mini-reorder up"
-                              title="Move up"
-                              aria-label="Move up"
-                            >
-                              <ArrowUp size={11} />
-                            </button>
-
-                            <div className="drag-handle-badge">
-                              <GripVertical size={12} className="drag-grip-icon" />
-                              <span className="order-num-text">{ssInfo ? ssInfo.code : String(idx + 1).padStart(2, '0')}</span>
-                            </div>
-
-                            <button
-                              type="button"
-                              disabled={idx === activeWorkout.exercises.length - 1}
-                              onClick={(e) => { e.stopPropagation(); moveExercise(idx, 1); }}
-                              className="btn-left-mini-reorder down"
-                              title="Move down"
-                              aria-label="Move down"
-                            >
-                              <ArrowDown size={11} />
-                            </button>
-                          </div>
-                        ) : (
-                          <span>{ssInfo ? ssInfo.code : String(idx + 1).padStart(2, '0')}</span>
-                        )}
-                      </div>
-
-                      {(exercise.illustration || exercise.customVideoUrl) && (
-                        <div 
-                          className="row-media-thumb" 
-                          onClick={() => setViewingExerciseGuide(exercise)}
-                          title="View movement guide"
-                        >
-                          {exercise.illustration ? (
-                            <img 
-                              src={exercise.illustration} 
-                              alt={exercise.name} 
-                              className="row-thumb-img" 
-                              loading="lazy" 
-                            />
-                          ) : (
-                            <div className="row-thumb-placeholder has-video">
-                              <Video size={16} color="var(--clay)" />
-                              <span className="thumb-add-hint">VIDEO</span>
-                            </div>
-                          )}
+                  <div className="timeline-superset-capsule animate-fade">
+                    {/* Capsule Header */}
+                    <div className="superset-capsule-header">
+                      <div className="capsule-header-left">
+                        <div className="capsule-badge-pill">
+                          <Link2 size={13} className="capsule-link-icon" />
+                          <span className="capsule-badge-text">SUPERSET CIRCUIT {group.letter}</span>
                         </div>
-                      )}
-
-                      <div className="row-exercise-content">
-                        <div className="row-title-line">
-                          {ssInfo && (
-                            <span className="row-superset-pill">
-                              <Link2 size={11} />
-                              <span>{ssInfo.label}</span>
-                            </span>
-                          )}
-                          {exercise.isWarmup && (
-                            <span className="row-warmup-pill">Warm-Up</span>
-                          )}
-                          <span className="row-muscle-pill">{primaryMuscle}</span>
-                          <span className="row-equipment-text">
-                            <Dumbbell size={12} />
-                            {exercise.equipment}
+                        <div className="capsule-sub-info">
+                          <span className="capsule-count-tag">{group.members.length} Movements · Alternate Rounds</span>
+                          <span className="capsule-hint-text">
+                            Perform #{group.letter}1 then #{group.letter}2 back-to-back with 0s rest
                           </span>
                         </div>
-
-                        <h3 
-                          className="row-exercise-name clickable-guide-title"
-                          onClick={() => setViewingExerciseGuide(exercise)}
-                          title="Click to view form guide and biomechanical cues"
-                        >
-                          <span>{exercise.name}</span>
-                        </h3>
-                        <p className="row-exercise-sub">{exercise.subtitle || exercise.scientificName}</p>
-
-                        {/* Clean High-Level Summary Badges Strip */}
-                        <div className="row-clean-summary-strip">
-                          <div className="summary-pill volume-pill" title="Planned Sets and Target Reps">
-                            <Layers size={13} className="summary-pill-icon" />
-                            <span><b>{exercise.defaultSets || 3} Sets</b> × {formatRepsSummary(exercise.defaultReps)}</span>
-                          </div>
-
-                          <div className={`summary-pill rest-pill ${timerOn ? '' : 'untimed'}`} title="Target Recovery Rest Interval">
-                            <Clock size={13} className="summary-pill-icon" />
-                            <span>{timerOn ? `${exercise.defaultRestSeconds || 60}s Rest` : 'Untimed'}</span>
-                          </div>
-
-                          {dropCount > 0 && (
-                            <div className="summary-pill dropset-pill" title={`${dropCount} Planned Drop Set(s)`}>
-                              <Flame size={13} className="summary-pill-icon" />
-                              <span>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</span>
-                            </div>
-                          )}
-
-                          {ssInfo && (
-                            <div className="summary-pill superset-pill" title={`Paired as Superset ${ssInfo.code}`}>
-                              <Link2 size={13} className="summary-pill-icon" />
-                              <span>Superset {ssInfo.code}</span>
-                            </div>
-                          )}
-
-                          {exercise.lastRecord && (
-                            <div className="summary-pill record-pill" title="Personal Record">
-                              <Trophy size={13} className="summary-pill-icon" />
-                              <span>Record: <b>{exercise.lastRecord}</b></span>
-                            </div>
-                          )}
-                        </div>
                       </div>
 
-                      <div className="row-actions-group">
+                      {isEditMode && (
                         <button
                           type="button"
-                          className={`btn-indepth-pill ${isExpanded ? 'active' : ''}`}
-                          onClick={() => toggleExpandExercise(exerciseKey)}
-                          title={isExpanded ? 'Collapse in-depth workout prescription' : 'Expand in-depth sets, timing & pairing details'}
-                          aria-expanded={isExpanded}
+                          className="btn-break-superset-circuit"
+                          onClick={() => handleBreakCircuit(group.groupId)}
+                          title="Break this superset circuit into independent exercises"
                         >
-                          <SlidersHorizontal size={13} />
-                          <span>In-Depth</span>
-                          {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                          <Unlink size={13} />
+                          <span>Break Circuit</span>
                         </button>
-
-                        {/* Edit Mode Delete Button */}
-                        {isEditMode && (
-                          <button 
-                            type="button"
-                            className="row-action-icon-btn delete-btn animate-fade"
-                            onClick={() => removeExercise(idx)}
-                            title="Remove exercise from workout"
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        )}
-
-                        {/* Preview Mode Start Button */}
-                        {!isEditMode && (
-                          <button 
-                            type="button"
-                            className="btn-play-from-here"
-                            onClick={() => onStartLive(idx)}
-                            title="Start workout from this exercise"
-                          >
-                            <Play size={13} fill="currentColor" />
-                            <span>Start</span>
-                          </button>
-                        )}
-                      </div>
+                      )}
                     </div>
 
-                    {/* Expandable In-Depth Training Architecture Sheet */}
-                    {isExpanded && (
-                      <div className="row-indepth-panel animate-fade">
-                        {/* Section 1: Sets Architecture & Presets */}
-                        <div className="indepth-sets-section">
-                          <div className="indepth-section-header">
-                            <div className="indepth-section-title">
-                              <Layers size={15} color="var(--clay)" />
-                              <h4>Sets Architecture &amp; Target Reps</h4>
-                              <button
-                                type="button"
-                                className="btn-indepth-guide-link"
-                                onClick={() => setViewingExerciseGuide(exercise)}
-                                title="Open full movement guide, anatomy and cues"
-                              >
-                                <BookOpen size={12} />
-                                <span>Movement Guide</span>
-                              </button>
-                            </div>
-
-                            {/* Set Count & Reps Controls (Active in Edit Mode, Read-Only in Preview Mode) */}
-                            {isEditMode ? (
-                              <div className="indepth-sets-controls animate-fade">
-                                <div className="indepth-count-stepper" role="group" aria-label="Adjust total working sets">
-                                  <span className="stepper-sublabel">Total Sets:</span>
-                                  <button
-                                    type="button"
-                                    className="indepth-step-btn"
-                                    disabled={(exercise.defaultSets || 3) <= 1}
-                                    onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) - 1)}
-                                    title="Remove 1 set"
-                                    aria-label="Remove 1 set"
-                                  >
-                                    −
-                                  </button>
-                                  <span className="indepth-step-count"><b>{exercise.defaultSets || 3}</b></span>
-                                  <button
-                                    type="button"
-                                    className="indepth-step-btn"
-                                    disabled={(exercise.defaultSets || 3) >= 10}
-                                    onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) + 1)}
-                                    title="Add 1 set"
-                                    aria-label="Add 1 set"
-                                  >
-                                    +
-                                  </button>
+                    {/* Capsule Body */}
+                    <div className="superset-capsule-body">
+                      {group.members.map((member, memberIdx) => {
+                        const isLastMember = memberIdx === group.members.length - 1;
+                        return (
+                          <React.Fragment key={member.exercise.id || `ss-ex-${member.index}`}>
+                            {renderExerciseCard(member.exercise, member.index, member.ssInfo)}
+                            {!isLastMember && (
+                              <div className="superset-transition-divider">
+                                <div className="transition-rule" />
+                                <div className="transition-badge">
+                                  <ArrowDownUp size={12} />
+                                  <span>Immediate Transition · 0s Rest</span>
                                 </div>
-
-                                <div className="indepth-rep-presets-row">
-                                  <span className="presets-label">Target Reps:</span>
-                                  <div className="rep-presets-chips">
-                                    {REP_PRESETS.map((repOption) => {
-                                      const isSelected = String(exercise.defaultReps || '').trim() === repOption;
-                                      return (
-                                        <button
-                                          key={repOption}
-                                          type="button"
-                                          className={`rep-preset-chip ${isSelected ? 'active' : ''}`}
-                                          onClick={() => handleSetExerciseReps(idx, repOption)}
-                                          title={`Set target reps to ${repOption}`}
-                                        >
-                                          {repOption}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="indepth-sets-preview-badge">
-                                <span className="preview-spec-tag">
-                                  <b>{exercise.defaultSets || 3} Sets</b> planned · <b>{formatRepsSummary(exercise.defaultReps)}</b>
-                                </span>
+                                <div className="transition-rule" />
                               </div>
                             )}
-                          </div>
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
 
-                          {/* Sets Architecture Table */}
-                          <div className="indepth-sets-table-wrap">
-                            <table className="indepth-sets-table">
-                              <thead>
-                                <tr>
-                                  <th className="col-set">SET</th>
-                                  <th className="col-phase">TYPE / PHASE</th>
-                                  <th className="col-target">TARGET WORK</th>
-                                  <th className="col-rest">RECOVERY REST</th>
-                                  <th className="col-intent">LOAD INTENT &amp; RPE</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {Array.from({ length: exercise.defaultSets || 3 }).map((_, sIdx) => {
-                                  const setNum = sIdx + 1;
-                                  const isFinalSet = setNum === (exercise.defaultSets || 3);
-                                  const setPhaseName = exercise.isWarmup
-                                    ? 'Warm-Up & Prime'
-                                    : setNum === 1
-                                    ? 'Working Set (Baseline)'
-                                    : isFinalSet
-                                    ? 'Working Set (Peak Output)'
-                                    : 'Working Set (Progressive)';
-                                  const setIntent = exercise.isWarmup
-                                    ? 'RPE 5-6 · Establish neuromuscular motor pattern'
-                                    : setNum === 1
-                                    ? 'RPE 7-8 · Clean form & crisp bar velocity'
-                                    : isFinalSet
-                                    ? 'RPE 9-9.5 · Push near technical breakdown'
-                                    : 'RPE 8-8.5 · Controlled eccentric cadence';
-
-                                  return (
-                                    <tr key={`set-${setNum}`} className="set-table-row">
-                                      <td className="col-set">
-                                        <span className="set-index-badge">#{String(setNum).padStart(2, '0')}</span>
-                                      </td>
-                                      <td className="col-phase">
-                                        <span className="set-type-tag">{setPhaseName}</span>
-                                      </td>
-                                      <td className="col-target">
-                                        <strong>{formatRepsSummary(exercise.defaultReps)}</strong>
-                                      </td>
-                                      <td className="col-rest">
-                                        <span className="table-rest-cell">
-                                          <Clock size={12} />
-                                          {timerOn ? `${exercise.defaultRestSeconds || 60}s` : 'Untimed'}
-                                        </span>
-                                      </td>
-                                      <td className="col-intent">
-                                        <span className="table-intent-text">{setIntent}</span>
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-
-                                {/* Drop Set Rows */}
-                                {Array.from({ length: dropCount }).map((_, dIdx) => {
-                                  const dropNum = dIdx + 1;
-                                  const stripPct = dropNum === 1 ? '20%' : `${dropNum * 20}%`;
-                                  return (
-                                    <tr key={`drop-${dropNum}`} className="set-table-row dropset-row">
-                                      <td className="col-set">
-                                        <span className="set-index-badge dropset">
-                                          <Flame size={11} /> DROP #{dropNum}
-                                        </span>
-                                      </td>
-                                      <td className="col-phase">
-                                        <span className="set-type-tag dropset">Drop Set (Immediate AMRAP)</span>
-                                      </td>
-                                      <td className="col-target">
-                                        <strong className="dropset-target-text">To Technical Failure</strong>
-                                      </td>
-                                      <td className="col-rest">
-                                        <span className="table-rest-cell dropset">
-                                          <b>0s Rest</b> (Strip −{stripPct} load)
-                                        </span>
-                                      </td>
-                                      <td className="col-intent">
-                                        <span className="table-intent-text dropset">
-                                          Hypertrophic metabolic stress &amp; recruitment of high-threshold motor units
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-
-                        {/* Section 2: Bottom Hub - Rest Recovery & Advanced Techniques */}
-                        <div className="indepth-bottom-hub">
-                          {/* Card 1: Rest Timer Hub */}
-                          <div className="indepth-hub-card timer-card">
-                            <div className="hub-card-header">
-                              <div className="hub-header-title">
-                                <Clock size={15} color="var(--clay)" />
-                                <h5>Rest Interval &amp; Recovery</h5>
-                              </div>
-                              {isEditMode ? (
-                                <button
-                                  type="button"
-                                  className={`timer-state-toggle-pill ${timerOn ? 'on' : 'off'}`}
-                                  onClick={() => handleToggleTimer(idx)}
-                                  title="Toggle Rest Timer"
-                                >
-                                  {timerOn ? 'Timer Active' : 'Untimed'}
-                                </button>
-                              ) : (
-                                <span className={`timer-state-badge ${timerOn ? 'on' : 'off'}`}>
-                                  {timerOn ? `${exercise.defaultRestSeconds || 60}s Active` : 'Untimed'}
-                                </span>
-                              )}
-                            </div>
-
-                            <div className="hub-card-body">
-                              {isEditMode ? (
-                                <>
-                                  <div className="hub-timer-presets-row">
-                                    {TIMER_PRESETS.map((seconds) => {
-                                      const isCur = timerOn && (Number(exercise.defaultRestSeconds) || 60) === seconds;
-                                      const label = seconds >= 60 && seconds % 60 === 0 ? `${seconds / 60}m` : `${seconds}s`;
-                                      return (
-                                        <button
-                                          key={seconds}
-                                          type="button"
-                                          className={`timer-preset-chip ${isCur ? 'active' : ''}`}
-                                          onClick={() => handleSetRestSeconds(idx, seconds)}
-                                          title={`Set rest interval to ${seconds} seconds`}
-                                        >
-                                          {label}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-
-                                  <div className="hub-timer-fine-stepper">
-                                    <span className="stepper-helper-label">Fine Adjust:</span>
-                                    <div className="stepper-btns-unit">
-                                      <button
-                                        type="button"
-                                        className="fine-step-btn"
-                                        disabled={!timerOn || (exercise.defaultRestSeconds || 60) <= 15}
-                                        onClick={() => handleStepRestSeconds(idx, -15)}
-                                        title="Decrease rest by 15s"
-                                      >
-                                        −15s
-                                      </button>
-                                      <span className="fine-step-value">
-                                        <b>{timerOn ? `${exercise.defaultRestSeconds || 60}s` : 'Untimed'}</b>
-                                      </span>
-                                      <button
-                                        type="button"
-                                        className="fine-step-btn"
-                                        disabled={!timerOn || (exercise.defaultRestSeconds || 60) >= 300}
-                                        onClick={() => handleStepRestSeconds(idx, 15)}
-                                        title="Increase rest by 15s"
-                                      >
-                                        +15s
-                                      </button>
-                                    </div>
-                                  </div>
-                                </>
-                              ) : (
-                                <div className="hub-preview-summary-box">
-                                  <p className="hub-preview-val">
-                                    Target Rest: <b>{timerOn ? `${exercise.defaultRestSeconds || 60} seconds` : 'Untimed (Self-paced)'}</b>
-                                  </p>
-                                  <p className="hub-explainer-text">
-                                    Rest intervals allow phosphocreatine replenishment to maintain intra-set power and muscle recruitment.
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Advanced Techniques: Drop Sets & Supersets */}
-                          {hasAnyTechniqueActive ? (
-                            <div className="active-techniques-deck animate-fade">
-                              {/* Active Drop Set Card */}
-                              {dropCount > 0 && (
-                                <div className="active-technique-card dropset animate-fade">
-                                  <div className="technique-card-top">
-                                    <div className="technique-title-group">
-                                      <Flame size={15} color="var(--ember)" />
-                                      <h5>Drop Set Protocol</h5>
-                                    </div>
-                                    <div className="technique-badge-group">
-                                      <span className="hub-status-pill ember">
-                                        +{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}
-                                      </span>
-                                      {isEditMode && (
-                                        <button
-                                          type="button"
-                                          className="btn-remove-technique"
-                                          onClick={() => handleUpdateExerciseDropSets(idx, 0)}
-                                          title="Remove drop set"
-                                        >
-                                          Remove
-                                        </button>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="technique-card-body">
-                                    {isEditMode ? (
-                                      <>
-                                        <div className="dropset-options-row">
-                                          {[1, 2, 3].map((count) => {
-                                            const isSel = dropCount === count;
-                                            return (
-                                              <button
-                                                key={count}
-                                                type="button"
-                                                className={`dropset-option-chip ${isSel ? 'active' : ''}`}
-                                                onClick={() => handleUpdateExerciseDropSets(idx, count)}
-                                                title={`Plan ${count} drop set(s)`}
-                                              >
-                                                +{count} Drop
-                                              </button>
-                                            );
-                                          })}
-                                        </div>
-                                        <p className="technique-compact-hint">
-                                          Execute immediately post final set. Strip ~20% load per drop and take to failure (0s rest).
-                                        </p>
-                                      </>
-                                    ) : (
-                                      <p className="technique-compact-hint">
-                                        <b>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</b> scheduled post final set #0{exercise.defaultSets || 3}. Strip ~{dropCount * 20}% load and take to technical breakdown with 0s rest.
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Active Superset Card */}
-                              {ssInfo && (
-                                <div className="active-technique-card superset animate-fade">
-                                  <div className="technique-card-top">
-                                    <div className="technique-title-group">
-                                      <Link2 size={15} color="var(--sage)" />
-                                      <h5>Superset Circuit {ssInfo.code}</h5>
-                                    </div>
-                                    <div className="technique-badge-group">
-                                      <span className="hub-status-pill sage">
-                                        {ssInfo.label}
-                                      </span>
-                                      {isEditMode && (
-                                        <button
-                                          type="button"
-                                          className="btn-remove-technique"
-                                          onClick={() => {
-                                            if (isLinkedWithNext) {
-                                              handleToggleSupersetWithNext(idx);
-                                            } else {
-                                              handleUnlinkSuperset(idx);
-                                            }
-                                          }}
-                                          title="Unlink from superset"
-                                        >
-                                          Unpair
-                                        </button>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="technique-card-body">
-                                    <div className="superset-partner-badge">
-                                      <Link2 size={13} color="var(--sage)" />
-                                      <span>Circuit Partner: <b>{pairedPartnerName}</b></span>
-                                    </div>
-                                    <p className="technique-compact-hint">
-                                      Perform back-to-back with 0s rest. Recovery timer initiates after completing both exercises.
-                                    </p>
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Compact triggers for remaining technique in Edit Mode */}
-                              {isEditMode && dropCount === 0 && (
-                                <button
-                                  type="button"
-                                  className="btn-technique-pill add-dropset compact-standalone"
-                                  onClick={() => handleUpdateExerciseDropSets(idx, 1)}
-                                  title="Add drop set to final set"
-                                >
-                                  <Flame size={13} />
-                                  <span>+ Add Drop Set</span>
-                                </button>
-                              )}
-
-                              {isEditMode && !ssInfo && canLinkWithNext && (
-                                <button
-                                  type="button"
-                                  className="btn-technique-pill add-superset compact-standalone"
-                                  onClick={() => handleToggleSupersetWithNext(idx)}
-                                  title={`Pair with next exercise: ${nextEx?.name}`}
-                                >
-                                  <Link2 size={13} />
-                                  <span>+ Pair with Next</span>
-                                </button>
-                              )}
-                            </div>
-                          ) : (
-                            isEditMode && (
-                              <div className="compact-techniques-strip animate-fade">
-                                <span className="compact-strip-label">ADVANCED INTENSITY &amp; CIRCUITS:</span>
-                                <div className="compact-strip-actions">
-                                  <button
-                                    type="button"
-                                    className="btn-technique-pill add-dropset"
-                                    onClick={() => handleUpdateExerciseDropSets(idx, 1)}
-                                    title="Add immediate drop set to final set"
-                                  >
-                                    <Flame size={13} />
-                                    <span>+ Add Drop Set</span>
-                                  </button>
-
-                                  {canLinkWithNext && (
-                                    <button
-                                      type="button"
-                                      className="btn-technique-pill add-superset"
-                                      onClick={() => handleToggleSupersetWithNext(idx)}
-                                      title={`Pair with next exercise: ${nextEx?.name}`}
-                                    >
-                                      <Link2 size={13} />
-                                      <span>+ Pair as Superset</span>
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                            )
-                          )}
-                        </div>
-
-                        {/* Subtle hint when viewing in preview mode */}
-                        {!isEditMode && (
-                          <div className="preview-edit-mode-hint">
-                            <SlidersHorizontal size={13} />
-                            <span>Preview Mode · Click <b>Edit Workout</b> at the top to customize sets, reps, timers, or pairings.</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {/* Capsule Footer */}
+                    <div className="superset-capsule-footer">
+                      <Clock size={12} />
+                      <span>
+                        Circuit Recovery: <b>{circuitRestSecs}s Rest</b> following round completion
+                      </span>
+                    </div>
                   </div>
                 </React.Fragment>
               );

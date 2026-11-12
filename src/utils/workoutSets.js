@@ -150,6 +150,19 @@ export function unlinkExerciseFromSuperset(exercises = [], index) {
   return normalizeSupersetGroups(clone);
 }
 
+export function unlinkSupersetGroup(exercises = [], groupId) {
+  if (!Array.isArray(exercises) || !groupId) return exercises;
+  const clone = exercises.map((ex) => {
+    if (ex?.supersetGroup === groupId) {
+      const copy = { ...ex };
+      delete copy.supersetGroup;
+      return copy;
+    }
+    return ex;
+  });
+  return normalizeSupersetGroups(clone);
+}
+
 export function suggestDropSetWeight(weightValue) {
   const num = parseFloat(String(weightValue ?? '').replace(',', '.'));
   if (!Number.isFinite(num) || num <= 0) return '';
