@@ -104,7 +104,7 @@ const LEGACY_REPLACED_EXERCISES = {
   }
 };
 
-function mergeMissingCanonical(ex, forceEnglishRefresh = false) {
+function mergeMissingCanonical(ex) {
   const legacyReplacement = LEGACY_REPLACED_EXERCISES[ex.id];
   if (legacyReplacement) {
     const replacement = EXERCISE_DATABASE.find(c => c.id === legacyReplacement.canonicalId);
@@ -121,24 +121,33 @@ function mergeMissingCanonical(ex, forceEnglishRefresh = false) {
   const lookupId = ex.sourceId || ex.id;
   const canonical = EXERCISE_DATABASE.find(c => c.id === lookupId);
   if (!canonical) return ex;
-  const shouldRefreshCanonical = forceEnglishRefresh || !ex.name;
   return {
     ...canonical,
     ...ex,
-    name: shouldRefreshCanonical ? canonical.name : (ex.name || canonical.name),
-    subtitle: shouldRefreshCanonical ? canonical.subtitle : (ex.subtitle ?? canonical.subtitle),
-    scientificName: shouldRefreshCanonical ? canonical.scientificName : (ex.scientificName || canonical.scientificName),
-    pattern: shouldRefreshCanonical ? canonical.pattern : (ex.pattern || canonical.pattern),
-    equipment: shouldRefreshCanonical ? canonical.equipment : (ex.equipment || canonical.equipment),
-    requiresEquipment: shouldRefreshCanonical ? canonical.requiresEquipment : (typeof ex.requiresEquipment === 'boolean' ? ex.requiresEquipment : canonical.requiresEquipment),
-    mechanics: shouldRefreshCanonical ? canonical.mechanics : (ex.mechanics || canonical.mechanics),
-    level: shouldRefreshCanonical ? canonical.level : (ex.level || canonical.level),
-    defaultReps: forceEnglishRefresh ? normalizeRepUnits(ex.defaultReps || canonical.defaultReps) : (ex.defaultReps || canonical.defaultReps),
-    illustration: (typeof ex.illustration === 'string' && (ex.illustration.startsWith('data:') || ex.illustration.startsWith('http')))
-      ? ex.illustration
-      : canonical.illustration,
-    targetMuscles: shouldRefreshCanonical ? canonical.targetMuscles : (ex.targetMuscles || canonical.targetMuscles),
-    execution: shouldRefreshCanonical ? canonical.execution : (ex.execution || canonical.execution)
+    // Canonical data from code always takes precedence for reference guide content:
+    name: canonical.name,
+    subtitle: canonical.subtitle,
+    scientificName: canonical.scientificName,
+    pattern: canonical.pattern,
+    equipment: canonical.equipment,
+    requiresEquipment: typeof canonical.requiresEquipment === 'boolean' ? canonical.requiresEquipment : (typeof ex.requiresEquipment === 'boolean' ? ex.requiresEquipment : true),
+    mechanics: canonical.mechanics,
+    level: canonical.level,
+    targetMuscles: canonical.targetMuscles,
+    execution: canonical.execution,
+    illustration: canonical.illustration,
+    customVideoUrl: canonical.customVideoUrl || ex.customVideoUrl,
+    // Workout composition fields preserved from user planning:
+    id: ex.id || canonical.id,
+    sourceId: canonical.id,
+    phase: ex.phase || (canonical.isWarmup ? 'warmup' : 'main'),
+    isWarmup: typeof ex.isWarmup === 'boolean' ? ex.isWarmup : Boolean(canonical.isWarmup),
+    defaultSets: ex.defaultSets ?? canonical.defaultSets ?? 3,
+    defaultReps: ex.defaultReps ? normalizeRepUnits(ex.defaultReps) : (canonical.defaultReps || '8-12'),
+    defaultRestSeconds: ex.defaultRestSeconds ?? canonical.defaultRestSeconds ?? 90,
+    defaultDropSets: ex.defaultDropSets ?? 0,
+    supersetGroup: ex.supersetGroup ?? null,
+    lastRecord: ex.lastRecord ?? null
   };
 }
 
@@ -175,40 +184,20 @@ export function App() {
     }
   }, []);
 
-  // Personal exercise database (shared between Library and Workouts)
+  // Canonical exercise database (always sourced from modular code)
   const [exerciseDatabase, setExerciseDatabase] = useState(() => {
-    const saved = safeReadJson(EXERCISES_STORAGE_KEY, null);
-    const needsEnRefresh = !safeReadString(EN_LOCALIZATION_KEY);
-    if (saved && Array.isArray(saved)) {
-      try {
-        const filtered = saved.filter(ex => ex && !LEGACY_REPLACED_EXERCISES[ex.id]);
-        const merged = filtered.map(ex => mergeMissingCanonical(ex, needsEnRefresh));
-        const presentIds = new Set(merged.map(e => e.id));
-        const seededArr = safeReadJson(SEEDED_CANONICAL_KEY, []);
-        const seededIds = new Set(Array.isArray(seededArr) ? seededArr : []);
-        const newlyAdded = EXERCISE_DATABASE.filter(
-          c => !presentIds.has(c.id) && !seededIds.has(c.id)
-        );
-        return [...merged, ...newlyAdded];
-      } catch {
-        // Fallback to initial curated database
-      }
-    }
     return EXERCISE_DATABASE;
   });
 
   // User workout routines
   const [routines, setRoutines] = useState(() => {
     const saved = safeReadJson(ROUTINES_STORAGE_KEY, null);
-    const needsEnRefresh = !safeReadString(EN_LOCALIZATION_KEY);
     if (saved && Array.isArray(saved)) {
       try {
         const savedIds = new Set(saved.map(r => r.id));
         const missingInitial = INITIAL_ROUTINES.filter(initR => !savedIds.has(initR.id));
         const mappedSaved = saved.map(routine => {
-          const canonicalRoutine = needsEnRefresh
-            ? INITIAL_ROUTINES.find(r => r.id === routine.id)
-            : null;
+          const canonicalRoutine = INITIAL_ROUTINES.find(r => r.id === routine.id);
           return {
             ...routine,
             title: normalizeRoutineTitle(routine.title),
@@ -216,7 +205,7 @@ export function App() {
             difficulty: canonicalRoutine ? canonicalRoutine.difficulty : routine.difficulty,
             equipmentTags: canonicalRoutine ? canonicalRoutine.equipmentTags : routine.equipmentTags,
             description: canonicalRoutine ? canonicalRoutine.description : routine.description,
-            exercises: (routine.exercises || []).map(ex => mergeMissingCanonical(ex, needsEnRefresh))
+            exercises: (routine.exercises || []).map(ex => mergeMissingCanonical(ex))
           };
         });
         return [...mappedSaved, ...missingInitial];

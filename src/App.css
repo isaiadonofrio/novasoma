@@ -5162,225 +5162,264 @@
   gap: 18px;
 }
 
-/* Form & Execution Numbered Timeline */
+/* Form & Execution Numbered Steps Track */
+.execution-steps-track,
 .guide-timeline-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-}
-
-.guide-timeline-step {
-  display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
   gap: 12px;
-  align-items: start;
 }
 
+.execution-step-row,
+.guide-timeline-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 13px 16px;
+  border-radius: var(--radius-md);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  transition: border-color var(--transition-fast);
+}
+
+.execution-step-row:hover,
+.guide-timeline-step:hover {
+  border-color: var(--border-hi);
+}
+
+.step-number-col {
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.step-num-pill,
 .timeline-step-badge {
   width: 28px;
   height: 28px;
   border-radius: 50%;
   background: var(--clay-soft);
   color: var(--clay);
-  border: 1px solid color-mix(in srgb, var(--clay) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--clay) 35%, transparent);
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 800;
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  margin-top: 1px;
 }
 
+.step-body-col,
+.timeline-step-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-name,
 .timeline-step-body strong {
-  display: block;
-  font-size: 0.86rem;
+  margin: 0 0 4px;
+  font-size: 0.88rem;
   font-weight: 800;
   color: var(--text);
-  margin-bottom: 3px;
+  font-family: var(--display);
+  letter-spacing: -0.01em;
 }
 
+.step-text,
 .timeline-step-body p {
   margin: 0;
-  font-size: 0.87rem;
+  font-size: 0.85rem;
   color: var(--dim);
   line-height: 1.55;
 }
 
-.guide-inline-callout {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 14px;
+.guide-empty-note {
+  padding: 24px;
+  text-align: center;
+  color: var(--faint);
+  font-size: 0.86rem;
+  font-style: italic;
+  background: var(--raised2);
   border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+}
+
+/* Editorial Cues & Biomechanics Cards */
+.editorial-cues-card {
+  border-radius: var(--radius-md);
+  padding: 15px 18px;
   border: 1px solid var(--border);
 }
 
-.guide-inline-callout svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.guide-inline-callout.breathing {
-  background: var(--sage-soft);
-  border-color: color-mix(in srgb, var(--sage) 32%, var(--border));
-  color: var(--sage);
-}
-
-.guide-inline-callout.coach-cue {
-  background: var(--clay-soft);
-  border-color: color-mix(in srgb, var(--clay) 32%, var(--border));
-  border-left: 3px solid var(--clay);
-  color: var(--clay);
-}
-
-.guide-inline-callout strong {
-  display: block;
-  font-family: var(--mono);
-  font-size: 0.69rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 3px;
-}
-
-.guide-inline-callout p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--text);
-  line-height: 1.5;
-}
-
+.editorial-cues-card.mistakes-card,
 .guide-mistakes-block {
-  background: rgba(229, 103, 76, 0.07);
-  border: 1px solid rgba(229, 103, 76, 0.24);
-  border-radius: var(--radius-md);
-  padding: 13px 15px;
+  background: rgba(229, 103, 76, 0.08);
+  border-color: rgba(229, 103, 76, 0.28);
 }
 
+.editorial-cues-card.protip-card {
+  background: var(--clay-soft);
+  border-color: color-mix(in srgb, var(--clay) 35%, var(--border));
+  border-left: 3px solid var(--clay);
+}
+
+.cues-card-header,
 .guide-mistakes-header {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--danger);
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 9px;
 }
 
+.cues-card-header h4,
+.guide-mistakes-header {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 800;
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mistakes-card .cues-card-header h4,
+.guide-mistakes-header {
+  color: var(--danger);
+}
+
+.protip-card .cues-card-header h4 {
+  color: var(--clay);
+}
+
+.cues-bullet-list,
 .guide-mistakes-list {
   margin: 0;
   padding-left: 18px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   font-size: 0.85rem;
   color: var(--text);
-  line-height: 1.48;
+  line-height: 1.52;
+}
+
+.cues-bullet-list li,
+.guide-mistakes-list li {
+  margin: 0;
+}
+
+.protip-text {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text);
+  line-height: 1.6;
 }
 
 /* Muscles & Anatomy Tab */
-.guide-anatomy-hero {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 14px 16px;
+.anatomy-spotlight-card {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 22px;
+  padding: 18px 20px;
   border-radius: var(--radius-md);
   background: var(--raised2);
   border: 1px solid var(--border);
+  align-items: center;
 }
 
-.guide-anatomy-bodymap {
-  width: 148px;
-  flex-shrink: 0;
+.anatomy-bodymap-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  border: 1px solid var(--border);
 }
 
-.guide-anatomy-summary {
+.anatomy-lists-box {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 15px;
   min-width: 0;
 }
 
-.anatomy-group-kicker {
+.anatomy-group-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.anatomy-label,
+.muscle-group-label {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--clay);
 }
 
-.guide-anatomy-summary h4 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--text);
-}
-
-.guide-anatomy-summary p {
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--dim);
-  line-height: 1.45;
-}
-
-.guide-muscle-groups-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.muscle-chip-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.muscle-group-label {
-  font-family: var(--mono);
-  font-size: 0.69rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
+.anatomy-label.primary,
 .muscle-group-label.primary {
   color: var(--clay);
 }
 
+.anatomy-label.secondary,
 .muscle-group-label.secondary {
   color: var(--sage);
 }
 
+.anatomy-label.stabilizers,
 .muscle-group-label.stabilizers {
   color: var(--dim);
 }
 
+.muscle-tags-wrap,
 .muscle-chips-wrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 6px;
 }
 
+.muscle-tag,
 .muscle-token {
-  display: inline-flex;
-  align-items: center;
-  width: auto;
-  padding: 5px 12px;
-  border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.77rem;
   font-weight: 700;
-  line-height: 1.25;
+  padding: 4px 11px;
+  border-radius: var(--radius-full);
+}
+
+.muscle-tag.primary {
+  background: var(--clay-soft);
+  color: var(--clay);
+  border: 1px solid color-mix(in srgb, var(--clay) 38%, transparent);
+}
+
+.muscle-tag.secondary {
+  background: var(--sage-soft);
+  color: var(--sage);
+  border: 1px solid color-mix(in srgb, var(--sage) 35%, transparent);
+}
+
+.muscle-tag.stabilizer,
+.muscle-token {
+  background: var(--surface);
+  color: var(--dim);
   border: 1px solid var(--border);
-  background: var(--raised2);
-  color: var(--text);
+}
+
+@media (max-width: 680px) {
+  .anatomy-spotlight-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .anatomy-lists-box {
+    width: 100%;
+  }
+  .muscle-tags-wrap {
+    justify-content: center;
+  }
 }
 
 .muscle-token.primary {
@@ -8123,11 +8162,38 @@
   font-size: 0.74rem;
 }
 
+.row-exercise-name.clickable-guide-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.row-exercise-name.clickable-guide-title:hover {
+  color: var(--clay);
+}
+
+.guide-title-icon {
+  opacity: 0.45;
+  color: var(--dim);
+  transition: opacity var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.row-exercise-name.clickable-guide-title:hover .guide-title-icon {
+  opacity: 1;
+  color: var(--clay);
+  transform: translateX(2px);
+}
+
 .row-plan-param-stepper {
   display: inline-flex;
   align-items: center;
   gap: 3px;
   padding: 2px 6px;
+  height: 26px;
+  box-sizing: border-box;
   border-radius: var(--radius-full);
   background: var(--raised);
   border: 1px solid var(--border);
@@ -8160,7 +8226,11 @@
 .param-step-btn:hover:not(:disabled) {
   background: var(--clay);
   border-color: var(--clay);
-  color: #fff;
+  color: var(--on-clay);
+}
+
+.param-step-btn:active:not(:disabled) {
+  transform: scale(0.88);
 }
 
 .param-step-btn:disabled {
@@ -8171,11 +8241,12 @@
 .param-step-label {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   padding: 0 4px;
   font-weight: 700;
   font-size: 0.74rem;
   color: var(--text);
+  line-height: 1;
 }
 
 .param-step-label b {
@@ -8188,7 +8259,8 @@
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
-  transition: opacity var(--transition-fast);
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+  padding: 2px 4px;
 }
 
 .param-step-label.timer-toggle:hover {
@@ -8201,14 +8273,42 @@
 }
 
 .row-spec-badge.clickable-reps {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  height: 26px;
+  box-sizing: border-box;
+  border-radius: var(--radius-full);
+  background: var(--raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
-  transition: all var(--transition-fast);
   user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.row-spec-badge.clickable-reps .reps-cycle-icon {
+  color: var(--dim);
+  transition: transform var(--transition-fast), color var(--transition-fast);
 }
 
 .row-spec-badge.clickable-reps:hover {
   border-color: var(--clay);
   color: var(--clay);
+  background: var(--clay-soft);
+}
+
+.row-spec-badge.clickable-reps:hover .reps-cycle-icon {
+  color: var(--clay);
+  transform: rotate(45deg);
+}
+
+.row-spec-badge.clickable-reps:active {
+  transform: scale(0.94);
 }
 
 .drop-step-label {
@@ -8236,12 +8336,18 @@
   font-size: 0.78rem;
   font-weight: 800;
   line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
 .drop-step-btn:hover:not(:disabled) {
   background: var(--clay);
   border-color: var(--clay);
-  color: #fff;
+  color: var(--on-clay);
+}
+
+.drop-step-btn:active:not(:disabled) {
+  transform: scale(0.88);
 }
 
 .drop-step-btn:disabled {

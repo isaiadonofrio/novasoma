@@ -144,15 +144,17 @@ export function ExercisePickerModal({
         <div className="picker-list-scroll">
           {filtered.length === 0 ? (
             <div className="picker-empty-state">
-              <Dumbbell size={32} color="#626262" />
-              <p>No exercises found in your library.</p>
+              <Dumbbell size={32} color="var(--dim)" />
+              <p>No exercises match your search or filters.</p>
               <button
                 type="button"
                 className="btn-gymmane-primary"
-                onClick={onCreateNewExercise}
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedMuscle('All');
+                }}
               >
-                <Plus size={15} />
-                <span>Create or Import 1 Exercise</span>
+                <span>Clear Filters</span>
               </button>
             </div>
           ) : (

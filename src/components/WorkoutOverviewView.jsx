@@ -14,7 +14,8 @@ import {
   Link2,
   Unlink2,
   Flame,
-  Edit3
+  Edit3,
+  Repeat
 } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
 import {
@@ -326,22 +327,22 @@ export function WorkoutOverviewView({
               const timerOn = isRestTimerEnabledForExercise(exercise);
               const dropCount = parseInt(exercise.defaultDropSets, 10) || 0;
 
-              const renderRepsBadge = (reps) => {
-                if (!reps) return null;
+              const formatRepsContent = (reps) => {
+                if (!reps) return <span><b>10</b> reps</span>;
                 const str = String(reps).trim();
                 if (/reps?|\d\s*s\b|sec|secondi|\bmin\b/i.test(str)) {
-                  return <span className="row-spec-badge">{str}</span>;
+                  return <span>{str}</span>;
                 }
                 if (/per (gamba|lato|leg|side)|\/(lato|gamba|side|leg)/i.test(str)) {
                   const num = str.replace(/per (gamba|lato|leg|side)|\/(lato|gamba|side|leg)/gi, '').trim();
                   return (
-                    <span className="row-spec-badge">
+                    <span>
                       <b>{num}</b> reps/side
                     </span>
                   );
                 }
                 return (
-                  <span className="row-spec-badge">
+                  <span>
                     <b>{str}</b> reps
                   </span>
                 );
@@ -413,7 +414,8 @@ export function WorkoutOverviewView({
                         onClick={() => setViewingExerciseGuide(exercise)}
                         title="Click to view form guide and biomechanical cues"
                       >
-                        {exercise.name}
+                        <span>{exercise.name}</span>
+                        <BookOpen size={13} className="guide-title-icon" aria-hidden="true" />
                       </h3>
                       <p className="row-exercise-sub">{exercise.subtitle || exercise.scientificName}</p>
 
@@ -450,9 +452,11 @@ export function WorkoutOverviewView({
                           type="button"
                           className="row-spec-badge clickable-reps"
                           onClick={() => handleCycleReps(idx)}
-                          title="Click to cycle rep target presets (8-10, 10-12, 12-15...)"
+                          title="Click to cycle rep target presets (8-10, 10-12, 12-15, 15-20, 6-8, 30s, 45s, 60s)"
+                          aria-label={`Target reps for ${exercise.name}: ${exercise.defaultReps || '10'}. Click to cycle presets.`}
                         >
-                          {renderRepsBadge(exercise.defaultReps)}
+                          <Repeat size={11} className="reps-cycle-icon" aria-hidden="true" />
+                          {formatRepsContent(exercise.defaultReps)}
                         </button>
 
                         {/* Rest Timer Stepper */}

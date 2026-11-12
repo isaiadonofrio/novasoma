@@ -33,6 +33,7 @@
   --clay-hover: #E4B297;
   --clay-soft: rgba(217, 161, 132, 0.16);
   --clay-glow: rgba(217, 161, 132, 0.26);
+  --on-clay: #141210;
   --brass: #B98F72;
 
   /* Sage: Active Session, Progress & Completed Sets */
@@ -97,6 +98,7 @@
   --clay-hover: #833F1E;
   --clay-soft: rgba(158, 78, 39, 0.12);
   --clay-glow: rgba(158, 78, 39, 0.22);
+  --on-clay: #FFFFFF;
   --brass: #8A6B41;
 
   --sage: #3D7A52;
