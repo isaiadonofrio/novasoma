@@ -6,11 +6,14 @@ import {
   ArrowLeft,
   X,
   UserCheck,
-  Video
+  Video,
+  Activity,
+  RotateCcw
 } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels.js';
 import { isBodyweightEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
 import { ExerciseDetailModal } from './ExerciseDetailModal.jsx';
+import { BodyMap } from './BodyMap.jsx';
 
 const EQUIPMENT_FILTERS = [
   { label: 'All', match: () => true },
@@ -72,6 +75,7 @@ export function ExerciseDatabaseView({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('All');
   const [selectedEquipment, setSelectedEquipment] = useState('All');
+  const [showBodyMap, setShowBodyMap] = useState(false);
   const [activeExerciseDetail, setActiveExerciseDetail] = useState(null);
 
   const activeEquipFilter = EQUIPMENT_FILTERS.find(f => f.label === selectedEquipment) || EQUIPMENT_FILTERS[0];
@@ -108,6 +112,11 @@ export function ExerciseDatabaseView({
               <ArrowLeft size={15} />
               <span>Back to Home</span>
             </button>
+
+            <div className="db-header-stats-badge">
+              <Dumbbell size={13} />
+              <span><b>{exercisesList.length}</b> movements</span>
+            </div>
           </div>
 
           <div className="db-header-content-row">
@@ -120,62 +129,120 @@ export function ExerciseDatabaseView({
             </div>
           </div>
 
-          {/* Search Bar & Filters Box */}
-          <div className="db-toolbar-box">
-            <div className="db-search-input-wrap">
-              <Search size={18} className="db-search-icon" />
-              <input
-                type="text"
-                placeholder="Search by exercise name, muscle group, movement pattern, or equipment..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="db-search-input"
-              />
-              {searchQuery && (
+          {/* Sleek Modern Filter & Search Cockpit */}
+          <div className="db-cockpit-shell">
+            <div className="db-cockpit-primary-row">
+              <div className="db-search-input-wrap">
+                <Search size={16} className="db-search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search by exercise name, muscle, equipment, or pattern..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="db-search-input"
+                  aria-label="Search exercises"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    className="clear-search-btn"
+                    onClick={() => setSearchQuery('')}
+                    title="Clear search"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              <div className="db-cockpit-tools">
+                <div className="db-select-pill-wrap" title="Filter by equipment">
+                  <Dumbbell size={13} className="db-select-icon" />
+                  <select
+                    className="db-filter-select"
+                    value={selectedEquipment}
+                    onChange={(e) => setSelectedEquipment(e.target.value)}
+                    aria-label="Filter equipment"
+                  >
+                    {EQUIPMENT_FILTERS.map((eq) => (
+                      <option key={eq.label} value={eq.label}>
+                        {eq.label === 'All' ? 'All Equipment' : eq.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <button
                   type="button"
-                  className="clear-search-btn"
-                  onClick={() => setSearchQuery('')}
-                  title="Clear search"
+                  className={`db-toggle-bodymap-btn ${showBodyMap || selectedMuscle !== 'All' ? 'active' : ''}`}
+                  onClick={() => setShowBodyMap((prev) => !prev)}
+                  title="Filter by tapping muscles on the 3D anatomical figure"
                 >
-                  <X size={15} />
+                  <Activity size={14} />
+                  <span>Body Map{selectedMuscle !== 'All' ? ` (${MUSCLE_LABELS[selectedMuscle] || selectedMuscle})` : ''}</span>
                 </button>
-              )}
-            </div>
 
-            <div className="db-filters-stack">
-              <div className="db-filter-row">
-                <span className="db-filter-label">EQUIPMENT:</span>
-                <div className="db-chips-scroll">
-                  {EQUIPMENT_FILTERS.map(eq => (
-                    <button
-                      key={eq.label}
-                      type="button"
-                      className={`db-chip ${selectedEquipment === eq.label ? 'active' : ''}`}
-                      onClick={() => setSelectedEquipment(eq.label)}
-                    >
-                      {eq.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="db-filter-row">
-                <span className="db-filter-label">MUSCLE GROUP:</span>
-                <div className="db-muscle-pills-scroll">
-                  {MUSCLE_CATEGORIES.map(cat => (
-                    <button
-                      key={cat.key}
-                      type="button"
-                      className={`db-muscle-pill ${selectedMuscle === cat.key ? 'active' : ''}`}
-                      onClick={() => setSelectedMuscle(cat.key)}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
-                </div>
+                {(selectedMuscle !== 'All' || selectedEquipment !== 'All' || searchQuery) && (
+                  <button
+                    type="button"
+                    className="db-reset-all-pill"
+                    onClick={() => {
+                      setSelectedMuscle('All');
+                      setSelectedEquipment('All');
+                      setSearchQuery('');
+                    }}
+                    title="Reset all active filters"
+                  >
+                    <RotateCcw size={12} />
+                    <span>Reset</span>
+                  </button>
+                )}
               </div>
             </div>
+
+            {/* Quick Equipment Fast-Pills */}
+            <div className="db-rail-row">
+              <span className="db-rail-label">GEAR</span>
+              <div className="db-rail-scroll">
+                {EQUIPMENT_FILTERS.map((eq) => (
+                  <button
+                    key={eq.label}
+                    type="button"
+                    className={`db-pill-btn ${selectedEquipment === eq.label ? 'active' : ''}`}
+                    onClick={() => setSelectedEquipment(eq.label)}
+                  >
+                    {eq.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Interactive Anatomy Muscle Fast-Pills */}
+            <div className="db-rail-row">
+              <span className="db-rail-label">ANATOMY</span>
+              <div className="db-rail-scroll">
+                {MUSCLE_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.key}
+                    type="button"
+                    className={`db-pill-btn ${selectedMuscle === cat.key ? 'active' : ''}`}
+                    onClick={() => setSelectedMuscle(cat.key)}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Expandable Interactive Anatomical Body Map */}
+            {showBodyMap && (
+              <div className="db-bodymap-drawer animate-fade">
+                <BodyMap
+                  selectedMuscles={selectedMuscle !== 'All' ? [selectedMuscle] : []}
+                  onToggleMuscle={(key) => setSelectedMuscle((prev) => (prev === key ? 'All' : key))}
+                  onClearMuscles={() => setSelectedMuscle('All')}
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>
