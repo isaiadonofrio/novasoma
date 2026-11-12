@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Flame, Check, Award } from 'lucide-react';
 import {
   calculateStreak,
