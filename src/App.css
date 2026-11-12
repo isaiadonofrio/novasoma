@@ -4461,43 +4461,122 @@
   flex-wrap: wrap;
 }
 
-.db-select-pill-wrap {
+/* Custom Equipment Dropdown in Exercise Library */
+.db-custom-select-wrap {
   position: relative;
   display: inline-flex;
+}
+
+.db-select-pill-btn {
+  display: inline-flex;
   align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 13px 0 12px;
   border-radius: var(--radius-full);
   background: var(--raised2);
   border: 1px solid var(--border);
-  padding: 0 12px 0 11px;
-  height: 38px;
+  color: var(--text);
+  font-size: 0.81rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: border-color 0.15s var(--ease);
+  transition: all 0.16s var(--ease);
 }
 
-.db-select-pill-wrap:hover {
+.db-select-pill-btn:hover {
   border-color: var(--border-hi);
+  background: var(--raised3);
+}
+
+.db-select-pill-btn.open,
+.db-select-pill-btn.active {
+  border-color: var(--clay);
+  background: var(--clay-soft);
+  color: var(--clay);
 }
 
 .db-select-icon {
-  color: var(--dim);
+  color: inherit;
   flex-shrink: 0;
-  margin-right: 6px;
-  pointer-events: none;
 }
 
-.db-filter-select {
-  border: none;
+.db-select-current-label {
+  white-space: nowrap;
+}
+
+.db-select-chevron {
+  color: var(--dim);
+  transition: transform 0.18s var(--ease);
+  flex-shrink: 0;
+}
+
+.db-select-chevron.rotated {
+  transform: rotate(180deg);
+  color: var(--clay);
+}
+
+.db-custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 120;
+  min-width: 210px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--raised);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: fadeIn 0.14s var(--ease);
+}
+
+[data-theme="light"] .db-custom-dropdown-menu {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+}
+
+.db-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   background: transparent;
+  border: none;
   color: var(--text);
   font-size: 0.82rem;
-  font-weight: 700;
-  outline: none;
+  font-weight: 600;
+  text-align: left;
   cursor: pointer;
-  appearance: none;
-  padding-right: 14px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='%23888' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m1 1 4 4 4-4'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right center;
+  transition: background 0.12s var(--ease);
+}
+
+.db-dropdown-item:hover {
+  background: var(--raised2);
+  color: var(--clay);
+}
+
+[data-theme="light"] .db-dropdown-item:hover {
+  background: #F4F1EA;
+  color: var(--clay);
+}
+
+.db-dropdown-item.selected {
+  background: var(--clay-soft);
+  color: var(--clay);
+  font-weight: 700;
+}
+
+.db-dropdown-check {
+  color: var(--clay);
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .db-toggle-bodymap-btn {
@@ -5258,115 +5337,252 @@
   font-size: 0.78rem;
 }
 
-.db-guide-specs-list {
-  margin: 0;
+/* Functional Biomechanical Dossier & Training Prescription */
+.guide-functional-overview {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
-.guide-spec-row {
+.guide-overview-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  padding-bottom: 2px;
 }
 
-.guide-spec-row:last-child {
-  border-bottom: none;
-}
-
-.guide-spec-row dt {
-  margin: 0;
+.guide-overview-kicker {
   font-family: var(--mono);
-  font-size: 0.67rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--faint);
-  flex-shrink: 0;
-}
-
-.guide-spec-row dd {
-  margin: 0;
-  font-size: 0.84rem;
-  font-weight: 700;
-  color: var(--text);
-  text-align: right;
-  flex: 1;
-  min-width: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.guide-spec-row .db-equip-status-pill,
-.guide-alt-meta .db-equip-status-pill {
-  max-width: 100%;
-  white-space: normal;
-  text-align: right;
-}
-
-.guide-spec-row .db-equip-status-pill.gear {
-  background: var(--raised);
-}
-
-.guide-spec-row dd.spec-emphasis {
-  color: var(--clay);
-}
-
-.db-guide-action-dock {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.guide-dock-label {
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--dim);
 }
 
-.guide-dock-controls {
-  display: flex;
-  align-items: center;
+.guide-overview-specs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
-.send-routine-select {
-  flex: 1;
-  min-width: 0;
-  padding: 8px 26px 8px 11px;
-  border-radius: var(--radius-sm);
+.guide-spec-tile {
   background: var(--raised);
-  color: var(--text);
-  border: 1px solid var(--border-hi);
-  font-size: 0.82rem;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  box-shadow: none;
-  outline: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.send-routine-select:focus {
-  border-color: var(--clay);
+[data-theme="light"] .guide-spec-tile {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
-.send-routine-btn {
-  padding: 8px 14px;
+.spec-tile-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+
+.spec-tile-value {
   font-size: 0.8rem;
-  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--text);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spec-tile-value.highlight {
+  color: var(--clay);
+}
+
+.spec-tile-value.primary-muscle {
+  color: var(--text);
+}
+
+/* Suggested Training Prescription Blueprint */
+.guide-prescription-box {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+[data-theme="light"] .guide-prescription-box {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.prescription-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prescription-kicker {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.prescription-rpe-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(229, 103, 76, 0.12);
+  border: 1px solid rgba(229, 103, 76, 0.28);
+  color: var(--danger);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.prescription-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.prescription-metric-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--raised2);
+  border-radius: var(--radius-sm);
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+}
+
+[data-theme="light"] .prescription-metric-cell {
+  background: #F8F6F0;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.prescription-metric-cell .cell-icon {
+  color: var(--clay);
+  flex-shrink: 0;
+}
+
+.prescription-metric-cell .cell-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.prescription-metric-cell .cell-num {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  line-height: 1.15;
+}
+
+.prescription-metric-cell .cell-sub {
+  font-size: 0.62rem;
+  color: var(--dim);
+  line-height: 1.2;
+}
+
+/* Kinematic Focus Callout */
+.guide-focus-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 11px;
+  background: var(--clay-soft);
+  border: 1px solid color-mix(in srgb, var(--clay) 25%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+.focus-callout-icon {
+  color: var(--clay);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.focus-callout-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.focus-callout-title {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--clay);
+}
+
+.focus-callout-text p {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* BodyMap Focused Anatomy Card (when hidePills=true) */
+.bodymap-anatomy-focus-card {
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+[data-theme="light"] .bodymap-anatomy-focus-card {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.focus-card-active,
+.focus-card-idle {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.focus-card-tag {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+
+.focus-card-muscle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.focus-card-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--dim);
+  line-height: 1.45;
 }
 
 /* Right Editorial Tabbed Pane */

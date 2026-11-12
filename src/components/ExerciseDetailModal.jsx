@@ -7,8 +7,9 @@ import {
   UserCheck,
   AlertTriangle,
   Lightbulb,
-  Plus,
-  Check
+  Clock,
+  Flame,
+  Repeat
 } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels.js';
 import { MediaViewer } from './MediaViewer.jsx';
@@ -18,13 +19,9 @@ import { useBodyScrollLock } from '../utils/useBodyScrollLock.js';
 
 export function ExerciseDetailModal({
   exercise,
-  onClose,
-  routines = [],
-  onAddToRoutine
+  onClose
 }) {
   const [activeTab, setActiveTab] = useState('form'); // 'form' | 'anatomy'
-  const [selectedRoutineId, setSelectedRoutineId] = useState(routines[0]?.id || '');
-  const [addedConfirm, setAddedConfirm] = useState(false);
   const scrollRef = useRef(null);
 
   // Prevent background scrolling while exercise guide is open
@@ -75,12 +72,9 @@ export function ExerciseDetailModal({
       ].filter(Boolean)
     : [];
 
-  const handleSendToRoutine = () => {
-    if (!onAddToRoutine || !selectedRoutineId) return;
-    onAddToRoutine(selectedRoutineId, exercise);
-    setAddedConfirm(true);
-    setTimeout(() => setAddedConfirm(false), 1800);
-  };
+  const formattedRest = exercise.defaultRestSeconds
+    ? `${Math.floor(exercise.defaultRestSeconds / 60)}m${exercise.defaultRestSeconds % 60 ? ` ${exercise.defaultRestSeconds % 60}s` : ''}`
+    : '90s';
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -117,7 +111,7 @@ export function ExerciseDetailModal({
 
         {/* Split Workspace */}
         <div className="db-guide-shell">
-          {/* Left Stage: Media & Quick Specs */}
+          {/* Left Stage: Media & Functional Biomechanical Dossier */}
           <aside className="db-guide-left-stage">
             <div className="db-guide-media-frame">
               {exercise.illustration ? (
@@ -150,61 +144,76 @@ export function ExerciseDetailModal({
               </div>
             )}
 
-            {/* Specs Table */}
-            <dl className="db-guide-specs-list">
-              <div className="guide-spec-row">
-                <dt>Equipment</dt>
-                <dd>
-                  <span className={`db-equip-status-pill ${usesGear ? 'gear' : 'bodyweight'}`}>
-                    {usesGear ? <Dumbbell size={11} /> : <UserCheck size={11} />}
-                    <span>{equipLabel}</span>
-                  </span>
-                </dd>
+            {/* Functional Overview & Prescription Dossier */}
+            <div className="guide-functional-overview">
+              <div className="guide-overview-section-header">
+                <span className="guide-overview-kicker">BIOMECHANICAL DOSSIER</span>
+                <span className={`db-equip-status-pill ${usesGear ? 'gear' : 'bodyweight'}`}>
+                  {usesGear ? <Dumbbell size={11} /> : <UserCheck size={11} />}
+                  <span>{equipLabel}</span>
+                </span>
               </div>
-              <div className="guide-spec-row">
-                <dt>Target Muscle</dt>
-                <dd className="spec-emphasis">{primaryMuscle}</dd>
-              </div>
-              <div className="guide-spec-row">
-                <dt>Mechanics</dt>
-                <dd>{mechanicsLabel}</dd>
-              </div>
-              <div className="guide-spec-row">
-                <dt>Difficulty</dt>
-                <dd>{levelLabel}</dd>
-              </div>
-            </dl>
 
-            {/* Quick Add to Workout dock (if available) */}
-            {routines.length > 0 && onAddToRoutine && (
-              <div className="db-guide-action-dock">
-                <label className="guide-dock-label" htmlFor="guide-routine-select">
-                  Add to workout
-                </label>
-                <div className="guide-dock-controls">
-                  <select
-                    id="guide-routine-select"
-                    value={selectedRoutineId}
-                    onChange={(e) => setSelectedRoutineId(e.target.value)}
-                    className="send-routine-select"
-                  >
-                    {routines.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.title}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="btn-gymmane-primary send-routine-btn"
-                    onClick={handleSendToRoutine}
-                  >
-                    {addedConfirm ? <Check size={14} /> : <Plus size={14} />}
-                    <span>{addedConfirm ? 'Added' : 'Add'}</span>
-                  </button>
+              {/* Functional Specs Grid */}
+              <div className="guide-overview-specs-grid">
+                <div className="guide-spec-tile">
+                  <span className="spec-tile-label">MOVEMENT PATTERN</span>
+                  <span className="spec-tile-value highlight">{exercise.pattern || 'Functional'}</span>
+                </div>
+                <div className="guide-spec-tile">
+                  <span className="spec-tile-label">TARGET AGONIST</span>
+                  <span className="spec-tile-value primary-muscle">{primaryMuscle}</span>
+                </div>
+                <div className="guide-spec-tile">
+                  <span className="spec-tile-label">KINETIC CHAIN</span>
+                  <span className="spec-tile-value">{mechanicsLabel}</span>
+                </div>
+                <div className="guide-spec-tile">
+                  <span className="spec-tile-label">DIFFICULTY TIER</span>
+                  <span className="spec-tile-value">{levelLabel}</span>
                 </div>
               </div>
-            )}
+
+              {/* Suggested Training Prescription Blueprint */}
+              <div className="guide-prescription-box">
+                <div className="prescription-header">
+                  <span className="prescription-kicker">TRAINING PRESCRIPTION</span>
+                  <span className="prescription-rpe-tag" title="Target Rate of Perceived Exertion">
+                    <Flame size={12} />
+                    <span>RPE {exercise.rpe || '7-8'}</span>
+                  </span>
+                </div>
+
+                <div className="prescription-metrics-row">
+                  <div className="prescription-metric-cell">
+                    <Repeat size={14} className="cell-icon" />
+                    <div className="cell-copy">
+                      <span className="cell-num">{exercise.defaultSets || 3} × {exercise.defaultReps || '8-12'}</span>
+                      <span className="cell-sub">Working Volume</span>
+                    </div>
+                  </div>
+
+                  <div className="prescription-metric-cell">
+                    <Clock size={14} className="cell-icon" />
+                    <div className="cell-copy">
+                      <span className="cell-num">{formattedRest}</span>
+                      <span className="cell-sub">Recovery Rest</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Kinematic Focus Callout */}
+              {exercise.execution?.proTip && (
+                <div className="guide-focus-callout">
+                  <Lightbulb size={14} className="focus-callout-icon" />
+                  <div className="focus-callout-text">
+                    <span className="focus-callout-title">Kinematic Focus</span>
+                    <p>{exercise.execution.proTip}</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </aside>
 
           {/* Right Stage: Cues & Anatomy */}

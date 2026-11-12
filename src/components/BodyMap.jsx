@@ -5,7 +5,7 @@ import { MUSCLE_LABELS } from '../data/muscleLabels';
 
 const MUSCLE_ENTRIES = Object.entries(MUSCLE_LABELS);
 
-export function BodyMap({ selectedMuscles = [], onToggleMuscle, onClearMuscles }) {
+export function BodyMap({ selectedMuscles = [], onToggleMuscle, onClearMuscles, hidePills = false }) {
   const containerRef = useRef(null);
 
   // Synchronize active highlights and click events on SVG elements
@@ -74,22 +74,45 @@ export function BodyMap({ selectedMuscles = [], onToggleMuscle, onClearMuscles }
           )}
         </div>
 
-        <div className="bodymap-quick-pills" role="group" aria-label="Muscle groups">
-          {MUSCLE_ENTRIES.map(([key, label]) => {
-            const isSelected = selectedMuscles.includes(key);
-            return (
-              <button
-                key={key}
-                type="button"
-                className={`bodymap-quick-pill ${isSelected ? 'active' : ''}`}
-                aria-pressed={isSelected}
-                onClick={() => onToggleMuscle(key)}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
+        {!hidePills ? (
+          <div className="bodymap-quick-pills" role="group" aria-label="Muscle groups">
+            {MUSCLE_ENTRIES.map(([key, label]) => {
+              const isSelected = selectedMuscles.includes(key);
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={`bodymap-quick-pill ${isSelected ? 'active' : ''}`}
+                  aria-pressed={isSelected}
+                  onClick={() => onToggleMuscle(key)}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="bodymap-anatomy-focus-card">
+            {selectedMuscles.length > 0 ? (
+              <div className="focus-card-active">
+                <span className="focus-card-tag">ACTIVE ANATOMICAL FOCUS</span>
+                <h4 className="focus-card-muscle">
+                  {selectedMuscles.map(k => MUSCLE_LABELS[k] || k).join(', ')}
+                </h4>
+                <p className="focus-card-hint">
+                  Tap any muscle group on the front or back figure to instantly toggle target movements in the library.
+                </p>
+              </div>
+            ) : (
+              <div className="focus-card-idle">
+                <span className="focus-card-tag">INTERACTIVE ANATOMY</span>
+                <p className="focus-card-hint">
+                  Click directly on any muscle group on the anatomical figure to filter exercises targeting that specific region.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

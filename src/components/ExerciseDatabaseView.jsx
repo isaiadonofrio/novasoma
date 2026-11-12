@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Search,
   Dumbbell,
@@ -8,7 +8,9 @@ import {
   UserCheck,
   Video,
   Activity,
-  RotateCcw
+  RotateCcw,
+  ChevronDown,
+  Check
 } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels.js';
 import { isBodyweightEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
@@ -68,15 +70,36 @@ const MUSCLE_CATEGORIES = [
 
 export function ExerciseDatabaseView({
   exercisesList = [],
-  routines = [],
-  onAddExerciseToRoutine,
+  _routines = [],
+  _onAddExerciseToRoutine,
   onBack
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('All');
   const [selectedEquipment, setSelectedEquipment] = useState('All');
+  const [isEquipMenuOpen, setIsEquipMenuOpen] = useState(false);
   const [showBodyMap, setShowBodyMap] = useState(false);
   const [activeExerciseDetail, setActiveExerciseDetail] = useState(null);
+  const equipMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (equipMenuRef.current && !equipMenuRef.current.contains(e.target)) {
+        setIsEquipMenuOpen(false);
+      }
+    };
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setIsEquipMenuOpen(false);
+    };
+    if (isEquipMenuOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+      document.addEventListener('keydown', handleEscape);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isEquipMenuOpen]);
 
   const activeEquipFilter = EQUIPMENT_FILTERS.find(f => f.label === selectedEquipment) || EQUIPMENT_FILTERS[0];
 
@@ -155,20 +178,48 @@ export function ExerciseDatabaseView({
               </div>
 
               <div className="db-cockpit-tools">
-                <div className="db-select-pill-wrap" title="Filter by equipment">
-                  <Dumbbell size={13} className="db-select-icon" />
-                  <select
-                    className="db-filter-select"
-                    value={selectedEquipment}
-                    onChange={(e) => setSelectedEquipment(e.target.value)}
-                    aria-label="Filter equipment"
+                {/* Properly formatted custom equipment dropdown */}
+                <div className="db-custom-select-wrap" ref={equipMenuRef}>
+                  <button
+                    type="button"
+                    className={`db-select-pill-btn ${isEquipMenuOpen ? 'open' : ''} ${selectedEquipment !== 'All' ? 'active' : ''}`}
+                    onClick={() => setIsEquipMenuOpen(prev => !prev)}
+                    aria-expanded={isEquipMenuOpen}
+                    aria-haspopup="listbox"
+                    title="Filter movements by required equipment"
                   >
-                    {EQUIPMENT_FILTERS.map((eq) => (
-                      <option key={eq.label} value={eq.label}>
-                        {eq.label === 'All' ? 'All Equipment' : eq.label}
-                      </option>
-                    ))}
-                  </select>
+                    <Dumbbell size={13} className="db-select-icon" />
+                    <span className="db-select-current-label">
+                      {selectedEquipment === 'All' ? 'All Equipment' : selectedEquipment}
+                    </span>
+                    <ChevronDown size={13} className={`db-select-chevron ${isEquipMenuOpen ? 'rotated' : ''}`} />
+                  </button>
+
+                  {isEquipMenuOpen && (
+                    <div className="db-custom-dropdown-menu animate-fade" role="listbox">
+                      {EQUIPMENT_FILTERS.map((eq) => {
+                        const isSelected = selectedEquipment === eq.label;
+                        return (
+                          <button
+                            key={eq.label}
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            className={`db-dropdown-item ${isSelected ? 'selected' : ''}`}
+                            onClick={() => {
+                              setSelectedEquipment(eq.label);
+                              setIsEquipMenuOpen(false);
+                            }}
+                          >
+                            <span className="db-dropdown-item-label">
+                              {eq.label === 'All' ? 'All Equipment' : eq.label}
+                            </span>
+                            {isSelected && <Check size={13} className="db-dropdown-check" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 <button
@@ -199,24 +250,7 @@ export function ExerciseDatabaseView({
               </div>
             </div>
 
-            {/* Quick Equipment Fast-Pills */}
-            <div className="db-rail-row">
-              <span className="db-rail-label">GEAR</span>
-              <div className="db-rail-scroll">
-                {EQUIPMENT_FILTERS.map((eq) => (
-                  <button
-                    key={eq.label}
-                    type="button"
-                    className={`db-pill-btn ${selectedEquipment === eq.label ? 'active' : ''}`}
-                    onClick={() => setSelectedEquipment(eq.label)}
-                  >
-                    {eq.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Interactive Anatomy Muscle Fast-Pills */}
+            {/* Interactive Anatomy Muscle Fast-Pills (Single Unified Rail) */}
             <div className="db-rail-row">
               <span className="db-rail-label">ANATOMY</span>
               <div className="db-rail-scroll">
@@ -233,13 +267,14 @@ export function ExerciseDatabaseView({
               </div>
             </div>
 
-            {/* Expandable Interactive Anatomical Body Map */}
+            {/* Expandable Interactive Anatomical Body Map (Streamlined without duplicate pills) */}
             {showBodyMap && (
               <div className="db-bodymap-drawer animate-fade">
                 <BodyMap
                   selectedMuscles={selectedMuscle !== 'All' ? [selectedMuscle] : []}
                   onToggleMuscle={(key) => setSelectedMuscle((prev) => (prev === key ? 'All' : key))}
                   onClearMuscles={() => setSelectedMuscle('All')}
+                  hidePills={true}
                 />
               </div>
             )}
@@ -406,8 +441,6 @@ export function ExerciseDatabaseView({
         <ExerciseDetailModal
           exercise={activeExerciseDetail}
           onClose={() => setActiveExerciseDetail(null)}
-          routines={routines}
-          onAddToRoutine={onAddExerciseToRoutine}
         />
       )}
     </div>
