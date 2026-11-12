@@ -202,17 +202,6 @@ export function ExerciseDetailModal({
                   </div>
                 </div>
               </div>
-
-              {/* Kinematic Focus Callout */}
-              {exercise.execution?.proTip && (
-                <div className="guide-focus-callout">
-                  <Lightbulb size={14} className="focus-callout-icon" />
-                  <div className="focus-callout-text">
-                    <span className="focus-callout-title">Kinematic Focus</span>
-                    <p>{exercise.execution.proTip}</p>
-                  </div>
-                </div>
-              )}
             </div>
           </aside>
 

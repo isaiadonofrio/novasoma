@@ -6196,7 +6196,7 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 350px minmax(0, 1fr);
+  grid-template-columns: 330px minmax(0, 1fr);
   overflow: hidden;
   overscroll-behavior: contain;
 }
@@ -6204,19 +6204,20 @@
 .db-guide-left-stage {
   background: var(--raised2);
   border-right: 1px solid var(--border);
-  padding: 18px 20px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   overflow-y: auto;
+  scrollbar-width: thin;
   min-height: 0;
 }
 
 .db-guide-media-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
-  max-height: 270px;
+  height: 180px;
+  max-height: 180px;
   align-self: center;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -6227,11 +6228,12 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: border-color 0.16s var(--ease);
+  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
 }
 
 .db-guide-media-frame:hover {
   border-color: var(--clay);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
 }
 
 [data-theme="light"] .db-guide-media-frame {
@@ -6241,28 +6243,29 @@
 .db-detail-media-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 6px;
   display: block;
 }
 
 [data-theme="light"] .db-detail-media-img {
   mix-blend-mode: multiply;
-  filter: brightness(1.04) contrast(1.04);
+  filter: brightness(1.02) contrast(1.02);
 }
 
 .db-detail-media-tag {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 8px;
+  left: 8px;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
+  gap: 4px;
+  padding: 3px 8px;
   border-radius: var(--radius-full);
   background: rgba(20, 20, 20, 0.78);
   color: #FFFFFF;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   font-weight: 700;
   backdrop-filter: blur(4px);
 }
@@ -6290,7 +6293,7 @@
 .guide-functional-overview {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .guide-overview-section-header {
@@ -6298,12 +6301,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-bottom: 2px;
+  padding-bottom: 0;
 }
 
 .guide-overview-kicker {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -6313,17 +6316,17 @@
 .guide-overview-specs-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
 }
 
 .guide-spec-tile {
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 8px 10px;
+  padding: 6px 9px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 [data-theme="light"] .guide-spec-tile {
@@ -6333,7 +6336,7 @@
 
 .spec-tile-label {
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   color: var(--faint);
@@ -6341,12 +6344,13 @@
 }
 
 .spec-tile-value {
-  font-size: 0.8rem;
+  font-size: 0.77rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.25;
 }
 
 .spec-tile-value.highlight {
@@ -6362,10 +6366,10 @@
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 [data-theme="light"] .guide-prescription-box {
@@ -6381,7 +6385,7 @@
 
 .prescription-kicker {
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.60rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -6391,30 +6395,30 @@
 .prescription-rpe-tag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   background: rgba(229, 103, 76, 0.12);
   border: 1px solid rgba(229, 103, 76, 0.28);
   color: var(--danger);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 800;
-  padding: 2px 7px;
+  padding: 2px 6px;
   border-radius: var(--radius-full);
 }
 
 .prescription-metrics-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
 }
 
 .prescription-metric-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   background: var(--raised2);
   border-radius: var(--radius-sm);
-  padding: 7px 9px;
+  padding: 6px 8px;
   border: 1px solid var(--border);
 }
 
@@ -6435,7 +6439,7 @@
 }
 
 .prescription-metric-cell .cell-num {
-  font-size: 0.8rem;
+  font-size: 0.77rem;
   font-weight: 800;
   color: var(--text);
   white-space: nowrap;
@@ -6443,9 +6447,9 @@
 }
 
 .prescription-metric-cell .cell-sub {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: var(--dim);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 /* Kinematic Focus Callout */
@@ -6453,7 +6457,7 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 9px 11px;
+  padding: 8px 10px;
   background: var(--clay-soft);
   border: 1px solid color-mix(in srgb, var(--clay) 25%, transparent);
   border-radius: var(--radius-sm);
@@ -6473,7 +6477,7 @@
 
 .focus-callout-title {
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.60rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -9088,6 +9092,7 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .db-guide-left-stage {
@@ -9096,12 +9101,15 @@
     border-bottom: 1px solid var(--border);
     overflow: visible;
     padding: 14px 16px;
+    gap: 10px;
   }
 
   .db-guide-media-frame,
   .editor-live-square-preview {
-    max-width: 240px;
-    max-height: 240px;
+    width: 100%;
+    max-width: 220px;
+    height: 170px;
+    max-height: 170px;
     margin: 0 auto;
   }
 
@@ -9114,7 +9122,9 @@
     padding: 10px 16px;
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: 10;
+    background: var(--raised);
+    border-bottom: 1px solid var(--border);
     scrollbar-width: none;
   }
 
