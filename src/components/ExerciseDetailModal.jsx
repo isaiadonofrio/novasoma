@@ -285,9 +285,9 @@ export function ExerciseDetailModal({
                   <div className="anatomy-spotlight-card">
                     <div className="anatomy-bodymap-box">
                       <MiniBodyMap
-                        primaryMuscles={exercise.muscleKey ? [exercise.muscleKey] : []}
-                        secondaryMuscles={exercise.secondaryKeys || []}
-                        size={140}
+                        primaryKeys={exercise.muscleKey ? [exercise.muscleKey] : []}
+                        secondaryKeys={exercise.secondaryKeys || []}
+                        className="detail-mini-body"
                       />
                     </div>
 

@@ -1184,11 +1184,19 @@ export function ActiveWorkoutModal({
               className="player-nav-prev studio-nav-prev"
               onClick={goToPrev}
               disabled={currentIndex === 0}
+              title={currentIndex === 0 ? 'First exercise in workout' : `Previous: ${prevExercise?.name}`}
+              aria-label={currentIndex === 0 ? 'First exercise in workout' : `Previous exercise: ${prevExercise?.name}`}
             >
-              <ArrowLeft size={16} />
+              <span className="nav-prev-icon-wrap" aria-hidden="true">
+                <ArrowLeft size={16} />
+              </span>
               <span className="nav-btn-copy">
-                <small className="nav-btn-kicker">PREVIOUS</small>
-                <strong className="nav-btn-name">{prevExercise ? prevExercise.name : 'Start'}</strong>
+                <small className="nav-btn-kicker">
+                  {currentIndex === 0 ? 'START' : 'PREVIOUS'}
+                </small>
+                <strong className="nav-btn-name">
+                  {currentIndex === 0 ? 'First Exercise' : (prevExercise ? prevExercise.name : 'Start')}
+                </strong>
               </span>
             </button>
 
@@ -1197,6 +1205,7 @@ export function ActiveWorkoutModal({
                 type="button"
                 className={`player-nav-next studio-nav-next ${allCurrentSetsDone ? 'ready-advance' : ''}`}
                 onClick={goToNext}
+                aria-label={`Next exercise: ${nextExercise.name}`}
               >
                 <span className="nav-btn-copy">
                   <small className="nav-btn-kicker">
@@ -1204,7 +1213,7 @@ export function ActiveWorkoutModal({
                   </small>
                   <strong className="nav-btn-name">{nextExercise.name}</strong>
                 </span>
-                <span className="nav-next-arrow-badge">
+                <span className="nav-next-arrow-badge" aria-hidden="true">
                   <ArrowRight size={17} />
                 </span>
               </button>
@@ -1213,12 +1222,13 @@ export function ActiveWorkoutModal({
                 type="button"
                 className="player-nav-next finish-mode ready-advance studio-nav-next"
                 onClick={() => onCompleteWorkout(finishPayload)}
+                aria-label="Finish and save workout"
               >
                 <span className="nav-btn-copy">
                   <small className="nav-btn-kicker">FINAL EXERCISE</small>
                   <strong className="nav-btn-name">Finish &amp; Save Workout</strong>
                 </span>
-                <span className="nav-next-arrow-badge">
+                <span className="nav-next-arrow-badge" aria-hidden="true">
                   <Trophy size={17} />
                 </span>
               </button>
@@ -1274,11 +1284,19 @@ export function ActiveWorkoutModal({
               className="player-nav-prev dock-nav-prev"
               onClick={goToPrev}
               disabled={currentIndex === 0}
+              title={currentIndex === 0 ? 'First exercise in workout' : `Previous: ${prevExercise?.name}`}
+              aria-label={currentIndex === 0 ? 'First exercise in workout' : `Previous exercise: ${prevExercise?.name}`}
             >
-              <ArrowLeft size={16} />
+              <span className="nav-prev-icon-wrap" aria-hidden="true">
+                <ArrowLeft size={16} />
+              </span>
               <span className="nav-btn-copy">
-                <small className="nav-btn-kicker">PREVIOUS</small>
-                <strong className="nav-btn-name">{prevExercise ? prevExercise.name : 'Start'}</strong>
+                <small className="nav-btn-kicker">
+                  {currentIndex === 0 ? 'START' : 'PREVIOUS'}
+                </small>
+                <strong className="nav-btn-name">
+                  {currentIndex === 0 ? 'First Exercise' : (prevExercise ? prevExercise.name : 'Start')}
+                </strong>
               </span>
             </button>
 
@@ -1299,6 +1317,7 @@ export function ActiveWorkoutModal({
                 type="button"
                 className={`player-nav-next dock-nav-next ${allCurrentSetsDone ? 'ready-advance' : ''}`}
                 onClick={goToNext}
+                aria-label={`Next exercise: ${nextExercise.name}`}
               >
                 <span className="nav-btn-copy">
                   <small className="nav-btn-kicker">
@@ -1306,7 +1325,7 @@ export function ActiveWorkoutModal({
                   </small>
                   <strong className="nav-btn-name">{nextExercise.name}</strong>
                 </span>
-                <span className="nav-next-arrow-badge">
+                <span className="nav-next-arrow-badge" aria-hidden="true">
                   <ArrowRight size={17} />
                 </span>
               </button>
@@ -1315,12 +1334,13 @@ export function ActiveWorkoutModal({
                 type="button"
                 className="player-nav-next finish-mode ready-advance dock-nav-next"
                 onClick={() => onCompleteWorkout(finishPayload)}
+                aria-label="Finish and save workout"
               >
                 <span className="nav-btn-copy">
                   <small className="nav-btn-kicker">FINAL EXERCISE</small>
                   <strong className="nav-btn-name">Finish &amp; Save Workout</strong>
                 </span>
-                <span className="nav-next-arrow-badge">
+                <span className="nav-next-arrow-badge" aria-hidden="true">
                   <Trophy size={17} />
                 </span>
               </button>
