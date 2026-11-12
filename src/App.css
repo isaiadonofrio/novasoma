@@ -498,22 +498,23 @@
 
 .hero-clean-header-row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .home-date-kicker {
-  display: block;
+  display: inline-flex;
+  align-items: center;
   font-family: var(--mono);
   font-size: 0.74rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--clay);
-  margin-bottom: 4px;
+  margin-bottom: 0;
 }
 
 .home-title-loud {

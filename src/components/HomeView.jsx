@@ -89,10 +89,6 @@ export function HomeView({
           <div className="hero-clean-header-row">
             <div>
               <span className="home-date-kicker">TODAY · {todayDisplay}</span>
-              <h1 className="home-title-loud">Overview</h1>
-              <p className="home-intro-sub">
-                Track weekly rhythm, full-year consistency, and muscle balance across your training plan.
-              </p>
             </div>
 
             <div className="hero-actions-right">
