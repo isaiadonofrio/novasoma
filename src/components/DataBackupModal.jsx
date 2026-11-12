@@ -7,6 +7,7 @@ import {
   parseBackupPayload,
   safeReadJson,
 } from '../utils/storage';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 
 export function DataBackupModal({
   routines,
@@ -21,6 +22,8 @@ export function DataBackupModal({
   const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: string }
   const usageKb = getLocalStorageUsageKb();
   const activeDraft = safeReadJson(STORAGE_KEYS.ACTIVE_DRAFT, null);
+
+  useBodyScrollLock();
 
   useEffect(() => {
     const handleKeyDown = (e) => {

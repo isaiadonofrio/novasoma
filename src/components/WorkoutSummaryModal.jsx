@@ -3,8 +3,11 @@ import { Trophy, CheckCircle, Clock, Dumbbell, RotateCcw, X } from 'lucide-react
 import { calculateSessionVolumeKg } from '../utils/analytics';
 import { triggerConfettiBurst } from '../utils/confetti';
 import { formatSessionDuration } from '../utils/formatting';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 
 export function WorkoutSummaryModal({ summary, routine, onClose, onRestart }) {
+  useBodyScrollLock();
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {

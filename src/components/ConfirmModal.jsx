@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 
 export function ConfirmModal({
   title = 'Confirm Action',
@@ -10,6 +11,8 @@ export function ConfirmModal({
   onConfirm,
   onCancel,
 }) {
+  useBodyScrollLock();
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {

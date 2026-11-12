@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, Search, Plus, Dumbbell, BookOpen, Check, Flame } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 
 export function ExercisePickerModal({
   exerciseDatabase = [],
@@ -11,6 +12,8 @@ export function ExercisePickerModal({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('All');
   const [phaseMode, setPhaseMode] = useState('auto'); // 'auto' | 'warmup' | 'main'
+
+  useBodyScrollLock();
 
   useEffect(() => {
     const handleKeyDown = (e) => {

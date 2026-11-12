@@ -14,6 +14,7 @@ import { MUSCLE_LABELS } from '../data/muscleLabels.js';
 import { MediaViewer } from './MediaViewer.jsx';
 import { MiniBodyMap } from './MiniBodyMap.jsx';
 import { isBodyweightEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock.js';
 
 export function ExerciseDetailModal({
   exercise,
@@ -25,6 +26,9 @@ export function ExerciseDetailModal({
   const [selectedRoutineId, setSelectedRoutineId] = useState(routines[0]?.id || '');
   const [addedConfirm, setAddedConfirm] = useState(false);
   const scrollRef = useRef(null);
+
+  // Prevent background scrolling while exercise guide is open
+  useBodyScrollLock(Boolean(exercise));
 
   useEffect(() => {
     const handleKeyDown = (e) => {

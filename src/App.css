@@ -4018,6 +4018,8 @@
   display: flex;
   justify-content: flex-end;
   animation: fadeIn 0.16s var(--ease);
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .guide-pullout-drawer {
@@ -4030,6 +4032,8 @@
   overflow: hidden;
   box-shadow: -20px 0 60px rgba(0, 0, 0, 0.45);
   animation: slideInRight 0.22s var(--ease);
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .drawer-sheet-handle {
@@ -4143,6 +4147,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 18px 22px 28px;
+  overscroll-behavior: contain;
 }
 
 .cues-list {
@@ -4970,6 +4975,8 @@
   justify-content: center;
   padding: 18px;
   animation: fadeIn 0.18s var(--ease);
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .gymmane-editor-modal,
@@ -4988,6 +4995,8 @@
   overflow: hidden;
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.55);
   animation: scaleUp 0.2s var(--ease);
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .gymmane-db-detail-dialog {
@@ -5161,6 +5170,7 @@
   display: grid;
   grid-template-columns: 350px minmax(0, 1fr);
   overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 .db-guide-left-stage {
@@ -5411,6 +5421,7 @@
   min-height: 0;
   overflow-y: auto;
   padding: 20px 24px 26px;
+  overscroll-behavior: contain;
 }
 
 .guide-panel {

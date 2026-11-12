@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, Dumbbell, CheckCircle, Trash2, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
 import { formatSessionDuration } from '../utils/formatting';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 
 function formatSessionDate(iso) {
   if (!iso) return 'Unknown date';
@@ -23,6 +24,8 @@ export function WorkoutHistoryModal({
 }) {
   const [expandedId, setExpandedId] = useState(null);
   const [pendingDeleteSession, setPendingDeleteSession] = useState(null);
+
+  useBodyScrollLock();
 
   useEffect(() => {
     const handleKeyDown = (e) => {

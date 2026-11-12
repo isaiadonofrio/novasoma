@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { X, Check } from 'lucide-react';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 
 export function WorkoutEditorModal({ workout, onSave, onClose }) {
+  useBodyScrollLock();
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
