@@ -42,7 +42,40 @@ const LEG_2_MAIN = [
   getEx('ex-seated-single-leg-calf-raise', false)
 ];
 
+// Full Body Movement Restoration Warm-Up Sequence (Joint mobilization & neuromuscular priming)
+const FULL_BODY_WARMUP = [
+  { ...getEx('wu-ankle-hip-mobility', true), defaultSets: 2, defaultReps: '8/side' },
+  { ...getEx('ex-bird-dog', true, 'wu-bird-dog'), defaultSets: 2, defaultReps: '8/side' },
+  { ...getEx('ex-reverse-snow-angel', true, 'wu-reverse-snow-angel'), defaultSets: 2, defaultReps: '10-12' },
+  { ...getEx('ex-glute-bridge', true, 'wu-glute-bridge'), defaultSets: 2, defaultReps: '12' }
+];
+
+// Full Body Movement Restoration Main Exercises (The 5 Fundamental Movement Patterns + Core)
+const FULL_BODY_MAIN = [
+  { ...getEx('ex-dumbbell-goblet-squat', false), defaultSets: 3, defaultReps: '8-10' },
+  { ...getEx('ex-dumbbell-romanian-deadlift', false), defaultSets: 3, defaultReps: '10' },
+  { ...getEx('ex-push-up', false), defaultSets: 3, defaultReps: '8-10' },
+  { ...getEx('ex-dumbbell-bent-over-row', false), defaultSets: 3, defaultReps: '10/side' },
+  { ...getEx('ex-dumbbell-reverse-lunge', false), defaultSets: 3, defaultReps: '8/leg' },
+  { ...getEx('ex-bear-plank', false), defaultSets: 3, defaultReps: '30s' }
+];
+
 export const INITIAL_ROUTINES = [
+  {
+    id: 'full-body-movement-restoration',
+    title: 'Full Body Movement & Health Restoration',
+    shortTitle: 'Full Body Reset',
+    description: 'Evidence-based functional movement routine engineered to re-establish physical form, joint mobility, posture, and full-body strength. Combines joint articulation and McGill spinal stabilizers with the 5 core human movement patterns.',
+    category: 'Full Body',
+    durationMinutes: 50,
+    difficulty: 'Beginner - Intermediate',
+    accentColor: '#10B981',
+    equipmentTags: ['Dumbbells', 'Mat', 'Bench', 'Bodyweight'],
+    exercises: [
+      ...FULL_BODY_WARMUP,
+      ...FULL_BODY_MAIN
+    ]
+  },
   {
     id: 'leg-workout-1',
     title: 'Leg Workout 1',

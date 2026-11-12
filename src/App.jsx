@@ -203,7 +203,9 @@ export function App() {
     const needsEnRefresh = !safeReadString(EN_LOCALIZATION_KEY);
     if (saved && Array.isArray(saved)) {
       try {
-        return saved.map(routine => {
+        const savedIds = new Set(saved.map(r => r.id));
+        const missingInitial = INITIAL_ROUTINES.filter(initR => !savedIds.has(initR.id));
+        const mappedSaved = saved.map(routine => {
           const canonicalRoutine = needsEnRefresh
             ? INITIAL_ROUTINES.find(r => r.id === routine.id)
             : null;
@@ -217,6 +219,7 @@ export function App() {
             exercises: (routine.exercises || []).map(ex => mergeMissingCanonical(ex, needsEnRefresh))
           };
         });
+        return [...mappedSaved, ...missingInitial];
       } catch {
         // Fallback to initial routines
       }
