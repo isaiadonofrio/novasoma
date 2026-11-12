@@ -6,7 +6,6 @@ export function ExercisePickerModal({
   exerciseDatabase = [],
   existingExercises = [],
   onSelectExercise,
-  onCreateNewExercise,
   onClose
 }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -62,20 +61,12 @@ export function ExercisePickerModal({
             <div>
               <h3>ADD EXERCISE TO WORKOUT</h3>
               <span className="editor-active-ex-name">
-                Pick from your Exercise Library or create/import a custom movement
+                Select from your curated Exercise Library
               </span>
             </div>
           </div>
 
           <div className="editor-header-actions">
-            <button
-              type="button"
-              className="btn-gymmane-primary picker-new-btn"
-              onClick={onCreateNewExercise}
-            >
-              <Plus size={15} />
-              <span>New / Import JSON</span>
-            </button>
             <button type="button" className="close-editor-btn" onClick={onClose} aria-label="Close">
               <X size={18} />
             </button>

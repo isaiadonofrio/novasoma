@@ -3,7 +3,7 @@ import {
   ArrowLeft, 
   Play, 
   Plus, 
-  Edit3, 
+  BookOpen, 
   Trash2, 
   ArrowUp, 
   ArrowDown, 
@@ -13,7 +13,8 @@ import {
   Video,
   Link2,
   Unlink2,
-  Flame
+  Flame,
+  Edit3
 } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
 import {
@@ -25,7 +26,7 @@ import {
   unlinkExerciseFromSuperset
 } from '../utils/workoutSets';
 import { MiniBodyMap } from './MiniBodyMap';
-import { ExerciseEditorModal } from './ExerciseEditorModal';
+import { ExerciseDetailModal } from './ExerciseDetailModal';
 import { ExercisePickerModal } from './ExercisePickerModal';
 import { WorkoutEditorModal } from './WorkoutEditorModal';
 import { ConfirmModal } from './ConfirmModal';
@@ -36,12 +37,10 @@ export function WorkoutOverviewView({
   onBack, 
   onStartLive, 
   onUpdateWorkout, 
-  onDeleteWorkout,
-  onSaveExerciseToDatabase
+  onDeleteWorkout
 }) {
-  const [editingExercise, setEditingExercise] = useState(null);
+  const [viewingExerciseGuide, setViewingExerciseGuide] = useState(null);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const [isCreatingCustomExercise, setIsCreatingCustomExercise] = useState(false);
   const [isEditingWorkoutMeta, setIsEditingWorkoutMeta] = useState(false);
   const [confirmState, setConfirmState] = useState(null);
 
@@ -70,6 +69,60 @@ export function WorkoutOverviewView({
     onUpdateWorkout({
       ...workout,
       exercises: unlinkExerciseFromSuperset(workout.exercises, index)
+    });
+  };
+
+  const handleUpdateExerciseSets = (index, nextSets) => {
+    const clamped = Math.max(1, Math.min(10, Number(nextSets) || 3));
+    onUpdateWorkout({
+      ...workout,
+      exercises: workout.exercises.map((ex, i) =>
+        i === index ? { ...ex, defaultSets: clamped } : ex
+      )
+    });
+  };
+
+  const handleStepRestSeconds = (index, deltaSeconds) => {
+    const current = Number(workout.exercises[index]?.defaultRestSeconds) || 60;
+    const nextVal = Math.max(15, Math.min(300, current + deltaSeconds));
+    onUpdateWorkout({
+      ...workout,
+      exercises: workout.exercises.map((ex, i) =>
+        i === index ? { ...ex, defaultRestSeconds: nextVal, timerEnabled: true } : ex
+      )
+    });
+  };
+
+  const handleToggleTimer = (index) => {
+    const current = workout.exercises[index];
+    const currentlyEnabled = isRestTimerEnabledForExercise(current);
+    onUpdateWorkout({
+      ...workout,
+      exercises: workout.exercises.map((ex, i) =>
+        i === index
+          ? {
+              ...ex,
+              timerEnabled: !currentlyEnabled,
+              defaultRestSeconds: !currentlyEnabled ? (Number(ex.defaultRestSeconds) || 60) : 0
+            }
+          : ex
+      )
+    });
+  };
+
+  const REP_CYCLE_PRESETS = ['8-10', '10-12', '12-15', '15-20', '6-8', '30s', '45s', '60s'];
+
+  const handleCycleReps = (index) => {
+    const current = String(workout.exercises[index]?.defaultReps || '').trim();
+    const foundIdx = REP_CYCLE_PRESETS.indexOf(current);
+    const nextReps = foundIdx >= 0 && foundIdx < REP_CYCLE_PRESETS.length - 1
+      ? REP_CYCLE_PRESETS[foundIdx + 1]
+      : REP_CYCLE_PRESETS[0];
+    onUpdateWorkout({
+      ...workout,
+      exercises: workout.exercises.map((ex, i) =>
+        i === index ? { ...ex, defaultReps: nextReps } : ex
+      )
     });
   };
 
@@ -118,28 +171,6 @@ export function WorkoutOverviewView({
       exercises: insertExerciseByPhase(workout.exercises, instance)
     });
     setIsPickerOpen(false);
-  };
-
-  const handleSaveExercise = (exerciseData, options = {}) => {
-    if (editingExercise) {
-      const newExs = workout.exercises.map(ex => ex.id === editingExercise.id ? {
-        ...exerciseData,
-        supersetGroup: editingExercise.supersetGroup,
-        phase: exerciseData.isWarmup ? 'warmup' : 'main'
-      } : ex);
-      onUpdateWorkout({ ...workout, exercises: normalizeSupersetGroups(newExs) });
-      setEditingExercise(null);
-    } else {
-      if (options.saveToDatabase && onSaveExerciseToDatabase) {
-        onSaveExerciseToDatabase(exerciseData);
-      }
-      const instance = buildUniqueWorkoutExercise(exerciseData);
-      onUpdateWorkout({
-        ...workout,
-        exercises: insertExerciseByPhase(workout.exercises, instance)
-      });
-      setIsCreatingCustomExercise(false);
-    }
   };
 
   const handleDeleteCurrentWorkout = () => {
@@ -340,8 +371,8 @@ export function WorkoutOverviewView({
                     {(exercise.illustration || exercise.customVideoUrl) && (
                       <div 
                         className="row-media-thumb" 
-                        onClick={() => setEditingExercise(exercise)}
-                        title="View / Edit media"
+                        onClick={() => setViewingExerciseGuide(exercise)}
+                        title="View movement guide"
                       >
                         {exercise.illustration ? (
                           <img 
@@ -377,17 +408,87 @@ export function WorkoutOverviewView({
                         </span>
                       </div>
 
-                      <h3 className="row-exercise-name">{exercise.name}</h3>
+                      <h3 
+                        className="row-exercise-name clickable-guide-title"
+                        onClick={() => setViewingExerciseGuide(exercise)}
+                        title="Click to view form guide and biomechanical cues"
+                      >
+                        {exercise.name}
+                      </h3>
                       <p className="row-exercise-sub">{exercise.subtitle || exercise.scientificName}</p>
 
                       <div className="row-specs-strip">
-                        <span className="row-spec-badge"><b>{exercise.defaultSets}</b> sets</span>
-                        {renderRepsBadge(exercise.defaultReps)}
-                        {timerOn ? (
-                          <span className="row-spec-badge"><b>{exercise.defaultRestSeconds}s</b> rest</span>
-                        ) : (
-                          <span className="row-spec-badge is-untimed">No timer</span>
-                        )}
+                        {/* Sets Stepper */}
+                        <div className="row-plan-param-stepper" role="group" aria-label={`Sets for ${exercise.name}`}>
+                          <button
+                            type="button"
+                            className="param-step-btn"
+                            disabled={(exercise.defaultSets || 3) <= 1}
+                            onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) - 1)}
+                            title="Decrease sets"
+                            aria-label="Decrease sets"
+                          >
+                            −
+                          </button>
+                          <span className="param-step-label">
+                            <b>{exercise.defaultSets || 3}</b> sets
+                          </span>
+                          <button
+                            type="button"
+                            className="param-step-btn"
+                            disabled={(exercise.defaultSets || 3) >= 10}
+                            onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) + 1)}
+                            title="Increase sets"
+                            aria-label="Increase sets"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* Reps Cycle Badge */}
+                        <button
+                          type="button"
+                          className="row-spec-badge clickable-reps"
+                          onClick={() => handleCycleReps(idx)}
+                          title="Click to cycle rep target presets (8-10, 10-12, 12-15...)"
+                        >
+                          {renderRepsBadge(exercise.defaultReps)}
+                        </button>
+
+                        {/* Rest Timer Stepper */}
+                        <div className="row-plan-param-stepper" role="group" aria-label={`Rest timer for ${exercise.name}`}>
+                          <button
+                            type="button"
+                            className="param-step-btn"
+                            disabled={!timerOn || (exercise.defaultRestSeconds || 60) <= 15}
+                            onClick={() => handleStepRestSeconds(idx, -15)}
+                            title="Decrease rest (-15s)"
+                            aria-label="Decrease rest"
+                          >
+                            −
+                          </button>
+                          <button
+                            type="button"
+                            className={`param-step-label timer-toggle ${timerOn ? '' : 'is-untimed'}`}
+                            onClick={() => handleToggleTimer(idx)}
+                            title="Click to toggle timer On/Off"
+                          >
+                            <Clock size={11} />
+                            {timerOn ? <b>{exercise.defaultRestSeconds || 60}s</b> : 'Untimed'}
+                          </button>
+                          <button
+                            type="button"
+                            className="param-step-btn"
+                            disabled={!timerOn || (exercise.defaultRestSeconds || 60) >= 300}
+                            onClick={() => handleStepRestSeconds(idx, +15)}
+                            title="Increase rest (+15s)"
+                            aria-label="Increase rest"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        {/* Drop Sets Stepper */}
                         {dropCount > 0 ? (
                           <div className="row-plan-drop-stepper" role="group" aria-label={`Drop sets for ${exercise.name}`}>
                             <button
@@ -491,11 +592,11 @@ export function WorkoutOverviewView({
                       <div className="crud-actions-box">
                         <button 
                           type="button"
-                          className="row-action-icon-btn edit-btn"
-                          onClick={() => setEditingExercise(exercise)}
-                          title="Edit exercise, weights, timer or drop sets"
+                          className="row-action-icon-btn guide-btn"
+                          onClick={() => setViewingExerciseGuide(exercise)}
+                          title="View exercise guide, anatomy and cues"
                         >
-                          <Edit3 size={15} />
+                          <BookOpen size={15} />
                         </button>
 
                         <button 
@@ -526,30 +627,21 @@ export function WorkoutOverviewView({
         )}
       </div>
 
-      {/* Exercise Picker Modal (Database or New/Import) */}
+      {/* Exercise Picker Modal (Database) */}
       {isPickerOpen && (
         <ExercisePickerModal
           exerciseDatabase={exerciseDatabase}
           existingExercises={workout.exercises}
           onSelectExercise={handlePickFromDatabase}
-          onCreateNewExercise={() => {
-            setIsPickerOpen(false);
-            setIsCreatingCustomExercise(true);
-          }}
           onClose={() => setIsPickerOpen(false)}
         />
       )}
 
-      {/* Exercise Editor Modal */}
-      {(editingExercise || isCreatingCustomExercise) && (
-        <ExerciseEditorModal 
-          exercise={editingExercise}
-          showSaveToDatabaseToggle={!editingExercise}
-          onSave={handleSaveExercise}
-          onClose={() => {
-            setEditingExercise(null);
-            setIsCreatingCustomExercise(false);
-          }}
+      {/* Flagship Read-Only Exercise Guide Modal */}
+      {viewingExerciseGuide && (
+        <ExerciseDetailModal
+          exercise={viewingExerciseGuide}
+          onClose={() => setViewingExerciseGuide(null)}
         />
       )}
 

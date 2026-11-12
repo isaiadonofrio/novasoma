@@ -329,23 +329,6 @@ export function App() {
     ? currentRoutine
     : routines.find(r => r.exercises?.length > 0) || null;
 
-  // Gestione Database Esercizi
-  const handleSaveExerciseToDb = (exerciseData) => {
-    setExerciseDatabase(prev => {
-      const idx = prev.findIndex(item => item.id === exerciseData.id);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = exerciseData;
-        return next;
-      }
-      return [exerciseData, ...prev];
-    });
-  };
-
-  const handleDeleteExerciseFromDb = (exerciseId) => {
-    setExerciseDatabase(prev => prev.filter(e => e.id !== exerciseId));
-  };
-
   const navigateToView = (view, routineId = null, { scroll = true } = {}) => {
     setCurrentView(view);
     setActiveRoutineId(routineId);
@@ -578,7 +561,6 @@ export function App() {
               onStartLive={(idx) => handleStartRoutineLive(currentRoutine.id, idx)}
               onUpdateWorkout={handleUpdateRoutine}
               onDeleteWorkout={handleDeleteRoutine}
-              onSaveExerciseToDatabase={handleSaveExerciseToDb}
             />
           ) : (
             <div className="gymmane-wrap" style={{ padding: '40px 0', textAlign: 'center' }}>
@@ -598,8 +580,6 @@ export function App() {
         {currentView === 'database' && (
           <ExerciseDatabaseView 
             exercisesList={exerciseDatabase}
-            onSaveExercise={handleSaveExerciseToDb}
-            onDeleteExercise={handleDeleteExerciseFromDb}
             routines={routines}
             workoutHistory={workoutHistory}
             onAddExerciseToRoutine={handleAddExerciseToRoutine}
