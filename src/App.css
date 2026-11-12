@@ -3136,11 +3136,178 @@
   color: var(--ember);
 }
 
-/* Controls Hub Grid */
+/* Bottom Hub - Rest Recovery & Dynamic Advanced Techniques */
+.indepth-bottom-hub {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .indepth-controls-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 14px;
+}
+
+.compact-techniques-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px dashed var(--border-hi);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  flex-wrap: wrap;
+}
+
+.compact-strip-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+}
+
+.compact-strip-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-technique-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.77rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-technique-pill:hover {
+  transform: translateY(-1px);
+}
+
+.btn-technique-pill.add-dropset:hover {
+  background: var(--ember-soft, rgba(229, 103, 76, 0.12));
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+.btn-technique-pill.add-superset:hover {
+  background: var(--sage-soft);
+  border-color: var(--sage);
+  color: var(--sage);
+}
+
+.btn-technique-pill.compact-standalone {
+  align-self: center;
+  justify-self: start;
+}
+
+.active-techniques-deck {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.active-technique-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1.5px solid var(--border-hi);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.active-technique-card.dropset {
+  border-color: color-mix(in srgb, var(--ember) 40%, transparent);
+  background: color-mix(in srgb, var(--ember-soft, rgba(229, 103, 76, 0.08)) 60%, var(--surface));
+}
+
+.active-technique-card.superset {
+  border-color: color-mix(in srgb, var(--sage) 40%, transparent);
+  background: color-mix(in srgb, var(--sage-soft) 55%, var(--surface));
+}
+
+.technique-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.technique-title-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.technique-title-group h5 {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0;
+}
+
+.technique-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-remove-technique {
+  font-size: 0.70rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+}
+
+.btn-remove-technique:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(229, 103, 76, 0.12);
+}
+
+.superset-partner-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  font-size: 0.80rem;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.superset-partner-badge b {
+  color: var(--sage);
+}
+
+.technique-compact-hint {
+  font-size: 0.76rem;
+  color: var(--dim);
+  line-height: 1.45;
+  margin: 0;
 }
 
 .indepth-hub-card {

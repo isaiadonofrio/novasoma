@@ -13,7 +13,6 @@ import {
   Dumbbell, 
   Video,
   Link2,
-  Unlink2,
   Flame,
   Edit3,
   ChevronDown,
@@ -588,6 +587,11 @@ export function WorkoutOverviewView({
               );
               const timerOn = isRestTimerEnabledForExercise(exercise);
               const dropCount = parseInt(exercise.defaultDropSets, 10) || 0;
+              const hasAnyTechniqueActive = dropCount > 0 || Boolean(ssInfo);
+              const pairedPartner = activeWorkout.exercises.find(
+                (ex, i) => i !== idx && exercise.supersetGroup && ex.supersetGroup === exercise.supersetGroup
+              );
+              const pairedPartnerName = pairedPartner?.name || nextEx?.name || 'Partner exercise';
               const exerciseKey = exercise.id || `ex-${idx}`;
               const isExpanded = expandedIds.has(exerciseKey);
               const isItemDragging = draggedIdx === idx;
@@ -969,8 +973,8 @@ export function WorkoutOverviewView({
                           </div>
                         </div>
 
-                        {/* Section 2: Controls Hub Grid */}
-                        <div className="indepth-controls-grid">
+                        {/* Section 2: Bottom Hub - Rest Recovery & Advanced Techniques */}
+                        <div className="indepth-bottom-hub">
                           {/* Card 1: Rest Timer Hub */}
                           <div className="indepth-hub-card timer-card">
                             <div className="hub-card-header">
@@ -1055,135 +1059,164 @@ export function WorkoutOverviewView({
                             </div>
                           </div>
 
-                          {/* Card 2: Drop Sets Protocol */}
-                          <div className="indepth-hub-card dropset-card">
-                            <div className="hub-card-header">
-                              <div className="hub-header-title">
-                                <Flame size={15} color="var(--ember)" />
-                                <h5>Drop Set Architecture</h5>
-                              </div>
-                              <span className="hub-status-pill ember">
-                                {dropCount === 0 ? 'No Drop Set' : `+${dropCount} Drop ${dropCount === 1 ? 'Set' : 'Sets'}`}
-                              </span>
-                            </div>
-
-                            <div className="hub-card-body">
-                              {isEditMode ? (
-                                <>
-                                  <div className="dropset-options-row">
-                                    {[0, 1, 2, 3].map((count) => {
-                                      const isSel = dropCount === count;
-                                      return (
-                                        <button
-                                          key={count}
-                                          type="button"
-                                          className={`dropset-option-chip ${isSel ? 'active' : ''}`}
-                                          onClick={() => handleUpdateExerciseDropSets(idx, count)}
-                                          title={count === 0 ? 'Disable drop set' : `Plan ${count} drop set(s)`}
-                                        >
-                                          {count === 0 ? 'None' : `+${count} Drop`}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-
-                                  <p className="hub-explainer-text">
-                                    Perform immediately following the final set. Strip ~20% load and take to failure without recovery rest.
-                                  </p>
-                                </>
-                              ) : (
-                                <div className="hub-preview-summary-box">
-                                  <p className="hub-preview-val">
-                                    {dropCount > 0 ? (
-                                      <span><b>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</b> scheduled post final working set</span>
-                                    ) : (
-                                      <span>Standard sets only · No drop set configured</span>
-                                    )}
-                                  </p>
-                                  <p className="hub-explainer-text">
-                                    Drop sets extend time-under-tension beyond voluntary failure to trigger maximal mechanical tension and metabolic pump.
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Card 3: Superset Pairing */}
-                          <div className="indepth-hub-card superset-card">
-                            <div className="hub-card-header">
-                              <div className="hub-header-title">
-                                <Link2 size={15} color="var(--sage)" />
-                                <h5>Superset Circuit Pairing</h5>
-                              </div>
-                              <span className={`hub-status-pill ${ssInfo ? 'sage' : 'neutral'}`}>
-                                {ssInfo ? ssInfo.label : 'Standard Linear'}
-                              </span>
-                            </div>
-
-                            <div className="hub-card-body">
-                              {isEditMode ? (
-                                <>
-                                  <div className="superset-actions-wrap">
-                                    {canLinkWithNext && !isLinkedWithNext && (
-                                      <button
-                                        type="button"
-                                        className="btn-superset-hub-action pair"
-                                        onClick={() => handleToggleSupersetWithNext(idx)}
-                                      >
-                                        <Link2 size={13} />
-                                        <span>Pair with Next: <b>{nextEx.name}</b></span>
-                                      </button>
-                                    )}
-
-                                    {isLinkedWithNext && (
-                                      <button
-                                        type="button"
-                                        className="btn-superset-hub-action unpair active"
-                                        onClick={() => handleToggleSupersetWithNext(idx)}
-                                      >
-                                        <Unlink2 size={13} />
-                                        <span>Unpair from <b>{nextEx.name}</b></span>
-                                      </button>
-                                    )}
-
-                                    {ssInfo && !isLinkedWithNext && (
-                                      <button
-                                        type="button"
-                                        className="btn-superset-hub-action unpair active"
-                                        onClick={() => handleUnlinkSuperset(idx)}
-                                      >
-                                        <Unlink2 size={13} />
-                                        <span>Leave {ssInfo.label}</span>
-                                      </button>
-                                    )}
-
-                                    {!canLinkWithNext && !ssInfo && (
-                                      <span className="superset-na-note">
-                                        Add another exercise in this phase to pair a superset circuit.
+                          {/* Advanced Techniques: Drop Sets & Supersets */}
+                          {hasAnyTechniqueActive ? (
+                            <div className="active-techniques-deck animate-fade">
+                              {/* Active Drop Set Card */}
+                              {dropCount > 0 && (
+                                <div className="active-technique-card dropset animate-fade">
+                                  <div className="technique-card-top">
+                                    <div className="technique-title-group">
+                                      <Flame size={15} color="var(--ember)" />
+                                      <h5>Drop Set Protocol</h5>
+                                    </div>
+                                    <div className="technique-badge-group">
+                                      <span className="hub-status-pill ember">
+                                        +{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}
                                       </span>
-                                    )}
+                                      {isEditMode && (
+                                        <button
+                                          type="button"
+                                          className="btn-remove-technique"
+                                          onClick={() => handleUpdateExerciseDropSets(idx, 0)}
+                                          title="Remove drop set"
+                                        >
+                                          Remove
+                                        </button>
+                                      )}
+                                    </div>
                                   </div>
 
-                                  <p className="hub-explainer-text">
-                                    Paired exercises run back-to-back with 0s rest. Recovery timer triggers after completing both exercises.
-                                  </p>
-                                </>
-                              ) : (
-                                <div className="hub-preview-summary-box">
-                                  <p className="hub-preview-val">
-                                    {ssInfo ? (
-                                      <span><b>Superset {ssInfo.code}</b> active · Back-to-back execution</span>
+                                  <div className="technique-card-body">
+                                    {isEditMode ? (
+                                      <>
+                                        <div className="dropset-options-row">
+                                          {[1, 2, 3].map((count) => {
+                                            const isSel = dropCount === count;
+                                            return (
+                                              <button
+                                                key={count}
+                                                type="button"
+                                                className={`dropset-option-chip ${isSel ? 'active' : ''}`}
+                                                onClick={() => handleUpdateExerciseDropSets(idx, count)}
+                                                title={`Plan ${count} drop set(s)`}
+                                              >
+                                                +{count} Drop
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                        <p className="technique-compact-hint">
+                                          Execute immediately post final set. Strip ~20% load per drop and take to failure (0s rest).
+                                        </p>
+                                      </>
                                     ) : (
-                                      <span>Standard linear sequence · Dedicated rest interval</span>
+                                      <p className="technique-compact-hint">
+                                        <b>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</b> scheduled post final set #0{exercise.defaultSets || 3}. Strip ~{dropCount * 20}% load and take to technical breakdown with 0s rest.
+                                      </p>
                                     )}
-                                  </p>
-                                  <p className="hub-explainer-text">
-                                    Supersets boost cardiovascular conditioning and training density without sacrificing working load.
-                                  </p>
+                                  </div>
                                 </div>
                               )}
+
+                              {/* Active Superset Card */}
+                              {ssInfo && (
+                                <div className="active-technique-card superset animate-fade">
+                                  <div className="technique-card-top">
+                                    <div className="technique-title-group">
+                                      <Link2 size={15} color="var(--sage)" />
+                                      <h5>Superset Circuit {ssInfo.code}</h5>
+                                    </div>
+                                    <div className="technique-badge-group">
+                                      <span className="hub-status-pill sage">
+                                        {ssInfo.label}
+                                      </span>
+                                      {isEditMode && (
+                                        <button
+                                          type="button"
+                                          className="btn-remove-technique"
+                                          onClick={() => {
+                                            if (isLinkedWithNext) {
+                                              handleToggleSupersetWithNext(idx);
+                                            } else {
+                                              handleUnlinkSuperset(idx);
+                                            }
+                                          }}
+                                          title="Unlink from superset"
+                                        >
+                                          Unpair
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div className="technique-card-body">
+                                    <div className="superset-partner-badge">
+                                      <Link2 size={13} color="var(--sage)" />
+                                      <span>Circuit Partner: <b>{pairedPartnerName}</b></span>
+                                    </div>
+                                    <p className="technique-compact-hint">
+                                      Perform back-to-back with 0s rest. Recovery timer initiates after completing both exercises.
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Compact triggers for remaining technique in Edit Mode */}
+                              {isEditMode && dropCount === 0 && (
+                                <button
+                                  type="button"
+                                  className="btn-technique-pill add-dropset compact-standalone"
+                                  onClick={() => handleUpdateExerciseDropSets(idx, 1)}
+                                  title="Add drop set to final set"
+                                >
+                                  <Flame size={13} />
+                                  <span>+ Add Drop Set</span>
+                                </button>
+                              )}
+
+                              {isEditMode && !ssInfo && canLinkWithNext && (
+                                <button
+                                  type="button"
+                                  className="btn-technique-pill add-superset compact-standalone"
+                                  onClick={() => handleToggleSupersetWithNext(idx)}
+                                  title={`Pair with next exercise: ${nextEx?.name}`}
+                                >
+                                  <Link2 size={13} />
+                                  <span>+ Pair with Next</span>
+                                </button>
+                              )}
                             </div>
-                          </div>
+                          ) : (
+                            isEditMode && (
+                              <div className="compact-techniques-strip animate-fade">
+                                <span className="compact-strip-label">ADVANCED INTENSITY &amp; CIRCUITS:</span>
+                                <div className="compact-strip-actions">
+                                  <button
+                                    type="button"
+                                    className="btn-technique-pill add-dropset"
+                                    onClick={() => handleUpdateExerciseDropSets(idx, 1)}
+                                    title="Add immediate drop set to final set"
+                                  >
+                                    <Flame size={13} />
+                                    <span>+ Add Drop Set</span>
+                                  </button>
+
+                                  {canLinkWithNext && (
+                                    <button
+                                      type="button"
+                                      className="btn-technique-pill add-superset"
+                                      onClick={() => handleToggleSupersetWithNext(idx)}
+                                      title={`Pair with next exercise: ${nextEx?.name}`}
+                                    >
+                                      <Link2 size={13} />
+                                      <span>+ Pair as Superset</span>
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          )}
                         </div>
 
                         {/* Subtle hint when viewing in preview mode */}
