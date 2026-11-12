@@ -2513,11 +2513,36 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 16px 20px;
-  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease), opacity 0.16s var(--ease), transform 0.16s var(--ease);
 }
 
 .overview-exercise-row-card:hover {
   border-color: var(--border-hi);
+}
+
+.overview-exercise-row-card.in-edit-mode {
+  cursor: grab;
+}
+
+.overview-exercise-row-card.in-edit-mode:active {
+  cursor: grabbing;
+}
+
+.overview-exercise-row-card.is-dragging {
+  opacity: 0.42;
+  transform: scale(0.99);
+  border: 1.5px dashed var(--clay);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.overview-exercise-row-card.drag-target-above {
+  border-top: 2.5px solid var(--clay) !important;
+  box-shadow: 0 -4px 14px rgba(194, 142, 82, 0.32);
+}
+
+.overview-exercise-row-card.drag-target-below {
+  border-bottom: 2.5px solid var(--clay) !important;
+  box-shadow: 0 4px 14px rgba(194, 142, 82, 0.32);
 }
 
 .overview-exercise-row-card.is-expanded {
@@ -2562,6 +2587,85 @@
   font-size: 0.86rem;
   font-weight: 800;
   color: var(--dim);
+}
+
+.row-order-index.editable-drag-hub {
+  width: 44px;
+  height: auto;
+  min-height: 60px;
+  padding: 4px 2px;
+  border-radius: var(--radius-sm);
+  background: var(--raised2);
+  border: 1.5px solid var(--border-hi);
+  cursor: grab;
+  user-select: none;
+  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row-order-index.editable-drag-hub:hover {
+  border-color: var(--clay);
+  box-shadow: 0 2px 10px rgba(194, 142, 82, 0.20);
+}
+
+.row-order-index.editable-drag-hub:active {
+  cursor: grabbing;
+}
+
+.drag-index-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.drag-handle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.drag-grip-icon {
+  color: var(--faint);
+  flex-shrink: 0;
+}
+
+.row-order-index.editable-drag-hub:hover .drag-grip-icon {
+  color: var(--clay);
+}
+
+.btn-left-mini-reorder {
+  width: 28px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+  padding: 0;
+}
+
+.btn-left-mini-reorder:hover:not(:disabled) {
+  background: var(--raised3);
+  color: var(--clay);
+  border-color: var(--clay);
+}
+
+.btn-left-mini-reorder:disabled {
+  opacity: 0.22;
+  cursor: not-allowed;
 }
 
 .row-media-thumb {
@@ -2655,6 +2759,15 @@
   font-weight: 800;
   color: var(--text);
   margin-bottom: 2px;
+}
+
+.row-exercise-name.clickable-guide-title {
+  cursor: pointer;
+  transition: color 0.15s var(--ease);
+}
+
+.row-exercise-name.clickable-guide-title:hover {
+  color: var(--clay);
 }
 
 .row-exercise-sub {
@@ -2787,7 +2900,8 @@
 .indepth-section-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .indepth-section-title h4 {
@@ -2796,6 +2910,27 @@
   color: var(--text);
   letter-spacing: 0.02em;
   margin: 0;
+}
+
+.btn-indepth-guide-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+}
+
+.btn-indepth-guide-link:hover {
+  color: var(--clay);
+  border-color: var(--clay);
+  background: var(--clay-soft);
 }
 
 .indepth-sets-controls {
@@ -8750,8 +8885,15 @@
     border-top: 1px solid var(--border);
   }
 
-  .reorder-btns-box {
-    flex-direction: row;
+  .row-order-index.editable-drag-hub {
+    width: 38px;
+    min-height: 52px;
+    padding: 3px 2px;
+  }
+
+  .btn-left-mini-reorder {
+    width: 24px;
+    height: 15px;
   }
 
   .player-header {

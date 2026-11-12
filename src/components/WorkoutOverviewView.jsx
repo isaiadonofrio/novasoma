@@ -7,6 +7,7 @@ import {
   Trash2, 
   ArrowUp, 
   ArrowDown, 
+  GripVertical,
   Clock, 
   Layers, 
   Dumbbell, 
@@ -56,6 +57,8 @@ export function WorkoutOverviewView({
   const [isEditingWorkoutMeta, setIsEditingWorkoutMeta] = useState(false);
   const [confirmState, setConfirmState] = useState(null);
   const [expandedIds, setExpandedIds] = useState(() => new Set());
+  const [draggedIdx, setDraggedIdx] = useState(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
 
   const handleEnterEditMode = () => {
     setDraftWorkout(workout);
@@ -142,6 +145,17 @@ export function WorkoutOverviewView({
     const newExs = [...draftWorkout.exercises];
     const [moved] = newExs.splice(index, 1);
     newExs.splice(newIdx, 0, moved);
+    setDraftWorkout(prev => ({
+      ...prev,
+      exercises: normalizeSupersetGroups(newExs)
+    }));
+  };
+
+  const handleDropExercise = (sourceIdx, targetIdx) => {
+    if (sourceIdx === null || targetIdx === null || sourceIdx === targetIdx) return;
+    const newExs = [...draftWorkout.exercises];
+    const [moved] = newExs.splice(sourceIdx, 1);
+    newExs.splice(targetIdx, 0, moved);
     setDraftWorkout(prev => ({
       ...prev,
       exercises: normalizeSupersetGroups(newExs)
@@ -516,7 +530,7 @@ export function WorkoutOverviewView({
               </button>
             )}
 
-            {isEditMode ? (
+            {isEditMode && (
               <button 
                 type="button" 
                 className="btn-gymmane-primary"
@@ -524,15 +538,6 @@ export function WorkoutOverviewView({
               >
                 <Plus size={16} />
                 <span>Add Exercise</span>
-              </button>
-            ) : (
-              <button 
-                type="button" 
-                className="btn-enter-edit-mode outline"
-                onClick={handleEnterEditMode}
-              >
-                <Edit3 size={14} />
-                <span>Edit Workout</span>
               </button>
             )}
           </div>
@@ -585,6 +590,9 @@ export function WorkoutOverviewView({
               const dropCount = parseInt(exercise.defaultDropSets, 10) || 0;
               const exerciseKey = exercise.id || `ex-${idx}`;
               const isExpanded = expandedIds.has(exerciseKey);
+              const isItemDragging = draggedIdx === idx;
+              const isDropTargetAbove = dragOverIdx === idx && draggedIdx !== null && draggedIdx > idx;
+              const isDropTargetBelow = dragOverIdx === idx && draggedIdx !== null && draggedIdx < idx;
 
               return (
                 <React.Fragment key={exerciseKey}>
@@ -601,12 +609,73 @@ export function WorkoutOverviewView({
                   )}
 
                   <div
-                    className={`overview-exercise-row-card clean-text-card ${exercise.isWarmup ? 'warmup-row' : ''} ${ssInfo ? 'in-superset' : ''} ${ssInfo?.isFirst ? 'superset-start' : ''} ${ssInfo?.isLast ? 'superset-end' : ''} ${isExpanded ? 'is-expanded' : ''} ${isEditMode ? 'in-edit-mode' : ''}`}
+                    className={`overview-exercise-row-card clean-text-card ${exercise.isWarmup ? 'warmup-row' : ''} ${ssInfo ? 'in-superset' : ''} ${ssInfo?.isFirst ? 'superset-start' : ''} ${ssInfo?.isLast ? 'superset-end' : ''} ${isExpanded ? 'is-expanded' : ''} ${isEditMode ? 'in-edit-mode' : ''} ${isItemDragging ? 'is-dragging' : ''} ${isDropTargetAbove ? 'drag-target-above' : ''} ${isDropTargetBelow ? 'drag-target-below' : ''}`}
+                    draggable={isEditMode}
+                    onDragStart={(e) => {
+                      if (!isEditMode) return;
+                      e.dataTransfer.setData('text/plain', String(idx));
+                      e.dataTransfer.effectAllowed = 'move';
+                      setDraggedIdx(idx);
+                    }}
+                    onDragOver={(e) => {
+                      if (!isEditMode) return;
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                      if (dragOverIdx !== idx) {
+                        setDragOverIdx(idx);
+                      }
+                    }}
+                    onDrop={(e) => {
+                      if (!isEditMode) return;
+                      e.preventDefault();
+                      handleDropExercise(draggedIdx, idx);
+                      setDraggedIdx(null);
+                      setDragOverIdx(null);
+                    }}
+                    onDragEnd={() => {
+                      setDraggedIdx(null);
+                      setDragOverIdx(null);
+                    }}
                   >
                     {/* Main Row Line */}
                     <div className="row-card-main-line">
-                      <div className="row-order-index">
-                        <span>{ssInfo ? ssInfo.code : String(idx + 1).padStart(2, '0')}</span>
+                      {/* Left: Order index & Drag Hub (in Edit Mode) */}
+                      <div 
+                        className={`row-order-index ${isEditMode ? 'editable-drag-hub' : ''}`}
+                        title={isEditMode ? "Drag to reorder or tap arrows" : undefined}
+                      >
+                        {isEditMode ? (
+                          <div className="drag-index-unit">
+                            <button
+                              type="button"
+                              disabled={idx === 0}
+                              onClick={(e) => { e.stopPropagation(); moveExercise(idx, -1); }}
+                              className="btn-left-mini-reorder up"
+                              title="Move up"
+                              aria-label="Move up"
+                            >
+                              <ArrowUp size={11} />
+                            </button>
+
+                            <div className="drag-handle-badge">
+                              <GripVertical size={12} className="drag-grip-icon" />
+                              <span className="order-num-text">{ssInfo ? ssInfo.code : String(idx + 1).padStart(2, '0')}</span>
+                            </div>
+
+                            <button
+                              type="button"
+                              disabled={idx === activeWorkout.exercises.length - 1}
+                              onClick={(e) => { e.stopPropagation(); moveExercise(idx, 1); }}
+                              className="btn-left-mini-reorder down"
+                              title="Move down"
+                              aria-label="Move down"
+                            >
+                              <ArrowDown size={11} />
+                            </button>
+                          </div>
+                        ) : (
+                          <span>{ssInfo ? ssInfo.code : String(idx + 1).padStart(2, '0')}</span>
+                        )}
                       </div>
 
                       {(exercise.illustration || exercise.customVideoUrl) && (
@@ -655,7 +724,6 @@ export function WorkoutOverviewView({
                           title="Click to view form guide and biomechanical cues"
                         >
                           <span>{exercise.name}</span>
-                          <BookOpen size={13} className="guide-title-icon" aria-hidden="true" />
                         </h3>
                         <p className="row-exercise-sub">{exercise.subtitle || exercise.scientificName}</p>
 
@@ -707,54 +775,17 @@ export function WorkoutOverviewView({
                           {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                         </button>
 
-                        {/* Edit Mode Reorder Buttons */}
+                        {/* Edit Mode Delete Button */}
                         {isEditMode && (
-                          <div className="reorder-btns-box animate-fade">
-                            <button 
-                              type="button" 
-                              disabled={idx === 0}
-                              onClick={() => moveExercise(idx, -1)}
-                              title="Move up"
-                              className="btn-reorder-item"
-                              aria-label="Move up"
-                            >
-                              <ArrowUp size={14} />
-                            </button>
-                            <button 
-                              type="button" 
-                              disabled={idx === activeWorkout.exercises.length - 1}
-                              onClick={() => moveExercise(idx, 1)}
-                              title="Move down"
-                              className="btn-reorder-item"
-                              aria-label="Move down"
-                            >
-                              <ArrowDown size={14} />
-                            </button>
-                          </div>
-                        )}
-
-                        <div className="crud-actions-box">
                           <button 
                             type="button"
-                            className="row-action-icon-btn guide-btn"
-                            onClick={() => setViewingExerciseGuide(exercise)}
-                            title="View exercise guide, anatomy and cues"
+                            className="row-action-icon-btn delete-btn animate-fade"
+                            onClick={() => removeExercise(idx)}
+                            title="Remove exercise from workout"
                           >
-                            <BookOpen size={15} />
+                            <Trash2 size={15} />
                           </button>
-
-                          {/* Edit Mode Delete Button */}
-                          {isEditMode && (
-                            <button 
-                              type="button"
-                              className="row-action-icon-btn delete-btn animate-fade"
-                              onClick={() => removeExercise(idx)}
-                              title="Remove exercise from workout"
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          )}
-                        </div>
+                        )}
 
                         {/* Preview Mode Start Button */}
                         {!isEditMode && (
@@ -780,6 +811,15 @@ export function WorkoutOverviewView({
                             <div className="indepth-section-title">
                               <Layers size={15} color="var(--clay)" />
                               <h4>Sets Architecture &amp; Target Reps</h4>
+                              <button
+                                type="button"
+                                className="btn-indepth-guide-link"
+                                onClick={() => setViewingExerciseGuide(exercise)}
+                                title="Open full movement guide, anatomy and cues"
+                              >
+                                <BookOpen size={12} />
+                                <span>Movement Guide</span>
+                              </button>
                             </div>
 
                             {/* Set Count & Reps Controls (Active in Edit Mode, Read-Only in Preview Mode) */}
