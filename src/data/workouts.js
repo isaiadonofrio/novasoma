@@ -60,6 +60,51 @@ const FULL_BODY_MAIN = [
   { ...getEx('ex-bear-plank', false), defaultSets: 3, defaultReps: '30s' }
 ];
 
+// 1. Zero-Equipment Bodyweight & Movement Flow
+const BODYWEIGHT_FLOW_WARMUP = [
+  { ...getEx('wu-cat-cow-child-pose', true), defaultSets: 2, defaultReps: '6-8 flows' },
+  { ...getEx('wu-worlds-greatest-stretch', true), defaultSets: 2, defaultReps: '5/side' },
+  { ...getEx('wu-ankle-hip-mobility', true), defaultSets: 2, defaultReps: '8/side' }
+];
+
+const BODYWEIGHT_FLOW_MAIN = [
+  { ...getEx('ex-bodyweight-box-squat', false), defaultSets: 3, defaultReps: '10-12' },
+  { ...getEx('ex-incline-push-up', false), defaultSets: 3, defaultReps: '8-10' },
+  { ...getEx('ex-glute-bridge', false), defaultSets: 3, defaultReps: '12-15' },
+  { ...getEx('ex-cossack-squat', false), defaultSets: 2, defaultReps: '6/side' },
+  { ...getEx('ex-reverse-snow-angel', false), defaultSets: 3, defaultReps: '10-12' },
+  { ...getEx('ex-side-plank', false), defaultSets: 3, defaultReps: '20-30s/side' }
+];
+
+// 2. Minimalist Kettlebell & Loaded Carry Framework
+const KETTLEBELL_CARRY_WARMUP = [
+  { ...getEx('wu-kettlebell-halo', true), defaultSets: 2, defaultReps: '6/side' },
+  { ...getEx('wu-ankle-hip-mobility', true), defaultSets: 2, defaultReps: '8/side' },
+  { ...getEx('ex-bird-dog', true, 'wu-bird-dog'), defaultSets: 2, defaultReps: '8/side' }
+];
+
+const KETTLEBELL_CARRY_MAIN = [
+  { ...getEx('ex-kettlebell-goblet-squat', false), defaultSets: 3, defaultReps: '8-10' },
+  { ...getEx('ex-kettlebell-russian-swing', false), defaultSets: 4, defaultReps: '12' },
+  { ...getEx('ex-farmers-carry', false), defaultSets: 3, defaultReps: '30-45s' },
+  { ...getEx('ex-dumbbell-floor-press', false), defaultSets: 3, defaultReps: '8-10' },
+  { ...getEx('ex-kettlebell-goblet-lunge', false), defaultSets: 3, defaultReps: '8/leg' },
+  { ...getEx('ex-bear-plank', false), defaultSets: 3, defaultReps: '30s' }
+];
+
+// 3. McGill Big 3 & Spinal Decompression Reset
+const MCGILL_WARMUP = [
+  { ...getEx('wu-cat-cow-child-pose', true), defaultSets: 2, defaultReps: '6 flows' },
+  { ...getEx('ex-glute-bridge-reach', true, 'wu-glute-bridge-reach'), defaultSets: 2, defaultReps: '8/side' }
+];
+
+const MCGILL_MAIN = [
+  { ...getEx('ex-mcgill-curl-up', false), defaultSets: 3, defaultReps: '6 holds (8s)' },
+  { ...getEx('ex-side-plank', false), defaultSets: 3, defaultReps: '20s/side' },
+  { ...getEx('ex-bird-dog', false), defaultSets: 3, defaultReps: '8/side' },
+  { ...getEx('ex-decompression-brisk-walk', false), defaultSets: 1, defaultReps: '15-20 min' }
+];
+
 export const INITIAL_ROUTINES = [
   {
     id: 'full-body-movement-restoration',
@@ -74,6 +119,51 @@ export const INITIAL_ROUTINES = [
     exercises: [
       ...FULL_BODY_WARMUP,
       ...FULL_BODY_MAIN
+    ]
+  },
+  {
+    id: 'bodyweight-movement-flow',
+    title: 'Zero-Equipment Bodyweight & Movement Flow',
+    shortTitle: 'Bodyweight Flow',
+    description: 'Zero-equipment calisthenics and spatial movement flow designed for mobility, joint lubrication, and foundational body control. Perfect for home, hotel, or travel.',
+    category: 'Full Body',
+    durationMinutes: 40,
+    difficulty: 'Beginner',
+    accentColor: '#F59E0B',
+    equipmentTags: ['Bodyweight', 'Mat', 'Chair'],
+    exercises: [
+      ...BODYWEIGHT_FLOW_WARMUP,
+      ...BODYWEIGHT_FLOW_MAIN
+    ]
+  },
+  {
+    id: 'kettlebell-functional-carry',
+    title: 'Minimalist Kettlebell & Loaded Carry Framework',
+    shortTitle: 'Kettlebell & Carry',
+    description: 'Athletic functional session pairing rhythmic kettlebell hinge power and deep goblet squat prying with anti-lateral core carries and floor pressing.',
+    category: 'Full Body',
+    durationMinutes: 45,
+    difficulty: 'Intermediate',
+    accentColor: '#EC4899',
+    equipmentTags: ['Kettlebell', 'Dumbbells', 'Mat'],
+    exercises: [
+      ...KETTLEBELL_CARRY_WARMUP,
+      ...KETTLEBELL_CARRY_MAIN
+    ]
+  },
+  {
+    id: 'mcgill-decompression-reset',
+    title: 'McGill Big 3 & Spinal Decompression Reset',
+    shortTitle: 'Spine Reset',
+    description: 'Clinical spine-sparing restoration protocol based on Dr. Stuart McGill’s spine biomechanics research. Rebuilds torso stiffness, stabilizes the lumbar spine, and decompresses intervertebral discs.',
+    category: 'Core & Functional',
+    durationMinutes: 35,
+    difficulty: 'Beginner',
+    accentColor: '#6366F1',
+    equipmentTags: ['Bodyweight', 'Mat'],
+    exercises: [
+      ...MCGILL_WARMUP,
+      ...MCGILL_MAIN
     ]
   },
   {

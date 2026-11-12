@@ -1,0 +1,128 @@
+================================================================================
+NOVA SOMA • EXERCISE ILLUSTRATION GENERATION LIST
+================================================================================
+Generated for: Nova Soma Workout App
+Total Exercises Requiring Illustrations: 10
+Target Image Format: WebP (4:3 aspect ratio, recommended 800x600 or 1200x900)
+Visual Style: Modern athletic fitness illustration / photography, dark background (#121212 to #1e1e1e), crisp lighting, subject in athletic apparel, highlighting proper biomechanical form and muscle engagement.
+
+--------------------------------------------------------------------------------
+1. CAT-COW TO CHILD'S POSE FLOW
+--------------------------------------------------------------------------------
+- Exercise ID: wu-cat-cow-child-pose
+- File Name Target: cat-cow-child-pose.webp
+- Routine: Zero-Equipment Bodyweight & Movement Flow / McGill Decompression
+- Movement Pattern: Mobility & Activation (Spinal articulation)
+- Equipment: Bodyweight (Mat)
+- Target Muscles: Spinal Erectors, Thoracic Spine, Latissimus Dorsi
+- Visual Scene Description:
+  An athletic person on a dark charcoal fitness mat demonstrating the fluid transition from quadruped Cat-Cow into Child's Pose. Side angle view. Hands flat under shoulders, hips sinking back to heels, arms extended forward with relaxed neck and decompressed thoracic spine.
+
+--------------------------------------------------------------------------------
+2. WORLD'S GREATEST STRETCH
+--------------------------------------------------------------------------------
+- Exercise ID: wu-worlds-greatest-stretch
+- File Name Target: worlds-greatest-stretch.webp
+- Routine: Zero-Equipment Bodyweight & Movement Flow
+- Movement Pattern: Mobility & Activation (Multi-planar lunge & thoracic rotation)
+- Equipment: Bodyweight (Mat)
+- Target Muscles: Hip Flexors, Psoas, Thoracic Spine, Hamstrings
+- Visual Scene Description:
+  A fitness athlete in a deep low runner's lunge on a mat. Right foot is planted firmly forward outside the right hand. The upper torso is actively rotated toward the right, with the right arm extending straight toward the ceiling, fingers pointing upward, head and gaze tracking the hand. Left hand braced flat on the floor.
+
+--------------------------------------------------------------------------------
+3. BODYWEIGHT BOX SQUAT
+--------------------------------------------------------------------------------
+- Exercise ID: ex-bodyweight-box-squat
+- File Name Target: bodyweight-box-squat.webp
+- Routine: Zero-Equipment Bodyweight & Movement Flow
+- Movement Pattern: Squat Pattern
+- Equipment: Chair / Bench
+- Target Muscles: Quadriceps, Gluteus Maximus
+- Visual Scene Description:
+  Side-profile view of an athlete at the bottom threshold of a box squat. Hips lightly touching the front edge of a clean wooden plyo box or flat bench. Torso held upright at ~45-60°, chest proud, hands clasped together in front of sternum, feet shoulder-width and flat on the floor, knees tracking outward over toes.
+
+--------------------------------------------------------------------------------
+4. INCLINE BENCH PUSH-UP
+--------------------------------------------------------------------------------
+- Exercise ID: ex-incline-push-up
+- File Name Target: incline-push-up.webp
+- Routine: Zero-Equipment Bodyweight & Movement Flow
+- Movement Pattern: Horizontal Push
+- Equipment: Flat Bench
+- Target Muscles: Pectoralis Major, Anterior Deltoids, Triceps
+- Visual Scene Description:
+  Side 3/4 angle of an athlete performing a push-up with both hands gripping the edge of a flat gym bench. Body forms a rigid, perfectly straight diagonal plank line from ears to heels. Elbows are tucked backward at a 45-degree angle to the torso, chest lowering toward the bench edge.
+
+--------------------------------------------------------------------------------
+5. KETTLEBELL HALO
+--------------------------------------------------------------------------------
+- Exercise ID: wu-kettlebell-halo
+- File Name Target: kettlebell-halo.webp
+- Routine: Minimalist Kettlebell & Loaded Carry Framework
+- Movement Pattern: Mobility & Activation (Shoulder circumduction)
+- Equipment: Kettlebell
+- Target Muscles: Rotator Cuff, Deltoids, Upper Trapezius, Core
+- Visual Scene Description:
+  Front/side view of an athlete standing tall with knees softly unlocked. The athlete is holding a cast-iron kettlebell upside down by the horns, smoothly guiding it in a circular path around the back of the head/nape of the neck. Chin remains level, torso motionless and upright without swaying.
+
+--------------------------------------------------------------------------------
+6. KETTLEBELL GOBLET SQUAT (PRYING PAUSE)
+--------------------------------------------------------------------------------
+- Exercise ID: ex-kettlebell-goblet-squat
+- File Name Target: kettlebell-goblet-squat.webp
+- Routine: Minimalist Kettlebell & Loaded Carry Framework
+- Movement Pattern: Squat Pattern
+- Equipment: Kettlebell
+- Target Muscles: Quadriceps, Gluteus Maximus, Adductors
+- Visual Scene Description:
+  Front-angle view of an athlete in a deep, pristine goblet squat holding a cast-iron kettlebell vertically against the sternum. Feet flat, chest vertical and proud. Elbows are positioned inside the inner knees, gently prying the knees outward to open the hip capsules.
+
+--------------------------------------------------------------------------------
+7. FARMER'S & SUITCASE LOADED CARRY
+--------------------------------------------------------------------------------
+- Exercise ID: ex-farmers-carry
+- File Name Target: farmers-carry.webp
+- Routine: Minimalist Kettlebell & Loaded Carry Framework
+- Movement Pattern: Core Anti-Lateral Flexion / Loaded Walk
+- Equipment: Kettlebells or Dumbbells
+- Target Muscles: Forearms (Grip), Trapezius, Core Cylinder, Obliques
+- Visual Scene Description:
+  Full-length athletic shot of an individual performing a loaded farmer's walk across a minimalist gym floor. Holding heavy kettlebells at arm's length by the sides. Shoulders packed down and back, chest lifted, walking tall with measured, balanced strides and level hips.
+
+--------------------------------------------------------------------------------
+8. MCGILL MODIFIED CURL-UP
+--------------------------------------------------------------------------------
+- Exercise ID: ex-mcgill-curl-up
+- File Name Target: mcgill-curl-up.webp
+- Routine: McGill Big 3 & Spinal Decompression Reset
+- Movement Pattern: Core Anti-Extension (Spine-sparing)
+- Equipment: Bodyweight (Mat)
+- Target Muscles: Rectus Abdominis, Transverse Abdominis, Deep Core
+- Visual Scene Description:
+  Side view of an athlete lying supine on a fitness mat. Both hands are placed palms-down beneath the lumbar spine to preserve the natural lower-back arch. One leg is extended straight, the other bent with foot flat on mat. The athlete's head and upper shoulders are lifted just 2–3 cm off the floor as a single rigid block, looking straight up toward the ceiling without tucking the chin.
+
+--------------------------------------------------------------------------------
+9. GLUTE BRIDGE WITH OVERHEAD REACH
+--------------------------------------------------------------------------------
+- Exercise ID: ex-glute-bridge-reach
+- File Name Target: glute-bridge-reach.webp
+- Routine: McGill Big 3 & Spinal Decompression Reset
+- Movement Pattern: Hip Hinge & Thoracic Mobility
+- Equipment: Bodyweight (Mat)
+- Target Muscles: Gluteus Maximus, Thoracic Spine, Latissimus Dorsi
+- Visual Scene Description:
+  An athlete in the top lockout of a glute bridge with hips fully extended toward the ceiling. From this elevated bridge, the right arm is reaching diagonally across the chest and overhead toward the floor behind the left shoulder, creating a smooth rotational stretch through the ribcage while keeping knees tracking straight ahead.
+
+--------------------------------------------------------------------------------
+10. POSTURAL DECOMPRESSION BRISK WALK
+--------------------------------------------------------------------------------
+- Exercise ID: ex-decompression-brisk-walk
+- File Name Target: decompression-brisk-walk.webp
+- Routine: McGill Big 3 & Spinal Decompression Reset
+- Movement Pattern: Conditioning & Locomotion (Nervous system downshift)
+- Equipment: Bodyweight
+- Target Muscles: Calves, Tibialis Anterior, Postural Spinal Stabilizers
+- Visual Scene Description:
+  Full-body outdoor or track perspective of an athlete in brisk, upright walking motion. Dynamic posture: eyes on horizon, relaxed shoulders, gentle reciprocal natural arm swings from the shoulders, heel-to-toe stride, radiating calm recovery and vitality.
+================================================================================

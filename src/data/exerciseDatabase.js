@@ -2148,6 +2148,356 @@ const RAW_EXERCISE_DATABASE = [
       ],
       proTip: 'Reach fingers far ahead and toes far behind rather than chasing high vertical lift—just a few centimeters off the floor delivers optimal safe tension.'
     }
+  },
+  {
+    id: 'wu-cat-cow-child-pose',
+    name: "Cat-Cow to Child's Pose Flow",
+    scientificName: 'Quadruped segmental spinal flexion-extension transitioning to passive lumbar flexion',
+    subtitle: 'Rhythmic spinal articulation and lat/thoracic decompression flow',
+    pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+    equipment: 'Bodyweight (Mat)',
+    mechanics: 'Mobility',
+    level: 'Beginner',
+    muscleKey: 'back',
+    defaultSets: 2,
+    defaultReps: '6-8 flows',
+    defaultRestSeconds: 45,
+    rpe: '5 - 6',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Spinal Erectors', 'Thoracic Spine'],
+      secondary: ['Latissimus Dorsi', 'Rectus Abdominis'],
+      stabilizers: ['Serratus Anterior', 'Hip Capsule']
+    },
+    execution: {
+      setup: 'Start on hands and knees with wrists stacked under shoulders and knees directly beneath hips.',
+      eccentric: 'Inhale to drop the belly, lift the chest, and gaze slightly forward (Cow). Exhale to tuck the tailbone and press the floor away, rounding the spine toward the ceiling (Cat).',
+      concentric: 'From peak Cat flexion, glide the hips smoothly backward onto your heels into Child’s Pose with arms extended long, taking a deep diaphragmatic breath into the back ribs.',
+      breathing: 'Synchronize breathing: Inhale Cow, exhale Cat, full slow inhale in Child’s Pose.',
+      commonMistakes: [
+        'Aggressively cranking the neck backward during Cow',
+        'Shrugging shoulders into the ears during Child’s Pose',
+        'Rushing the flow without pausing in thoracic extension'
+      ],
+      proTip: 'Focus on segmenting individual vertebrae rather than hinging only at the lower back.'
+    }
+  },
+  {
+    id: 'wu-worlds-greatest-stretch',
+    name: "World's Greatest Stretch",
+    scientificName: 'Multi-planar lunge with thoracic rotation, hip flexor elongation & hamstring extension',
+    subtitle: 'Comprehensive multi-joint dynamic mobility complex',
+    pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+    equipment: 'Bodyweight (Mat)',
+    mechanics: 'Mobility',
+    level: 'Beginner',
+    muscleKey: 'glutes',
+    defaultSets: 2,
+    defaultReps: '5/side',
+    defaultRestSeconds: 45,
+    rpe: '5 - 6',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Hip Flexors & Psoas', 'Thoracic Spine', 'Hamstrings'],
+      secondary: ['Gluteus Medius', 'Adductors', 'Calves'],
+      stabilizers: ['Shoulder Girdle', 'Core Cylindrical Stabilizers']
+    },
+    execution: {
+      setup: 'Step forward into a deep runner’s lunge with right foot outside your right hand. Drop back left knee to floor (or keep elevated).',
+      eccentric: 'Lower right elbow toward right instep to stretch hip adductors and groin.',
+      concentric: 'Rotate chest open toward right knee, sweeping right hand toward ceiling while tracking thumb with your eyes. Return hand down and press hips back into a brief hamstring stretch.',
+      breathing: 'Inhale dropping elbow; exhale rotating chest toward ceiling; inhale returning.',
+      commonMistakes: [
+        'Rotating solely from the lumbar spine rather than opening the ribcage',
+        'Allowing front heel to peel off floor',
+        'Collapsing the supportive shoulder girdle'
+      ],
+      proTip: 'Actively squeeze the glute of the rear trailing leg to release the anterior hip flexor via reciprocal inhibition.'
+    }
+  },
+  {
+    id: 'ex-bodyweight-box-squat',
+    name: 'Bodyweight Box Squat',
+    scientificName: 'Closed-chain knee flexion & hip extension to a calibrated box/chair threshold',
+    subtitle: 'Safe depth-controlled bodyweight squat teaching pelvic control',
+    pattern: MOVEMENT_PATTERNS.SQUAT,
+    equipment: 'Chair / Bench',
+    mechanics: 'Compound',
+    level: 'Beginner',
+    muscleKey: 'quads',
+    defaultSets: 3,
+    defaultReps: '10-12',
+    defaultRestSeconds: 60,
+    rpe: '6 - 7',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Quadriceps', 'Gluteus Maximus'],
+      secondary: ['Hamstrings', 'Adductors'],
+      stabilizers: ['Core Bracing Cylinder', 'Soleus']
+    },
+    execution: {
+      setup: 'Stand facing away from a knee-height box or sturdy chair with feet shoulder-width and toes flared slightly outward 15–20°.',
+      eccentric: 'Push hips back and bend knees over 3 seconds, descending with a proud chest until hips lightly tap the box without collapsing weight down.',
+      concentric: 'Pause for a microsecond to eliminate momentum, then drive through midfoot and heels to stand tall, locking hips and glutes at the top.',
+      breathing: 'Inhale bracing core descending; exhale forcefully standing tall.',
+      commonMistakes: [
+        'Rocking back and relaxing core when touching the box',
+        'Allowing knees to cave inward during the ascent',
+        'Lifting heels off the floor'
+      ],
+      proTip: 'Treat the box as a tactile depth sensor, not a recliner: keep muscular tension in the legs throughout the contact.'
+    }
+  },
+  {
+    id: 'ex-incline-push-up',
+    name: 'Incline Bench Push-Up',
+    scientificName: 'Angle-reduced closed-chain horizontal pressing with active plank stabilization',
+    subtitle: 'Joint-friendly elevated push-up maintaining strict core anti-extension',
+    pattern: MOVEMENT_PATTERNS.HORIZONTAL_PUSH,
+    equipment: 'Flat Bench',
+    mechanics: 'Compound',
+    level: 'Beginner',
+    muscleKey: 'chest',
+    defaultSets: 3,
+    defaultReps: '8-12',
+    defaultRestSeconds: 60,
+    rpe: '6 - 7',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Pectoralis Major (Lower & Mid)', 'Anterior Deltoid'],
+      secondary: ['Triceps Brachii', 'Serratus Anterior'],
+      stabilizers: ['Transverse Abdominis', 'Gluteus Maximus', 'Quadriceps']
+    },
+    execution: {
+      setup: 'Place hands slightly wider than shoulder-width on the edge of a sturdy bench or box. Step feet back into a rigid head-to-heel plank.',
+      eccentric: 'Lower chest toward bench edge over 2–3 seconds with elbows tracking backward at roughly 45° to torso.',
+      concentric: 'Press palms firmly into bench to return to full lockout, spreading shoulder blades apart at top.',
+      breathing: 'Inhale on the way down; exhale driving away from the bench.',
+      commonMistakes: [
+        'Sagging hips into lumbar hyperextension',
+        'Flaring elbows out at 90° stressing the rotator cuff',
+        'Dropping head forward to touch bench before chest'
+      ],
+      proTip: 'Squeeze glutes and pull belly button to spine—the incline push-up is a moving plank as much as a chest builder.'
+    }
+  },
+  {
+    id: 'wu-kettlebell-halo',
+    name: 'Kettlebell Halo',
+    scientificName: 'Tri-planar circumduction of external mass around cervical-thoracic axis',
+    subtitle: 'Shoulder capsule mobilization and rotational core priming',
+    pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+    equipment: 'Kettlebell',
+    mechanics: 'Mobility',
+    level: 'Beginner',
+    muscleKey: 'shoulders',
+    defaultSets: 2,
+    defaultReps: '6-8 circles/dir',
+    defaultRestSeconds: 45,
+    rpe: '5 - 6',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Rotator Cuff (Supraspinatus, Infraspinatus, Teres Minor)', 'Deltoids'],
+      secondary: ['Upper Trapezius', 'Rhomboids'],
+      stabilizers: ['Obliques (Anti-Rotation)', 'Thoracic Spine']
+    },
+    execution: {
+      setup: 'Stand tall with ribs stacked over pelvis. Hold a light kettlebell upside down by the horns at chest level (or light dumbbell horizontally).',
+      eccentric: 'Circle the bell smoothly around the side and back of your head, grazing the nape of the neck.',
+      concentric: 'Bring the bell around the opposite ear back to starting chest position, then immediately reverse direction.',
+      breathing: 'Breathe steadily and rhythmically throughout the circular path.',
+      commonMistakes: [
+        'Moving torso and swaying hips instead of isolating the arms',
+        'Craning head aggressively forward to dodge the weight',
+        'Using excessive weight that strains elbows'
+      ],
+      proTip: 'Keep your chin neutral and move the bell around your head—never move your head around the bell.'
+    }
+  },
+  {
+    id: 'ex-kettlebell-goblet-squat',
+    name: 'Kettlebell Goblet Squat (Prying)',
+    scientificName: 'Anterior kettlebell squat with deep-squat adductor prying and upright posture',
+    subtitle: 'Anterior-loaded squat with bottom pause to open hip capsules',
+    pattern: MOVEMENT_PATTERNS.SQUAT,
+    equipment: 'Kettlebell',
+    mechanics: 'Compound',
+    level: 'Beginner',
+    muscleKey: 'quads',
+    defaultSets: 3,
+    defaultReps: '8-10',
+    defaultRestSeconds: 75,
+    rpe: '7 - 8',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Quadriceps', 'Gluteus Maximus'],
+      secondary: ['Adductors', 'Thoracic Spine Erectors'],
+      stabilizers: ['Anterior Core Cylinder', 'Biceps & Forearms']
+    },
+    execution: {
+      setup: 'Grip kettlebell by the horns tight against your sternum. Feet slightly wider than shoulder-width with toes angled out 20–30°.',
+      eccentric: 'Descend smoothly between your heels over 3 seconds, keeping elbows tucked inside your knees at depth.',
+      concentric: 'In the bottom position, gently use elbows to press knees outward (prying open hips) for 1–2 seconds, then drive through midfoot to stand tall.',
+      breathing: 'Inhale deep into belly descending; exhale driving through floor.',
+      commonMistakes: [
+        'Allowing kettlebell to drift away from chest, loading lower back',
+        'Collapsing arches of feet inward',
+        'Bouncing out of bottom pause'
+      ],
+      proTip: 'The 2-second bottom pause transforms this from a pure quad exercise into an incredible hip-mobility developer.'
+    }
+  },
+  {
+    id: 'ex-farmers-carry',
+    name: "Farmer's & Suitcase Loaded Carry",
+    scientificName: 'Locomotive dynamic core anti-lateral flexion and axial postural endurance',
+    subtitle: 'Full-body loaded walking carry for posture, grip, and core stability',
+    pattern: MOVEMENT_PATTERNS.CORE_ANTI_LATERAL,
+    equipment: 'Kettlebell',
+    mechanics: 'Compound',
+    level: 'Beginner',
+    muscleKey: 'forearm',
+    defaultSets: 3,
+    defaultReps: '30-45 sec',
+    defaultRestSeconds: 60,
+    rpe: '7 - 8',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Forearm Flexors & Grip', 'Trapezius (Upper & Middle)'],
+      secondary: ['Quadratus Lumborum', 'Obliques'],
+      stabilizers: ['Gluteus Medius', 'Full Core Cylinder']
+    },
+    execution: {
+      setup: 'Pick up a pair of kettlebells or dumbbells (Farmer’s Carry) or one single bell (Suitcase Carry). Stand tall with shoulders pulled down and back.',
+      eccentric: 'Walk in a straight line with slow, heel-to-toe deliberate strides, preventing weights from swinging.',
+      concentric: 'Resist leaning forward or sideways. Maintain level pelvis and horizontal shoulders for full target duration.',
+      breathing: 'Take steady, rhythmic breaths into belly while maintaining 360-degree core stiffness.',
+      commonMistakes: [
+        'Slumping shoulders forward into thoracic kyphosis',
+        'Tilting torso sideways when carrying single weight',
+        'Rushing steps and losing balance'
+      ],
+      proTip: 'Imagine walking with a glass of water balanced on each shoulder—smooth, stable, unwavering strides.'
+    }
+  },
+  {
+    id: 'ex-mcgill-curl-up',
+    name: 'McGill Modified Curl-Up',
+    scientificName: 'Supine thoracic elevation with neutral lumbar lordosis maintained via hand placement',
+    subtitle: 'Spine-sparing rectus abdominis activation with zero disc compression',
+    pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+    equipment: 'Bodyweight (Mat)',
+    mechanics: 'Isolation',
+    level: 'Beginner',
+    muscleKey: 'abdomen',
+    defaultSets: 3,
+    defaultReps: '6-8 holds (8s)',
+    defaultRestSeconds: 45,
+    rpe: '6 - 7',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Rectus Abdominis', 'Transverse Abdominis'],
+      secondary: ['Internal & External Obliques'],
+      stabilizers: ['Deep Neck Flexors (Longus Colli)']
+    },
+    execution: {
+      setup: 'Lie on your back on a mat. Place both hands palms-down underneath your lower back to maintain natural spinal arch. Bend one knee with foot flat; extend other leg straight.',
+      eccentric: 'Lower head and upper shoulders back to mat smoothly without losing hand pressure.',
+      concentric: 'Lift head and upper shoulders just 2–3 cm off floor as one rigid unit without tucking chin to chest or flattening lower back. Hold for 7–8 seconds.',
+      breathing: 'Breathe shallowly over a braced abdominal wall during the hold.',
+      commonMistakes: [
+        'Flattening lower back into floor and crushing hands',
+        'Yanking neck with chin poking out',
+        'Holding breath completely (Valsalva) instead of controlled breathing'
+      ],
+      proTip: 'Pick a spot on the ceiling directly above you and lift straight up toward it to preserve neck neutrality.'
+    }
+  },
+  {
+    id: 'ex-glute-bridge-reach',
+    name: 'Glute Bridge with Overhead Reach',
+    scientificName: 'Supine bilateral hip extension combined with diagonal thoracic reach',
+    subtitle: 'Posterior chain drive paired with thoracic opening and rotational stretch',
+    pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+    equipment: 'Bodyweight (Mat)',
+    mechanics: 'Compound',
+    level: 'Beginner',
+    muscleKey: 'glutes',
+    defaultSets: 3,
+    defaultReps: '8-10/side',
+    defaultRestSeconds: 45,
+    rpe: '6 - 7',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Gluteus Maximus', 'Thoracic Spine'],
+      secondary: ['Hamstrings', 'Latissimus Dorsi'],
+      stabilizers: ['Contralateral Glute Medius', 'Quadratus Lumborum']
+    },
+    execution: {
+      setup: 'Lie on back, knees bent 90°, feet flat hip-width apart.',
+      eccentric: 'Lower hips back toward floor with control over 2 seconds.',
+      concentric: 'Drive through heels to bridge hips into full extension. At top, reach right arm diagonally across chest overhead toward floor on left side, gently rotating through ribcage. Return to center and repeat on opposite side.',
+      breathing: 'Inhale lowering; exhale driving hips up and reaching across.',
+      commonMistakes: [
+        'Overextending lower back rather than squeezing glutes',
+        'Lifting heels off mat',
+        'Twisting from hips instead of rotating through upper torso'
+      ],
+      proTip: 'Keep your knees tracking straight forward while your upper torso rotates—this dissociates hip stability from thoracic mobility.'
+    }
+  },
+  {
+    id: 'ex-decompression-brisk-walk',
+    name: 'Postural Decompression Brisk Walk',
+    scientificName: 'Low-impact reciprocal rhythmic locomotion with synchronized diaphragmatic breath',
+    subtitle: 'Nervous system downshift, spinal decompression, and synovial fluid circulation',
+    pattern: MOVEMENT_PATTERNS.CARDIO_PLYO,
+    equipment: 'Bodyweight',
+    mechanics: 'Mobility',
+    level: 'Beginner',
+    muscleKey: 'calves',
+    defaultSets: 1,
+    defaultReps: '15-20 min',
+    defaultRestSeconds: 0,
+    rpe: '4 - 5',
+    lastRecord: '',
+    illustration: '',
+    mediaType: 'image',
+    targetMuscles: {
+      primary: ['Gastrocnemius & Soleus', 'Tibialis Anterior'],
+      secondary: ['Gluteus Medius', 'Hamstrings'],
+      stabilizers: ['Postural Spinal Erectors', 'Diaphragm']
+    },
+    execution: {
+      setup: 'Stand tall with relaxed shoulders, eyes on horizon. Step forward with upright, athletic posture.',
+      eccentric: 'Absorb heel strike smoothly, rolling energy forward through arch to big toe.',
+      concentric: 'Swing arms reciprocally from shoulders (not elbows), creating gentle natural counter-rotation through ribcage.',
+      breathing: 'Breathe strictly through the nose in a 3-step inhale, 3-step exhale rhythm.',
+      commonMistakes: [
+        'Looking down at phone while walking with forward head posture',
+        'Walking with stiff, motionless arms',
+        'Overstriding with heavy heel impact'
+      ],
+      proTip: 'Walking is the ultimate biological reset: it flushes metabolites, restores reciprocal arm-leg coordination, and decompresses intervertebral discs.'
+    }
   }
 ];
 
