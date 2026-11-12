@@ -1,63 +1,119 @@
-/* GymMane-Inspired Design System & CSS Tokens */
+/* GymMane Essential Design System (Ember + Clay + Sage Triad) */
 :root {
-  /* GymMane Authentic Color Palette */
+  /* Obsidian Warm Matte Dark Palette */
   --page: #0A0908;
-  --raised: #141414;
-  --raised2: #1C1C1C;
-  --raised3: #242424;
-  
-  --border: #262626;
-  --border-hi: #3A3A3A;
+  --bg: #0A0A0A;
+  --raised: #1C1C1C;
+  --raised2: #2B2B2B;
+  --raised3: #343434;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hi: rgba(255, 255, 255, 0.16);
   --border-active: #D9A184;
 
   --text: #FFFFFF;
   --dim: #9A9A9A;
-  --faint: #626262;
+  --faint: #666666;
+  --dot-grid: rgba(255, 255, 255, 0.045);
 
+  /* Ember: Primary CTA */
+  --ember: #FFFFFF;
+  --ember-hover: #E6E6E6;
+  --on-ember: #0A0A0A;
+
+  /* Compatibility aliases */
+  --accent: var(--ember);
+  --accent-hover: var(--ember-hover);
+  --accent-fg: var(--on-ember);
+  --accent-soft: rgba(255, 255, 255, 0.10);
+  --accent-glow: rgba(255, 255, 255, 0.18);
+
+  /* Clay: Brand Identity & Muscle Highlight */
   --clay: #D9A184;
-  --clay-hover: #E3B39A;
-  --clay-soft: rgba(217, 161, 132, 0.12);
-  --clay-glow: rgba(217, 161, 132, 0.28);
-
+  --clay-hover: #E4B297;
+  --clay-soft: rgba(217, 161, 132, 0.16);
+  --clay-glow: rgba(217, 161, 132, 0.26);
   --brass: #B98F72;
+
+  /* Sage: Active Session, Progress & Completed Sets */
   --sage: #8FA377;
-  --danger: #EF4444;
+  --sage-soft: rgba(143, 163, 119, 0.18);
+  --sage-glow: rgba(143, 163, 119, 0.28);
+  --signal: #8FA377;
 
-  --display: 'Oswald', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --mono: 'JetBrains Mono', monospace;
+  /* Semantic Status */
+  --info: #7FA8C9;
+  --warn: #E0B15A;
+  --danger: #E5674C;
 
-  --maxw: 1200px;
-  --ease: cubic-bezier(.22,.61,.36,1);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  /* Folder-Stack Pastel Routine Tabs */
+  --tab-1: #C8DDE8;
+  --tab-2: #D8D2EC;
+  --tab-3: #E6D2C5;
+  --tab-4: #CEE0D0;
+  --tab-5: #EAE0C8;
+  --tab-6: #E7CED4;
+
+  --display: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --body: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --maxw: 1400px;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
   --radius-full: 999px;
 }
 
-/* Light Theme Tokens */
+/* Warm Linen Light Palette */
 [data-theme="light"] {
-  --page: #F6F5F2;
+  --page: #F7F4F0;
+  --bg: #FFFEFD;
   --raised: #FFFFFF;
-  --raised2: #ECEAE4;
-  --raised3: #E0DDD5;
-  
-  --border: #E2DFD8;
-  --border-hi: #CEC9BF;
-  --border-active: #C87A54;
+  --raised2: #ECE8E3;
+  --raised3: #E0DBD5;
 
-  --text: #161514;
-  --dim: #595652;
-  --faint: #8A867F;
+  --border: #E0DBD5;
+  --border-hi: #CFC8BF;
+  --border-active: #9E4E27;
 
-  --clay: #C87A54;
-  --clay-hover: #B56742;
-  --clay-soft: rgba(200, 122, 84, 0.12);
-  --clay-glow: rgba(200, 122, 84, 0.22);
+  --text: #1A1713;
+  --dim: #5F574F;
+  --faint: #8A8179;
+  --dot-grid: rgba(26, 23, 20, 0.055);
 
-  --brass: #9E7457;
-  --sage: #6B8452;
-  --danger: #DC2626;
+  --ember: #1A1713;
+  --ember-hover: #000000;
+  --on-ember: #FFFFFF;
+
+  --accent: var(--ember);
+  --accent-hover: var(--ember-hover);
+  --accent-fg: var(--on-ember);
+  --accent-soft: rgba(26, 23, 19, 0.08);
+  --accent-glow: rgba(26, 23, 19, 0.16);
+
+  --clay: #9E4E27;
+  --clay-hover: #833F1E;
+  --clay-soft: rgba(158, 78, 39, 0.12);
+  --clay-glow: rgba(158, 78, 39, 0.22);
+  --brass: #8A6B41;
+
+  --sage: #3D7A52;
+  --sage-soft: rgba(61, 122, 82, 0.14);
+  --sage-glow: rgba(61, 122, 82, 0.24);
+  --signal: #3D7A52;
+
+  --info: #3268A0;
+  --warn: #9A6A12;
+  --danger: #C0392B;
+
+  --tab-1: #C2D8E6;
+  --tab-2: #D4CDE9;
+  --tab-3: #E7CFC1;
+  --tab-4: #C7DEC9;
+  --tab-5: #EAE0C4;
+  --tab-6: #E7CBD1;
 }
 
 *, *::before, *::after {
@@ -73,9 +129,11 @@ html {
 
 body {
   background-color: var(--page);
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 22px 22px;
   color: var(--text);
   font-family: var(--body);
-  line-height: 1.6;
+  line-height: 1.55;
   overflow-x: hidden;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -83,10 +141,10 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--display);
-  font-weight: 700;
-  line-height: 1.05;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-weight: 800;
+  line-height: 1.15;
+  text-transform: none;
+  letter-spacing: -0.02em;
 }
 
 button {
@@ -94,7 +152,7 @@ button {
   cursor: pointer;
   border: none;
   background: none;
-  transition: all 0.2s var(--ease);
+  transition: all 0.18s var(--ease);
 }
 
 input, select, textarea {

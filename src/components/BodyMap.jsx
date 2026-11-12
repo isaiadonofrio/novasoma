@@ -1,22 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import bodySvgRaw from '../assets/body.svg?raw';
-import { X, Sparkles, RotateCcw } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
+import { MUSCLE_LABELS } from '../data/muscleLabels';
 
-export const MUSCLE_LABELS = {
-  chest: 'Pettorali',
-  back: 'Dorsali',
-  shoulders: 'Spalle',
-  biceps: 'Bicipiti',
-  triceps: 'Tricipiti',
-  trapezius: 'Trapezi',
-  abdomen: 'Addome',
-  obliques: 'Obliqui',
-  forearm: 'Avambracci',
-  quads: 'Quadricipiti',
-  hamstrings: 'Femorali',
-  glutes: 'Glutei',
-  calves: 'Polpacci'
-};
+const MUSCLE_ENTRIES = Object.entries(MUSCLE_LABELS);
 
 export function BodyMap({ selectedMuscles = [], onToggleMuscle, onClearMuscles }) {
   const containerRef = useRef(null);
@@ -36,11 +23,14 @@ export function BodyMap({ selectedMuscles = [], onToggleMuscle, onClearMuscles }
       g.classList.toggle('on', isSelected);
 
       const title = MUSCLE_LABELS[muscleKey] || muscleKey;
-      g.setAttribute('title', `${title} (Clicca per selezionare)`);
+      g.setAttribute('title', `${title} (Click to select)`);
 
       const handleClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (e.detail > 0 && typeof e.currentTarget?.blur === 'function') {
+          e.currentTarget.blur();
+        }
         onToggleMuscle(muscleKey);
       };
 
@@ -56,56 +46,50 @@ export function BodyMap({ selectedMuscles = [], onToggleMuscle, onClearMuscles }
 
   return (
     <div className="gymmane-bodymap-card">
-      <div className="bodymap-header">
-        <div className="bodymap-header-title">
-          <span className="step-tag">MAPPA CORPOREA INTERATTIVA</span>
-          <h3>Tocca i muscoli che vuoi allenare</h3>
-          <p className="bodymap-desc">
-            Visualizzazione anatomica Fronte e Retro. Tocca direttamente sul corpo per filtrare gli esercizi mirati.
-          </p>
-        </div>
-
-        {selectedMuscles.length > 0 && (
-          <button 
-            type="button" 
-            className="clear-muscles-btn"
-            onClick={onClearMuscles}
-          >
-            <RotateCcw size={14} />
-            <span>Azzera Selezione</span>
-          </button>
-        )}
-      </div>
-
-      {/* SVG Body Map rendered inline */}
-      <div 
+      <div
         ref={containerRef}
         className="bodymap-svg-wrapper a-body"
         dangerouslySetInnerHTML={{ __html: bodySvgRaw }}
       />
 
-      {/* Selected Muscle Chips */}
-      <div className="bodymap-chips-row">
-        {selectedMuscles.length === 0 ? (
-          <span className="chips-placeholder">
-            Nessun muscolo selezionato: tocca la sagoma del corpo o scegli una routine.
-          </span>
-        ) : (
-          <div className="chips-list">
-            <span className="focus-label">Focus Attivo:</span>
-            {selectedMuscles.map((key) => (
+      <div className="bodymap-side-panel">
+        <div className="bodymap-header">
+          <div className="bodymap-header-title">
+            <span className="step-tag">MUSCLE FILTER</span>
+            <h3>Select target areas</h3>
+            <p className="bodymap-desc">
+              Tap directly on the body map or pick one or more muscle groups below.
+            </p>
+          </div>
+
+          {selectedMuscles.length > 0 && (
+            <button
+              type="button"
+              className="clear-muscles-btn"
+              onClick={onClearMuscles}
+            >
+              <RotateCcw size={13} />
+              <span>Clear ({selectedMuscles.length})</span>
+            </button>
+          )}
+        </div>
+
+        <div className="bodymap-quick-pills" role="group" aria-label="Muscle groups">
+          {MUSCLE_ENTRIES.map(([key, label]) => {
+            const isSelected = selectedMuscles.includes(key);
+            return (
               <button
                 key={key}
                 type="button"
-                className="muscle-chip-pill active"
+                className={`bodymap-quick-pill ${isSelected ? 'active' : ''}`}
+                aria-pressed={isSelected}
                 onClick={() => onToggleMuscle(key)}
               >
-                <span>{MUSCLE_LABELS[key] || key}</span>
-                <X size={13} className="chip-x" />
+                {label}
               </button>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

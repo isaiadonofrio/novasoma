@@ -1,87 +1,78 @@
 import React from 'react';
-import { Play, Dumbbell, Award, Flame, Sparkles, Sun, Moon } from 'lucide-react';
+import { Play, Dumbbell, Sun, Moon, BookOpen, Home } from 'lucide-react';
 
-export function Navbar({ 
-  routines, 
+export function Navbar({
   currentView = 'home',
-  activeRoutineId, 
   theme = 'dark',
   onToggleTheme,
   onNavigateHome,
-  onSelectRoutine, 
+  onNavigateDatabase,
   onStartPresentation,
-  totalWorkoutsCompleted = 0
+  hasPlayableRoutine = true
 }) {
   return (
     <header className="gymmane-nav-header">
       <div className="nav-container">
         {/* Brand */}
-        <div 
+        <div
           className="gymmane-brand"
           onClick={onNavigateHome}
           role="button"
           tabIndex={0}
-          title="Torna alla Libreria Schede"
+          title="Back to Home"
           onKeyDown={(e) => e.key === 'Enter' && onNavigateHome && onNavigateHome()}
         >
           <div className="brand-logo-icon">
-            <Dumbbell size={20} color="#0A0908" />
+            <Dumbbell size={17} />
           </div>
-          <div className="brand-titles">
-            <span className="brand-main">CORPO</span>
-            <span className="brand-tag">DIARIO DI ALLENAMENTO</span>
-          </div>
+          <span className="brand-main">Corpo</span>
         </div>
 
-        {/* Routine Pills */}
-        <div className="nav-routine-tabs">
+        {/* Center Segmented Switcher */}
+        <nav className="nav-center-links" aria-label="Main navigation">
           <button
             type="button"
-            className={`nav-tab-btn ${currentView === 'home' ? 'active' : ''}`}
+            className={`nav-link-btn ${currentView === 'home' || currentView === 'overview' ? 'active' : ''}`}
             onClick={onNavigateHome}
           >
-            <span>LIBRERIA</span>
+            <Home size={15} />
+            <span>Home</span>
           </button>
-          {routines.map(r => (
+          {onNavigateDatabase && (
             <button
-              key={r.id}
               type="button"
-              className={`nav-tab-btn ${currentView === 'overview' && r.id === activeRoutineId ? 'active' : ''}`}
-              onClick={() => onSelectRoutine(r.id)}
+              className={`nav-link-btn ${currentView === 'database' ? 'active' : ''}`}
+              onClick={onNavigateDatabase}
             >
-              <span>{r.shortTitle || r.title}</span>
+              <BookOpen size={15} />
+              <span>Library</span>
             </button>
-          ))}
-        </div>
+          )}
+        </nav>
 
-        {/* Right CTA */}
+        {/* Right Controls */}
         <div className="nav-right-actions">
           {onToggleTheme && (
             <button
               type="button"
               className="theme-toggle-btn"
               onClick={onToggleTheme}
-              title={theme === 'dark' ? "Passa a Tema Chiaro" : "Passa a Tema Scuro"}
-              aria-label="Cambia tema chiaro/scuro"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label="Toggle light/dark theme"
             >
               {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
           )}
 
-          {totalWorkoutsCompleted > 0 && (
-            <div className="streak-badge" title="Sessioni completate">
-              <Sparkles size={14} color="#D9A184" />
-              <span>{totalWorkoutsCompleted} {totalWorkoutsCompleted === 1 ? 'allenamento' : 'allenamenti'}</span>
-            </div>
-          )}
-
           <button
             type="button"
             className="gymmane-cta-btn"
-            onClick={() => onStartPresentation(0)}
+            disabled={!hasPlayableRoutine}
+            title={hasPlayableRoutine ? 'Start workout' : 'Add at least one exercise to a workout'}
+            onClick={() => onStartPresentation && onStartPresentation(0)}
           >
-            <Play size={15} fill="currentColor" />
-            <span>ALLENATI ORA</span>
+            <Play size={14} fill="currentColor" />
+            <span>Train</span>
           </button>
         </div>
       </div>

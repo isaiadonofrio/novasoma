@@ -1,262 +1,294 @@
-import React, { useState } from 'react';
-import { 
-  Play, 
-  Search, 
-  Plus, 
-  Clock, 
-  Layers, 
-  Dumbbell, 
-  Eye, 
-  Sparkles, 
-  Filter,
-  Trash2,
-  Activity
+import React, { useMemo, useState } from 'react';
+import {
+  Plus,
+  Clock,
+  Dumbbell,
+  Layers,
+  Database,
+  Sparkles,
+  Activity,
+  Calendar
 } from 'lucide-react';
-import { BodyMap, MUSCLE_LABELS } from './BodyMap';
+import { MiniBodyMap } from './MiniBodyMap';
+import { StatsDashboard } from './StatsDashboard';
+import { YearHeatmapCard } from './YearHeatmapCard';
+import { RoutinesSection } from './RoutinesSection';
 import { WorkoutEditorModal } from './WorkoutEditorModal';
+import { MUSCLE_LABELS } from '../data/muscleLabels';
+import { calculateOverviewDashboardStats } from '../utils/analytics';
+import { formatVolumeCompact } from '../utils/formatting';
 
-export function HomeView({ 
-  routines, 
-  onSelectRoutineToView, 
-  onStartRoutineLive, 
+export function HomeView({
+  routines = [],
+  exerciseDatabase = [],
+  workoutHistory = [],
+  weeklyGoal = 4,
+  onChangeWeeklyGoal,
+  onOpenHistory,
+  onSelectRoutineToView,
+  onStartRoutineLive,
   onCreateRoutine,
-  onDeleteRoutine,
-  totalWorkoutsCompleted = 0 
+  onDuplicateRoutine,
+  onDeleteRoutine
 }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Tutte');
-  const [selectedMuscles, setSelectedMuscles] = useState([]);
-  const [showBodyMap, setShowBodyMap] = useState(false);
-  const [isCreatingWorkout, setIsCreatingWorkout] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
-  // Categories list
-  const categories = ['Tutte', 'Gambe', 'Parte Superiore', 'Full Body', 'Core & Funzionale'];
+  const [now, setNow] = useState(() => new Date());
 
-  // Toggle muscle on body map
-  const handleToggleMuscle = (muscleKey) => {
-    setSelectedMuscles(prev => {
-      if (prev.includes(muscleKey)) {
-        return prev.filter(m => m !== muscleKey);
-      } else {
-        return [...prev, muscleKey];
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        setNow(new Date());
       }
-    });
-  };
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
 
-  // Filter routines
-  const filteredRoutines = routines.filter(r => {
-    // Search query
-    const matchesSearch = 
-      r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.exercises.some(ex => ex.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    // Category filter
-    const matchesCategory = selectedCategory === 'Tutte' || r.category.toLowerCase().includes(selectedCategory.toLowerCase());
-
-    // Muscle filter (if any selected on body map)
-    const matchesMuscles = selectedMuscles.length === 0 || r.exercises.some(ex => {
-      return selectedMuscles.includes(ex.muscleKey) || (ex.secondaryKeys && ex.secondaryKeys.some(k => selectedMuscles.includes(k)));
-    });
-
-    return matchesSearch && matchesCategory && matchesMuscles;
+  const todayDisplay = now.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric'
   });
 
+  const allMuscleCoverage = useMemo(() => {
+    const primary = new Set();
+    const secondary = new Set();
+    routines.forEach((routine) => {
+      (routine.exercises || []).forEach((ex) => {
+        if (ex.muscleKey) primary.add(ex.muscleKey);
+        if (Array.isArray(ex.secondaryKeys)) {
+          ex.secondaryKeys.forEach((k) => secondary.add(k));
+        }
+      });
+    });
+    return {
+      primaryKeys: Array.from(primary),
+      secondaryKeys: Array.from(secondary)
+    };
+  }, [routines]);
+
+  const stats = useMemo(
+    () =>
+      calculateOverviewDashboardStats(
+        routines,
+        exerciseDatabase,
+        workoutHistory,
+        MUSCLE_LABELS
+      ),
+    [routines, exerciseDatabase, workoutHistory]
+  );
+
+  const leadMuscle = stats.muscleBreakdown[0] || null;
+  const visibleBreakdown = stats.muscleBreakdown.slice(0, 5);
+
   return (
-    <div className="gymmane-home-view">
-      {/* Home Hero Banner */}
+    <div className="gymmane-home">
       <section className="home-clean-hero">
         <div className="gymmane-wrap">
           <div className="hero-clean-header-row">
             <div>
-              <div className="hero-status-tag">
-                <span className="dot-clay"></span>
-                <span>SCHEDE DI ALLENAMENTO PERSONALI</span>
-              </div>
-              <h1 className="home-title-loud">
-                LE TUE <span className="clay-highlight">SCHEDE</span>
-              </h1>
-              <p className="home-subtitle">
-                Seleziona un workout per visualizzarlo e modificarlo, oppure avvia la sessione guidata esercizio per esercizio.
+              <span className="home-date-kicker">TODAY · {todayDisplay}</span>
+              <h1 className="home-title-loud">Overview</h1>
+              <p className="home-intro-sub">
+                Track weekly rhythm, full-year consistency, and muscle balance across your training plan.
               </p>
             </div>
 
             <div className="hero-actions-right">
-              <button 
-                type="button" 
+              {onOpenHistory && (
+                <button
+                  type="button"
+                  className="btn-gymmane-secondary"
+                  onClick={onOpenHistory}
+                >
+                  <Calendar size={15} />
+                  <span>History{workoutHistory.length > 0 ? ` (${workoutHistory.length})` : ''}</span>
+                </button>
+              )}
+              <button
+                type="button"
                 className="btn-gymmane-primary"
-                onClick={() => setIsCreatingWorkout(true)}
+                onClick={() => setIsCreating(true)}
               >
                 <Plus size={16} />
-                <span>NUOVA SCHEDA</span>
+                <span>New Workout</span>
               </button>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Filter and Search Bar */}
-      <section className="home-toolbar-strip">
-        <div className="gymmane-wrap">
-          <div className="toolbar-controls-grid">
-            {/* Search */}
-            <div className="search-box-home">
-              <Search size={15} className="search-icon-muted" />
-              <input 
-                type="text"
-                placeholder="Cerca per scheda o esercizio..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input-field"
-              />
-            </div>
+          <div className="home-hero-bento">
+            {/* Upgraded General Summary Telemetry Card */}
+            <section className="home-summary-panel" aria-label="General training summary">
+              <div className="summary-panel-top">
+                <div className="summary-panel-copy">
+                  <div className="featured-kicker-row">
+                    <span className="featured-kicker">TRAINING TELEMETRY</span>
+                    <span className="featured-cat-pill">
+                      {allMuscleCoverage.primaryKeys.length} target areas
+                    </span>
+                    {stats.avgDurationMins > 0 && (
+                      <span className="featured-cat-pill">
+                        ~{stats.avgDurationMins}m avg
+                      </span>
+                    )}
+                  </div>
 
-            {/* Category Pills */}
-            <div className="category-chips-list">
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  type="button"
-                  className={`category-chip ${selectedCategory === cat ? 'active' : ''}`}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+                  <h2 className="featured-routine-title">General Summary</h2>
 
-            {/* Toggle Body Map Filter */}
-            <button
-              type="button"
-              className={`toggle-bodymap-btn ${showBodyMap || selectedMuscles.length > 0 ? 'active' : ''}`}
-              onClick={() => setShowBodyMap(prev => !prev)}
-              title="Filtra toccando i muscoli sul corpo"
-            >
-              <Activity size={14} />
-              <span>MAPPA CORPOREA {selectedMuscles.length > 0 ? `(${selectedMuscles.length})` : ''}</span>
-            </button>
+                  {stats.lastSessionSummary ? (
+                    <div className="last-session-note">
+                      <Activity size={13} />
+                      <span>
+                        Last trained <b>{stats.lastSessionSummary.whenLabel}</b> ·{' '}
+                        {stats.lastSessionSummary.title} ({stats.lastSessionSummary.durationLabel}
+                        {stats.lastSessionSummary.volumeKg > 0
+                          ? ` · ${formatVolumeCompact(stats.lastSessionSummary.volumeKg)}`
+                          : ''}
+                        )
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="summary-panel-desc">
+                      Active blueprint spans <b>{stats.totalPlannedExercises} movements</b> and{' '}
+                      <b>{stats.totalPlannedSets} programmed sets</b> across {stats.totalRoutines}{' '}
+                      routine{stats.totalRoutines === 1 ? '' : 's'}.
+                    </p>
+                  )}
+                </div>
+
+                <div className="featured-bodymap-stage" title="Muscle coverage across all active routines">
+                  <MiniBodyMap
+                    primaryKeys={allMuscleCoverage.primaryKeys}
+                    secondaryKeys={allMuscleCoverage.secondaryKeys}
+                    className="hero-mini-body"
+                  />
+                  <span className="bodymap-stage-caption">Plan Coverage</span>
+                </div>
+              </div>
+
+              {/* Muscle Focus Distribution Bar */}
+              {visibleBreakdown.length > 0 && (
+                <div className="summary-focus-strip">
+                  <div className="focus-strip-header">
+                    <span className="focus-strip-kicker">MUSCLE FOCUS BREAKDOWN</span>
+                    {leadMuscle && (
+                      <span className="focus-lead-pill">
+                        <Sparkles size={11} />
+                        Lead: {leadMuscle.label} ({leadMuscle.percent}%)
+                      </span>
+                    )}
+                  </div>
+
+                  <div
+                    className="focus-dist-bar"
+                    role="img"
+                    aria-label="Muscle group distribution across workout plans"
+                  >
+                    {visibleBreakdown.map((item) => (
+                      <div
+                        key={item.key}
+                        className={`focus-dist-seg tone-${item.toneIndex}`}
+                        style={{ width: `${Math.max(6, item.percent)}%` }}
+                        title={`${item.label}: ${item.count} exercise${item.count === 1 ? '' : 's'} (${item.percent}%)`}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="focus-legend-row">
+                    {visibleBreakdown.map((item) => (
+                      <span key={item.key} className="focus-legend-chip">
+                        <span className={`focus-legend-dot tone-${item.toneIndex}`} aria-hidden="true" />
+                        <span className="focus-legend-name">{item.label}</span>
+                        <span className="focus-legend-pct">{item.percent}%</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 4-Card Telemetry Grid */}
+              <div className="home-summary-metrics">
+                <div className="summary-metric-pill">
+                  <div className="metric-pill-head">
+                    <Clock size={13} />
+                    <span className="metric-pill-lbl">Training Time</span>
+                  </div>
+                  <span className="metric-pill-val">{stats.totalTrainingTime}</span>
+                  <span className="metric-pill-sub">
+                    {stats.completedSessions > 0
+                      ? `${stats.completedSessions} logged session${stats.completedSessions === 1 ? '' : 's'}`
+                      : 'No sessions logged yet'}
+                  </span>
+                </div>
+
+                <div className="summary-metric-pill">
+                  <div className="metric-pill-head">
+                    <Dumbbell size={13} />
+                    <span className="metric-pill-lbl">Volume Lifted</span>
+                  </div>
+                  <span className="metric-pill-val">{formatVolumeCompact(stats.totalVolumeKg)}</span>
+                  <span className="metric-pill-sub">
+                    {stats.totalCompletedSets > 0
+                      ? `${stats.totalCompletedSets} completed sets`
+                      : `${stats.totalPlannedSets} sets in blueprint`}
+                  </span>
+                </div>
+
+                <div className="summary-metric-pill">
+                  <div className="metric-pill-head">
+                    <Layers size={13} />
+                    <span className="metric-pill-lbl">Active Plan</span>
+                  </div>
+                  <span className="metric-pill-val">{stats.totalRoutines}</span>
+                  <span className="metric-pill-sub">
+                    {stats.totalPlannedExercises} ex · {stats.totalPlannedSets} sets
+                  </span>
+                </div>
+
+                <div className="summary-metric-pill">
+                  <div className="metric-pill-head">
+                    <Database size={13} />
+                    <span className="metric-pill-lbl">Exercise Vault</span>
+                  </div>
+                  <span className="metric-pill-val">{stats.libraryCount}</span>
+                  <span className="metric-pill-sub">
+                    {stats.libraryEquipmentCount} gear · {stats.libraryBodyweightCount} bodyweight
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            {/* Right: Week Consistency Card */}
+            <StatsDashboard
+              workoutHistory={workoutHistory}
+              goalTarget={weeklyGoal}
+              onChangeGoalTarget={onChangeWeeklyGoal}
+            />
           </div>
 
-          {/* Expandable Body Map Drawer */}
-          {showBodyMap && (
-            <div className="home-bodymap-drawer">
-              <BodyMap 
-                selectedMuscles={selectedMuscles}
-                onToggleMuscle={handleToggleMuscle}
-                onClearMuscles={() => setSelectedMuscles([])}
-              />
-            </div>
-          )}
+          {/* Full-Width 53-Week Annual Activity Heatmap */}
+          <YearHeatmapCard workoutHistory={workoutHistory} />
         </div>
       </section>
 
-      {/* Routines Grid */}
-      <section className="home-routines-grid-section">
-        <div className="gymmane-wrap">
-          {filteredRoutines.length === 0 ? (
-            <div className="empty-routines-box">
-              <Dumbbell size={40} color="#626262" />
-              <h3>Nessuna scheda trovata</h3>
-              <p>Nessun allenamento corrisponde ai filtri selezionati.</p>
-              <button 
-                type="button" 
-                className="btn-gymmane-secondary"
-                onClick={() => { setSelectedCategory('Tutte'); setSearchQuery(''); setSelectedMuscles([]); }}
-              >
-                Azzera tutti i filtri
-              </button>
-            </div>
-          ) : (
-            <div className="routines-cards-grid">
-              {filteredRoutines.map((routine) => {
-                // Get unique muscle labels for this routine safely
-                const muscleNames = Array.from(
-                  new Set(
-                    routine.exercises
-                      .map(ex => {
-                        if (ex.muscleKey && MUSCLE_LABELS[ex.muscleKey]) {
-                          return MUSCLE_LABELS[ex.muscleKey];
-                        }
-                        if (ex.targetMuscles?.primary?.[0]) {
-                          return ex.targetMuscles.primary[0];
-                        }
-                        return ex.muscleKey || null;
-                      })
-                      .filter(Boolean)
-                  )
-                ).slice(0, 3);
+      <RoutinesSection
+        routines={routines}
+        onSelectRoutineToView={onSelectRoutineToView}
+        onStartRoutineLive={onStartRoutineLive}
+        onOpenCreateWorkout={() => setIsCreating(true)}
+        onDuplicateRoutine={onDuplicateRoutine}
+        onDeleteRoutine={onDeleteRoutine}
+      />
 
-                return (
-                  <article key={routine.id} className="routine-clean-card">
-                    <div className="card-top-category-row">
-                      <span className="routine-category-tag">{routine.category}</span>
-                      <div className="card-sub-info">
-                        <Clock size={13} color="#9A9A9A" />
-                        <span>~{routine.durationMinutes} min</span>
-                      </div>
-                    </div>
-
-                    <h2 className="routine-clean-title">{routine.title}</h2>
-                    <p className="routine-clean-desc">{routine.description}</p>
-
-                    {/* Muscle Pills */}
-                    <div className="routine-muscles-row">
-                      {muscleNames.map((m, i) => (
-                        <span key={i} className="routine-muscle-chip">{m}</span>
-                      ))}
-                      {routine.exercises.length > 3 && (
-                        <span className="routine-muscle-chip more">+{routine.exercises.length - 3} altri</span>
-                      )}
-                    </div>
-
-                    {/* Quick Specs */}
-                    <div className="routine-footer-meta">
-                      <div className="spec-unit">
-                        <Layers size={14} color="#D9A184" />
-                        <span><b>{routine.exercises.length}</b> esercizi</span>
-                      </div>
-                      <div className="spec-unit">
-                        <span className="diff-dot"></span>
-                        <span>{routine.difficulty || 'Intermedio'}</span>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="routine-card-actions-bar">
-                      <button 
-                        type="button" 
-                        className="btn-card-secondary"
-                        onClick={() => onSelectRoutineToView(routine.id)}
-                      >
-                        <Eye size={15} />
-                        <span>VEDI & MODIFICA</span>
-                      </button>
-
-                      <button 
-                        type="button" 
-                        className="btn-card-primary"
-                        onClick={() => onStartRoutineLive(routine.id)}
-                      >
-                        <Play size={15} fill="currentColor" />
-                        <span>ALLENATI</span>
-                      </button>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Workout Creation Modal */}
-      {isCreatingWorkout && (
-        <WorkoutEditorModal 
-          onSave={(newWorkout) => {
-            onCreateRoutine(newWorkout);
-            setIsCreatingWorkout(false);
+      {isCreating && (
+        <WorkoutEditorModal
+          workout={null}
+          onSave={(newRoutine) => {
+            onCreateRoutine(newRoutine);
+            setIsCreating(false);
           }}
-          onClose={() => setIsCreatingWorkout(false)}
+          onClose={() => setIsCreating(false)}
         />
       )}
     </div>

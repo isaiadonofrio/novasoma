@@ -10,27 +10,43 @@ import {
   Clock, 
   Layers, 
   Dumbbell, 
-  Flame,
-  CheckCircle2,
-  Video
+  Video,
+  Link2,
+  Unlink2,
+  Flame
 } from 'lucide-react';
-import { MediaViewer } from './MediaViewer';
-import { MUSCLE_LABELS } from './BodyMap';
+import { MUSCLE_LABELS } from '../data/muscleLabels';
+import {
+  getSupersetInfoMap,
+  isRestTimerEnabledForExercise,
+  insertExerciseByPhase,
+  normalizeSupersetGroups,
+  toggleSupersetLinkWithNext,
+  unlinkExerciseFromSuperset
+} from '../utils/workoutSets';
+import { MiniBodyMap } from './MiniBodyMap';
 import { ExerciseEditorModal } from './ExerciseEditorModal';
+import { ExercisePickerModal } from './ExercisePickerModal';
 import { WorkoutEditorModal } from './WorkoutEditorModal';
+import { ConfirmModal } from './ConfirmModal';
 
 export function WorkoutOverviewView({ 
   workout, 
+  exerciseDatabase = [],
   onBack, 
   onStartLive, 
   onUpdateWorkout, 
-  onDeleteWorkout 
+  onDeleteWorkout,
+  onSaveExerciseToDatabase
 }) {
-  const [editingExercise, setEditingExercise] = useState(null); // null | exercise object
-  const [isAddingExercise, setIsAddingExercise] = useState(false);
+  const [editingExercise, setEditingExercise] = useState(null);
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [isCreatingCustomExercise, setIsCreatingCustomExercise] = useState(false);
   const [isEditingWorkoutMeta, setIsEditingWorkoutMeta] = useState(false);
+  const [confirmState, setConfirmState] = useState(null);
 
-  // Handle reorder
+  const supersetMap = getSupersetInfoMap(workout.exercises || []);
+
   const moveExercise = (index, delta) => {
     const newIdx = index + delta;
     if (newIdx < 0 || newIdx >= workout.exercises.length) return;
@@ -39,36 +55,112 @@ export function WorkoutOverviewView({
     newExs.splice(newIdx, 0, moved);
     onUpdateWorkout({
       ...workout,
-      exercises: newExs
+      exercises: normalizeSupersetGroups(newExs)
     });
   };
 
-  // Handle delete exercise
-  const removeExercise = (index) => {
-    if (!window.confirm('Rimuovere questo esercizio dalla scheda?')) return;
-    const newExs = workout.exercises.filter((_, i) => i !== index);
+  const handleToggleSupersetWithNext = (index) => {
     onUpdateWorkout({
       ...workout,
-      exercises: newExs
+      exercises: toggleSupersetLinkWithNext(workout.exercises, index)
     });
   };
 
-  // Handle save edited or new exercise
-  const handleSaveExercise = (exerciseData) => {
+  const handleUnlinkSuperset = (index) => {
+    onUpdateWorkout({
+      ...workout,
+      exercises: unlinkExerciseFromSuperset(workout.exercises, index)
+    });
+  };
+
+  const handleUpdateExerciseDropSets = (index, nextCount) => {
+    const clamped = Math.max(0, Math.min(5, Number(nextCount) || 0));
+    onUpdateWorkout({
+      ...workout,
+      exercises: workout.exercises.map((ex, i) =>
+        i === index ? { ...ex, defaultDropSets: clamped } : ex
+      )
+    });
+  };
+
+  const removeExercise = (index) => {
+    const target = workout.exercises[index];
+    setConfirmState({
+      title: 'Remove Exercise?',
+      message: `Remove "${target?.name || 'this exercise'}" from ${workout.title}? It will remain in your Exercise Library.`,
+      confirmLabel: 'Remove',
+      onConfirm: () => {
+        const newExs = normalizeSupersetGroups(workout.exercises.filter((_, i) => i !== index));
+        onUpdateWorkout({
+          ...workout,
+          exercises: newExs
+        });
+        setConfirmState(null);
+      }
+    });
+  };
+
+  const buildUniqueWorkoutExercise = (exerciseData) => {
+    const alreadyExists = workout.exercises.some(ex => ex.id === exerciseData.id);
+    return {
+      ...exerciseData,
+      sourceId: exerciseData.sourceId || exerciseData.id,
+      id: alreadyExists ? `${exerciseData.id}-${Date.now()}` : exerciseData.id,
+      phase: exerciseData.isWarmup ? 'warmup' : 'main',
+      isWarmup: Boolean(exerciseData.isWarmup)
+    };
+  };
+
+  const handlePickFromDatabase = (selectedExercise) => {
+    const instance = buildUniqueWorkoutExercise(selectedExercise);
+    onUpdateWorkout({
+      ...workout,
+      exercises: insertExerciseByPhase(workout.exercises, instance)
+    });
+    setIsPickerOpen(false);
+  };
+
+  const handleSaveExercise = (exerciseData, options = {}) => {
     if (editingExercise) {
-      // Update existing
-      const newExs = workout.exercises.map(ex => ex.id === exerciseData.id ? exerciseData : ex);
-      onUpdateWorkout({ ...workout, exercises: newExs });
+      const newExs = workout.exercises.map(ex => ex.id === editingExercise.id ? {
+        ...exerciseData,
+        supersetGroup: editingExercise.supersetGroup,
+        phase: exerciseData.isWarmup ? 'warmup' : 'main'
+      } : ex);
+      onUpdateWorkout({ ...workout, exercises: normalizeSupersetGroups(newExs) });
       setEditingExercise(null);
     } else {
-      // Add new
+      if (options.saveToDatabase && onSaveExerciseToDatabase) {
+        onSaveExerciseToDatabase(exerciseData);
+      }
+      const instance = buildUniqueWorkoutExercise(exerciseData);
       onUpdateWorkout({
         ...workout,
-        exercises: [...workout.exercises, exerciseData]
+        exercises: insertExerciseByPhase(workout.exercises, instance)
       });
-      setIsAddingExercise(false);
+      setIsCreatingCustomExercise(false);
     }
   };
+
+  const handleDeleteCurrentWorkout = () => {
+    if (!onDeleteWorkout) return;
+    setConfirmState({
+      title: 'Delete Workout?',
+      message: `Permanently delete "${workout.title}"? Your Exercise Library and workout history remain intact.`,
+      confirmLabel: 'Delete Workout',
+      onConfirm: () => {
+        setConfirmState(null);
+        onDeleteWorkout(workout.id);
+      }
+    });
+  };
+
+  const routinePrimaryMuscles = Array.from(
+    new Set((workout.exercises || []).map((ex) => ex.muscleKey).filter(Boolean))
+  );
+  const routineSecondaryMuscles = Array.from(
+    new Set((workout.exercises || []).flatMap((ex) => ex.secondaryKeys || []).filter(Boolean))
+  );
 
   return (
     <div className="gymmane-overview-view">
@@ -77,53 +169,78 @@ export function WorkoutOverviewView({
         <div className="overview-nav-bar">
           <button type="button" className="overview-back-btn" onClick={onBack}>
             <ArrowLeft size={16} />
-            <span>TUTTE LE SCHEDE</span>
+            <span>Back to Home</span>
           </button>
         </div>
 
-        {/* Workout Big Header */}
+        {/* Workout Hero Summary */}
         <div className="overview-hero-card">
-          <div className="hero-meta-strip">
-            <span className="overview-category-badge">{workout.category}</span>
-            <span className="overview-diff-badge">{workout.difficulty || 'Tutti i livelli'}</span>
-          </div>
+          <div className="overview-hero-main">
+            <div className="overview-hero-copy">
+              <div className="hero-meta-strip">
+                <span className="overview-category-badge">{workout.category}</span>
+                <span className="overview-diff-badge">{workout.difficulty || 'All Levels'}</span>
+              </div>
 
-          <div className="overview-title-actions-row">
-            <div>
               <h1 className="overview-title-loud">{workout.title}</h1>
               {workout.description && (
                 <p className="overview-description-text">{workout.description}</p>
               )}
             </div>
 
-            <div className="overview-main-cta-group">
-              <button 
-                type="button" 
-                className="btn-gymmane-primary big-cta"
-                onClick={() => onStartLive(0)}
-              >
-                <Play size={17} fill="currentColor" />
-                <span>ALLENATI ORA</span>
-              </button>
-            </div>
+            {workout.exercises.length > 0 && (
+              <div className="overview-hero-bodymap">
+                <MiniBodyMap
+                  primaryKeys={routinePrimaryMuscles}
+                  secondaryKeys={routineSecondaryMuscles}
+                  className="overview-mini-body"
+                />
+              </div>
+            )}
           </div>
 
           <div className="overview-quick-stats-row">
-            <div className="quick-stat-pill">
-              <Clock size={14} color="#D9A184" />
-              <span>~{workout.durationMinutes} min</span>
+            <div className="overview-stats-pills">
+              <div className="quick-stat-pill">
+                <Clock size={14} color="var(--clay)" />
+                <span>~{workout.durationMinutes} min</span>
+              </div>
+              <div className="quick-stat-pill">
+                <Layers size={14} color="var(--clay)" />
+                <span>{workout.exercises.length} {workout.exercises.length === 1 ? 'exercise' : 'exercises'}</span>
+              </div>
+
+              <div className="quick-meta-actions">
+                <button
+                  type="button"
+                  className="quick-edit-workout-meta-btn"
+                  onClick={() => setIsEditingWorkoutMeta(true)}
+                >
+                  <Edit3 size={13} />
+                  <span>Edit details</span>
+                </button>
+                {onDeleteWorkout && (
+                  <button
+                    type="button"
+                    className="quick-delete-workout-btn"
+                    onClick={handleDeleteCurrentWorkout}
+                  >
+                    <Trash2 size={13} />
+                    <span>Delete</span>
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="quick-stat-pill">
-              <Layers size={14} color="#D9A184" />
-              <span>{workout.exercises.length} esercizi</span>
-            </div>
-            <button 
-              type="button" 
-              className="quick-edit-workout-meta-btn"
-              onClick={() => setIsEditingWorkoutMeta(true)}
+
+            <button
+              type="button"
+              className="btn-gymmane-primary big-cta"
+              disabled={workout.exercises.length === 0}
+              title={workout.exercises.length === 0 ? 'Add at least one exercise to start' : 'Start guided session'}
+              onClick={() => onStartLive(0)}
             >
-              <Edit3 size={13} />
-              <span>Modifica dati scheda</span>
+              <Play size={15} fill="currentColor" />
+              <span>Start Workout</span>
             </button>
           </div>
         </div>
@@ -131,146 +248,307 @@ export function WorkoutOverviewView({
         {/* Exercises Section Header */}
         <div className="overview-timeline-heading-row">
           <div>
-            <h2 className="timeline-title-oswald">ESERCIZI DELLA SCHEDA ({workout.exercises.length})</h2>
+            <h2 className="timeline-title">Workout Exercises ({workout.exercises.length})</h2>
             <p className="timeline-sub">
-              Rivedi le serie, modifica la biomeccanica o inserisci video tutorial ed immagini personalizzate.
+              Plan sets, drop sets, timers, or pair consecutive exercises as supersets before starting.
             </p>
           </div>
 
           <button 
             type="button" 
-            className="btn-gymmane-secondary"
-            onClick={() => setIsAddingExercise(true)}
+            className="btn-gymmane-primary"
+            onClick={() => setIsPickerOpen(true)}
           >
-            <Plus size={15} />
-            <span>AGGIUNGI ESERCIZIO</span>
+            <Plus size={16} />
+            <span>Add Exercise</span>
           </button>
         </div>
 
         {/* Exercises List */}
         {workout.exercises.length === 0 ? (
           <div className="empty-overview-exercises">
-            <Dumbbell size={36} color="#626262" />
-            <p>Questa scheda non ha ancora esercizi. Aggiungine uno per iniziare!</p>
+            <Dumbbell size={36} color="var(--faint)" />
+            <p>This workout has no exercises yet. Add one from your library or create a new one!</p>
             <button 
               type="button" 
               className="btn-gymmane-primary"
-              onClick={() => setIsAddingExercise(true)}
+              onClick={() => setIsPickerOpen(true)}
             >
               <Plus size={16} />
-              <span>Aggiungi primo esercizio</span>
+              <span>Add First Exercise</span>
             </button>
           </div>
         ) : (
           <div className="overview-exercises-timeline">
             {workout.exercises.map((exercise, idx) => {
               const primaryMuscle = MUSCLE_LABELS[exercise.muscleKey] || exercise.muscleKey;
+              const isFirstWarmup = idx === 0 && exercise.isWarmup;
+              const isFirstMain = !exercise.isWarmup && (idx === 0 || workout.exercises[idx - 1]?.isWarmup);
+              const ssInfo = supersetMap.get(idx);
+              const nextEx = workout.exercises[idx + 1];
+              const canLinkWithNext = Boolean(nextEx) && Boolean(nextEx.isWarmup) === Boolean(exercise.isWarmup);
+              const isLinkedWithNext = Boolean(
+                canLinkWithNext &&
+                exercise.supersetGroup &&
+                exercise.supersetGroup === nextEx?.supersetGroup
+              );
+              const timerOn = isRestTimerEnabledForExercise(exercise);
+              const dropCount = parseInt(exercise.defaultDropSets, 10) || 0;
+
+              const renderRepsBadge = (reps) => {
+                if (!reps) return null;
+                const str = String(reps).trim();
+                if (/reps?|\d\s*s\b|sec|secondi|\bmin\b/i.test(str)) {
+                  return <span className="row-spec-badge">{str}</span>;
+                }
+                if (/per (gamba|lato|leg|side)|\/(lato|gamba|side|leg)/i.test(str)) {
+                  const num = str.replace(/per (gamba|lato|leg|side)|\/(lato|gamba|side|leg)/gi, '').trim();
+                  return (
+                    <span className="row-spec-badge">
+                      <b>{num}</b> reps/side
+                    </span>
+                  );
+                }
+                return (
+                  <span className="row-spec-badge">
+                    <b>{str}</b> reps
+                  </span>
+                );
+              };
 
               return (
-                <div key={exercise.id || idx} className="overview-exercise-row-card">
-                  {/* Order Number */}
-                  <div className="row-order-index">
-                    <span>{String(idx + 1).padStart(2, '0')}</span>
-                  </div>
+                <React.Fragment key={exercise.id || idx}>
+                  {isFirstWarmup && (
+                    <div className="workout-phase-divider warmup">
+                      <span className="phase-pill">Warm-Up & Activation</span>
+                    </div>
+                  )}
 
-                  {/* Media Frame (Animation / Video) */}
-                  <div className="row-media-container">
-                    <MediaViewer 
-                      src={exercise.illustration} 
-                      alt={exercise.name} 
-                      className="timeline-media-viewer"
-                    />
-                  </div>
+                  {isFirstMain && (
+                    <div className="workout-phase-divider main">
+                      <span className="phase-pill">Main Workout</span>
+                    </div>
+                  )}
 
-                  {/* Exercise Content & Details */}
-                  <div className="row-exercise-content">
-                    <div className="row-title-line">
-                      <span className="row-muscle-pill">{primaryMuscle}</span>
-                      <span className="row-equipment-text">
-                        <Dumbbell size={12} />
-                        {exercise.equipment}
-                      </span>
+                  <div
+                    className={`overview-exercise-row-card clean-text-card ${exercise.isWarmup ? 'warmup-row' : ''} ${ssInfo ? 'in-superset' : ''} ${ssInfo?.isFirst ? 'superset-start' : ''} ${ssInfo?.isLast ? 'superset-end' : ''}`}
+                  >
+                    <div className="row-order-index">
+                      <span>{ssInfo ? ssInfo.code : String(idx + 1).padStart(2, '0')}</span>
                     </div>
 
-                    <h3 className="row-exercise-name">{exercise.name}</h3>
-                    <p className="row-exercise-sub">{exercise.subtitle}</p>
-
-                    <div className="row-specs-strip">
-                      <span className="row-spec-badge"><b>{exercise.defaultSets}</b> serie</span>
-                      <span className="row-spec-badge"><b>{exercise.defaultReps}</b> reps</span>
-                      <span className="row-spec-badge"><b>{exercise.defaultRestSeconds}s</b> rest</span>
-                      {exercise.lastRecord && (
-                        <span className="row-spec-record">Record: <b>{exercise.lastRecord}</b></span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Actions / Order Controls */}
-                  <div className="row-actions-group">
-                    <div className="reorder-btns">
-                      <button 
-                        type="button" 
-                        disabled={idx === 0}
-                        onClick={() => moveExercise(idx, -1)}
-                        title="Sposta su"
-                        className="btn-reorder"
+                    {(exercise.illustration || exercise.customVideoUrl) && (
+                      <div 
+                        className="row-media-thumb" 
+                        onClick={() => setEditingExercise(exercise)}
+                        title="View / Edit media"
                       >
-                        <ArrowUp size={14} />
-                      </button>
-                      <button 
-                        type="button" 
-                        disabled={idx === workout.exercises.length - 1}
-                        onClick={() => moveExercise(idx, 1)}
-                        title="Sposta giù"
-                        className="btn-reorder"
-                      >
-                        <ArrowDown size={14} />
-                      </button>
+                        {exercise.illustration ? (
+                          <img 
+                            src={exercise.illustration} 
+                            alt={exercise.name} 
+                            className="row-thumb-img" 
+                            loading="lazy" 
+                          />
+                        ) : (
+                          <div className="row-thumb-placeholder has-video">
+                            <Video size={16} color="var(--clay)" />
+                            <span className="thumb-add-hint">VIDEO</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="row-exercise-content">
+                      <div className="row-title-line">
+                        {ssInfo && (
+                          <span className="row-superset-pill">
+                            <Link2 size={11} />
+                            <span>{ssInfo.label}</span>
+                          </span>
+                        )}
+                        {exercise.isWarmup && (
+                          <span className="row-warmup-pill">Warm-Up</span>
+                        )}
+                        <span className="row-muscle-pill">{primaryMuscle}</span>
+                        <span className="row-equipment-text">
+                          <Dumbbell size={12} />
+                          {exercise.equipment}
+                        </span>
+                      </div>
+
+                      <h3 className="row-exercise-name">{exercise.name}</h3>
+                      <p className="row-exercise-sub">{exercise.subtitle || exercise.scientificName}</p>
+
+                      <div className="row-specs-strip">
+                        <span className="row-spec-badge"><b>{exercise.defaultSets}</b> sets</span>
+                        {renderRepsBadge(exercise.defaultReps)}
+                        {timerOn ? (
+                          <span className="row-spec-badge"><b>{exercise.defaultRestSeconds}s</b> rest</span>
+                        ) : (
+                          <span className="row-spec-badge is-untimed">No timer</span>
+                        )}
+                        {dropCount > 0 ? (
+                          <div className="row-plan-drop-stepper" role="group" aria-label={`Drop sets for ${exercise.name}`}>
+                            <button
+                              type="button"
+                              className="drop-step-btn"
+                              onClick={() => handleUpdateExerciseDropSets(idx, dropCount - 1)}
+                              title="Remove 1 drop set"
+                              aria-label={`Decrease drop sets for ${exercise.name}`}
+                            >
+                              −
+                            </button>
+                            <span className="drop-step-label">
+                              <Flame size={11} />
+                              <b>+{dropCount}</b> drop {dropCount === 1 ? 'set' : 'sets'}
+                            </span>
+                            <button
+                              type="button"
+                              className="drop-step-btn"
+                              disabled={dropCount >= 5}
+                              onClick={() => handleUpdateExerciseDropSets(idx, dropCount + 1)}
+                              title="Add 1 more drop set (max 5)"
+                              aria-label={`Increase drop sets for ${exercise.name}`}
+                            >
+                              +
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            className="row-plan-pill-btn dropset"
+                            onClick={() => handleUpdateExerciseDropSets(idx, 1)}
+                            title="Plan a Drop Set after the working sets"
+                          >
+                            <Flame size={11} />
+                            <span>+ Drop Set</span>
+                          </button>
+                        )}
+                        {canLinkWithNext && !isLinkedWithNext && (
+                          <button
+                            type="button"
+                            className="row-plan-pill-btn superset"
+                            onClick={() => handleToggleSupersetWithNext(idx)}
+                            title={`Pair "${exercise.name}" with next exercise "${nextEx.name}" as a Superset`}
+                          >
+                            <Link2 size={11} />
+                            <span>Pair Superset</span>
+                          </button>
+                        )}
+                        {isLinkedWithNext && (
+                          <button
+                            type="button"
+                            className="row-plan-pill-btn superset active"
+                            onClick={() => handleToggleSupersetWithNext(idx)}
+                            title={`Unpair "${nextEx.name}" from Superset ${ssInfo?.letter || ''}`}
+                          >
+                            <Unlink2 size={11} />
+                            <span>Unpair {ssInfo?.letter || 'Superset'}</span>
+                          </button>
+                        )}
+                        {ssInfo && !isLinkedWithNext && (
+                          <button
+                            type="button"
+                            className="row-plan-pill-btn superset active"
+                            onClick={() => handleUnlinkSuperset(idx)}
+                            title={`Remove "${exercise.name}" from ${ssInfo.label}`}
+                          >
+                            <Unlink2 size={11} />
+                            <span>Leave {ssInfo.label}</span>
+                          </button>
+                        )}
+                        {exercise.lastRecord && (
+                          <span className="row-spec-record">Record: <b>{exercise.lastRecord}</b></span>
+                        )}
+                      </div>
                     </div>
 
-                    <button 
-                      type="button"
-                      className="row-action-icon-btn"
-                      onClick={() => setEditingExercise(exercise)}
-                      title="Modifica esercizio e media"
-                    >
-                      <Edit3 size={15} />
-                    </button>
+                    <div className="row-actions-group">
+                      <div className="reorder-btns-box">
+                        <button 
+                          type="button" 
+                          disabled={idx === 0}
+                          onClick={() => moveExercise(idx, -1)}
+                          title="Move up"
+                          className="btn-reorder-item"
+                          aria-label="Move up"
+                        >
+                          <ArrowUp size={14} />
+                        </button>
+                        <button 
+                          type="button" 
+                          disabled={idx === workout.exercises.length - 1}
+                          onClick={() => moveExercise(idx, 1)}
+                          title="Move down"
+                          className="btn-reorder-item"
+                          aria-label="Move down"
+                        >
+                          <ArrowDown size={14} />
+                        </button>
+                      </div>
 
-                    <button 
-                      type="button"
-                      className="row-action-icon-btn delete-btn"
-                      onClick={() => removeExercise(idx)}
-                      title="Rimuovi esercizio"
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                      <div className="crud-actions-box">
+                        <button 
+                          type="button"
+                          className="row-action-icon-btn edit-btn"
+                          onClick={() => setEditingExercise(exercise)}
+                          title="Edit exercise, weights, timer or drop sets"
+                        >
+                          <Edit3 size={15} />
+                        </button>
 
-                    <button 
-                      type="button"
-                      className="btn-play-from-here"
-                      onClick={() => onStartLive(idx)}
-                      title="Avvia workout da qui"
-                    >
-                      <Play size={13} fill="currentColor" />
-                      <span>AVVIA</span>
-                    </button>
+                        <button 
+                          type="button"
+                          className="row-action-icon-btn delete-btn"
+                          onClick={() => removeExercise(idx)}
+                          title="Remove exercise"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+
+                      <button 
+                        type="button"
+                        className="btn-play-from-here"
+                        onClick={() => onStartLive(idx)}
+                        title="Start workout from this exercise"
+                      >
+                        <Play size={13} fill="currentColor" />
+                        <span>Start</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </React.Fragment>
               );
             })}
           </div>
         )}
       </div>
 
+      {/* Exercise Picker Modal (Database or New/Import) */}
+      {isPickerOpen && (
+        <ExercisePickerModal
+          exerciseDatabase={exerciseDatabase}
+          existingExercises={workout.exercises}
+          onSelectExercise={handlePickFromDatabase}
+          onCreateNewExercise={() => {
+            setIsPickerOpen(false);
+            setIsCreatingCustomExercise(true);
+          }}
+          onClose={() => setIsPickerOpen(false)}
+        />
+      )}
+
       {/* Exercise Editor Modal */}
-      {(editingExercise || isAddingExercise) && (
+      {(editingExercise || isCreatingCustomExercise) && (
         <ExerciseEditorModal 
           exercise={editingExercise}
+          showSaveToDatabaseToggle={!editingExercise}
           onSave={handleSaveExercise}
           onClose={() => {
             setEditingExercise(null);
-            setIsAddingExercise(false);
+            setIsCreatingCustomExercise(false);
           }}
         />
       )}
@@ -284,6 +562,16 @@ export function WorkoutOverviewView({
             setIsEditingWorkoutMeta(false);
           }}
           onClose={() => setIsEditingWorkoutMeta(false)}
+        />
+      )}
+
+      {confirmState && (
+        <ConfirmModal
+          title={confirmState.title}
+          message={confirmState.message}
+          confirmLabel={confirmState.confirmLabel}
+          onConfirm={confirmState.onConfirm}
+          onCancel={() => setConfirmState(null)}
         />
       )}
     </div>
