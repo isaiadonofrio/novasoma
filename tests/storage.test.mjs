@@ -20,7 +20,7 @@ test('buildBackupPayload creates valid schema with clamped weeklyGoal and round-
     weeklyGoal: 99,
   });
 
-  assert.equal(payload.app, 'CORPO');
+  assert.equal(payload.app, 'Nova Soma');
   assert.equal(payload.schemaVersion, 1);
   assert.equal(payload.data.weeklyGoal, 7);
   assert.equal(payload.data.theme, 'light');
@@ -35,7 +35,7 @@ test('buildBackupPayload creates valid schema with clamped weeklyGoal and round-
 
 test('parseBackupPayload rejects malformed JSON and missing required arrays', () => {
   assert.throws(() => parseBackupPayload('{not-json'), /not valid JSON/i);
-  assert.throws(() => parseBackupPayload('{}'), /Invalid CORPO backup format/i);
+  assert.throws(() => parseBackupPayload('{}'), /Invalid Nova Soma backup format/i);
   assert.throws(
     () => parseBackupPayload(JSON.stringify({ data: { routines: 'bad' } })),
     /missing routines/i

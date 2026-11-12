@@ -48,7 +48,7 @@ export function DataBackupModal({
       const dateStamp = new Date().toISOString().slice(0, 10);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `corpo-backup-${dateStamp}.json`;
+      link.download = `novasoma-backup-${dateStamp}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

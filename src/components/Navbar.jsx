@@ -25,7 +25,7 @@ export function Navbar({
           <div className="brand-logo-icon">
             <Dumbbell size={17} />
           </div>
-          <span className="brand-main">Corpo</span>
+          <span className="brand-main">Nova Soma</span>
         </div>
 
         {/* Center Segmented Switcher */}

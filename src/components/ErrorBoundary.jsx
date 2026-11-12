@@ -55,7 +55,7 @@ export class ErrorBoundary extends React.Component {
               Something went wrong
             </h1>
             <p style={{ fontSize: '14px', color: '#a8a29e', lineHeight: 1.5, marginBottom: '20px' }}>
-              An unexpected error occurred in CORPO. Your workout history and custom exercises stored on this device remain safe.
+              An unexpected error occurred in Nova Soma. Your workout history and custom exercises stored on this device remain safe.
             </p>
             {this.state.error?.message && (
               <pre style={{

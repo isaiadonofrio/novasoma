@@ -136,7 +136,7 @@ export function getLocalStorageUsageKb() {
 export function buildBackupPayload({ routines, exerciseDatabase, workoutHistory, theme, weeklyGoal = 4 }) {
   const safeGoal = Math.min(7, Math.max(1, parseInt(weeklyGoal, 10) || 4));
   return {
-    app: 'CORPO',
+    app: 'Nova Soma',
     schemaVersion: 1,
     exportedAt: new Date().toISOString(),
     data: {
@@ -161,7 +161,7 @@ export function parseBackupPayload(rawText) {
   }
 
   if (!parsed || typeof parsed !== 'object' || !parsed.data) {
-    throw new Error('Invalid CORPO backup format.');
+    throw new Error('Invalid Nova Soma backup format.');
   }
 
   const { routines, exerciseDatabase, workoutHistory, theme, weeklyGoal } = parsed.data;

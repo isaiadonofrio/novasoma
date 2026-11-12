@@ -661,8 +661,8 @@ export function App() {
       <footer className="gymmane-footer">
         <div className="gymmane-wrap footer-inner">
           <div>
-            <span className="footer-brand-title">CORPO</span>
-            <p>Minimalist, distraction-free personal training journal.</p>
+            <span className="footer-brand-title">NOVA SOMA</span>
+            <p>Minimalist biomechanics & personal workout journal • A Nova Psiche project</p>
           </div>
           <div className="footer-right-group">
             <span className="footer-right-note">
