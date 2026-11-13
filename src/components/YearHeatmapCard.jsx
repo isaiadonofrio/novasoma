@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Flame, CalendarDays, Plus } from 'lucide-react';
+import { Flame, CalendarDays } from 'lucide-react';
 import { calculateMonthGroupedHeatmap } from '../utils/analytics';
 import { formatVolumeCompact } from '../utils/formatting';
 
@@ -172,22 +172,9 @@ export function YearHeatmapCard({ workoutHistory = [], onSelectDate }) {
       </div>
 
       <div className="year-heatmap-footer">
-        <div className="heatmap-footer-inspect-group">
-          <span className={`heatmap-inspect-text ${inspectedCell ? 'active' : ''}`}>
-            {detailText}
-          </span>
-          {inspectedCell && !inspectedCell.isFuture && onSelectDate && (
-            <button
-              type="button"
-              className="btn-heatmap-action-log"
-              onClick={() => onSelectDate(inspectedCell.dateKey)}
-              title={`Log workout for ${inspectedCell.dateLabel}`}
-            >
-              <Plus size={12} />
-              <span>{inspectedCell.count > 0 ? 'Add Another Session' : 'Log Workout'}</span>
-            </button>
-          )}
-        </div>
+        <span className={`heatmap-inspect-text ${inspectedCell ? 'active' : ''}`}>
+          {detailText}
+        </span>
 
         <div className="heatmap-legend" aria-label="Activity intensity legend">
           <span className="heatmap-legend-lbl">Less</span>

@@ -641,6 +641,35 @@
   border-radius: var(--radius-full);
 }
 
+.summary-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-history-dashboard-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.btn-history-dashboard-icon:hover {
+  background: var(--surface);
+  border-color: var(--clay);
+  color: var(--clay);
+  transform: translateY(-1px);
+}
+
 .featured-routine-title {
   font-size: clamp(1.28rem, 2vw, 1.56rem);
   font-weight: 800;

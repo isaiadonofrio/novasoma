@@ -120,6 +120,17 @@ export function RoutinesSection({
               <span className="home-routines-count-pill">{filteredRoutines.length}</span>
             </div>
           </div>
+
+          {onOpenCreateWorkout && (
+            <button
+              type="button"
+              className="btn-gymmane-primary"
+              onClick={onOpenCreateWorkout}
+            >
+              <Plus size={16} />
+              <span>New Workout</span>
+            </button>
+          )}
         </div>
 
         <div className="home-toolbar-strip">

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import {
-  Plus,
+  History,
   Clock,
   Dumbbell,
   Layers,
@@ -97,27 +97,6 @@ export function HomeView({
               </div>
               <span className="home-date-kicker">TODAY · {todayDisplay}</span>
             </div>
-
-            <div className="hero-actions-right">
-              {onOpenHistory && (
-                <button
-                  type="button"
-                  className="btn-gymmane-secondary"
-                  onClick={onOpenHistory}
-                >
-                  <Calendar size={15} />
-                  <span>History{workoutHistory.length > 0 ? ` (${workoutHistory.length})` : ''}</span>
-                </button>
-              )}
-              <button
-                type="button"
-                className="btn-gymmane-primary"
-                onClick={() => setIsCreating(true)}
-              >
-                <Plus size={16} />
-                <span>New Workout</span>
-              </button>
-            </div>
           </div>
 
           <div className="home-hero-bento">
@@ -137,7 +116,20 @@ export function HomeView({
                     )}
                   </div>
 
-                  <h2 className="featured-routine-title">General Summary</h2>
+                  <div className="summary-title-row">
+                    <h2 className="featured-routine-title">General Summary</h2>
+                    {onOpenHistory && (
+                      <button
+                        type="button"
+                        className="btn-history-dashboard-icon"
+                        onClick={onOpenHistory}
+                        title={`Workout History (${workoutHistory.length} sessions logged)`}
+                        aria-label="Workout History"
+                      >
+                        <History size={15} />
+                      </button>
+                    )}
+                  </div>
 
                   {stats.lastSessionSummary ? (
                     <div className="last-session-note">
