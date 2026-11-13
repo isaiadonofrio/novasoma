@@ -1,0 +1,214 @@
+/* ==========================================================================
+   3. Anatomical Body Map & Compact Mini Silhouettes
+   ========================================================================== */
+.mini-bodymap-wrap svg,
+.bodymap-svg-wrapper svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bodymap-svg-wrapper svg .muscle,
+.bodymap-svg-wrapper svg .muscle:focus,
+.bodymap-svg-wrapper svg .muscle:focus-visible,
+.bodymap-svg-wrapper svg .muscle path {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bodymap-svg-wrapper svg .muscle:focus-visible path {
+  stroke: var(--clay);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+}
+
+.body-base path {
+  fill: #524B44;
+}
+
+.body-lite path {
+  fill: #3D3833;
+}
+
+.muscle path {
+  fill: #645C54;
+  transition: fill 0.16s var(--ease), opacity 0.16s var(--ease);
+}
+
+.muscle:hover path {
+  fill: #9B745C;
+}
+
+.muscle.on path {
+  fill: var(--clay) !important;
+}
+
+.muscle.sec path {
+  fill: var(--sage) !important;
+  opacity: 0.88;
+}
+
+[data-theme="light"] .body-base path {
+  fill: #CBC3B8;
+}
+
+[data-theme="light"] .body-lite path {
+  fill: #DDD6CC;
+}
+
+[data-theme="light"] .muscle path {
+  fill: #B5ACA0;
+}
+
+[data-theme="light"] .muscle:hover path {
+  fill: #A8763E;
+}
+
+[data-theme="light"] .muscle.on path {
+  fill: var(--clay) !important;
+}
+
+[data-theme="light"] .muscle.sec path {
+  fill: var(--sage) !important;
+  opacity: 0.85;
+}
+
+.mini-bodymap-wrap {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.hero-mini-body {
+  width: 150px;
+}
+
+.card-mini-body {
+  width: 118px;
+}
+
+.overview-mini-body {
+  width: 136px;
+}
+
+.player-mini-body {
+  width: 114px;
+}
+
+.gymmane-bodymap-card {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+
+[data-theme="light"] .gymmane-bodymap-card {
+  box-shadow: 0 2px 10px rgba(26, 23, 19, 0.04);
+}
+
+.bodymap-side-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bodymap-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bodymap-header-title {
+  min-width: 0;
+}
+
+.bodymap-header-title .step-tag {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--clay);
+  margin-bottom: 3px;
+}
+
+.bodymap-header-title h3 {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.bodymap-desc {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--dim);
+}
+
+.clear-muscles-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.clear-muscles-btn:hover {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+.bodymap-svg-wrapper.a-body {
+  width: 100%;
+  max-width: 200px;
+  margin: 0;
+}
+
+.bodymap-svg-wrapper .muscle {
+  cursor: pointer;
+}
+
+.bodymap-quick-pills {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.bodymap-quick-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition: border-color 0.15s var(--ease), color 0.15s var(--ease), background 0.15s var(--ease);
+}
+
+.bodymap-quick-pill:hover {
+  color: var(--text);
+  border-color: var(--border-hi);
+}
+
+.bodymap-quick-pill.active {
+  background: var(--clay-soft);
+  color: var(--clay);
+  border-color: var(--border-active);
+}
+

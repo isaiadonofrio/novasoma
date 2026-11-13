@@ -1,0 +1,1088 @@
+/* ==========================================================================
+   4. Home View (Panoramica Generale & Catalogo Schede)
+   ========================================================================== */
+.gymmane-home-view {
+  padding-bottom: 64px;
+}
+
+.home-clean-hero {
+  padding: 28px 0 18px;
+}
+
+.hero-clean-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.hero-brand-date-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-date-icon-frame {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--clay-soft);
+  border: 1px solid color-mix(in srgb, var(--clay) 28%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--clay);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.home-date-kicker {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 0;
+}
+
+.home-title-loud {
+  font-size: clamp(1.9rem, 3.4vw, 2.55rem);
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.03em;
+}
+
+.home-intro-sub {
+  margin: 6px 0 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: var(--dim);
+  max-width: 60ch;
+}
+
+.hero-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Desktop 2-Col Home Hero Bento */
+.home-hero-bento {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.home-summary-panel {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+[data-theme="light"] .home-summary-panel,
+[data-theme="light"] .quick-bento-card,
+[data-theme="light"] .consistency-card {
+  box-shadow: 0 2px 10px rgba(26, 23, 19, 0.04);
+}
+
+.summary-panel-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.summary-panel-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.featured-kicker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.featured-kicker {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--clay);
+}
+
+.featured-cat-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dim);
+  background: var(--raised2);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.summary-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-history-dashboard-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.btn-history-dashboard-icon:hover {
+  background: var(--surface);
+  border-color: var(--clay);
+  color: var(--clay);
+  transform: translateY(-1px);
+}
+
+.featured-routine-title {
+  font-size: clamp(1.28rem, 2vw, 1.56rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.22;
+}
+
+.summary-panel-desc {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--dim);
+}
+
+.last-session-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--dim);
+}
+
+.last-session-note b {
+  color: var(--text);
+}
+
+.featured-bodymap-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px 10px;
+  border-radius: var(--radius-md);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.bodymap-stage-caption {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* Muscle Focus Breakdown Bar */
+.summary-focus-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+}
+
+.focus-strip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.focus-strip-kicker {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+}
+
+.focus-lead-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 0.71rem;
+  font-weight: 700;
+  color: var(--clay);
+}
+
+.focus-dist-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 3px;
+  height: 8px;
+  width: 100%;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--raised3);
+}
+
+.focus-dist-seg {
+  height: 100%;
+  min-width: 8px;
+  border-radius: 3px;
+  transition: opacity 0.16s var(--ease);
+}
+
+.focus-dist-seg:hover {
+  opacity: 0.85;
+}
+
+.focus-dist-seg.tone-0,
+.focus-legend-dot.tone-0 {
+  background: var(--clay);
+}
+
+.focus-dist-seg.tone-1,
+.focus-legend-dot.tone-1 {
+  background: var(--sage);
+}
+
+.focus-dist-seg.tone-2,
+.focus-legend-dot.tone-2 {
+  background: var(--info);
+}
+
+.focus-dist-seg.tone-3,
+.focus-legend-dot.tone-3 {
+  background: #8B7D72;
+}
+
+.focus-dist-seg.tone-4,
+.focus-legend-dot.tone-4 {
+  background: var(--dim);
+}
+
+.focus-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.focus-legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--dim);
+}
+
+.focus-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.focus-legend-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.focus-legend-pct {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--faint);
+}
+
+.home-summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.summary-metric-pill {
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.metric-pill-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--clay);
+}
+
+.metric-pill-val {
+  font-family: var(--mono);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+}
+
+.metric-pill-lbl {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--dim);
+  line-height: 1.25;
+}
+
+.metric-pill-sub {
+  font-size: 0.72rem;
+  color: var(--faint);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Embedded Routines Catalog Section on Home */
+.home-routines-catalog-section {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.home-routines-divider-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.home-routines-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.home-routines-section-title {
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.home-routines-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: var(--radius-full);
+  background: var(--raised);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--dim);
+}
+
+/* ==========================================================================
+   5. Weekly Consistency Widget (StatsDashboard)
+   ========================================================================== */
+.consistency-card {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.consistency-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consistency-title-block {
+  min-width: 0;
+}
+
+.consistency-kicker {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  margin-bottom: 2px;
+}
+
+.consistency-heading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.consistency-streak-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.consistency-streak-pill.hot {
+  background: var(--clay-soft);
+  color: var(--clay);
+}
+
+.consistency-body-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.consistency-ring-wrap {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.consistency-ring-svg {
+  width: 54px;
+  height: 54px;
+  transform: rotate(-90deg);
+}
+
+.consistency-ring-track {
+  fill: none;
+  stroke: var(--raised2);
+  stroke-width: 4.5;
+}
+
+.consistency-ring-fill {
+  fill: none;
+  stroke: var(--clay);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.35s var(--ease);
+}
+
+.consistency-ring-val {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.consistency-days-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.weekly-days-pills {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.week-day-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 4px;
+  border-radius: 10px;
+  background: var(--raised2);
+  border: 1px solid transparent;
+}
+
+.week-day-pill.is-today:not(.active) {
+  border-color: var(--border-active);
+}
+
+.week-day-letter {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+
+.week-day-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--raised3);
+  color: var(--on-ember);
+  display: grid;
+  place-items: center;
+}
+
+.week-day-pill.active .week-day-letter {
+  color: var(--text);
+}
+
+.week-day-pill.active .week-day-dot {
+  background: var(--ember);
+  color: var(--on-ember);
+}
+
+.consistency-badges-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.consistency-best-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  background: var(--sage-soft);
+  color: var(--sage);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.consistency-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.consistency-goal-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.goal-step-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--raised2);
+  color: var(--dim);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease), color 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+
+.goal-step-btn:hover:not(:disabled) {
+  background: var(--raised3);
+  border-color: var(--border-hi);
+  color: var(--text);
+}
+
+.goal-step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.week-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.week-mini-stat {
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 11px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.week-mini-lbl {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+
+.week-mini-val {
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.week-mini-sub {
+  font-size: 0.72rem;
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.consistency-caption {
+  font-size: 0.82rem;
+  color: var(--dim);
+  margin: 0;
+}
+
+.consistency-goal-chip {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--faint);
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   5b. Annual Year Activity Heatmap Card
+   ========================================================================== */
+.year-heatmap-card {
+  margin-top: 20px;
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+[data-theme="light"] .year-heatmap-card {
+  box-shadow: 0 2px 10px rgba(26, 23, 19, 0.04);
+}
+
+.year-heatmap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.year-heatmap-kicker-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.year-heatmap-range {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--faint);
+}
+
+.year-heatmap-stats-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.heatmap-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  font-size: 0.76rem;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.heatmap-stat-pill strong {
+  font-family: var(--mono);
+  font-weight: 800;
+  color: var(--text);
+}
+
+.heatmap-stat-pill.accent {
+  background: var(--clay-soft);
+  border-color: transparent;
+  color: var(--clay);
+}
+
+.heatmap-stat-pill.accent strong {
+  color: var(--clay);
+}
+
+.heatmap-scroll-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.heatmap-months-grouped {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 980px;
+}
+
+.heatmap-weekday-axis {
+  width: 24px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 0;
+}
+
+.heatmap-axis-head-spacer {
+  height: 16px;
+}
+
+.heatmap-weekday-rows {
+  display: grid;
+  grid-template-rows: repeat(7, 10px);
+  gap: 2.5px;
+  align-items: center;
+}
+
+.heatmap-weekday-rows span {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--faint);
+  line-height: 1;
+}
+
+.heatmap-months-row {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.heatmap-month-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  flex-shrink: 0;
+}
+
+.heatmap-month-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  height: 16px;
+}
+
+.heatmap-month-name {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.heatmap-month-block.is-current .heatmap-month-name {
+  color: var(--clay);
+}
+
+.heatmap-month-yr {
+  font-weight: 600;
+  color: var(--faint);
+}
+
+.heatmap-month-count {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 2px 5px;
+  border-radius: var(--radius-full);
+  background: var(--clay-soft);
+  color: var(--clay);
+}
+
+.heatmap-month-weeks {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5px;
+}
+
+.heatmap-week-col {
+  display: grid;
+  grid-template-rows: repeat(7, 10px);
+  gap: 2.5px;
+}
+
+.heatmap-day-pad {
+  display: block;
+  width: 10px;
+  height: 10px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.heatmap-day-cell,
+.heatmap-legend-swatch {
+  display: block;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-radius: 2.5px;
+  border: 1px solid transparent;
+  background: var(--raised);
+  cursor: pointer;
+  transition: transform 0.12s var(--ease), border-color 0.12s var(--ease);
+}
+
+.heatmap-legend-swatch {
+  width: 11px;
+  height: 11px;
+  cursor: default;
+}
+
+.heatmap-day-cell:hover:not(:disabled),
+.heatmap-day-cell:focus-visible:not(:disabled) {
+  transform: scale(1.22);
+  border-color: var(--text);
+  outline: none;
+  z-index: 2;
+}
+
+.heatmap-day-cell.is-selected {
+  border-color: var(--text);
+}
+
+.heatmap-day-cell.is-today:not(.lvl-1):not(.lvl-2):not(.lvl-3):not(.lvl-4) {
+  box-shadow: inset 0 0 0 1.5px var(--clay);
+}
+
+.heatmap-day-cell.is-future {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Dark theme heatmap intensity levels */
+.heatmap-day-cell.lvl-0,
+.heatmap-legend-swatch.lvl-0 {
+  background: var(--raised2);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.heatmap-day-cell.lvl-1,
+.heatmap-legend-swatch.lvl-1 {
+  background: rgba(217, 161, 132, 0.25);
+  border-color: rgba(217, 161, 132, 0.22);
+}
+
+.heatmap-day-cell.lvl-2,
+.heatmap-legend-swatch.lvl-2 {
+  background: rgba(217, 161, 132, 0.48);
+  border-color: rgba(217, 161, 132, 0.36);
+}
+
+.heatmap-day-cell.lvl-3,
+.heatmap-legend-swatch.lvl-3 {
+  background: rgba(217, 161, 132, 0.74);
+  border-color: rgba(217, 161, 132, 0.56);
+}
+
+.heatmap-day-cell.lvl-4,
+.heatmap-legend-swatch.lvl-4 {
+  background: var(--clay);
+  border-color: var(--clay);
+}
+
+/* Light theme heatmap intensity levels */
+[data-theme="light"] .heatmap-day-cell.lvl-0,
+[data-theme="light"] .heatmap-legend-swatch.lvl-0 {
+  background: var(--raised2);
+  border-color: rgba(26, 23, 19, 0.08);
+}
+
+[data-theme="light"] .heatmap-day-cell.lvl-1,
+[data-theme="light"] .heatmap-legend-swatch.lvl-1 {
+  background: rgba(158, 78, 39, 0.22);
+  border-color: rgba(158, 78, 39, 0.18);
+}
+
+[data-theme="light"] .heatmap-day-cell.lvl-2,
+[data-theme="light"] .heatmap-legend-swatch.lvl-2 {
+  background: rgba(158, 78, 39, 0.44);
+  border-color: rgba(158, 78, 39, 0.30);
+}
+
+[data-theme="light"] .heatmap-day-cell.lvl-3,
+[data-theme="light"] .heatmap-legend-swatch.lvl-3 {
+  background: rgba(158, 78, 39, 0.72);
+  border-color: rgba(158, 78, 39, 0.48);
+}
+
+[data-theme="light"] .heatmap-day-cell.lvl-4,
+[data-theme="light"] .heatmap-legend-swatch.lvl-4 {
+  background: var(--clay);
+  border-color: var(--clay);
+}
+
+.year-heatmap-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.heatmap-inspect-text {
+  font-size: 0.78rem;
+  color: var(--faint);
+}
+
+.heatmap-inspect-text.active {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.heatmap-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.heatmap-legend-lbl {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--faint);
+}
+
+
+/* =========================================================================
+   MANUAL WORKOUT LOG MODAL & INTERACTIVE CALENDAR / HEATMAP LOGGING
+   ========================================================================= */
+
+/* Clickable Week Day Pills in StatsDashboard */
+.week-day-pill.clickable {
+  cursor: pointer;
+  transition: all 0.16s var(--ease);
+}
+
+.week-day-pill.clickable:hover {
+  transform: translateY(-2px);
+  border-color: var(--clay);
+  box-shadow: 0 4px 12px rgba(194, 142, 82, 0.20);
+}
+
+.week-day-pill.is-future {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Heatmap Footer Action Button */
+.heatmap-footer-inspect-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-heatmap-action-log {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px dashed var(--clay);
+  color: var(--clay);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+}
+
+.btn-heatmap-action-log:hover {
+  background: var(--clay-soft);
+  border-style: solid;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(194, 142, 82, 0.16);
+}
+
