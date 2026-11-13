@@ -526,28 +526,21 @@
 .hero-brand-date-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.hero-logo-frame {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #FFFFFF;
-  border: 1.5px solid var(--border-hi);
+.hero-date-icon-frame {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--clay-soft);
+  border: 1px solid color-mix(in srgb, var(--clay) 28%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 0 10px rgba(33, 155, 157, 0.28);
-}
-
-.hero-logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  color: var(--clay);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .home-date-kicker {
