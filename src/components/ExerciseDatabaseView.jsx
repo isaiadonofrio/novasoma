@@ -337,16 +337,16 @@ export function ExerciseDatabaseView({
             </div>
           </div>
 
-          {/* Archive Telemetry Bento (Spacious 2-Card Layout, Pure Static Informational Telemetry, Zero Pseudo-Buttons) */}
+          {/* Archive Telemetry Bento (Spacious 2-Card Balanced Layout, Zero White Space, Pure Static Telemetry) */}
           <div className="db-telemetry-bento">
-            {/* Card 1: Equipment & Setup Profile (Static Pure Telemetry) */}
+            {/* Card 1: Equipment & Movement Mechanics (Training Setup & Lift Kinematics) */}
             <div className="db-telemetry-card equip-card">
               <div className="telemetry-card-header">
                 <span className="telemetry-card-title">
                   <Dumbbell size={15} className="telemetry-title-icon" />
-                  EQUIPMENT PROFILE
+                  EQUIPMENT & MOVEMENT SPECTRUM
                 </span>
-                <span className="telemetry-badge-count">{telemetry.total} Total Exercises</span>
+                <span className="telemetry-badge-count">{telemetry.total} Movements</span>
               </div>
 
               {/* High-Level KPI Comparison Cards */}
@@ -384,9 +384,7 @@ export function ExerciseDatabaseView({
                 />
               </div>
 
-              <div className="telemetry-section-divider" />
-
-              {/* Detailed Gear Distribution (Static Informational Tiles, NOT Buttons) */}
+              {/* Detailed Gear Distribution (3 Columns x 2 Rows, Static Informational Tiles) */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
                   <SlidersHorizontal size={13} />
@@ -417,23 +415,14 @@ export function ExerciseDatabaseView({
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Card 2: Biomechanics & Anatomical Coverage (Static Pure Telemetry, Crystal Clear) */}
-            <div className="db-telemetry-card anatomy-card">
-              <div className="telemetry-card-header">
-                <span className="telemetry-card-title">
-                  <Activity size={15} className="telemetry-title-icon" />
-                  BIOMECHANICS & ANATOMICAL FOCUS
-                </span>
-                <span className="telemetry-badge-count">{telemetry.distinctMusclesCount} Muscle Groups</span>
-              </div>
+              <div className="telemetry-section-divider" />
 
-              {/* Section 1: Movement Mechanics & Difficulty */}
+              {/* Movement Mechanics & Difficulty Spectrum */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
                   <Activity size={13} />
-                  MOVEMENT MECHANICS & DIFFICULTY
+                  MOVEMENT MECHANICS & LEVEL
                 </span>
                 <span className="telemetry-sub-meta">Lift Classification</span>
               </div>
@@ -485,7 +474,7 @@ export function ExerciseDatabaseView({
                 </div>
               </div>
 
-              {/* Difficulty Spectrum Row */}
+              {/* Experience Level Row */}
               <div className="telemetry-level-bar-wrap">
                 <span className="level-bar-label">EXPERIENCE LEVEL:</span>
                 <div className="level-stat-tags">
@@ -500,54 +489,80 @@ export function ExerciseDatabaseView({
                   </span>
                 </div>
               </div>
+            </div>
+
+            {/* Card 2: Anatomical Coverage & Muscle Vault (Macro Regions + Detailed Muscle Groups) */}
+            <div className="db-telemetry-card anatomy-card">
+              <div className="telemetry-card-header">
+                <span className="telemetry-card-title">
+                  <Layers size={15} className="telemetry-title-icon" />
+                  ANATOMICAL COVERAGE & MUSCLE VAULT
+                </span>
+                <span className="telemetry-badge-count">{telemetry.distinctMusclesCount} Muscle Groups</span>
+              </div>
+
+              {/* Macro Regional Distribution KPIs (3-Card Row) */}
+              <div className="telemetry-region-kpi-row">
+                <div className="telemetry-region-kpi-card lower">
+                  <div className="region-kpi-top">
+                    <span className="region-kpi-num">{telemetry.regions.lower.count}</span>
+                    <span className="region-kpi-pct lower">{telemetry.regions.lower.percent}%</span>
+                  </div>
+                  <span className="region-kpi-title">Lower Body</span>
+                  <span className="region-kpi-sub">Quads, Glutes, Hamstrings & Calves</span>
+                </div>
+
+                <div className="telemetry-region-kpi-card upper">
+                  <div className="region-kpi-top">
+                    <span className="region-kpi-num teal">{telemetry.regions.upper.count}</span>
+                    <span className="region-kpi-pct upper">{telemetry.regions.upper.percent}%</span>
+                  </div>
+                  <span className="region-kpi-title">Upper Body</span>
+                  <span className="region-kpi-sub">Chest, Back, Shoulders & Arms</span>
+                </div>
+
+                <div className="telemetry-region-kpi-card core">
+                  <div className="region-kpi-top">
+                    <span className="region-kpi-num amber">{telemetry.regions.core.count}</span>
+                    <span className="region-kpi-pct core">{telemetry.regions.core.percent}%</span>
+                  </div>
+                  <span className="region-kpi-title">Core & Trunk</span>
+                  <span className="region-kpi-sub">Abs, Obliques & Spinal Stability</span>
+                </div>
+              </div>
+
+              {/* 3-Part Regional Proportion Bar */}
+              <div className="telemetry-region-bar" aria-hidden="true">
+                <div
+                  className="region-bar-seg seg-lower"
+                  style={{ width: `${telemetry.regions.lower.percent}%` }}
+                  title={`Lower Body: ${telemetry.regions.lower.count} (${telemetry.regions.lower.percent}%)`}
+                />
+                <div
+                  className="region-bar-seg seg-upper"
+                  style={{ width: `${telemetry.regions.upper.percent}%` }}
+                  title={`Upper Body: ${telemetry.regions.upper.count} (${telemetry.regions.upper.percent}%)`}
+                />
+                <div
+                  className="region-bar-seg seg-core"
+                  style={{ width: `${telemetry.regions.core.percent}%` }}
+                  title={`Core & Posture: ${telemetry.regions.core.count} (${telemetry.regions.core.percent}%)`}
+                />
+              </div>
 
               <div className="telemetry-section-divider" />
 
-              {/* Section 2: Regional & Target Muscle Coverage */}
+              {/* Detailed Target Muscle Groups (Top 10 Groups, 2 Columns x 5 Rows) */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
                   <Layers size={13} />
-                  BODY REGION & TOP TARGET MUSCLES
+                  PRIMARY TARGET MUSCLE DISTRIBUTION
                 </span>
-                <span className="telemetry-sub-meta">Top 8 Targets</span>
+                <span className="telemetry-sub-meta">Top 10 Groups Indexed</span>
               </div>
 
-              {/* 3-Part Regional Proportion Bar with Clean Direct Legend */}
-              <div className="telemetry-region-block">
-                <div className="telemetry-region-bar" aria-hidden="true">
-                  <div
-                    className="region-bar-seg seg-lower"
-                    style={{ width: `${telemetry.regions.lower.percent}%` }}
-                    title={`Lower Body: ${telemetry.regions.lower.count} (${telemetry.regions.lower.percent}%)`}
-                  />
-                  <div
-                    className="region-bar-seg seg-upper"
-                    style={{ width: `${telemetry.regions.upper.percent}%` }}
-                    title={`Upper Body: ${telemetry.regions.upper.count} (${telemetry.regions.upper.percent}%)`}
-                  />
-                  <div
-                    className="region-bar-seg seg-core"
-                    style={{ width: `${telemetry.regions.core.percent}%` }}
-                    title={`Core & Posture: ${telemetry.regions.core.count} (${telemetry.regions.core.percent}%)`}
-                  />
-                </div>
-
-                <div className="telemetry-region-legend">
-                  <span className="region-leg-item">
-                    <span className="region-leg-dot seg-lower" /> Lower Body <b>{telemetry.regions.lower.count}</b> ({telemetry.regions.lower.percent}%)
-                  </span>
-                  <span className="region-leg-item">
-                    <span className="region-leg-dot seg-upper" /> Upper Body <b>{telemetry.regions.upper.count}</b> ({telemetry.regions.upper.percent}%)
-                  </span>
-                  <span className="region-leg-item">
-                    <span className="region-leg-dot seg-core" /> Core <b>{telemetry.regions.core.count}</b> ({telemetry.regions.core.percent}%)
-                  </span>
-                </div>
-              </div>
-
-              {/* Muscle Breakdown Grid (2 Columns, Static Informational Tiles) */}
               <div className="telemetry-muscle-grid">
-                {telemetry.sortedMuscles.slice(0, 8).map((item, idx) => (
+                {telemetry.sortedMuscles.slice(0, 10).map((item, idx) => (
                   <div key={item.key} className="muscle-stat-tile">
                     <div className="muscle-stat-left">
                       <span className={`chip-color-dot tone-${idx % 6}`} />
