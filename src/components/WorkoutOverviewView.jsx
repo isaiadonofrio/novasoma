@@ -731,17 +731,28 @@ export function WorkoutOverviewView({
                       <span>In-Table Editing Active · Modify reps, rest &amp; sets directly in the rows</span>
                     </span>
                   ) : (
-                    <span className="preview-spec-tag">
-                      <b>{exercise.defaultSets || 3} Sets</b> planned · <b>{formatRepsSummary(exercise.defaultReps, exercise.customRepsPerSet)}</b>
-                      {ssInfo && !ssInfo.isLast ? (
-                        <span className="preview-rest-tag"> · <b>0s Transition</b> to #{ssInfo.letter}2</span>
-                      ) : (
-                        <span className="preview-rest-tag"> · <b>{timerOn ? `${exercise.defaultRestSeconds || 60}s Rest` : 'Untimed'}</b></span>
-                      )}
-                      {dropCount > 0 && (
-                        <span className="preview-drop-tag"> · <b>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</b></span>
-                      )}
-                    </span>
+                    <div className="table-preview-actions-box">
+                      <span className="preview-spec-tag">
+                        <b>{exercise.defaultSets || 3} Sets</b> planned · <b>{formatRepsSummary(exercise.defaultReps, exercise.customRepsPerSet)}</b>
+                        {ssInfo && !ssInfo.isLast ? (
+                          <span className="preview-rest-tag"> · <b>0s Transition</b> to #{ssInfo.letter}2</span>
+                        ) : (
+                          <span className="preview-rest-tag"> · <b>{timerOn ? `${exercise.defaultRestSeconds || 60}s Rest` : 'Untimed'}</b></span>
+                        )}
+                        {dropCount > 0 && (
+                          <span className="preview-drop-tag"> · <b>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</b></span>
+                        )}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn-enable-table-edit"
+                        onClick={handleEnterEditMode}
+                        title="Customize sets, reps, and timers for this workout"
+                      >
+                        <Edit3 size={11} />
+                        <span>Customize Sets &amp; Reps</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -1027,7 +1038,7 @@ export function WorkoutOverviewView({
     <div className="gymmane-overview-view">
       <div className="gymmane-wrap">
         {/* Navigation Bar / Mode Bar */}
-        {!isEditMode ? (
+        {!isEditMode && !hasUnsavedChanges ? (
           <div className="overview-nav-bar">
             <button type="button" className="overview-back-btn" onClick={handleBackGuarded}>
               <ArrowLeft size={16} />
@@ -1046,10 +1057,10 @@ export function WorkoutOverviewView({
                 type="button"
                 className="btn-enter-edit-mode"
                 onClick={handleEnterEditMode}
-                title="Edit workout architecture, exercises, sets, reps, and timers"
+                title="Reorder exercises, pair supersets, and manage routine"
               >
-                <Edit3 size={14} />
-                <span>Edit Workout</span>
+                <SlidersHorizontal size={14} />
+                <span>Reorder &amp; Manage</span>
               </button>
             </div>
           </div>
@@ -1065,8 +1076,8 @@ export function WorkoutOverviewView({
                 <ArrowLeft size={14} />
               </button>
               <span className="editor-mode-badge">
-                <Edit3 size={13} />
-                <span>EDITING WORKOUT</span>
+                <SlidersHorizontal size={13} />
+                <span>ROUTINE BUILDER</span>
               </span>
               {hasUnsavedChanges ? (
                 <span className="editor-unsaved-badge">
@@ -1076,7 +1087,7 @@ export function WorkoutOverviewView({
               ) : (
                 <span className="editor-synced-badge">
                   <Check size={12} />
-                  No pending changes
+                  Synced
                 </span>
               )}
             </div>
@@ -1113,9 +1124,11 @@ export function WorkoutOverviewView({
               <div className="hero-meta-strip">
                 <span className="overview-category-badge">{activeWorkout.category}</span>
                 <span className="overview-diff-badge">{activeWorkout.difficulty || 'All Levels'}</span>
-                {isEditMode && (
-                  <span className="hero-editing-tag">Draft Mode</span>
-                )}
+                {hasUnsavedChanges ? (
+                  <span className="hero-editing-tag unsaved">● Unsaved Edits</span>
+                ) : isEditMode ? (
+                  <span className="hero-editing-tag">Manage Mode</span>
+                ) : null}
               </div>
 
               <h1 className="overview-title-loud">{activeWorkout.title}</h1>
@@ -1154,13 +1167,14 @@ export function WorkoutOverviewView({
                   title="Edit title, description, category, and difficulty"
                 >
                   <Edit3 size={13} />
-                  <span>Edit details</span>
+                  <span>Edit Info</span>
                 </button>
-                {onDeleteWorkout && !isEditMode && (
+                {onDeleteWorkout && (
                   <button
                     type="button"
                     className="quick-delete-workout-btn"
                     onClick={handleDeleteCurrentWorkout}
+                    title="Delete routine"
                   >
                     <Trash2 size={13} />
                     <span>Delete</span>
@@ -1170,29 +1184,21 @@ export function WorkoutOverviewView({
             </div>
 
             <div className="overview-hero-cta-box">
-              {!isEditMode ? (
-                <button
-                  type="button"
-                  className="btn-gymmane-primary big-cta"
-                  disabled={activeWorkout.exercises.length === 0}
-                  title={activeWorkout.exercises.length === 0 ? 'Add at least one exercise to start' : 'Start guided session'}
-                  onClick={() => onStartLive(0)}
-                >
-                  <Play size={15} fill="currentColor" />
-                  <span>Start Workout</span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-save-workout-edits big-cta"
-                  onClick={handleSaveChanges}
-                  disabled={!hasUnsavedChanges}
-                  title={hasUnsavedChanges ? 'Save changes to workout' : 'No changes to save'}
-                >
-                  <Check size={16} />
-                  <span>Save Changes</span>
-                </button>
-              )}
+              <button
+                type="button"
+                className="btn-gymmane-primary big-cta"
+                disabled={activeWorkout.exercises.length === 0}
+                title={activeWorkout.exercises.length === 0 ? 'Add at least one exercise to start' : 'Start guided session'}
+                onClick={() => {
+                  if (hasUnsavedChanges) {
+                    onUpdateWorkout(draftWorkout);
+                  }
+                  onStartLive(0);
+                }}
+              >
+                <Play size={15} fill="currentColor" />
+                <span>Start Workout</span>
+              </button>
             </div>
           </div>
         </div>
@@ -1205,8 +1211,8 @@ export function WorkoutOverviewView({
             </h2>
             <p className="timeline-sub">
               {isEditMode 
-                ? 'Editing mode active: adjust sets, target reps, recovery intervals, drop sets, or pair supersets, then click Save Changes.' 
-                : 'Preview mode: view clean movement profiles and in-depth training architecture. Click "Edit Workout" to modify.'}
+                ? 'Managing exercises: drag or tap arrows to reorder, pair supersets, remove exercises, and customize sets & reps in-table.' 
+                : 'Preview mode: view movement profiles, expand in-depth architecture to customize sets and reps, or reorder.'}
             </p>
           </div>
 
@@ -1223,16 +1229,36 @@ export function WorkoutOverviewView({
               </button>
             )}
 
-            {isEditMode && (
+            {activeWorkout.exercises.length > 0 && (
               <button 
                 type="button" 
-                className="btn-gymmane-primary"
-                onClick={() => setIsPickerOpen(true)}
+                className={`btn-reorder-manage-toggle ${isEditMode ? 'active' : ''}`}
+                onClick={() => {
+                  if (!isEditMode) {
+                    handleEnterEditMode();
+                  } else {
+                    setIsEditMode(false);
+                  }
+                }}
+                title={isEditMode ? 'Exit reordering mode' : 'Reorder exercises, pair supersets, and manage routine'}
               >
-                <Plus size={16} />
-                <span>Add Exercise</span>
+                <SlidersHorizontal size={13} />
+                <span>{isEditMode ? 'Done Managing' : 'Reorder & Manage'}</span>
               </button>
             )}
+
+            <button 
+              type="button" 
+              className="btn-gymmane-primary btn-add-exercise-direct"
+              onClick={() => {
+                if (!isEditMode) handleEnterEditMode();
+                setIsPickerOpen(true);
+              }}
+              title="Add an exercise from your library"
+            >
+              <Plus size={15} />
+              <span>Add Exercise</span>
+            </button>
           </div>
         </div>
 

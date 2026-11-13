@@ -2216,6 +2216,12 @@
   border: 1px solid var(--clay);
 }
 
+.hero-editing-tag.unsaved {
+  background: var(--ember-soft, rgba(229, 103, 76, 0.15));
+  color: var(--ember);
+  border-color: color-mix(in srgb, var(--ember) 40%, transparent);
+}
+
 .overview-hero-cta-box {
   display: flex;
   align-items: center;
@@ -2397,6 +2403,41 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.btn-reorder-manage-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border-hi);
+  color: var(--dim);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.16s var(--ease);
+}
+
+.btn-reorder-manage-toggle:hover {
+  color: var(--text);
+  border-color: var(--clay);
+  background: var(--raised3);
+  transform: translateY(-1px);
+}
+
+.btn-reorder-manage-toggle.active {
+  background: var(--clay-soft);
+  color: var(--clay);
+  border-color: var(--clay);
+  font-weight: 800;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--clay) 25%, transparent);
+}
+
+.btn-add-exercise-direct {
+  padding: 8px 16px;
+  font-size: 0.8rem;
 }
 
 .btn-toggle-all-indepth {
@@ -3848,6 +3889,35 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+.table-preview-actions-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-enable-table-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px dashed var(--clay);
+  color: var(--clay);
+  font-family: var(--mono);
+  font-size: 0.69rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+}
+
+.btn-enable-table-edit:hover {
+  background: var(--clay-soft);
+  border-style: solid;
+  transform: translateY(-1px);
 }
 
 .preview-spec-tag {
