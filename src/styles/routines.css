@@ -134,12 +134,12 @@
   border-color: var(--border-hi);
 }
 
-.routine-folder-card.folder-tab-tone-0 { --folder-tab-bg: var(--tab-1); }
-.routine-folder-card.folder-tab-tone-1 { --folder-tab-bg: var(--tab-2); }
-.routine-folder-card.folder-tab-tone-2 { --folder-tab-bg: var(--tab-3); }
-.routine-folder-card.folder-tab-tone-3 { --folder-tab-bg: var(--tab-4); }
-.routine-folder-card.folder-tab-tone-4 { --folder-tab-bg: var(--tab-5); }
-.routine-folder-card.folder-tab-tone-5 { --folder-tab-bg: var(--tab-6); }
+.routine-folder-card.category-tone-legs { --card-accent: #C28E52; }
+.routine-folder-card.category-tone-fullbody { --card-accent: #E5A93C; }
+.routine-folder-card.category-tone-core { --card-accent: #E5674C; }
+.routine-folder-card.category-tone-upper { --card-accent: #2A6B6D; }
+.routine-folder-card.category-tone-power { --card-accent: #5B6E8C; }
+.routine-folder-card.category-tone-default { --card-accent: var(--clay); }
 
 .routine-folder-top-row {
   display: flex;
@@ -155,21 +155,89 @@
   flex-wrap: wrap;
 }
 
+/* Deterministic Category Tag (Ouroboros Spine System) */
 .routine-folder-tab {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
+  padding: 4px 11px;
   border-radius: var(--radius-full);
-  background: var(--folder-tab-bg);
-  color: #1A1713;
   font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  transition: all 0.16s var(--ease);
 }
 
+.routine-folder-tab.category-tone-legs {
+  background: rgba(194, 142, 82, 0.13);
+  color: #9E6B32;
+  border: 1px solid rgba(194, 142, 82, 0.32);
+}
+
+.routine-folder-tab.category-tone-fullbody {
+  background: rgba(229, 169, 60, 0.14);
+  color: #B57918;
+  border: 1px solid rgba(229, 169, 60, 0.38);
+}
+
+.routine-folder-tab.category-tone-core {
+  background: rgba(229, 103, 76, 0.13);
+  color: #C24528;
+  border: 1px solid rgba(229, 103, 76, 0.32);
+}
+
+.routine-folder-tab.category-tone-upper {
+  background: rgba(42, 107, 109, 0.13);
+  color: #1E5254;
+  border: 1px solid rgba(42, 107, 109, 0.32);
+}
+
+.routine-folder-tab.category-tone-power {
+  background: rgba(91, 110, 140, 0.13);
+  color: #40516E;
+  border: 1px solid rgba(91, 110, 140, 0.32);
+}
+
+.routine-folder-tab.category-tone-default {
+  background: var(--raised2);
+  color: var(--dim);
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .routine-folder-tab.category-tone-legs {
+  background: rgba(194, 142, 82, 0.22);
+  color: #E2B27E;
+  border-color: rgba(194, 142, 82, 0.45);
+}
+
+[data-theme="dark"] .routine-folder-tab.category-tone-fullbody {
+  background: rgba(229, 169, 60, 0.22);
+  color: #F0C46A;
+  border-color: rgba(229, 169, 60, 0.45);
+}
+
+[data-theme="dark"] .routine-folder-tab.category-tone-core {
+  background: rgba(229, 103, 76, 0.22);
+  color: #F28C74;
+  border-color: rgba(229, 103, 76, 0.45);
+}
+
+[data-theme="dark"] .routine-folder-tab.category-tone-upper {
+  background: rgba(42, 107, 109, 0.22);
+  color: #55A8AA;
+  border-color: rgba(42, 107, 109, 0.45);
+}
+
+[data-theme="dark"] .routine-folder-tab.category-tone-power {
+  background: rgba(91, 110, 140, 0.22);
+  color: #92A6C4;
+  border-color: rgba(91, 110, 140, 0.45);
+}
+
+/* Difficulty Level Badge with Dedicated Pip */
 .routine-level-pill {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   padding: 4px 10px;
   border-radius: var(--radius-full);
   background: var(--raised2);
@@ -179,29 +247,58 @@
   font-weight: 700;
 }
 
+.routine-level-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.routine-level-pip.tier-beginner {
+  background: #2E7D5B;
+}
+
+.routine-level-pip.tier-intermediate {
+  background: #C28E52;
+}
+
+.routine-level-pip.tier-advanced {
+  background: #E5674C;
+}
+
+/* Enclosed Top Actions Pill */
 .routine-card-top-actions {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
+  padding: 2px 3px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
 }
 
-.card-delete-icon-btn {
-  width: 28px;
-  height: 28px;
+.card-action-icon-btn {
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: var(--faint);
+  color: var(--dim);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
 }
 
-.card-delete-icon-btn:hover {
+.card-action-icon-btn:hover {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.card-action-icon-btn.delete:hover {
   color: var(--danger);
   background: rgba(229, 103, 76, 0.14);
-}
-
-.card-delete-icon-btn.neutral:hover {
-  color: var(--text);
-  background: var(--raised2);
 }
 
 .routine-folder-body {
@@ -275,11 +372,21 @@
 }
 
 .routine-folder-sil {
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-radius: var(--radius-md);
   background: var(--raised2);
   border: 1px solid var(--border);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.14s var(--ease);
+}
+
+[data-theme="light"] .routine-folder-sil {
+  background: #FFFFFF;
+  border-color: rgba(194, 142, 82, 0.18);
+  box-shadow: 0 2px 8px rgba(26, 23, 19, 0.03);
 }
 
 .routine-preview-tray {
@@ -385,7 +492,33 @@
 }
 
 .routine-phase-summary {
-  color: var(--faint);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--dim);
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.phase-pill-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--dim);
+}
+
+.phase-pill-mini.warmup {
+  color: #B57918;
+}
+
+.phase-pill-mini.main {
+  color: var(--clay);
+  font-weight: 800;
+}
+
+.phase-dot-sep {
+  color: var(--border-hi);
+  font-weight: 300;
 }
 
 .routine-preview-more {

@@ -54,6 +54,34 @@ const CATEGORIES = [
   'Core & Functional'
 ];
 
+function getCategoryToneClass(category = '') {
+  const norm = String(category || '').toLowerCase();
+  if (norm.includes('leg') || norm.includes('lower') || norm.includes('glute')) {
+    return 'category-tone-legs';
+  }
+  if (norm.includes('full') || norm.includes('body')) {
+    return 'category-tone-fullbody';
+  }
+  if (norm.includes('core') || norm.includes('functional') || norm.includes('spine') || norm.includes('mobility')) {
+    return 'category-tone-core';
+  }
+  if (norm.includes('upper') || norm.includes('push') || norm.includes('pull')) {
+    return 'category-tone-upper';
+  }
+  if (norm.includes('cardio') || norm.includes('conditioning') || norm.includes('power')) {
+    return 'category-tone-power';
+  }
+  return 'category-tone-default';
+}
+
+function getDifficultyTone(difficulty = '') {
+  const norm = String(difficulty || '').toLowerCase();
+  if (norm.includes('advanced')) return 'tier-advanced';
+  if (norm.includes('intermediate')) return 'tier-intermediate';
+  if (norm.includes('beginner')) return 'tier-beginner';
+  return 'tier-intermediate';
+}
+
 export function RoutinesSection({
   routines = [],
   onSelectRoutineToView,
@@ -214,11 +242,12 @@ export function RoutinesSection({
           </div>
         ) : (
           <div className="routines-cards-grid">
-            {filteredRoutines.map((routine, idx) => {
+            {filteredRoutines.map((routine) => {
               const { primaryKeys, secondaryKeys } = getRoutineMuscleKeys(routine);
               const exercises = routine.exercises || [];
               const hasExercises = exercises.length > 0;
-              const tabTone = `folder-tab-tone-${idx % 6}`;
+              const categoryTone = getCategoryToneClass(routine.category);
+              const difficultyTone = getDifficultyTone(routine.difficulty);
               const totalSets = exercises.reduce(
                 (sum, ex) => sum + (parseInt(ex.defaultSets, 10) || 3),
                 0
@@ -233,37 +262,42 @@ export function RoutinesSection({
               return (
                 <article
                   key={routine.id}
-                  className={`routine-folder-card ${tabTone}`}
+                  className={`routine-folder-card ${categoryTone}`}
                   onClick={() => onSelectRoutineToView(routine.id)}
                 >
                   <div className="routine-folder-top-row">
                     <div className="routine-card-badges">
-                      <span className="routine-folder-tab">{routine.category || 'Workout'}</span>
+                      <span className={`routine-folder-tab ${categoryTone}`}>
+                        {routine.category || 'Workout'}
+                      </span>
                       {routine.difficulty && (
-                        <span className="routine-level-pill">{routine.difficulty}</span>
+                        <span className="routine-level-pill">
+                          <span className={`routine-level-pip ${difficultyTone}`} />
+                          <span>{routine.difficulty}</span>
+                        </span>
                       )}
                     </div>
                     <div className="routine-card-top-actions">
                       {onDuplicateRoutine && (
                         <button
                           type="button"
-                          className="card-delete-icon-btn"
+                          className="card-action-icon-btn"
                           onClick={(e) => handleDuplicateClick(e, routine)}
                           title="Duplicate workout"
                           aria-label={`Duplicate ${routine.title}`}
                         >
-                          <Copy size={14} />
+                          <Copy size={13} />
                         </button>
                       )}
                       {onDeleteRoutine && (
                         <button
                           type="button"
-                          className="card-delete-icon-btn"
+                          className="card-action-icon-btn delete"
                           onClick={(e) => handleDeleteClick(e, routine)}
                           title="Delete workout"
                           aria-label={`Delete ${routine.title}`}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={13} />
                         </button>
                       )}
                     </div>
@@ -310,7 +344,7 @@ export function RoutinesSection({
                         )}
                       </div>
 
-                      <div className="routine-folder-sil">
+                      <div className="routine-folder-sil" title="Target muscle activation">
                         <MiniBodyMap
                           primaryKeys={primaryKeys}
                           secondaryKeys={secondaryKeys}
@@ -350,9 +384,15 @@ export function RoutinesSection({
 
                         <div className="routine-preview-footer">
                           <span className="routine-phase-summary">
-                            {warmupCount > 0 && mainExercises.length > 0
-                              ? `${warmupCount} warm-up · ${mainExercises.length} main`
-                              : `${exercises.length} ${exercises.length === 1 ? 'exercise' : 'exercises'} planned`}
+                            {warmupCount > 0 && mainExercises.length > 0 ? (
+                              <>
+                                <span className="phase-pill-mini warmup">● {warmupCount} warm-up</span>
+                                <span className="phase-dot-sep">·</span>
+                                <span className="phase-pill-mini main">▲ {mainExercises.length} main</span>
+                              </>
+                            ) : (
+                              `${exercises.length} ${exercises.length === 1 ? 'exercise' : 'exercises'} planned`
+                            )}
                           </span>
                           <span className="routine-preview-more">
                             {remainingCount > 0 ? `+${remainingCount} more` : 'View workout'}

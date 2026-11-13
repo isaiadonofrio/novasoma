@@ -76,8 +76,14 @@ function deriveLastRecordFromSets(sets) {
 }
 
 const LEGACY_ROUTINE_TITLES = {
-  'Leg Workout 1 (Focus Squat & Catena Posteriore)': 'Leg Workout 1',
-  'Leg Workout 2 (Focus Squat Pesante & Flessione Ginocchio)': 'Leg Workout 2'
+  'Leg Workout 1 (Focus Squat & Catena Posteriore)': 'Legs · Squat & Posterior Chain',
+  'Leg Workout 2 (Focus Squat Pesante & Flessione Ginocchio)': 'Legs · Back Squat & Knee Flexion',
+  'Leg Workout 1': 'Legs · Squat & Posterior Chain',
+  'Leg Workout 2': 'Legs · Back Squat & Knee Flexion',
+  'Full Body Movement & Health Restoration': 'Full Body · Movement Restoration',
+  'Zero-Equipment Bodyweight & Movement Flow': 'Full Body · Calisthenics Flow',
+  'Minimalist Kettlebell & Loaded Carry Framework': 'Full Body · Kettlebell & Carry',
+  'McGill Big 3 & Spinal Decompression Reset': 'Core · McGill Spine Decompression',
 };
 
 function normalizeRoutineTitle(title) {
