@@ -2,48 +2,33 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
   Calendar,
   Clock,
-  Dumbbell,
-  Layers,
   Trash2,
   Check,
   X,
   Flame,
   ChevronDown,
-  Sparkles,
-  Activity,
-  Plus
+  ChevronLeft,
+  ChevronRight,
+  Activity
 } from 'lucide-react';
 import { toLocalDateKey } from '../utils/analytics';
-import { formatVolumeCompact } from '../utils/formatting';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 import { ConfirmModal } from './ConfirmModal';
 
-const DURATION_PRESETS = [30, 45, 60, 75, 90];
-
-const RPE_PRESETS = [
-  { value: 'RPE 6', label: 'Moderate', sub: 'RPE 6 · Aerobic', color: 'teal' },
-  { value: 'RPE 7-8', label: 'Target', sub: 'RPE 7-8 · Working', color: 'clay' },
-  { value: 'RPE 8-9', label: 'Heavy', sub: 'RPE 8-9 · Near Limit', color: 'ember' },
-  { value: 'RPE 9-10', label: 'Maximum', sub: 'RPE 9-10 · All-Out', color: 'red' },
-];
-
-const CUSTOM_ACTIVITY_PRESETS = [
-  { label: '🏃 Run / Jogging', title: 'Running Session', duration: 45, category: 'Cardio' },
-  { label: '🚴 Cycling', title: 'Cycling Session', duration: 45, category: 'Cardio' },
-  { label: '🏊 Swimming', title: 'Swimming Workout', duration: 45, category: 'Cardio' },
-  { label: '💪 Gym Split', title: 'Custom Gym Workout', duration: 60, category: 'Strength' },
-  { label: '🧘 Mobility / Yoga', title: 'Mobility & Stretching', duration: 30, category: 'Mobility' },
-  { label: '⚽ Sports / Games', title: 'Sports Activity', duration: 60, category: 'Sports' },
+const RPE_CHOICES = [
+  { value: 'RPE 6', label: 'Light', rpe: 'Recovery · RPE 6', tone: 'easy' },
+  { value: 'RPE 7-8', label: 'Moderate', rpe: 'Working · RPE 7-8', tone: 'target' },
+  { value: 'RPE 8-9', label: 'Hard', rpe: 'Near Limit · RPE 8-9', tone: 'hard' },
+  { value: 'RPE 9-10', label: 'Max Effort', rpe: 'All-Out · RPE 10', tone: 'max' },
 ];
 
 /**
- * Automatically computes an indicative volume in kg for a routine
+ * Automatically computes indicative volume in kg for a routine
  * based on user history of that routine, or estimated from planned sets & equipment.
  */
 function getIndicativeRoutineVolume(routine, workoutHistory = []) {
   if (!routine || !Array.isArray(routine.exercises)) return 0;
 
-  // 1. If this exact routine was completed in the past with recorded volume, use that benchmark!
   const pastSession = (workoutHistory || []).find(
     (s) => s.routineId === routine.id && Number(s.volumeKg) > 0
   );
@@ -51,7 +36,6 @@ function getIndicativeRoutineVolume(routine, workoutHistory = []) {
     return Math.round(Number(pastSession.volumeKg));
   }
 
-  // 2. Otherwise calculate indicative volume from the exercises
   let totalEstKg = 0;
   routine.exercises.forEach((ex) => {
     const sets = Number(ex.defaultSets) || 3;
@@ -102,10 +86,21 @@ export function ManualWorkoutLogModal({
     setSelectedDateKey(initialDateKey || todayKey);
   }
 
-  const [activeTab, setActiveTab] = useState(() => (routines.length > 0 ? 'routine' : 'custom'));
-  const [selectedRoutineId, setSelectedRoutineId] = useState(() => routines[0]?.id || null);
-  const [customTitle, setCustomTitle] = useState('Custom Workout');
-  const [customCategory, setCustomCategory] = useState('Strength');
+  // Parse calendar year & month from selectedDateKey
+  const [calendarYear, setCalendarYear] = useState(() => {
+    const [y] = (initialDateKey || toLocalDateKey(new Date())).split('-').map(Number);
+    return y;
+  });
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const [, m] = (initialDateKey || toLocalDateKey(new Date())).split('-').map(Number);
+    return m - 1;
+  });
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  // Default workout selection
+  const defaultOption = routines.length > 0 ? `routine:${routines[0].id}` : 'activity:Gym Session';
+  const [selectedWorkoutOption, setSelectedWorkoutOption] = useState(defaultOption);
+  const [customWorkoutTitle, setCustomWorkoutTitle] = useState('Gym Workout');
   const [durationMinutes, setDurationMinutes] = useState(() => routines[0]?.durationMinutes || 60);
   const [selectedRpe, setSelectedRpe] = useState('RPE 7-8');
   const [notes, setNotes] = useState('');
@@ -113,42 +108,10 @@ export function ManualWorkoutLogModal({
 
   useBodyScrollLock(isOpen);
 
-  // Selected routine object
-  const selectedRoutine = useMemo(() => {
-    if (activeTab !== 'routine' || !selectedRoutineId) return null;
-    return routines.find((r) => r.id === selectedRoutineId) || null;
-  }, [routines, activeTab, selectedRoutineId]);
+  // Check if selected date is today
+  const isToday = selectedDateKey === todayKey;
 
-  // Indicative volume automatically gathered from the routine
-  const indicativeVolumeKg = useMemo(() => {
-    if (activeTab !== 'routine' || !selectedRoutine) return 0;
-    return getIndicativeRoutineVolume(selectedRoutine, workoutHistory);
-  }, [activeTab, selectedRoutine, workoutHistory]);
-
-  const handleSelectRoutine = (routine) => {
-    if (!routine) return;
-    setSelectedRoutineId(routine.id);
-    setDurationMinutes(routine.durationMinutes || 60);
-  };
-
-  const handleApplyCustomPreset = (preset) => {
-    setCustomTitle(preset.title);
-    setCustomCategory(preset.category);
-    setDurationMinutes(preset.duration);
-  };
-
-  const stepDuration = (delta) => {
-    setDurationMinutes((prev) => Math.max(5, Math.min(360, (Number(prev) || 60) + delta)));
-  };
-
-  // Find all workouts already logged for the selected date
-  const existingOnDate = useMemo(() => {
-    if (!selectedDateKey) return [];
-    return (workoutHistory || []).filter(
-      (s) => toLocalDateKey(s.date || s.completedAt) === selectedDateKey
-    );
-  }, [workoutHistory, selectedDateKey]);
-
+  // Formatted date string (e.g. "Tuesday, Sep 22, 2026")
   const formattedDateTitle = useMemo(() => {
     if (!selectedDateKey) return 'Select Date';
     const [year, month, day] = selectedDateKey.split('-').map(Number);
@@ -161,46 +124,150 @@ export function ManualWorkoutLogModal({
     });
   }, [selectedDateKey]);
 
-  const formattedDateShort = useMemo(() => {
-    if (!selectedDateKey) return 'Date';
+  // Calendar month name
+  const calendarMonthName = useMemo(() => {
+    const d = new Date(calendarYear, calendarMonth, 1);
+    return d.toLocaleDateString('en-US', { month: 'long' });
+  }, [calendarYear, calendarMonth]);
+
+  // Day shift handler: easily jump 1 day back or forward with 1 tap!
+  const handleShiftDay = (delta) => {
     const [year, month, day] = selectedDateKey.split('-').map(Number);
     const d = new Date(year, month - 1, day, 12, 0, 0);
-    return d.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  }, [selectedDateKey]);
+    d.setDate(d.getDate() + delta);
+    const newKey = toLocalDateKey(d);
+    if (newKey && newKey <= todayKey) {
+      setSelectedDateKey(newKey);
+      setCalendarYear(d.getFullYear());
+      setCalendarMonth(d.getMonth());
+    }
+  };
+
+  const handleShiftMonth = (delta) => {
+    let nextMonth = calendarMonth + delta;
+    let nextYear = calendarYear;
+    if (nextMonth < 0) {
+      nextMonth = 11;
+      nextYear -= 1;
+    } else if (nextMonth > 11) {
+      nextMonth = 0;
+      nextYear += 1;
+    }
+    setCalendarMonth(nextMonth);
+    setCalendarYear(nextYear);
+  };
+
+  // Custom CSS-themed calendar days grid generator
+  const calendarDays = useMemo(() => {
+    const firstDay = new Date(calendarYear, calendarMonth, 1);
+    const jsDay = firstDay.getDay();
+    const startOffset = jsDay === 0 ? 6 : jsDay - 1; // Mon = 0..Sun = 6
+
+    const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+    const daysInPrevMonth = new Date(calendarYear, calendarMonth, 0).getDate();
+
+    const days = [];
+
+    // Previous month filler days
+    for (let i = startOffset - 1; i >= 0; i--) {
+      const dayNum = daysInPrevMonth - i;
+      const prevM = calendarMonth === 0 ? 11 : calendarMonth - 1;
+      const prevY = calendarMonth === 0 ? calendarYear - 1 : calendarYear;
+      const key = `${prevY}-${String(prevM + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+      days.push({
+        dayNum,
+        key,
+        isCurrentMonth: false,
+        isFuture: key > todayKey,
+        isSelected: key === selectedDateKey,
+        isToday: key === todayKey
+      });
+    }
+
+    // Current month days
+    for (let i = 1; i <= daysInMonth; i++) {
+      const key = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      days.push({
+        dayNum: i,
+        key,
+        isCurrentMonth: true,
+        isFuture: key > todayKey,
+        isSelected: key === selectedDateKey,
+        isToday: key === todayKey
+      });
+    }
+
+    // Trailing days to complete 35 or 42 grid cells
+    const targetTotal = days.length > 35 ? 42 : 35;
+    const remaining = targetTotal - days.length;
+    for (let i = 1; i <= remaining; i++) {
+      const nextM = calendarMonth === 11 ? 0 : calendarMonth + 1;
+      const nextY = calendarMonth === 11 ? calendarYear + 1 : calendarYear;
+      const key = `${nextY}-${String(nextM + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      days.push({
+        dayNum: i,
+        key,
+        isCurrentMonth: false,
+        isFuture: key > todayKey,
+        isSelected: key === selectedDateKey,
+        isToday: key === todayKey
+      });
+    }
+
+    return days;
+  }, [calendarYear, calendarMonth, selectedDateKey, todayKey]);
+
+  // When workout option changes, update duration automatically
+  const handleWorkoutOptionChange = (optionValue) => {
+    setSelectedWorkoutOption(optionValue);
+    if (optionValue.startsWith('routine:')) {
+      const rId = optionValue.replace('routine:', '');
+      const routine = routines.find((r) => r.id === rId);
+      if (routine?.durationMinutes) {
+        setDurationMinutes(routine.durationMinutes);
+      }
+    } else if (optionValue.startsWith('activity:')) {
+      const actName = optionValue.replace('activity:', '');
+      setCustomWorkoutTitle(actName);
+      if (actName.includes('Cardio') || actName.includes('Running')) {
+        setDurationMinutes(45);
+      } else if (actName.includes('Mobility')) {
+        setDurationMinutes(30);
+      } else {
+        setDurationMinutes(60);
+      }
+    }
+  };
+
+  // Find workouts already logged on selected date
+  const existingOnDate = useMemo(() => {
+    if (!selectedDateKey) return [];
+    return (workoutHistory || []).filter(
+      (s) => toLocalDateKey(s.date || s.completedAt) === selectedDateKey
+    );
+  }, [workoutHistory, selectedDateKey]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedDateKey) return;
 
-    const isRoutine = activeTab === 'routine' && selectedRoutine;
-    const finalTitle = isRoutine
-      ? selectedRoutine.title
-      : customTitle.trim() || 'Workout Session';
-    const finalMinutes = Math.max(1, Number(durationMinutes) || 60);
-    const dateIso = `${selectedDateKey}T12:00:00.000Z`;
+    let finalTitle = 'Workout Session';
+    let routineId = null;
+    let category = 'Strength';
+    let indicativeVol = 0;
+    let loggedSets = {};
 
-    // Gather realistic volume automatically
-    const finalVolume = isRoutine ? indicativeVolumeKg : 0;
-
-    const newSession = {
-      id: `manual-${Date.now()}`,
-      routineId: isRoutine ? selectedRoutine.id : null,
-      routineTitle: finalTitle,
-      category: isRoutine ? selectedRoutine.category : customCategory,
-      date: dateIso,
-      completedAt: dateIso,
-      durationSeconds: finalMinutes * 60,
-      volumeKg: finalVolume,
-      rpe: selectedRpe || null,
-      notes: notes.trim() || null,
-      isManual: true,
-      loggedSets: isRoutine && selectedRoutine.exercises
-        ? Object.fromEntries(
-            selectedRoutine.exercises.map((ex, i) => [
+    if (selectedWorkoutOption.startsWith('routine:')) {
+      const rId = selectedWorkoutOption.replace('routine:', '');
+      const r = routines.find((item) => item.id === rId);
+      if (r) {
+        finalTitle = r.title;
+        routineId = r.id;
+        category = r.category || 'Strength';
+        indicativeVol = getIndicativeRoutineVolume(r, workoutHistory);
+        if (Array.isArray(r.exercises)) {
+          loggedSets = Object.fromEntries(
+            r.exercises.map((ex, i) => [
               ex.id || `ex-${i}`,
               Array.from({ length: ex.defaultSets || 3 }, () => ({
                 reps: String(ex.defaultReps || '10'),
@@ -208,8 +275,33 @@ export function ManualWorkoutLogModal({
                 completed: true
               }))
             ])
-          )
-        : {}
+          );
+        }
+      }
+    } else if (selectedWorkoutOption.startsWith('activity:')) {
+      finalTitle = selectedWorkoutOption.replace('activity:', '');
+      category = finalTitle.includes('Running') || finalTitle.includes('Cycling') ? 'Cardio' : 'General';
+    } else {
+      finalTitle = customWorkoutTitle.trim() || 'Workout Session';
+      category = 'Custom';
+    }
+
+    const finalMinutes = Math.max(5, Math.min(360, Number(durationMinutes) || 60));
+    const dateIso = `${selectedDateKey}T12:00:00.000Z`;
+
+    const newSession = {
+      id: `manual-${Date.now()}`,
+      routineId,
+      routineTitle: finalTitle,
+      category,
+      date: dateIso,
+      completedAt: dateIso,
+      durationSeconds: finalMinutes * 60,
+      volumeKg: indicativeVol,
+      rpe: selectedRpe || null,
+      notes: notes.trim() || null,
+      isManual: true,
+      loggedSets
     };
 
     onSaveSession(newSession);
@@ -236,319 +328,259 @@ export function ManualWorkoutLogModal({
       }}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="manual-log-modal-title"
+      aria-labelledby="clean-modal-title"
     >
-      <div className="clean-workout-log-modal animate-fade">
-        {/* Modal Header */}
-        <div className="clean-log-header">
-          <div className="clean-log-title-area">
-            <div className="clean-log-icon">
+      <div className="pure-log-modal animate-fade">
+        {/* Clean Modal Header */}
+        <div className="pure-modal-header">
+          <div className="pure-header-left">
+            <div className="pure-header-icon">
               <Calendar size={18} />
             </div>
-            <div>
-              <h2 id="manual-log-modal-title" className="clean-log-heading">
-                Log Completed Workout
-              </h2>
-              <div className="clean-log-subdate">
-                <span>{formattedDateTitle}</span>
-                {selectedDateKey === todayKey && (
-                  <span className="today-badge">Today</span>
-                )}
-              </div>
-            </div>
+            <h2 id="clean-modal-title" className="pure-header-title">
+              Log Workout
+            </h2>
           </div>
 
-          <div className="clean-log-header-actions">
-            {/* Clickable Date Pill */}
-            <label className="clean-date-pill" title="Tap to choose date">
-              <Calendar size={13} />
-              <span>{formattedDateShort}</span>
-              <ChevronDown size={12} />
-              <input
-                type="date"
-                className="clean-date-hidden-input"
-                value={selectedDateKey}
-                max={todayKey}
-                onChange={(e) => e.target.value && setSelectedDateKey(e.target.value)}
-              />
-            </label>
-
-            <button
-              type="button"
-              className="clean-log-close-btn"
-              onClick={onClose}
-              aria-label="Close"
-            >
-              <X size={16} />
-            </button>
-          </div>
+          <button
+            type="button"
+            className="pure-close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <X size={17} />
+          </button>
         </div>
 
-        {/* Existing Sessions Alert Banner */}
+        {/* Existing Session Alert (if already logged on this day) */}
         {existingOnDate.length > 0 && (
-          <div className="clean-existing-alert">
-            <div className="existing-alert-left">
-              <Activity size={13} className="alert-icon" />
-              <span>
-                <b>{existingOnDate.length} session{existingOnDate.length > 1 ? 's' : ''}</b> already logged for this date
-              </span>
+          <div className="pure-existing-bar">
+            <div className="existing-bar-label">
+              <Activity size={13} />
+              <span>Already logged: <b>{existingOnDate[0]?.routineTitle || 'Workout'}</b></span>
             </div>
-            <div className="existing-session-chips">
-              {existingOnDate.map((s, idx) => (
-                <span key={s.id || idx} className="existing-pill">
-                  <span>{s.routineTitle || 'Workout'}</span>
-                  {onDeleteSession && (
-                    <button
-                      type="button"
-                      className="btn-del-mini"
-                      onClick={() => setPendingDeleteSession(s)}
-                      title="Delete this session"
-                    >
-                      <Trash2 size={11} />
-                    </button>
-                  )}
-                </span>
-              ))}
-            </div>
+            {onDeleteSession && (
+              <button
+                type="button"
+                className="btn-del-existing"
+                onClick={() => setPendingDeleteSession(existingOnDate[0])}
+                title="Delete this session"
+              >
+                <Trash2 size={12} />
+                <span>Remove</span>
+              </button>
+            )}
           </div>
         )}
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="clean-log-form">
-          {/* Main Selection Tabs */}
-          <div className="clean-type-switcher">
-            <button
-              type="button"
-              className={`switcher-tab ${activeTab === 'routine' ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab('routine');
-                if (routines.length > 0 && !selectedRoutineId) {
-                  setSelectedRoutineId(routines[0].id);
-                }
-              }}
-            >
-              <Layers size={14} />
-              <span>From Workout Routine</span>
-            </button>
-            <button
-              type="button"
-              className={`switcher-tab ${activeTab === 'custom' ? 'active' : ''}`}
-              onClick={() => setActiveTab('custom')}
-            >
-              <Plus size={14} />
-              <span>Other / Custom Activity</span>
-            </button>
-          </div>
-
-          {/* Routine Mode: Visual Routine Picker & Blueprint Card */}
-          {activeTab === 'routine' ? (
-            <div className="clean-routine-section">
-              {routines.length > 0 ? (
-                <>
-                  <div className="clean-routine-selector-box">
-                    <label className="clean-field-kicker" htmlFor="routine-select-dropdown">
-                      Select Completed Routine
-                    </label>
-                    <div className="routine-select-wrapper">
-                      <select
-                        id="routine-select-dropdown"
-                        className="clean-routine-select"
-                        value={selectedRoutineId || ''}
-                        onChange={(e) => {
-                          const r = routines.find((item) => item.id === e.target.value);
-                          if (r) handleSelectRoutine(r);
-                        }}
-                      >
-                        {routines.map((r) => (
-                          <option key={r.id} value={r.id}>
-                            {r.title} · {r.category || 'Workout'} ({r.exercises?.length || 0} exercises · ~{r.durationMinutes || 60}m)
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown size={14} className="select-chevron" />
-                    </div>
-                  </div>
-
-                  {/* High-Fidelity Routine Spotlight Card */}
-                  {selectedRoutine && (
-                    <div className="routine-spotlight-card animate-fade">
-                      <div className="spotlight-header">
-                        <div className="spotlight-title-box">
-                          <h3 className="spotlight-title">{selectedRoutine.title}</h3>
-                          <div className="spotlight-meta-tags">
-                            <span className="spotlight-badge category">
-                              {selectedRoutine.category || 'Routine'}
-                            </span>
-                            <span className="spotlight-badge duration">
-                              <Clock size={11} />
-                              ~{selectedRoutine.durationMinutes || 60}m
-                            </span>
-                            <span className="spotlight-badge exercises">
-                              <Dumbbell size={11} />
-                              {selectedRoutine.exercises?.length || 0} exercises
-                            </span>
-                          </div>
-                        </div>
-
-                        {indicativeVolumeKg > 0 && (
-                          <div className="spotlight-volume-badge" title="Indicative volume calculated from routine blueprint">
-                            <Sparkles size={12} />
-                            <span>~{formatVolumeCompact(indicativeVolumeKg)} est.</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Exercise Name Snippets */}
-                      {selectedRoutine.exercises && selectedRoutine.exercises.length > 0 && (
-                        <div className="spotlight-exercise-preview">
-                          <span className="preview-label">Movements:</span>
-                          <span className="preview-list">
-                            {selectedRoutine.exercises.slice(0, 4).map((ex) => ex.name).join(' · ')}
-                            {selectedRoutine.exercises.length > 4 && ` +${selectedRoutine.exercises.length - 4} more`}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="no-routines-empty">
-                  <p>You have no saved workout routines yet. You can log an unscripted custom activity below.</p>
-                </div>
-              )}
+        <form onSubmit={handleSubmit} className="pure-modal-body">
+          {/* Section 1: In-Theme Date Picker Directly Below Header */}
+          <div className="pure-date-block">
+            <div className="pure-date-header">
+              <span className="pure-field-label">Date of Workout</span>
+              {isToday && <span className="pure-today-pill">Today</span>}
             </div>
-          ) : (
-            /* Custom Activity Mode */
-            <div className="clean-custom-section animate-fade">
-              <div className="clean-field-group">
-                <label className="clean-field-kicker" htmlFor="custom-session-title">
-                  Activity Name
-                </label>
-                <input
-                  id="custom-session-title"
-                  type="text"
-                  className="clean-text-input"
-                  value={customTitle}
-                  onChange={(e) => setCustomTitle(e.target.value)}
-                  placeholder="e.g. 5km Morning Run, Bouldering, Swimming"
-                  required
-                />
-              </div>
 
-              {/* Quick Activity Presets */}
-              <div className="custom-quick-presets">
-                <span className="quick-presets-label">Popular activities:</span>
-                <div className="preset-chip-list">
-                  {CUSTOM_ACTIVITY_PRESETS.map((preset) => (
+            <div className="pure-date-stepper-row">
+              <button
+                type="button"
+                className="pure-date-nav-btn"
+                onClick={() => handleShiftDay(-1)}
+                title="Previous Day"
+                aria-label="Previous Day"
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              <button
+                type="button"
+                className="pure-date-display-btn"
+                onClick={() => setShowCalendar((prev) => !prev)}
+                title="Tap to choose from calendar"
+              >
+                <Calendar size={14} className="date-icon" />
+                <span className="date-display-text">{formattedDateTitle}</span>
+                <ChevronDown size={13} className={`chevron-indicator ${showCalendar ? 'open' : ''}`} />
+              </button>
+
+              <button
+                type="button"
+                className="pure-date-nav-btn"
+                disabled={isToday}
+                onClick={() => handleShiftDay(1)}
+                title="Next Day"
+                aria-label="Next Day"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+
+            {/* Custom In-Theme CSS Calendar Dropdown */}
+            {showCalendar && (
+              <div className="pure-custom-calendar animate-fade">
+                <div className="cal-nav-bar">
+                  <button type="button" className="cal-arrow-btn" onClick={() => handleShiftMonth(-1)}>
+                    <ChevronLeft size={14} />
+                  </button>
+                  <span className="cal-title">{calendarMonthName} {calendarYear}</span>
+                  <button type="button" className="cal-arrow-btn" onClick={() => handleShiftMonth(1)}>
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+
+                <div className="cal-weekday-row">
+                  <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+                </div>
+
+                <div className="cal-day-grid">
+                  {calendarDays.map((d) => (
                     <button
-                      key={preset.title}
+                      key={d.key}
                       type="button"
-                      className="btn-activity-preset"
-                      onClick={() => handleApplyCustomPreset(preset)}
+                      disabled={d.isFuture}
+                      className={`cal-day-button ${d.isSelected ? 'selected' : ''} ${d.isToday ? 'is-today' : ''} ${!d.isCurrentMonth ? 'other-month' : ''}`}
+                      onClick={() => {
+                        setSelectedDateKey(d.key);
+                        setShowCalendar(false);
+                      }}
                     >
-                      {preset.label}
+                      {d.dayNum}
                     </button>
                   ))}
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Duration Control (Clean & Tactile Stepper) */}
-          <div className="clean-duration-row">
-            <div className="duration-label-block">
-              <span className="clean-field-kicker">Session Duration</span>
-              <div className="duration-stepper-wrap">
-                <button
-                  type="button"
-                  className="btn-stepper minus"
-                  onClick={() => stepDuration(-5)}
-                  title="Subtract 5 minutes"
-                >
-                  −5
-                </button>
-                <div className="duration-numeric-display">
-                  <input
-                    type="number"
-                    min="5"
-                    max="360"
-                    className="duration-stepper-input"
-                    value={durationMinutes}
-                    onChange={(e) => setDurationMinutes(e.target.value)}
-                  />
-                  <span className="duration-unit">min</span>
-                </div>
-                <button
-                  type="button"
-                  className="btn-stepper plus"
-                  onClick={() => stepDuration(5)}
-                  title="Add 5 minutes"
-                >
-                  +5
-                </button>
+          {/* Section 2: Workout / Routine (Simplified & Uncluttered) */}
+          <div className="pure-field-block">
+            <label className="pure-field-label" htmlFor="workout-selector-input">
+              Workout / Activity
+            </label>
+            <div className="pure-select-wrap">
+              <select
+                id="workout-selector-input"
+                className="pure-native-select"
+                value={selectedWorkoutOption}
+                onChange={(e) => handleWorkoutOptionChange(e.target.value)}
+              >
+                {routines.length > 0 && (
+                  <optgroup label="Saved Routines">
+                    {routines.map((r) => (
+                      <option key={r.id} value={`routine:${r.id}`}>
+                        {r.title} ({r.category || 'Routine'})
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                <optgroup label="Common Workouts">
+                  <option value="activity:Gym Session">Gym Session</option>
+                  <option value="activity:Running / Cardio">Running / Cardio</option>
+                  <option value="activity:Cycling">Cycling</option>
+                  <option value="activity:Swimming">Swimming</option>
+                  <option value="activity:Mobility & Stretch">Mobility &amp; Stretch</option>
+                  <option value="activity:Sports / Games">Sports / Games</option>
+                </optgroup>
+                <option value="custom">+ Other (Type Custom Name)</option>
+              </select>
+              <ChevronDown size={14} className="select-arrow" />
+            </div>
+
+            {selectedWorkoutOption === 'custom' && (
+              <input
+                type="text"
+                className="pure-text-input custom-name animate-fade"
+                value={customWorkoutTitle}
+                onChange={(e) => setCustomWorkoutTitle(e.target.value)}
+                placeholder="e.g. Bouldering, Track Workout, Calisthenics"
+                autoFocus
+                required
+              />
+            )}
+          </div>
+
+          {/* Section 3: Clean Duration Control (Tactile Slider, No Clutter!) */}
+          <div className="pure-field-block">
+            <div className="pure-slider-header">
+              <label className="pure-field-label" htmlFor="pure-duration-slider">
+                Session Duration
+              </label>
+              <div className="pure-duration-badge">
+                <Clock size={12} />
+                <span className="duration-val">{durationMinutes}</span>
+                <span className="duration-lbl">min</span>
               </div>
             </div>
 
-            {/* Quick duration presets */}
-            <div className="duration-quick-bar">
-              {DURATION_PRESETS.map((mins) => (
-                <button
-                  key={mins}
-                  type="button"
-                  className={`btn-duration-pill ${Number(durationMinutes) === mins ? 'active' : ''}`}
-                  onClick={() => setDurationMinutes(mins)}
-                >
-                  {mins}m
-                </button>
-              ))}
+            <div className="pure-slider-wrap">
+              <input
+                id="pure-duration-slider"
+                type="range"
+                min="10"
+                max="150"
+                step="5"
+                value={durationMinutes}
+                onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                className="pure-slider"
+              />
+              <div className="pure-slider-labels">
+                <span>15m</span>
+                <span>30m</span>
+                <span>45m</span>
+                <span>60m</span>
+                <span>75m</span>
+                <span>90m</span>
+                <span>120m+</span>
+              </div>
             </div>
           </div>
 
-          {/* Perceived Intensity / Effort (RPE) */}
-          <div className="clean-rpe-row">
-            <div className="rpe-header">
-              <span className="clean-field-kicker">
+          {/* Section 4: Intensity & Difficulty (Clean 4-Button Grid) */}
+          <div className="pure-field-block">
+            <div className="pure-intensity-header">
+              <span className="pure-field-label">
                 <Flame size={12} />
-                <span>Effort &amp; Intensity</span>
+                <span>Difficulty &amp; Intensity</span>
               </span>
-              <span className="rpe-active-badge">{selectedRpe}</span>
+              <span className="intensity-selected-tag">{selectedRpe}</span>
             </div>
 
-            <div className="rpe-segmented-bar">
-              {RPE_PRESETS.map((item) => {
+            <div className="pure-intensity-grid">
+              {RPE_CHOICES.map((item) => {
                 const isSelected = selectedRpe === item.value;
                 return (
                   <button
                     key={item.value}
                     type="button"
-                    className={`btn-rpe-segment ${item.color} ${isSelected ? 'active' : ''}`}
+                    className={`pure-intensity-card ${item.tone} ${isSelected ? 'active' : ''}`}
                     onClick={() => setSelectedRpe(item.value)}
-                    title={item.sub}
+                    title={item.rpe}
                   >
-                    <span className="rpe-segment-label">{item.label}</span>
-                    <span className="rpe-segment-sub">{item.sub.split('·')[0]}</span>
+                    <span className="intensity-title">{item.label}</span>
+                    <span className="intensity-sub">{item.rpe.split('·')[0]}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Quick Notes (Collapsible / Clean) */}
-          <div className="clean-notes-row">
+          {/* Section 5: Clean Optional Notes Input */}
+          <div className="pure-field-block">
             <input
               type="text"
-              className="clean-notes-input"
+              className="pure-text-input notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add optional reflection or notes (e.g. Felt strong, new PR on squats)..."
+              placeholder="Optional notes (e.g. felt energized, great pump)..."
             />
           </div>
 
           {/* Footer Actions */}
-          <div className="clean-log-footer">
+          <div className="pure-modal-footer">
             <button
               type="button"
-              className="btn-gymmane-secondary clean-cancel-btn"
+              className="btn-gymmane-secondary pure-cancel-btn"
               onClick={onClose}
             >
               Cancel
@@ -556,10 +588,10 @@ export function ManualWorkoutLogModal({
 
             <button
               type="submit"
-              className="btn-gymmane-primary clean-submit-btn"
+              className="btn-gymmane-primary pure-submit-btn"
             >
               <Check size={16} />
-              <span>Log to Heatmap &amp; Schedule</span>
+              <span>Log Workout</span>
             </button>
           </div>
         </form>
