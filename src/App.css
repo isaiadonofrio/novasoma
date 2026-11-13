@@ -11861,25 +11861,26 @@
 
 .pure-field-label {
   font-family: var(--mono);
-  font-size: 0.70rem;
+  font-size: 0.82rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--dim);
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .pure-today-pill {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  padding: 1px 7px;
+  padding: 2px 8px;
   border-radius: var(--radius-full);
   background: var(--clay-soft);
   color: var(--clay);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .pure-date-stepper-row {
@@ -12333,8 +12334,8 @@
 .pure-slider-wrap {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 4px 2px;
+  gap: 2px;
+  padding: 4px 0 2px 0;
 }
 
 .pure-slider {
@@ -12346,7 +12347,7 @@
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
-  margin: 8px 0;
+  margin: 10px 0 4px 0;
 }
 
 .pure-slider::-webkit-slider-thumb {
@@ -12376,13 +12377,61 @@
   cursor: pointer;
 }
 
-.pure-slider-labels {
+/* Mathematically synchronized timeline ticks & labels */
+.pure-slider-timeline {
+  position: relative;
+  width: 100%;
+  height: 26px;
+}
+
+.pure-timeline-stop {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.timeline-tick {
+  width: 1.5px;
+  height: 5px;
+  background: var(--border-hi);
+  border-radius: 1px;
+  transition: all 0.12s var(--ease);
+}
+
+.timeline-tick.active {
+  background: var(--clay);
+  height: 7px;
+  width: 2px;
+}
+
+.timeline-label {
+  background: transparent;
+  border: none;
+  padding: 1px 4px;
+  margin: 0;
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
+  font-weight: 700;
   color: var(--dim);
-  padding: 0 2px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.12s var(--ease);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.timeline-label:hover {
+  color: var(--text);
+  background: var(--raised2);
+}
+
+.timeline-label.active {
+  color: var(--clay);
+  font-weight: 900;
 }
 
 /* Simplified Intensity Button Grid (4 clean tactile buttons) */

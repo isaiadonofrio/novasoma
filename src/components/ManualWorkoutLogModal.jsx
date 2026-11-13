@@ -108,6 +108,18 @@ const INTENSITY_CHOICES = [
   { id: 'Max Effort', label: 'Max Effort', tone: 'max' },
 ];
 
+const DURATION_MIN = 15;
+const DURATION_MAX = 120;
+const DURATION_STOPS = [
+  { val: 15, label: '15m' },
+  { val: 30, label: '30m' },
+  { val: 45, label: '45m' },
+  { val: 60, label: '60m' },
+  { val: 75, label: '75m' },
+  { val: 90, label: '90m' },
+  { val: 120, label: '120m' },
+];
+
 export function ManualWorkoutLogModal({
   isOpen = false,
   initialDateKey = null,
@@ -588,21 +600,36 @@ export function ManualWorkoutLogModal({
               <input
                 id="pure-duration-slider"
                 type="range"
-                min="10"
-                max="150"
+                min={DURATION_MIN}
+                max={DURATION_MAX}
                 step="5"
                 value={durationMinutes}
                 onChange={(e) => setDurationMinutes(Number(e.target.value))}
                 className="pure-slider"
+                aria-label="Workout duration in minutes"
               />
-              <div className="pure-slider-labels">
-                <span>15m</span>
-                <span>30m</span>
-                <span>45m</span>
-                <span>60m</span>
-                <span>75m</span>
-                <span>90m</span>
-                <span>120m+</span>
+              <div className="pure-slider-timeline">
+                {DURATION_STOPS.map((stop) => {
+                  const pct = ((stop.val - DURATION_MIN) / (DURATION_MAX - DURATION_MIN)) * 100;
+                  const isSelected = durationMinutes === stop.val;
+                  return (
+                    <div
+                      key={stop.val}
+                      className="pure-timeline-stop"
+                      style={{ left: `calc(11px + (100% - 22px) * ${pct / 100})` }}
+                    >
+                      <span className={`timeline-tick ${isSelected ? 'active' : ''}`} />
+                      <button
+                        type="button"
+                        className={`timeline-label ${isSelected ? 'active' : ''}`}
+                        onClick={() => setDurationMinutes(stop.val)}
+                        title={`Set duration to ${stop.val} minutes`}
+                      >
+                        {stop.label}
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -635,7 +662,7 @@ export function ManualWorkoutLogModal({
               className="pure-text-input notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Optional notes (e.g. felt great, new PR)..."
+              placeholder="Optional notes"
             />
           </div>
 
