@@ -227,18 +227,109 @@ export function WorkoutOverviewView({
     const clamped = Math.max(1, Math.min(10, Number(nextSets) || 3));
     setDraftWorkout(prev => ({
       ...prev,
-      exercises: prev.exercises.map((ex, i) =>
-        i === index ? { ...ex, defaultSets: clamped } : ex
-      )
+      exercises: prev.exercises.map((ex, i) => {
+        if (i !== index) return ex;
+        let repsList = Array.isArray(ex.customRepsPerSet) ? [...ex.customRepsPerSet] : null;
+        if (repsList) {
+          if (repsList.length < clamped) {
+            while (repsList.length < clamped) {
+              repsList.push(ex.defaultReps || '10');
+            }
+          } else if (repsList.length > clamped) {
+            repsList = repsList.slice(0, clamped);
+          }
+        }
+        return { ...ex, defaultSets: clamped, customRepsPerSet: repsList };
+      })
     }));
   };
 
-  const handleSetExerciseReps = (index, repsValue) => {
+  const handleRemoveSpecificSet = (index, setIdx) => {
     setDraftWorkout(prev => ({
       ...prev,
-      exercises: prev.exercises.map((ex, i) =>
-        i === index ? { ...ex, defaultReps: repsValue } : ex
-      )
+      exercises: prev.exercises.map((ex, i) => {
+        if (i !== index) return ex;
+        const currentSets = ex.defaultSets || 3;
+        if (currentSets <= 1) return ex;
+        const newCount = currentSets - 1;
+        let repsList = Array.isArray(ex.customRepsPerSet)
+          ? [...ex.customRepsPerSet]
+          : Array.from({ length: currentSets }, () => ex.defaultReps || '10');
+        repsList.splice(setIdx, 1);
+        let intentsList = Array.isArray(ex.customIntentsPerSet) ? [...ex.customIntentsPerSet] : null;
+        if (intentsList) {
+          intentsList.splice(setIdx, 1);
+        }
+        return {
+          ...ex,
+          defaultSets: newCount,
+          defaultReps: repsList[0] || ex.defaultReps,
+          customRepsPerSet: repsList,
+          customIntentsPerSet: intentsList
+        };
+      })
+    }));
+  };
+
+  const handleSetRowReps = (index, setIdx, repsValue) => {
+    setDraftWorkout(prev => ({
+      ...prev,
+      exercises: prev.exercises.map((ex, i) => {
+        if (i !== index) return ex;
+        const totalSets = ex.defaultSets || 3;
+        const list = Array.isArray(ex.customRepsPerSet) && ex.customRepsPerSet.length === totalSets
+          ? [...ex.customRepsPerSet]
+          : Array.from({ length: totalSets }, () => ex.defaultReps || '10');
+        list[setIdx] = repsValue;
+        return {
+          ...ex,
+          defaultReps: setIdx === 0 ? repsValue : ex.defaultReps,
+          customRepsPerSet: list
+        };
+      })
+    }));
+  };
+
+  const handleSetAllRowsReps = (index, repsValue) => {
+    setDraftWorkout(prev => ({
+      ...prev,
+      exercises: prev.exercises.map((ex, i) => {
+        if (i !== index) return ex;
+        const totalSets = ex.defaultSets || 3;
+        return {
+          ...ex,
+          defaultReps: repsValue,
+          customRepsPerSet: Array.from({ length: totalSets }, () => repsValue)
+        };
+      })
+    }));
+  };
+
+  const handleSetRowIntent = (index, setIdx, intentValue) => {
+    setDraftWorkout(prev => ({
+      ...prev,
+      exercises: prev.exercises.map((ex, i) => {
+        if (i !== index) return ex;
+        const totalSets = ex.defaultSets || 3;
+        const list = Array.isArray(ex.customIntentsPerSet) && ex.customIntentsPerSet.length === totalSets
+          ? [...ex.customIntentsPerSet]
+          : Array.from({ length: totalSets }, (_, s) => {
+              const num = s + 1;
+              const isFinal = num === totalSets;
+              return ex.isWarmup
+                ? 'RPE 5-6 · Establish neuromuscular motor pattern'
+                : num === 1
+                ? 'RPE 7-8 · Clean form & crisp bar velocity'
+                : isFinal
+                ? 'RPE 9-9.5 · Push near technical breakdown'
+                : 'RPE 8-8.5 · Controlled eccentric cadence';
+            });
+        list[setIdx] = intentValue;
+        return {
+          ...ex,
+          customIntentsPerSet: list
+        };
+      })
     }));
   };
 
@@ -354,7 +445,14 @@ export function WorkoutOverviewView({
     new Set((activeWorkout.exercises || []).flatMap((ex) => ex.secondaryKeys || []).filter(Boolean))
   );
 
-  const formatRepsSummary = (reps) => {
+  const formatRepsSummary = (reps, customList = null) => {
+    if (Array.isArray(customList) && customList.length > 0) {
+      const unique = Array.from(new Set(customList.map(r => String(r || '').trim())));
+      if (unique.length === 1) {
+        return formatRepsSummary(unique[0]);
+      }
+      return unique.join(' · ');
+    }
     if (!reps) return '10 reps';
     const str = String(reps).trim();
     if (/reps?|\d\s*s\b|sec|secondi|\bmin\b/i.test(str)) {
@@ -513,7 +611,7 @@ export function WorkoutOverviewView({
             <div className="row-clean-summary-strip">
               <div className="summary-pill volume-pill" title="Planned Sets and Target Reps">
                 <Layers size={13} className="summary-pill-icon" />
-                <span><b>{exercise.defaultSets || 3} Sets</b> × {formatRepsSummary(exercise.defaultReps)}</span>
+                <span><b>{exercise.defaultSets || 3} Sets</b> × {formatRepsSummary(exercise.defaultReps, exercise.customRepsPerSet)}</span>
               </div>
 
               <div className={`summary-pill rest-pill ${ssInfo && !ssInfo.isLast ? 'superset-transition-pill' : (!timerOn ? 'untimed' : '')}`} title="Target Recovery Rest Interval / Transition">
@@ -609,7 +707,7 @@ export function WorkoutOverviewView({
         {/* Expandable In-Depth Training Architecture Sheet */}
         {isExpanded && (
           <div className="row-indepth-panel animate-fade">
-            {/* Section 1: Sets Architecture & Presets with Integrated Toolbar */}
+            {/* Section 1: Sets Architecture & Presets with Direct In-Table Editing */}
             <div className="indepth-sets-section">
               <div className="indepth-section-header">
                 <div className="indepth-section-title">
@@ -626,127 +724,15 @@ export function WorkoutOverviewView({
                   </button>
                 </div>
 
-                {/* Integrated Controls in Edit Mode */}
-                {isEditMode ? (
-                  <div className="indepth-integrated-toolbar animate-fade">
-                    {/* 1. Sets Stepper */}
-                    <div className="toolbar-control-box">
-                      <span className="control-label">Sets:</span>
-                      <div className="compact-stepper-unit">
-                        <button
-                          type="button"
-                          className="indepth-step-btn"
-                          disabled={(exercise.defaultSets || 3) <= 1}
-                          onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) - 1)}
-                          title="Remove 1 set"
-                        >−</button>
-                        <span className="indepth-step-count"><b>{exercise.defaultSets || 3}</b></span>
-                        <button
-                          type="button"
-                          className="indepth-step-btn"
-                          disabled={(exercise.defaultSets || 3) >= 10}
-                          onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) + 1)}
-                          title="Add 1 set"
-                        >+</button>
-                      </div>
-                    </div>
-
-                    {/* 2. Rest Stepper & Toggle */}
-                    <div className="toolbar-control-box">
-                      <span className="control-label">
-                        {ssInfo && !ssInfo.isLast ? 'Round Rest:' : 'Rest Interval:'}
-                      </span>
-                      <div className="compact-stepper-unit rest-unit">
-                        <button
-                          type="button"
-                          className="indepth-step-btn"
-                          disabled={!timerOn || (exercise.defaultRestSeconds || 60) <= 15}
-                          onClick={() => handleStepRestSeconds(idx, -15)}
-                          title="Decrease rest by 15s"
-                        >−15s</button>
-                        <span className="indepth-step-count rest-val-text">
-                          <b>{timerOn ? `${exercise.defaultRestSeconds || 60}s` : 'Untimed'}</b>
-                        </span>
-                        <button
-                          type="button"
-                          className="indepth-step-btn"
-                          disabled={!timerOn || (exercise.defaultRestSeconds || 60) >= 300}
-                          onClick={() => handleStepRestSeconds(idx, 15)}
-                          title="Increase rest by 15s"
-                        >+15s</button>
-                        <button
-                          type="button"
-                          className={`btn-timer-pill-toggle ${timerOn ? 'on' : 'off'}`}
-                          onClick={() => handleToggleTimer(idx)}
-                          title={timerOn ? 'Disable timer (Untimed)' : 'Enable rest timer'}
-                        >
-                          <Clock size={11} />
-                          <span>{timerOn ? 'Timer' : 'Untimed'}</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* 3. Drop Sets Stepper / Add */}
-                    <div className="toolbar-control-box">
-                      <span className="control-label">Drop Sets:</span>
-                      {dropCount === 0 ? (
-                        <button
-                          type="button"
-                          className="btn-toolbar-add-dropset"
-                          onClick={() => handleUpdateExerciseDropSets(idx, 1)}
-                          title="Add immediate drop set post final set"
-                        >
-                          <Flame size={12} color="var(--ember)" />
-                          <span>+ Add Drop</span>
-                        </button>
-                      ) : (
-                        <div className="compact-stepper-unit dropset-active-unit">
-                          <button
-                            type="button"
-                            className="indepth-step-btn"
-                            onClick={() => handleUpdateExerciseDropSets(idx, dropCount - 1)}
-                            title="Decrease drop sets"
-                          >−</button>
-                          <span className="indepth-step-count dropset-val-text">
-                            <Flame size={12} color="var(--ember)" />
-                            <b>+{dropCount}</b>
-                          </span>
-                          <button
-                            type="button"
-                            className="indepth-step-btn"
-                            disabled={dropCount >= 3}
-                            onClick={() => handleUpdateExerciseDropSets(idx, dropCount + 1)}
-                            title="Increase drop sets"
-                          >+</button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 4. Target Reps Presets */}
-                    <div className="toolbar-control-box reps-box">
-                      <span className="control-label">Target Reps:</span>
-                      <div className="rep-presets-chips">
-                        {REP_PRESETS.map((repOption) => {
-                          const isSelected = String(exercise.defaultReps || '').trim() === repOption;
-                          return (
-                            <button
-                              key={repOption}
-                              type="button"
-                              className={`rep-preset-chip ${isSelected ? 'active' : ''}`}
-                              onClick={() => handleSetExerciseReps(idx, repOption)}
-                              title={`Set target reps to ${repOption}`}
-                            >
-                              {repOption}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="indepth-sets-preview-badge">
+                <div className="indepth-sets-preview-badge">
+                  {isEditMode ? (
+                    <span className="editing-table-hint">
+                      <Edit3 size={12} />
+                      <span>In-Table Editing Active · Modify reps, rest &amp; sets directly in the rows</span>
+                    </span>
+                  ) : (
                     <span className="preview-spec-tag">
-                      <b>{exercise.defaultSets || 3} Sets</b> planned · <b>{formatRepsSummary(exercise.defaultReps)}</b>
+                      <b>{exercise.defaultSets || 3} Sets</b> planned · <b>{formatRepsSummary(exercise.defaultReps, exercise.customRepsPerSet)}</b>
                       {ssInfo && !ssInfo.isLast ? (
                         <span className="preview-rest-tag"> · <b>0s Transition</b> to #{ssInfo.letter}2</span>
                       ) : (
@@ -756,8 +742,8 @@ export function WorkoutOverviewView({
                         <span className="preview-drop-tag"> · <b>+{dropCount} Drop {dropCount === 1 ? 'Set' : 'Sets'}</b></span>
                       )}
                     </span>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               {/* Sets Architecture Table */}
@@ -783,7 +769,7 @@ export function WorkoutOverviewView({
                         : isFinalSet
                         ? 'Working Set (Peak Output)'
                         : 'Working Set (Progressive)';
-                      const setIntent = exercise.isWarmup
+                      const defaultIntent = exercise.isWarmup
                         ? 'RPE 5-6 · Establish neuromuscular motor pattern'
                         : setNum === 1
                         ? 'RPE 7-8 · Clean form & crisp bar velocity'
@@ -791,46 +777,138 @@ export function WorkoutOverviewView({
                         ? 'RPE 9-9.5 · Push near technical breakdown'
                         : 'RPE 8-8.5 · Controlled eccentric cadence';
 
-                      let restDisplay;
-                      if (ssInfo && !ssInfo.isLast) {
-                        restDisplay = (
-                          <span className="table-rest-cell superset-transition">
-                            <ArrowDownUp size={11} />
-                            <b>0s (Transition to #{ssInfo.letter}2)</b>
-                          </span>
-                        );
-                      } else if (ssInfo && ssInfo.isLast) {
-                        restDisplay = (
-                          <span className="table-rest-cell superset-round-rest">
-                            <Clock size={11} />
-                            <b>{timerOn ? `${exercise.defaultRestSeconds || 90}s` : 'Untimed'} (Circuit Rest)</b>
-                          </span>
-                        );
-                      } else {
-                        restDisplay = (
-                          <span className="table-rest-cell">
-                            <Clock size={12} />
-                            {timerOn ? `${exercise.defaultRestSeconds || 60}s` : 'Untimed'}
-                          </span>
-                        );
-                      }
+                      const rowReps = (exercise.customRepsPerSet && exercise.customRepsPerSet[sIdx]) || exercise.defaultReps || '10-12';
+                      const rowIntent = (exercise.customIntentsPerSet && exercise.customIntentsPerSet[sIdx]) || defaultIntent;
 
                       return (
                         <tr key={`set-${setNum}`} className="set-table-row">
                           <td className="col-set">
-                            <span className="set-index-badge">#{String(setNum).padStart(2, '0')}</span>
+                            {isEditMode ? (
+                              <div className="table-set-cell-edit">
+                                <span className="set-index-badge">#{String(setNum).padStart(2, '0')}</span>
+                                {(exercise.defaultSets || 3) > 1 && (
+                                  <button
+                                    type="button"
+                                    className="btn-delete-row-set"
+                                    onClick={() => handleRemoveSpecificSet(idx, sIdx)}
+                                    title={`Remove Set #${setNum}`}
+                                    aria-label={`Remove Set #${setNum}`}
+                                  >
+                                    <Trash2 size={11} />
+                                  </button>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="set-index-badge">#{String(setNum).padStart(2, '0')}</span>
+                            )}
                           </td>
                           <td className="col-phase">
                             <span className="set-type-tag">{setPhaseName}</span>
                           </td>
                           <td className="col-target">
-                            <strong>{formatRepsSummary(exercise.defaultReps)}</strong>
+                            {isEditMode ? (
+                              <div className="table-reps-editor-box">
+                                <input
+                                  type="text"
+                                  className="table-reps-input"
+                                  value={rowReps}
+                                  onChange={(e) => handleSetRowReps(idx, sIdx, e.target.value)}
+                                  placeholder="e.g. 10-12, 8/side, 30s"
+                                  title="Edit target reps or duration"
+                                />
+                                <div className="table-reps-micro-chips">
+                                  {['8-10', '10-12', '12-15'].map((chip) => (
+                                    <button
+                                      key={chip}
+                                      type="button"
+                                      className={`btn-table-micro-chip ${rowReps === chip ? 'active' : ''}`}
+                                      onClick={() => handleSetRowReps(idx, sIdx, chip)}
+                                      title={`Set to ${chip}`}
+                                    >
+                                      {chip}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <strong>{formatRepsSummary(rowReps)}</strong>
+                            )}
                           </td>
                           <td className="col-rest">
-                            {restDisplay}
+                            {isEditMode ? (
+                              ssInfo && !ssInfo.isLast ? (
+                                <div className="table-rest-cell superset-transition">
+                                  <ArrowDownUp size={11} />
+                                  <b>0s (Transition to #{ssInfo.letter}2)</b>
+                                </div>
+                              ) : (
+                                <div className="table-rest-stepper-cell">
+                                  <button
+                                    type="button"
+                                    className="table-mini-step-btn"
+                                    disabled={!timerOn || (exercise.defaultRestSeconds || 60) <= 15}
+                                    onClick={() => handleStepRestSeconds(idx, -15)}
+                                    title="Decrease recovery rest by 15s"
+                                  >
+                                    −15s
+                                  </button>
+                                  <span className={`table-rest-val-display ${!timerOn ? 'untimed' : ''}`}>
+                                    {timerOn ? `${exercise.defaultRestSeconds || 60}s` : 'Untimed'}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="table-mini-step-btn"
+                                    disabled={!timerOn || (exercise.defaultRestSeconds || 60) >= 300}
+                                    onClick={() => handleStepRestSeconds(idx, 15)}
+                                    title="Increase recovery rest by 15s"
+                                  >
+                                    +15s
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={`table-timer-mode-btn ${timerOn ? 'on' : 'off'}`}
+                                    onClick={() => handleToggleTimer(idx)}
+                                    title={timerOn ? 'Set to Untimed' : 'Enable Rest Timer'}
+                                  >
+                                    <Clock size={10} />
+                                    <span>{timerOn ? 'Timer' : 'Untimed'}</span>
+                                  </button>
+                                </div>
+                              )
+                            ) : (
+                              ssInfo && !ssInfo.isLast ? (
+                                <span className="table-rest-cell superset-transition">
+                                  <ArrowDownUp size={11} />
+                                  <b>0s (Transition to #{ssInfo.letter}2)</b>
+                                </span>
+                              ) : ssInfo && ssInfo.isLast ? (
+                                <span className="table-rest-cell superset-round-rest">
+                                  <Clock size={11} />
+                                  <b>{timerOn ? `${exercise.defaultRestSeconds || 90}s` : 'Untimed'} (Circuit Rest)</b>
+                                </span>
+                              ) : (
+                                <span className="table-rest-cell">
+                                  <Clock size={12} />
+                                  {timerOn ? `${exercise.defaultRestSeconds || 60}s` : 'Untimed'}
+                                </span>
+                              )
+                            )}
                           </td>
                           <td className="col-intent">
-                            <span className="table-intent-text">{setIntent}</span>
+                            {isEditMode ? (
+                              <div className="table-intent-editor-box">
+                                <input
+                                  type="text"
+                                  className="table-intent-input"
+                                  value={rowIntent}
+                                  onChange={(e) => handleSetRowIntent(idx, sIdx, e.target.value)}
+                                  placeholder="e.g. RPE 8 · Controlled tempo"
+                                  title="Edit load intent or RPE cue"
+                                />
+                              </div>
+                            ) : (
+                              <span className="table-intent-text">{rowIntent}</span>
+                            )}
                           </td>
                         </tr>
                       );
@@ -843,9 +921,26 @@ export function WorkoutOverviewView({
                       return (
                         <tr key={`drop-${dropNum}`} className="set-table-row dropset-row">
                           <td className="col-set">
-                            <span className="set-index-badge dropset">
-                              <Flame size={11} /> DROP #{dropNum}
-                            </span>
+                            {isEditMode ? (
+                              <div className="table-set-cell-edit">
+                                <span className="set-index-badge dropset">
+                                  <Flame size={11} /> DROP #{dropNum}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="btn-delete-row-set drop"
+                                  onClick={() => handleUpdateExerciseDropSets(idx, dropCount - 1)}
+                                  title="Remove this drop set"
+                                  aria-label="Remove drop set"
+                                >
+                                  <Trash2 size={11} />
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="set-index-badge dropset">
+                                <Flame size={11} /> DROP #{dropNum}
+                              </span>
+                            )}
                           </td>
                           <td className="col-phase">
                             <span className="set-type-tag dropset">Drop Set (Immediate AMRAP)</span>
@@ -868,6 +963,62 @@ export function WorkoutOverviewView({
                     })}
                   </tbody>
                 </table>
+
+                {/* In-Table Editing Footer Toolbar */}
+                {isEditMode && (
+                  <div className="table-editor-footer-toolbar animate-fade">
+                    <div className="table-footer-btn-group">
+                      <button
+                        type="button"
+                        className="btn-table-action-add add-working-set"
+                        disabled={(exercise.defaultSets || 3) >= 10}
+                        onClick={() => handleUpdateExerciseSets(idx, (exercise.defaultSets || 3) + 1)}
+                        title="Add another working set"
+                      >
+                        <Plus size={13} />
+                        <span>Add Working Set</span>
+                      </button>
+
+                      {dropCount === 0 ? (
+                        <button
+                          type="button"
+                          className="btn-table-action-add add-dropset"
+                          onClick={() => handleUpdateExerciseDropSets(idx, 1)}
+                          title="Add immediate drop set post final set"
+                        >
+                          <Flame size={13} />
+                          <span>+ Add Drop Set Protocol</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn-table-action-add add-dropset active"
+                          disabled={dropCount >= 3}
+                          onClick={() => handleUpdateExerciseDropSets(idx, dropCount + 1)}
+                          title="Add another drop set"
+                        >
+                          <Flame size={13} />
+                          <span>+ Add Another Drop ({dropCount}/3)</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="table-footer-batch-presets">
+                      <span className="batch-presets-label">Apply to all sets:</span>
+                      {REP_PRESETS.map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          className={`btn-batch-preset-chip ${String(exercise.defaultReps || '').trim() === preset ? 'active' : ''}`}
+                          onClick={() => handleSetAllRowsReps(idx, preset)}
+                          title={`Set all sets to ${preset}`}
+                        >
+                          {preset}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

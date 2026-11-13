@@ -3136,6 +3136,332 @@
   color: var(--ember);
 }
 
+/* In-Table Direct Interactive Editor Styles */
+.editing-table-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--clay-soft);
+  color: var(--clay);
+  border: 1px solid color-mix(in srgb, var(--clay) 30%, transparent);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.table-set-cell-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-delete-row-set {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.btn-delete-row-set:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(229, 103, 76, 0.12);
+  transform: scale(1.08);
+}
+
+.btn-delete-row-set.drop {
+  color: var(--ember);
+  border-color: color-mix(in srgb, var(--ember) 35%, transparent);
+}
+
+.btn-delete-row-set.drop:hover {
+  background: var(--ember-soft, rgba(229, 103, 76, 0.18));
+}
+
+.table-reps-editor-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 140px;
+}
+
+.table-reps-input {
+  width: 100%;
+  max-width: 130px;
+  padding: 5px 9px;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--border-hi);
+  border-radius: var(--radius-sm);
+  transition: all 0.14s var(--ease);
+}
+
+.table-reps-input:focus {
+  outline: none;
+  border-color: var(--clay);
+  box-shadow: 0 0 0 2px var(--clay-soft);
+}
+
+.table-reps-micro-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.btn-table-micro-chip {
+  padding: 2px 6px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--raised2);
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+  line-height: 1.2;
+}
+
+.btn-table-micro-chip:hover {
+  color: var(--text);
+  border-color: var(--clay);
+  background: var(--surface);
+}
+
+.btn-table-micro-chip.active {
+  background: var(--clay);
+  color: #FFFFFF;
+  border-color: var(--clay);
+  font-weight: 800;
+}
+
+.table-rest-stepper-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 3px 6px;
+  white-space: nowrap;
+}
+
+.table-mini-step-btn {
+  padding: 2px 6px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--raised2);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+  line-height: 1.2;
+}
+
+.table-mini-step-btn:hover:not(:disabled) {
+  background: var(--clay);
+  color: #FFFFFF;
+  border-color: var(--clay);
+}
+
+.table-mini-step-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.table-rest-val-display {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text);
+  min-width: 32px;
+  text-align: center;
+  padding: 0 3px;
+}
+
+.table-rest-val-display.untimed {
+  color: var(--faint);
+  font-style: italic;
+}
+
+.table-timer-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+  margin-left: 2px;
+}
+
+.table-timer-mode-btn.on {
+  background: var(--clay-soft);
+  color: var(--clay);
+  border: 1px solid color-mix(in srgb, var(--clay) 35%, transparent);
+}
+
+.table-timer-mode-btn.off {
+  background: var(--raised2);
+  color: var(--faint);
+  border: 1px dashed var(--border-hi);
+}
+
+.table-intent-editor-box {
+  width: 100%;
+}
+
+.table-intent-input {
+  width: 100%;
+  padding: 5px 9px;
+  font-size: 0.74rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all 0.14s var(--ease);
+}
+
+.table-intent-input:focus {
+  outline: none;
+  border-color: var(--clay);
+  box-shadow: 0 0 0 2px var(--clay-soft);
+}
+
+/* In-Table Editing Footer Toolbar */
+.table-editor-footer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--raised2);
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.table-footer-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-table-action-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+  border: 1px dashed var(--border-hi);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.btn-table-action-add:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.btn-table-action-add.add-working-set {
+  border-color: var(--clay);
+  color: var(--clay);
+  background: var(--surface);
+}
+
+.btn-table-action-add.add-working-set:hover:not(:disabled) {
+  background: var(--clay-soft);
+  border-style: solid;
+}
+
+.btn-table-action-add.add-working-set:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-table-action-add.add-dropset {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+.btn-table-action-add.add-dropset:hover:not(:disabled) {
+  background: var(--ember-soft, rgba(229, 103, 76, 0.12));
+  border-style: solid;
+}
+
+.btn-table-action-add.add-dropset.active {
+  background: var(--ember-soft, rgba(229, 103, 76, 0.14));
+  border-style: solid;
+}
+
+.table-footer-batch-presets {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.batch-presets-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 2px;
+}
+
+.btn-batch-preset-chip {
+  padding: 3px 8px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+}
+
+.btn-batch-preset-chip:hover {
+  color: var(--text);
+  border-color: var(--clay);
+  background: var(--clay-soft);
+}
+
+.btn-batch-preset-chip.active {
+  background: var(--clay);
+  color: #FFFFFF;
+  border-color: var(--clay);
+  font-weight: 800;
+}
+
 /* =========================================================================
    SUPERSET CIRCUIT CAPSULE CONTAINER (OPTION A) & INTEGRATED SETS TOOLBAR
    ========================================================================= */
