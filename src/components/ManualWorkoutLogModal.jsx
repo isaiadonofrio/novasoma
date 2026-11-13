@@ -5,103 +5,44 @@ import {
   Trash2,
   Check,
   X,
-  Flame,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Activity,
-  Layers,
   Dumbbell,
   Zap,
   Bike,
+  Mountain,
   Waves,
   Sparkles,
-  Plus,
-  Sunrise,
-  Sun,
-  Moon
+  Plus
 } from 'lucide-react';
 import { toLocalDateKey } from '../utils/analytics';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 import { ConfirmModal } from './ConfirmModal';
 
-const RPE_CHOICES = [
-  { value: 'RPE 6', label: 'Light', rpe: 'Recovery · RPE 6', tone: 'easy' },
-  { value: 'RPE 7-8', label: 'Moderate', rpe: 'Working · RPE 7-8', tone: 'target' },
-  { value: 'RPE 8-9', label: 'Hard', rpe: 'Near Limit · RPE 8-9', tone: 'hard' },
-  { value: 'RPE 9-10', label: 'Max Effort', rpe: 'All-Out · RPE 10', tone: 'max' },
+const COMMON_WORKOUTS = [
+  { id: 'gym', name: 'Gym Workout', icon: Dumbbell, defaultDuration: 60, tone: 'clay' },
+  { id: 'running', name: 'Running / Jogging', icon: Zap, defaultDuration: 45, tone: 'ember' },
+  { id: 'cycling', name: 'Cycling / Bike', icon: Bike, defaultDuration: 50, tone: 'teal' },
+  { id: 'trekking', name: 'Trekking / Hiking', icon: Mountain, defaultDuration: 90, tone: 'clay' },
+  { id: 'swimming', name: 'Swimming', icon: Waves, defaultDuration: 45, tone: 'teal' },
+  { id: 'tennis', name: 'Tennis / Padel', icon: Activity, defaultDuration: 60, tone: 'ember' },
+  { id: 'mobility', name: 'Mobility & Stretch', icon: Sparkles, defaultDuration: 30, tone: 'clay' },
+  { id: 'sports', name: 'Sports & Games', icon: Activity, defaultDuration: 60, tone: 'ember' },
+  { id: 'custom', name: '+ Other (Custom)', icon: Plus, defaultDuration: 60, tone: 'custom' },
 ];
 
-const COMMON_ACTIVITIES = [
-  { name: 'Gym Session', description: 'Strength & resistance training', icon: Dumbbell, tone: 'clay', defaultDuration: 60 },
-  { name: 'Running / Cardio', description: 'Aerobic pacing & intervals', icon: Zap, tone: 'ember', defaultDuration: 45 },
-  { name: 'Cycling', description: 'Road, gravel or spin ride', icon: Bike, tone: 'teal', defaultDuration: 50 },
-  { name: 'Swimming', description: 'Pool laps & conditioning', icon: Waves, tone: 'teal', defaultDuration: 45 },
-  { name: 'Mobility & Stretch', description: 'Recovery, yoga & flexibility', icon: Sparkles, tone: 'clay', defaultDuration: 30 },
-  { name: 'Sports & Games', description: 'Athletics, tennis, climbing, etc.', icon: Activity, tone: 'ember', defaultDuration: 60 },
+const INTENSITY_CHOICES = [
+  { id: 'Light', label: 'Light', tone: 'easy' },
+  { id: 'Moderate', label: 'Moderate', tone: 'target' },
+  { id: 'Hard', label: 'Hard', tone: 'hard' },
+  { id: 'Max Effort', label: 'Max Effort', tone: 'max' },
 ];
-
-const TIME_OF_DAY_OPTIONS = [
-  { id: 'Morning', label: 'Morning', icon: Sunrise },
-  { id: 'Afternoon', label: 'Afternoon', icon: Sun },
-  { id: 'Evening', label: 'Evening', icon: Moon },
-];
-
-const FEEL_OPTIONS = [
-  { id: 'Energized', label: 'Energized', icon: Zap, sub: 'Felt strong & sharp' },
-  { id: 'Solid', label: 'Solid', icon: Check, sub: 'Target hit on plan' },
-  { id: 'Grind', label: 'Heavy Grind', icon: Flame, sub: 'Pushed through fatigue' },
-];
-
-/**
- * Automatically computes indicative volume in kg for a routine
- * based on user history of that routine, or estimated from planned sets & equipment.
- */
-function getIndicativeRoutineVolume(routine, workoutHistory = []) {
-  if (!routine || !Array.isArray(routine.exercises)) return 0;
-
-  const pastSession = (workoutHistory || []).find(
-    (s) => s.routineId === routine.id && Number(s.volumeKg) > 0
-  );
-  if (pastSession && pastSession.volumeKg) {
-    return Math.round(Number(pastSession.volumeKg));
-  }
-
-  let totalEstKg = 0;
-  routine.exercises.forEach((ex) => {
-    const sets = Number(ex.defaultSets) || 3;
-    let reps = 10;
-    if (ex.defaultReps) {
-      const match = String(ex.defaultReps).match(/\d+/);
-      if (match) reps = parseInt(match[0], 10);
-    }
-
-    const eq = (ex.equipment || '').toLowerCase();
-    let unitWeight = 0;
-    if (eq.includes('barbell')) {
-      unitWeight = 40;
-    } else if (eq.includes('dumbbell')) {
-      unitWeight = 16;
-    } else if (eq.includes('kettlebell')) {
-      unitWeight = 16;
-    } else if (eq.includes('machine') || eq.includes('cable')) {
-      unitWeight = 35;
-    } else if (eq.includes('bodyweight') || eq.includes('mat')) {
-      unitWeight = 0;
-    } else {
-      unitWeight = 15;
-    }
-
-    totalEstKg += sets * reps * unitWeight;
-  });
-
-  return Math.round(totalEstKg / 50) * 50;
-}
 
 export function ManualWorkoutLogModal({
   isOpen = false,
   initialDateKey = null,
-  routines = [],
   workoutHistory = [],
   onSaveSession,
   onDeleteSession,
@@ -128,29 +69,17 @@ export function ManualWorkoutLogModal({
   });
   const [showCalendar, setShowCalendar] = useState(false);
 
-  // Default workout selection
-  const defaultOption = routines.length > 0 ? `routine:${routines[0].id}` : 'activity:Gym Session';
-  const [selectedWorkoutOption, setSelectedWorkoutOption] = useState(defaultOption);
-  const [customWorkoutTitle, setCustomWorkoutTitle] = useState('Gym Workout');
-  const [durationMinutes, setDurationMinutes] = useState(() => routines[0]?.durationMinutes || 60);
-  const [selectedRpe, setSelectedRpe] = useState('RPE 7-8');
+  // Clean workout selection (Classics & Common only)
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState('gym');
+  const [customWorkoutTitle, setCustomWorkoutTitle] = useState('');
+  const [durationMinutes, setDurationMinutes] = useState(60);
+  const [intensity, setIntensity] = useState('Moderate');
   const [notes, setNotes] = useState('');
   const [pendingDeleteSession, setPendingDeleteSession] = useState(null);
 
-  // Custom in-theme workout dropdown state
+  // In-theme workout dropdown state
   const [showWorkoutMenu, setShowWorkoutMenu] = useState(false);
   const workoutMenuRef = useRef(null);
-
-  // Time of Day state (Morning, Afternoon, Evening)
-  const [timeOfDay, setTimeOfDay] = useState(() => {
-    const hr = new Date().getHours();
-    if (hr < 12) return 'Morning';
-    if (hr < 17) return 'Afternoon';
-    return 'Evening';
-  });
-
-  // Optional Session Feel (Energized, Solid, Heavy Grind)
-  const [selectedFeel, setSelectedFeel] = useState(null);
 
   useBodyScrollLock(isOpen);
 
@@ -193,7 +122,7 @@ export function ManualWorkoutLogModal({
     return d.toLocaleDateString('en-US', { month: 'long' });
   }, [calendarYear, calendarMonth]);
 
-  // Day shift handler: easily jump 1 day back or forward with 1 tap!
+  // Day shift handler: jump 1 day back or forward with 1 tap
   const handleShiftDay = (delta) => {
     const [year, month, day] = selectedDateKey.split('-').map(Number);
     const d = new Date(year, month - 1, day, 12, 0, 0);
@@ -224,7 +153,7 @@ export function ManualWorkoutLogModal({
   const calendarDays = useMemo(() => {
     const firstDay = new Date(calendarYear, calendarMonth, 1);
     const jsDay = firstDay.getDay();
-    const startOffset = jsDay === 0 ? 6 : jsDay - 1; // Mon = 0..Sun = 6
+    const startOffset = jsDay === 0 ? 6 : jsDay - 1;
 
     const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
     const daysInPrevMonth = new Date(calendarYear, calendarMonth, 0).getDate();
@@ -280,27 +209,12 @@ export function ManualWorkoutLogModal({
     return days;
   }, [calendarYear, calendarMonth, selectedDateKey, todayKey]);
 
-  // When workout option changes, update duration automatically
-  const handleWorkoutOptionChange = (optionValue) => {
-    setSelectedWorkoutOption(optionValue);
-    if (optionValue.startsWith('routine:')) {
-      const rId = optionValue.replace('routine:', '');
-      const routine = routines.find((r) => r.id === rId);
-      if (routine?.durationMinutes) {
-        setDurationMinutes(routine.durationMinutes);
-      }
-    } else if (optionValue.startsWith('activity:')) {
-      const actName = optionValue.replace('activity:', '');
-      setCustomWorkoutTitle(actName);
-      if (actName.includes('Cardio') || actName.includes('Running')) {
-        setDurationMinutes(45);
-      } else if (actName.includes('Mobility')) {
-        setDurationMinutes(30);
-      } else {
-        setDurationMinutes(60);
-      }
-    }
-  };
+  // Selected workout activity lookup
+  const selectedWorkout = useMemo(() => {
+    return COMMON_WORKOUTS.find((w) => w.id === selectedWorkoutId) || COMMON_WORKOUTS[0];
+  }, [selectedWorkoutId]);
+
+  const WorkoutIcon = selectedWorkout.icon;
 
   // Find workouts already logged on selected date
   const existingOnDate = useMemo(() => {
@@ -310,81 +224,29 @@ export function ManualWorkoutLogModal({
     );
   }, [workoutHistory, selectedDateKey]);
 
-  const isRoutine = selectedWorkoutOption.startsWith('routine:');
-  const selectedRoutine = useMemo(() => {
-    if (!isRoutine) return null;
-    const rId = selectedWorkoutOption.replace('routine:', '');
-    return routines.find((r) => r.id === rId) || null;
-  }, [isRoutine, selectedWorkoutOption, routines]);
-
-  const indicativeVol = useMemo(() => {
-    if (!selectedRoutine) return 0;
-    return getIndicativeRoutineVolume(selectedRoutine, workoutHistory);
-  }, [selectedRoutine, workoutHistory]);
-
-  const { triggerTitle, triggerSub, triggerTone, TriggerIcon } = useMemo(() => {
-    if (selectedWorkoutOption.startsWith('routine:')) {
-      const rId = selectedWorkoutOption.replace('routine:', '');
-      const r = routines.find((item) => item.id === rId);
-      if (r) {
-        return {
-          triggerTitle: r.title,
-          triggerSub: `${r.category || 'Routine'} · ${r.exercises?.length || 0} ex · ~${r.durationMinutes || 60}m`,
-          triggerTone: 'routine',
-          TriggerIcon: Layers
-        };
-      }
-    } else if (selectedWorkoutOption.startsWith('activity:')) {
-      const actName = selectedWorkoutOption.replace('activity:', '');
-      const act = COMMON_ACTIVITIES.find((a) => a.name === actName);
-      if (act) {
-        return {
-          triggerTitle: act.name,
-          triggerSub: act.description,
-          triggerTone: act.tone,
-          TriggerIcon: act.icon
-        };
-      }
-    }
-    return {
-      triggerTitle: customWorkoutTitle.trim() || 'Custom Workout',
-      triggerSub: 'Custom manual workout entry',
-      triggerTone: 'custom',
-      TriggerIcon: Plus
-    };
-  }, [selectedWorkoutOption, customWorkoutTitle, routines]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedDateKey) return;
 
-    let finalTitle = 'Workout Session';
-    let routineId = null;
+    let finalTitle = 'Gym Workout';
     let category = 'Strength';
-    let loggedSets = {};
 
-    if (isRoutine && selectedRoutine) {
-      finalTitle = selectedRoutine.title;
-      routineId = selectedRoutine.id;
-      category = selectedRoutine.category || 'Strength';
-      if (Array.isArray(selectedRoutine.exercises)) {
-        loggedSets = Object.fromEntries(
-          selectedRoutine.exercises.map((ex, i) => [
-            ex.id || `ex-${i}`,
-            Array.from({ length: ex.defaultSets || 3 }, () => ({
-              reps: String(ex.defaultReps || '10'),
-              weightKg: 0,
-              completed: true
-            }))
-          ])
-        );
-      }
-    } else if (selectedWorkoutOption.startsWith('activity:')) {
-      finalTitle = selectedWorkoutOption.replace('activity:', '');
-      category = finalTitle.includes('Running') || finalTitle.includes('Cycling') ? 'Cardio' : 'General';
-    } else {
-      finalTitle = customWorkoutTitle.trim() || 'Workout Session';
+    if (selectedWorkoutId === 'custom') {
+      finalTitle = customWorkoutTitle.trim() || 'Custom Workout';
       category = 'Custom';
+    } else {
+      finalTitle = selectedWorkout.name;
+      if (['running', 'cycling', 'swimming'].includes(selectedWorkout.id)) {
+        category = 'Cardio';
+      } else if (selectedWorkout.id === 'trekking') {
+        category = 'Outdoor';
+      } else if (selectedWorkout.id === 'mobility') {
+        category = 'Recovery';
+      } else if (['tennis', 'sports'].includes(selectedWorkout.id)) {
+        category = 'Sports';
+      } else {
+        category = 'Strength';
+      }
     }
 
     const finalMinutes = Math.max(5, Math.min(360, Number(durationMinutes) || 60));
@@ -392,20 +254,19 @@ export function ManualWorkoutLogModal({
 
     const newSession = {
       id: `manual-${Date.now()}`,
-      routineId,
+      routineId: null,
       routineTitle: finalTitle,
       category,
       date: dateIso,
       completedAt: dateIso,
       durationMinutes: finalMinutes,
       durationSeconds: finalMinutes * 60,
-      volumeKg: indicativeVol,
-      rpe: selectedRpe || null,
+      volumeKg: 0,
+      intensity,
+      rpe: intensity,
       notes: notes.trim() || null,
       isManual: true,
-      loggedSets,
-      timeOfDay,
-      feel: selectedFeel || null
+      loggedSets: {}
     };
 
     onSaveSession(newSession);
@@ -441,7 +302,7 @@ export function ManualWorkoutLogModal({
       aria-labelledby="clean-modal-title"
     >
       <div className="pure-log-modal animate-fade">
-        {/* Clean Modal Header */}
+        {/* Modal Header */}
         <div className="pure-modal-header">
           <div className="pure-header-left">
             <div className="pure-header-icon">
@@ -462,7 +323,7 @@ export function ManualWorkoutLogModal({
           </button>
         </div>
 
-        {/* Existing Session Alert (if already logged on this day) */}
+        {/* Existing Session Notice (if already logged on this day) */}
         {existingOnDate.length > 0 && (
           <div className="pure-existing-bar">
             <div className="existing-bar-label">
@@ -485,7 +346,7 @@ export function ManualWorkoutLogModal({
 
         {/* Modal Form */}
         <form onSubmit={handleSubmit} className="pure-modal-body">
-          {/* Section 1: In-Theme Date Picker Directly Below Header */}
+          {/* Section 1: In-Theme Date Stepper & Calendar */}
           <div className="pure-date-block">
             <div className="pure-date-header">
               <span className="pure-field-label">Date of Workout</span>
@@ -506,7 +367,10 @@ export function ManualWorkoutLogModal({
               <button
                 type="button"
                 className="pure-date-display-btn"
-                onClick={() => setShowCalendar((prev) => !prev)}
+                onClick={() => {
+                  setShowCalendar((prev) => !prev);
+                  setShowWorkoutMenu(false);
+                }}
                 title="Tap to choose from calendar"
               >
                 <Calendar size={14} className="date-icon" />
@@ -561,39 +425,11 @@ export function ManualWorkoutLogModal({
                 </div>
               </div>
             )}
-            {/* Time of Day quick selector */}
-            <div className="pure-time-strip">
-              <span className="pure-field-sublabel">Time of Day</span>
-              <div className="pure-time-pills">
-                {TIME_OF_DAY_OPTIONS.map((t) => {
-                  const TIcon = t.icon;
-                  const isActive = timeOfDay === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      className={`time-pill-btn ${isActive ? 'active' : ''}`}
-                      onClick={() => setTimeOfDay(t.id)}
-                    >
-                      <TIcon size={12} />
-                      <span>{t.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>
 
-          {/* Section 2: Workout / Routine (In-Theme Custom Dropdown) */}
+          {/* Section 2: Workout Type (Classics & Common Only) */}
           <div className="pure-field-block" ref={workoutMenuRef}>
-            <div className="pure-field-header">
-              <label className="pure-field-label">Workout / Activity</label>
-              {indicativeVol > 0 && (
-                <span className="pure-volume-pill animate-fade">
-                  <Zap size={11} /> ~{indicativeVol.toLocaleString()} kg est. volume
-                </span>
-              )}
-            </div>
+            <label className="pure-field-label">Workout Type</label>
 
             <div className="pure-custom-select-wrap">
               <button
@@ -607,13 +443,14 @@ export function ManualWorkoutLogModal({
                 aria-expanded={showWorkoutMenu}
               >
                 <div className="trigger-left">
-                  <div className={`trigger-icon-box ${triggerTone}`}>
-                    <TriggerIcon size={15} />
+                  <div className={`trigger-icon-box ${selectedWorkout.tone}`}>
+                    <WorkoutIcon size={16} />
                   </div>
-                  <div className="trigger-copy">
-                    <span className="trigger-title">{triggerTitle}</span>
-                    <span className="trigger-meta">{triggerSub}</span>
-                  </div>
+                  <span className="trigger-title">
+                    {selectedWorkoutId === 'custom'
+                      ? (customWorkoutTitle.trim() || 'Custom Workout')
+                      : selectedWorkout.name}
+                  </span>
                 </div>
                 <ChevronDown size={14} className={`chevron-indicator ${showWorkoutMenu ? 'open' : ''}`} />
               </button>
@@ -621,130 +458,56 @@ export function ManualWorkoutLogModal({
               {/* In-Theme Custom Dropdown Menu Panel */}
               {showWorkoutMenu && (
                 <div className="pure-custom-dropdown-panel animate-fade" role="listbox">
-                  {routines.length > 0 && (
-                    <div className="dropdown-section">
-                      <div className="dropdown-section-heading">
-                        <Layers size={11} />
-                        <span>Saved Routines</span>
-                      </div>
-                      <div className="dropdown-items-list">
-                        {routines.map((r) => {
-                          const isSelected = selectedWorkoutOption === `routine:${r.id}`;
-                          return (
-                            <button
-                              key={r.id}
-                              type="button"
-                              role="option"
-                              aria-selected={isSelected}
-                              className={`dropdown-item-btn ${isSelected ? 'active' : ''}`}
-                              onClick={() => {
-                                handleWorkoutOptionChange(`routine:${r.id}`);
-                                setShowWorkoutMenu(false);
-                              }}
-                            >
-                              <div className="item-main">
-                                <div className="item-icon-circle routine">
-                                  <Layers size={13} />
-                                </div>
-                                <div className="item-info">
-                                  <span className="item-name">{r.title}</span>
-                                  <span className="item-sub">
-                                    {r.category || 'Routine'} · {r.exercises?.length || 0} ex · ~{r.durationMinutes || 60}m
-                                  </span>
-                                </div>
-                              </div>
-                              {isSelected && <Check size={14} className="item-check" />}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="dropdown-section">
-                    <div className="dropdown-section-heading">
-                      <Activity size={11} />
-                      <span>Common Workouts</span>
-                    </div>
-                    <div className="dropdown-items-list">
-                      {COMMON_ACTIVITIES.map((act) => {
-                        const isSelected = selectedWorkoutOption === `activity:${act.name}`;
-                        const ActIcon = act.icon;
-                        return (
-                          <button
-                            key={act.name}
-                            type="button"
-                            role="option"
-                            aria-selected={isSelected}
-                            className={`dropdown-item-btn ${isSelected ? 'active' : ''}`}
-                            onClick={() => {
-                              handleWorkoutOptionChange(`activity:${act.name}`);
-                              setShowWorkoutMenu(false);
-                            }}
-                          >
-                            <div className="item-main">
-                              <div className={`item-icon-circle ${act.tone}`}>
-                                <ActIcon size={13} />
-                              </div>
-                              <div className="item-info">
-                                <span className="item-name">{act.name}</span>
-                                <span className="item-sub">{act.description}</span>
-                              </div>
+                  <div className="dropdown-items-list">
+                    {COMMON_WORKOUTS.map((item) => {
+                      const isSelected = selectedWorkoutId === item.id;
+                      const ItemIcon = item.icon;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          className={`dropdown-item-btn ${isSelected ? 'active' : ''}`}
+                          onClick={() => {
+                            setSelectedWorkoutId(item.id);
+                            setDurationMinutes(item.defaultDuration);
+                            setShowWorkoutMenu(false);
+                          }}
+                        >
+                          <div className="item-main">
+                            <div className={`item-icon-circle ${item.tone}`}>
+                              <ItemIcon size={14} />
                             </div>
-                            {isSelected && <Check size={14} className="item-check" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="dropdown-section custom-section">
-                    <div className="dropdown-items-list">
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={selectedWorkoutOption === 'custom'}
-                        className={`dropdown-item-btn custom-entry ${selectedWorkoutOption === 'custom' ? 'active' : ''}`}
-                        onClick={() => {
-                          handleWorkoutOptionChange('custom');
-                          setShowWorkoutMenu(false);
-                        }}
-                      >
-                        <div className="item-main">
-                          <div className="item-icon-circle custom">
-                            <Plus size={13} />
+                            <span className="item-name">{item.name}</span>
                           </div>
-                          <div className="item-info">
-                            <span className="item-name">+ Other (Type Custom Name)</span>
-                            <span className="item-sub">Custom workout without preset blueprint</span>
-                          </div>
-                        </div>
-                        {selectedWorkoutOption === 'custom' && <Check size={14} className="item-check" />}
-                      </button>
-                    </div>
+                          {isSelected && <Check size={14} className="item-check" />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
             </div>
 
-            {selectedWorkoutOption === 'custom' && (
+            {selectedWorkoutId === 'custom' && (
               <input
                 type="text"
                 className="pure-text-input custom-name animate-fade"
                 value={customWorkoutTitle}
                 onChange={(e) => setCustomWorkoutTitle(e.target.value)}
-                placeholder="e.g. Bouldering, Track Workout, Calisthenics"
+                placeholder="e.g. Bouldering, Boxing, Calisthenics"
                 autoFocus
                 required
               />
             )}
           </div>
 
-          {/* Section 3: Clean Duration Control (Tactile Slider, No Clutter!) */}
+          {/* Section 3: Clean Duration Control (Tactile Range Slider) */}
           <div className="pure-field-block">
             <div className="pure-slider-header">
               <label className="pure-field-label" htmlFor="pure-duration-slider">
-                Session Duration
+                Duration
               </label>
               <div className="pure-duration-badge">
                 <Clock size={12} />
@@ -776,79 +539,35 @@ export function ManualWorkoutLogModal({
             </div>
           </div>
 
-          {/* Section 4: Intensity & Difficulty (Clean 4-Button Grid) */}
+          {/* Section 4: Simplified Intensity (No Reps / No RPE Clutter) */}
           <div className="pure-field-block">
-            <div className="pure-intensity-header">
-              <span className="pure-field-label">
-                <Flame size={12} />
-                <span>Difficulty &amp; Intensity</span>
-              </span>
-              <span className="intensity-selected-tag">{selectedRpe}</span>
-            </div>
+            <label className="pure-field-label">Intensity</label>
 
             <div className="pure-intensity-grid">
-              {RPE_CHOICES.map((item) => {
-                const isSelected = selectedRpe === item.value;
+              {INTENSITY_CHOICES.map((item) => {
+                const isSelected = intensity === item.id;
                 return (
                   <button
-                    key={item.value}
+                    key={item.id}
                     type="button"
-                    className={`pure-intensity-card ${item.tone} ${isSelected ? 'active' : ''}`}
-                    onClick={() => setSelectedRpe(item.value)}
-                    title={item.rpe}
+                    className={`pure-intensity-btn ${item.tone} ${isSelected ? 'active' : ''}`}
+                    onClick={() => setIntensity(item.id)}
                   >
-                    <span className="intensity-title">{item.label}</span>
-                    <span className="intensity-sub">{item.rpe.split('·')[0]}</span>
+                    {item.label}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Section 5: Optional Session Feel */}
-          <div className="pure-field-block">
-            <div className="pure-feel-header">
-              <span className="pure-field-label">Session Feel (Optional)</span>
-              {selectedFeel && (
-                <button
-                  type="button"
-                  className="pure-clear-feel-btn"
-                  onClick={() => setSelectedFeel(null)}
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-            <div className="pure-feel-grid">
-              {FEEL_OPTIONS.map((f) => {
-                const isSelected = selectedFeel === f.id;
-                const FIcon = f.icon;
-                return (
-                  <button
-                    key={f.id}
-                    type="button"
-                    className={`pure-feel-card ${isSelected ? 'active' : ''}`}
-                    onClick={() => setSelectedFeel((prev) => (prev === f.id ? null : f.id))}
-                  >
-                    <div className="feel-icon-row">
-                      <FIcon size={13} />
-                      <span className="feel-label">{f.label}</span>
-                    </div>
-                    <span className="feel-sub">{f.sub}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Section 6: Clean Optional Notes Input */}
+          {/* Section 5: Optional Notes */}
           <div className="pure-field-block">
             <input
               type="text"
               className="pure-text-input notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Optional notes (e.g. felt energized, great pump)..."
+              placeholder="Optional notes (e.g. felt great, new PR)..."
             />
           </div>
 
