@@ -82,7 +82,7 @@
    ========================================================================== */
 .db-telemetry-bento {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
   align-items: stretch;
   margin-bottom: 28px;
@@ -98,6 +98,9 @@
   gap: 14px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+  box-sizing: border-box;
+  overflow: hidden;
+  min-width: 0;
 }
 
 [data-theme="light"] .db-telemetry-card {
@@ -275,11 +278,11 @@
   color: var(--dim);
 }
 
-/* Gear Stat Tiles Grid (Card 1 - Static Pure Telemetry, 3 Columns x 2 Rows) */
+/* Gear Stat Tiles Grid (Card 1 - Static Pure Telemetry, 2 Columns x 3 Rows) */
 .telemetry-gear-stat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
 }
 
 .gear-stat-tile {
@@ -516,18 +519,23 @@
 /* Regional Macro Distribution KPI Cards (Card 2) */
 .telemetry-region-kpi-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .telemetry-region-kpi-card {
   background: var(--raised2);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 12px 14px;
+  padding: 10px 11px;
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 [data-theme="light"] .telemetry-region-kpi-card {
@@ -540,6 +548,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px;
+  min-width: 0;
 }
 
 .region-kpi-num {
@@ -588,6 +597,9 @@
   font-size: 0.78rem;
   font-weight: 800;
   color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .region-kpi-sub {
@@ -824,7 +836,7 @@
   }
 
   .telemetry-region-kpi-row {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

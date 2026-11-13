@@ -509,7 +509,7 @@ export function ExerciseDatabaseView({
                     <span className="region-kpi-pct lower">{telemetry.regions.lower.percent}%</span>
                   </div>
                   <span className="region-kpi-title">Lower Body</span>
-                  <span className="region-kpi-sub">Quads, Glutes, Hamstrings & Calves</span>
+                  <span className="region-kpi-sub">Quads, Glutes & Legs</span>
                 </div>
 
                 <div className="telemetry-region-kpi-card upper">
@@ -518,7 +518,7 @@ export function ExerciseDatabaseView({
                     <span className="region-kpi-pct upper">{telemetry.regions.upper.percent}%</span>
                   </div>
                   <span className="region-kpi-title">Upper Body</span>
-                  <span className="region-kpi-sub">Chest, Back, Shoulders & Arms</span>
+                  <span className="region-kpi-sub">Chest, Back & Arms</span>
                 </div>
 
                 <div className="telemetry-region-kpi-card core">
@@ -527,7 +527,7 @@ export function ExerciseDatabaseView({
                     <span className="region-kpi-pct core">{telemetry.regions.core.percent}%</span>
                   </div>
                   <span className="region-kpi-title">Core & Trunk</span>
-                  <span className="region-kpi-sub">Abs, Obliques & Spinal Stability</span>
+                  <span className="region-kpi-sub">Abs, Obliques & Trunk</span>
                 </div>
               </div>
 
@@ -552,17 +552,17 @@ export function ExerciseDatabaseView({
 
               <div className="telemetry-section-divider" />
 
-              {/* Detailed Target Muscle Groups (Top 10 Groups, 2 Columns x 5 Rows) */}
+              {/* Detailed Target Muscle Groups (All 12 Groups, 2 Columns x 6 Rows) */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
                   <Layers size={13} />
                   PRIMARY TARGET MUSCLE DISTRIBUTION
                 </span>
-                <span className="telemetry-sub-meta">Top 10 Groups Indexed</span>
+                <span className="telemetry-sub-meta">All 12 Groups Indexed (70 Movements)</span>
               </div>
 
               <div className="telemetry-muscle-grid">
-                {telemetry.sortedMuscles.slice(0, 10).map((item, idx) => (
+                {telemetry.sortedMuscles.slice(0, 12).map((item, idx) => (
                   <div key={item.key} className="muscle-stat-tile">
                     <div className="muscle-stat-left">
                       <span className={`chip-color-dot tone-${idx % 6}`} />
