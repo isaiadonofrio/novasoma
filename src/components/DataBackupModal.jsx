@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { X, Download, Upload, HardDrive, Check, AlertTriangle } from 'lucide-react';
 import {
   STORAGE_KEYS,
@@ -8,6 +8,7 @@ import {
   safeReadJson,
 } from '../utils/storage';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
+import { useFocusTrap } from '../utils/useFocusTrap';
 
 export function DataBackupModal({
   routines,
@@ -19,6 +20,7 @@ export function DataBackupModal({
   onClose,
 }) {
   const fileInputRef = useRef(null);
+  const trapRef = useFocusTrap(true);
   const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: string }
   const usageKb = getLocalStorageUsageKb();
   const activeDraft = safeReadJson(STORAGE_KEYS.ACTIVE_DRAFT, null);
@@ -100,7 +102,7 @@ export function DataBackupModal({
       aria-modal="true"
       aria-labelledby="data-backup-title"
     >
-      <div className="summary-modal-card data-backup-modal">
+      <div ref={trapRef} className="summary-modal-card data-backup-modal">
         <div className="data-backup-header">
           <div className="data-backup-title-wrap">
             <span className="data-backup-eyebrow">LOCAL DEVICE STORAGE</span>

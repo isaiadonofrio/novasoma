@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   X,
   BookOpen,
@@ -16,13 +16,14 @@ import { MediaViewer } from './MediaViewer.jsx';
 import { MiniBodyMap } from './MiniBodyMap.jsx';
 import { isBodyweightEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock.js';
+import { useFocusTrap } from '../utils/useFocusTrap.js';
 
 export function ExerciseDetailModal({
   exercise,
   onClose
 }) {
   const [activeTab, setActiveTab] = useState('form'); // 'form' | 'anatomy'
-  const scrollRef = useRef(null);
+  const trapRef = useFocusTrap(Boolean(exercise));
 
   // Prevent background scrolling while exercise guide is open
   useBodyScrollLock(Boolean(exercise));
@@ -77,8 +78,18 @@ export function ExerciseDetailModal({
     : '90s';
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="gymmane-db-detail-dialog" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="exercise-detail-title"
+      onClick={onClose}
+    >
+      <div
+        ref={trapRef}
+        className="gymmane-db-detail-dialog"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="db-dialog-header">
           <div className="db-dialog-header-info">
@@ -90,7 +101,7 @@ export function ExerciseDetailModal({
                 <span className="detail-warmup-tag">Warm-Up</span>
               )}
             </div>
-            <h2 className="db-dialog-title">{exercise.name}</h2>
+            <h2 id="exercise-detail-title" className="db-dialog-title">{exercise.name}</h2>
             <p className="db-dialog-scientific">
               {exercise.scientificName || exercise.subtitle}
             </p>

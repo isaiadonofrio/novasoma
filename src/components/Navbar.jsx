@@ -34,6 +34,7 @@ export function Navbar({
           <button
             type="button"
             className={`nav-link-btn ${currentView === 'home' || currentView === 'overview' ? 'active' : ''}`}
+            aria-current={currentView === 'home' || currentView === 'overview' ? 'page' : undefined}
             onClick={onNavigateHome}
           >
             <Home size={15} />
@@ -43,6 +44,7 @@ export function Navbar({
             <button
               type="button"
               className={`nav-link-btn ${currentView === 'database' ? 'active' : ''}`}
+              aria-current={currentView === 'database' ? 'page' : undefined}
               onClick={onNavigateDatabase}
             >
               <BookOpen size={15} />
@@ -70,6 +72,7 @@ export function Navbar({
             className="gymmane-cta-btn"
             disabled={!hasPlayableRoutine}
             title={hasPlayableRoutine ? 'Start workout' : 'Add at least one exercise to a workout'}
+            aria-label="Start workout"
             onClick={() => onStartPresentation && onStartPresentation(0)}
           >
             <Play size={14} fill="currentColor" />

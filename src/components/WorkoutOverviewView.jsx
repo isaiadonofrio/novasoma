@@ -561,8 +561,17 @@ export function WorkoutOverviewView({
           {(exercise.illustration || exercise.customVideoUrl) && (
             <div 
               className="row-media-thumb" 
+              role="button"
+              tabIndex={0}
               onClick={() => setViewingExerciseGuide(exercise)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setViewingExerciseGuide(exercise);
+                }
+              }}
               title="View movement guide"
+              aria-label={`View movement guide for ${exercise.name}`}
             >
               {exercise.illustration ? (
                 <img 
@@ -600,8 +609,17 @@ export function WorkoutOverviewView({
 
             <h3 
               className="row-exercise-name clickable-guide-title"
+              role="button"
+              tabIndex={0}
               onClick={() => setViewingExerciseGuide(exercise)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setViewingExerciseGuide(exercise);
+                }
+              }}
               title="Click to view form guide and biomechanical cues"
+              aria-label={`Click to view form guide and biomechanical cues for ${exercise.name}`}
             >
               <span>{exercise.name}</span>
             </h3>

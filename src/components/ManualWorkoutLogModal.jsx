@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Calendar,
   Clock,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { toLocalDateKey } from '../utils/analytics';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
+import { useFocusTrap } from '../utils/useFocusTrap';
 import { ConfirmModal } from './ConfirmModal';
 
 /* Accurate athletic custom SVG icons matching Lucide 2px round stroke */
@@ -162,6 +163,7 @@ export function ManualWorkoutLogModal({
   const workoutMenuRef = useRef(null);
 
   useBodyScrollLock(isOpen);
+  const trapRef = useFocusTrap(isOpen);
 
   // Outside click listener for custom workout dropdown
   useEffect(() => {
@@ -381,7 +383,7 @@ export function ManualWorkoutLogModal({
       aria-modal="true"
       aria-labelledby="clean-modal-title"
     >
-      <div className="pure-log-modal animate-fade">
+      <div ref={trapRef} className="pure-log-modal animate-fade">
         {/* Modal Header */}
         <div className="pure-modal-header">
           <div className="pure-header-left">

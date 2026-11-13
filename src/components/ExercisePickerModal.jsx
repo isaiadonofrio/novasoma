@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Search, Plus, Dumbbell, BookOpen, Check, Flame } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
+import { useFocusTrap } from '../utils/useFocusTrap';
 
 export function ExercisePickerModal({
   exerciseDatabase = [],
@@ -14,6 +15,7 @@ export function ExercisePickerModal({
   const [phaseMode, setPhaseMode] = useState('auto'); // 'auto' | 'warmup' | 'main'
 
   useBodyScrollLock();
+  const trapRef = useFocusTrap(true);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -56,13 +58,23 @@ export function ExercisePickerModal({
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="exercise-picker-dialog" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="picker-modal-title"
+      onClick={onClose}
+    >
+      <div
+        ref={trapRef}
+        className="exercise-picker-dialog"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="editor-header">
           <div className="editor-header-title">
             <BookOpen size={18} color="var(--clay)" />
             <div>
-              <h3>ADD EXERCISE TO WORKOUT</h3>
+              <h3 id="picker-modal-title">ADD EXERCISE TO WORKOUT</h3>
               <span className="editor-active-ex-name">
                 Select from your curated Exercise Library
               </span>

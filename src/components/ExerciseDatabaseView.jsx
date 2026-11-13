@@ -86,10 +86,7 @@ const MUSCLE_CATEGORIES = [
 ];
 
 export function ExerciseDatabaseView({
-  exercisesList = [],
-  _routines = [],
-  _workoutHistory = [],
-  _onAddExerciseToRoutine
+  exercisesList = []
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('All');
@@ -834,7 +831,16 @@ export function ExerciseDatabaseView({
                   <article
                     key={ex.id}
                     className="db-catalog-card clean-typography-card"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setActiveExerciseDetail(ex)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setActiveExerciseDetail(ex);
+                      }
+                    }}
+                    aria-label={`Open exercise guide for ${ex.name}`}
                   >
                     <div
                       className="db-card-media-wrapper"

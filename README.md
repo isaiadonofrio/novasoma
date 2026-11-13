@@ -13,7 +13,7 @@ Nova Soma is a high-performance, distraction-free home workout and biomechanics 
 * **Pre-Planned Supersets & Drop Sets**: Clean visual cues for paired exercises, automatic 20% drop set load calculations, and seamless transitions.
 * **Intelligent Timers**: Wall-clock timestamp tracking for both rest countdowns and session elapsed time with zero drift during backgrounding or mobile screen locks.
 * **Somatic Exercise Library**: Interactive muscle map, movement patterns, form cues, and equipment tagging with lightweight local WebP assets.
-* **100% Offline-First Architecture**: All personal workout logs, custom exercises, routines, and heatmaps remain encrypted in your local browser sandbox.
+* **100% Offline-First Architecture**: All personal workout logs, custom exercises, routines, and heatmaps remain strictly within your device's browser local storage (`localStorage`). No telemetry, no third-party tracking, and zero remote database transmissions.
 * **One-Click Portable Backups**: Export and import your entire workout history as a portable JSON file across PC, tablet, and mobile.
 
 ---
@@ -32,8 +32,8 @@ Nova Soma is a high-performance, distraction-free home workout and biomechanics 
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/nova-soma.git
-cd nova-soma
+git clone https://github.com/isaiadonofrio/novasoma.git
+cd novasoma
 
 # Install dependencies
 npm install

@@ -1,12 +1,11 @@
 /**
- * ANALYTICS & STATISTICHE DI ALLENAMENTO - CORPO
- * Calcolo metriche di volume, tonnellaggio totale sollevato, streak di costanza e storico progressi.
+ * WORKOUT ANALYTICS & TELEMETRY — NOVA SOMA
+ * Calculates volume tonnage, consistency streaks, weekly distribution, and historical progress.
  */
 import { isBodyweightEquipment } from './exerciseImport.js';
 
-
 /**
- * Converte una data in stringa locale YYYY-MM-DD (evitando slittamenti UTC intorno alla mezzanotte).
+ * Converts a Date or date string to local YYYY-MM-DD (preventing UTC midnight drift).
  */
 export function toLocalDateKey(dateInput) {
   const d = dateInput instanceof Date ? dateInput : new Date(dateInput);
@@ -18,7 +17,7 @@ export function toLocalDateKey(dateInput) {
 }
 
 /**
- * Calcola il volume sollevato (kg * ripetizioni) per una singola sessione a partire dai loggedSets.
+ * Calculates total volume (kg * reps) for a single session from loggedSets.
  */
 export function calculateSessionVolumeKg(loggedSets) {
   if (!loggedSets || typeof loggedSets !== 'object') return 0;
@@ -39,7 +38,7 @@ export function calculateSessionVolumeKg(loggedSets) {
 }
 
 /**
- * Calcola il volume totale sollevato in kg (tonnellaggio) su tutta la cronologia.
+ * Calculates cumulative volume in kg (tonnage) across all recorded workout history.
  */
 export function calculateTotalVolumeKg(history) {
   if (!Array.isArray(history) || history.length === 0) return 0;
@@ -53,7 +52,7 @@ export function calculateTotalVolumeKg(history) {
 }
 
 /**
- * Calcola il tempo totale cumulativo di allenamento in secondi.
+ * Calculates cumulative total training duration in seconds.
  */
 export function calculateTotalTrainingTimeSeconds(history) {
   if (!Array.isArray(history) || history.length === 0) return 0;
@@ -61,7 +60,7 @@ export function calculateTotalTrainingTimeSeconds(history) {
 }
 
 /**
- * Formatta i secondi in ore e minuti leggibili (es. "4h 25m").
+ * Formats duration seconds into readable hours and minutes (e.g. "4h 25m" or "45 min").
  */
 export function formatHoursMinutes(totalSeconds) {
   if (!totalSeconds || totalSeconds <= 0) return '0 min';
@@ -74,7 +73,7 @@ export function formatHoursMinutes(totalSeconds) {
 }
 
 /**
- * Calcola la streak di costanza e la mappa settimanale Lun-Dom.
+ * Calculates consistency streak and Monday-Sunday active days map.
  */
 export function calculateStreak(history) {
   if (!Array.isArray(history) || history.length === 0) {
@@ -106,7 +105,7 @@ export function calculateStreak(history) {
 
   const trainedToday = dateSet.has(todayStr);
 
-  // Consente 1 giorno di riposo se l'ultimo allenamento è stato ieri
+  // Allow 1 rest day if last workout was yesterday
   let currentStreak = 0;
   const checkDate = new Date(now);
 
@@ -126,8 +125,8 @@ export function calculateStreak(history) {
     }
   }
 
-  // Mappa attività della settimana corrente (Lun -> Dom)
-  const currentDayOfWeek = (now.getDay() + 6) % 7; // 0 = Lunedì, 6 = Domenica
+  // Current week activity map (Monday -> Sunday)
+  const currentDayOfWeek = (now.getDay() + 6) % 7; // 0 = Monday, 6 = Sunday
   const monday = new Date(now);
   monday.setDate(now.getDate() - currentDayOfWeek);
   monday.setHours(0, 0, 0, 0);

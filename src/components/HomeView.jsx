@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   History,
   Sparkles,
@@ -17,6 +17,7 @@ import {
   toLocalDateKey
 } from '../utils/analytics';
 import { formatVolumeCompact } from '../utils/formatting';
+import { MS_PER_DAY } from '../utils/constants';
 
 export function HomeView({
   routines = [],
@@ -272,7 +273,7 @@ export function HomeView({
                         let dateLabel = sKey || 'Recent';
                         if (sKey === todayKey) dateLabel = 'Today';
                         else if (sKey) {
-                          const diff = Math.round((new Date(`${todayKey}T12:00:00`) - new Date(`${sKey}T12:00:00`)) / 86400000);
+                          const diff = Math.round((new Date(`${todayKey}T12:00:00`) - new Date(`${sKey}T12:00:00`)) / MS_PER_DAY);
                           if (diff === 1) dateLabel = 'Yesterday';
                           else if (diff > 1 && diff < 7) {
                             dateLabel = new Date(`${sKey}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short' });
@@ -288,8 +289,17 @@ export function HomeView({
                           <div
                             key={session.id || session.date}
                             className="recent-session-card"
+                            role="button"
+                            tabIndex={0}
                             onClick={onOpenHistory}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                onOpenHistory();
+                              }
+                            }}
                             title="Click to open workout history"
+                            aria-label={`View history: ${session.routineTitle || 'Workout'}`}
                           >
                             <div className="session-card-left">
                               <span className="session-card-title">{session.routineTitle || 'Workout'}</span>

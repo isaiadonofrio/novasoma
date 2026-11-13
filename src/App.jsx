@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { HardDrive, AlertTriangle, X } from 'lucide-react';
 import { INITIAL_ROUTINES } from './data/workouts';
 import { EXERCISE_DATABASE } from './data/exerciseDatabase';
@@ -12,7 +12,6 @@ import {
   safeWriteString,
   safeRemoveItem,
 } from './utils/storage';
-import { insertExerciseByPhase } from './utils/workoutSets';
 import { Navbar } from './components/Navbar';
 import { HomeView } from './components/HomeView';
 import { WorkoutOverviewView } from './components/WorkoutOverviewView';
@@ -158,7 +157,7 @@ function mergeMissingCanonical(ex) {
 }
 
 export function App() {
-  // Pulizia iniziale di eventuali chiavi legacy e registrazione catalogo seed corrente
+  // Initial cleanup of legacy keys and current catalog registration
   useEffect(() => {
     try {
       [
@@ -283,15 +282,15 @@ export function App() {
     setWeeklyGoal(parsed);
   };
 
-  // Modal di allenamento live
+  // Live workout player modal
   const [isPresentationActive, setIsPresentationActive] = useState(false);
   const [liveRoutine, setLiveRoutine] = useState(null);
   const [startExerciseIndex, setStartExerciseIndex] = useState(0);
 
-  // Riepilogo a fine allenamento
+  // Post-workout summary dialog
   const [completedSummary, setCompletedSummary] = useState(null);
 
-  // Storico allenamenti
+  // Workout session history
   const [workoutHistory, setWorkoutHistory] = useState(() => {
     const saved = safeReadJson(HISTORY_STORAGE_KEY, null);
     if (saved && Array.isArray(saved)) {
@@ -401,25 +400,6 @@ export function App() {
 
   const handleLogManualWorkout = (sessionData) => {
     setWorkoutHistory(prev => [sessionData, ...prev]);
-  };
-
-  const handleAddExerciseToRoutine = (routineId, exerciseData) => {
-    setRoutines(prev => prev.map(routine => {
-      if (routine.id !== routineId) return routine;
-      const existing = routine.exercises || [];
-      const alreadyExists = existing.some(ex => ex.id === exerciseData.id);
-      const instance = {
-        ...exerciseData,
-        sourceId: exerciseData.sourceId || exerciseData.id,
-        id: alreadyExists ? `${exerciseData.id}-${Date.now()}` : exerciseData.id,
-        phase: exerciseData.isWarmup ? 'warmup' : 'main',
-        isWarmup: Boolean(exerciseData.isWarmup)
-      };
-      return {
-        ...routine,
-        exercises: insertExerciseByPhase(existing, instance)
-      };
-    }));
   };
 
   const handleWorkoutComplete = (summaryData) => {
@@ -581,10 +561,6 @@ export function App() {
         {currentView === 'database' && (
           <ExerciseDatabaseView 
             exercisesList={exerciseDatabase}
-            routines={routines}
-            workoutHistory={workoutHistory}
-            onAddExerciseToRoutine={handleAddExerciseToRoutine}
-            onBack={handleNavigateHome}
           />
         )}
       </main>

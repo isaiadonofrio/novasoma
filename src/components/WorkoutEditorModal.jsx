@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Check } from 'lucide-react';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
+import { useFocusTrap } from '../utils/useFocusTrap';
 
 export function WorkoutEditorModal({ workout, onSave, onClose }) {
   useBodyScrollLock();
+  const trapRef = useFocusTrap(true);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -41,10 +43,21 @@ export function WorkoutEditorModal({ workout, onSave, onClose }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="gymmane-editor-modal" style={{ maxWidth: 520 }} onClick={(e) => e.stopPropagation()}>
+    <div
+      className="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="workout-editor-title"
+      onClick={onClose}
+    >
+      <div
+        ref={trapRef}
+        className="gymmane-editor-modal"
+        style={{ maxWidth: 520 }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="editor-modal-header">
-          <h3>{workout ? 'EDIT WORKOUT' : 'CREATE NEW WORKOUT'}</h3>
+          <h3 id="workout-editor-title">{workout ? 'EDIT WORKOUT' : 'CREATE NEW WORKOUT'}</h3>
           <button type="button" className="close-editor-btn" onClick={onClose} aria-label="Close">
             <X size={18} />
           </button>

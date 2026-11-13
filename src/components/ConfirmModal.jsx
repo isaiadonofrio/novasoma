@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
+import { useFocusTrap } from '../utils/useFocusTrap';
 
 export function ConfirmModal({
   title = 'Confirm Action',
@@ -12,6 +13,7 @@ export function ConfirmModal({
   onCancel,
 }) {
   useBodyScrollLock();
+  const trapRef = useFocusTrap(true);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -33,7 +35,7 @@ export function ConfirmModal({
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
     >
-      <div className="summary-modal-card confirm-modal-card">
+      <div ref={trapRef} className="summary-modal-card confirm-modal-card">
         <div className="confirm-modal-head">
           <div className={`confirm-icon-badge ${tone === 'danger' ? 'is-danger' : ''}`}>
             <AlertTriangle size={18} />

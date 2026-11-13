@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Play,
   Search,
@@ -102,28 +102,30 @@ export function RoutinesSection({
     );
   };
 
-  const filteredRoutines = routines.filter((r) => {
-    const q = searchQuery.trim().toLowerCase();
-    const matchesSearch =
-      !q ||
-      r.title.toLowerCase().includes(q) ||
-      (r.description || '').toLowerCase().includes(q) ||
-      (r.exercises || []).some((ex) => ex.name.toLowerCase().includes(q));
+  const filteredRoutines = useMemo(() => {
+    return routines.filter((r) => {
+      const q = searchQuery.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        r.title.toLowerCase().includes(q) ||
+        (r.description || '').toLowerCase().includes(q) ||
+        (r.exercises || []).some((ex) => ex.name.toLowerCase().includes(q));
 
-    const matchesCategory =
-      selectedCategory === 'All' ||
-      (r.category || '').toLowerCase().includes(selectedCategory.toLowerCase());
+      const matchesCategory =
+        selectedCategory === 'All' ||
+        (r.category || '').toLowerCase().includes(selectedCategory.toLowerCase());
 
-    const matchesMuscles =
-      selectedMuscles.length === 0 ||
-      (r.exercises || []).some(
-        (ex) =>
-          selectedMuscles.includes(ex.muscleKey) ||
-          (ex.secondaryKeys && ex.secondaryKeys.some((k) => selectedMuscles.includes(k)))
-      );
+      const matchesMuscles =
+        selectedMuscles.length === 0 ||
+        (r.exercises || []).some(
+          (ex) =>
+            selectedMuscles.includes(ex.muscleKey) ||
+            (ex.secondaryKeys && ex.secondaryKeys.some((k) => selectedMuscles.includes(k)))
+        );
 
-    return matchesSearch && matchesCategory && matchesMuscles;
-  });
+      return matchesSearch && matchesCategory && matchesMuscles;
+    });
+  }, [routines, searchQuery, selectedCategory, selectedMuscles]);
 
   const handleDeleteClick = (e, routine) => {
     e.stopPropagation();
@@ -168,18 +170,20 @@ export function RoutinesSection({
               <input
                 type="text"
                 placeholder="Search workouts or exercises..."
+                aria-label="Search workouts or exercises"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input-field"
               />
             </div>
 
-            <div className="category-chips-list">
+            <div className="category-chips-list" role="group" aria-label="Filter by category">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   type="button"
                   className={`category-chip ${selectedCategory === cat ? 'active' : ''}`}
+                  aria-pressed={selectedCategory === cat}
                   onClick={() => setSelectedCategory(cat)}
                 >
                   {cat}
@@ -263,7 +267,16 @@ export function RoutinesSection({
                 <article
                   key={routine.id}
                   className={`routine-folder-card ${categoryTone}`}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => onSelectRoutineToView(routine.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSelectRoutineToView(routine.id);
+                    }
+                  }}
+                  aria-label={`Open routine ${routine.title}`}
                 >
                   <div className="routine-folder-top-row">
                     <div className="routine-card-badges">

@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Trophy, CheckCircle, Clock, Dumbbell, RotateCcw, X } from 'lucide-react';
 import { calculateSessionVolumeKg } from '../utils/analytics';
 import { triggerConfettiBurst } from '../utils/confetti';
 import { formatSessionDuration } from '../utils/formatting';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
+import { useFocusTrap } from '../utils/useFocusTrap';
 
 export function WorkoutSummaryModal({ summary, routine, onClose, onRestart }) {
   useBodyScrollLock();
+  const trapRef = useFocusTrap(true);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -27,9 +29,17 @@ export function WorkoutSummaryModal({ summary, routine, onClose, onRestart }) {
     : calculateSessionVolumeKg(summary.loggedSets);
 
   return (
-    <div className="modal-backdrop">
-      <div className="summary-modal-card">
-        <button type="button" className="summary-close-btn" onClick={onClose} aria-label="Close">
+    <div
+      className="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="summary-modal-title"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div ref={trapRef} className="summary-modal-card">
+        <button type="button" className="summary-close-btn" onClick={onClose} aria-label="Close summary modal">
           <X size={20} />
         </button>
 
@@ -37,7 +47,7 @@ export function WorkoutSummaryModal({ summary, routine, onClose, onRestart }) {
           <Trophy size={38} color="var(--clay)" />
         </div>
 
-        <h2 className="summary-title">Workout Completed</h2>
+        <h2 id="summary-modal-title" className="summary-title">Workout Completed</h2>
         <p className="summary-routine-name">{routine.title}</p>
         <p className="summary-message">
           Session logged to your weekly consistency tracker. Great job!
