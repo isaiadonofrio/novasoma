@@ -11825,7 +11825,24 @@
   gap: 18px;
 }
 
-/* In-Theme Date Block */
+/* In-Theme Date Block & Stepper */
+.pure-field-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pure-date-stepper-box {
+  background: var(--raised2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
 .pure-date-block {
   background: var(--raised2);
   border: 1.5px solid var(--border);
@@ -11991,16 +12008,20 @@
 .cal-day-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
+  gap: 4px;
+  justify-items: center;
 }
 
 .cal-day-button {
-  height: 28px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  aspect-ratio: 1 / 1;
+  border-radius: 50% !important;
+  margin: 0 auto;
   border: none;
   background: transparent;
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--text);
   cursor: pointer;
@@ -12008,21 +12029,25 @@
   align-items: center;
   justify-content: center;
   transition: all 0.1s var(--ease);
+  box-sizing: border-box;
 }
 
 .cal-day-button:hover:not(:disabled) {
   background: var(--clay-soft);
   color: var(--clay);
+  border-radius: 50% !important;
 }
 
 .cal-day-button.selected {
   background: var(--clay) !important;
   color: #FFFFFF !important;
   font-weight: 900;
+  border-radius: 50% !important;
 }
 
 .cal-day-button.is-today {
-  border: 1px solid var(--clay);
+  border: 1.5px solid var(--clay);
+  border-radius: 50% !important;
 }
 
 .cal-day-button.other-month {
@@ -12261,10 +12286,19 @@
 }
 
 .pure-text-input.notes {
-  height: 40px;
+  height: 42px;
   font-size: 0.84rem;
   background: var(--surface);
-  border-color: var(--border);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.pure-text-input.notes::placeholder {
+  color: var(--dim);
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
 /* Duration Slider Header & Track */

@@ -10,27 +10,95 @@ import {
   ChevronRight,
   Activity,
   Dumbbell,
-  Zap,
   Bike,
   Mountain,
   Waves,
-  Sparkles,
+  Trophy,
   Plus
 } from 'lucide-react';
 import { toLocalDateKey } from '../utils/analytics';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 import { ConfirmModal } from './ConfirmModal';
 
+/* Accurate athletic custom SVG icons matching Lucide 2px round stroke */
+function RunningIcon({ size = 14, className = '', ...props }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <circle cx="16" cy="4" r="2" />
+      <path d="M7 21l3-6 3.5 2 2.5 4" />
+      <path d="M11.5 8.5L9.5 12l4 3-1 6" />
+      <path d="M8 12l3.5-3.5L15 10l3.5-2" />
+    </svg>
+  );
+}
+
+function TennisIcon({ size = 14, className = '', ...props }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <ellipse cx="9.5" cy="9.5" rx="5" ry="6" transform="rotate(-45 9.5 9.5)" />
+      <path d="m13.2 13.2 6.8 6.8" />
+      <path d="m17.5 17.5 2 2" strokeWidth="3" />
+      <circle cx="18" cy="5" r="3" />
+      <path d="M16 3.5a3 3 0 0 0 0 3" />
+    </svg>
+  );
+}
+
+function MobilityIcon({ size = 14, className = '', ...props }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <circle cx="12" cy="4" r="2" />
+      <path d="M12 6v6" />
+      <path d="m7 11 5 1 5-1" />
+      <path d="m8.5 20 3.5-8 3.5 8" />
+      <path d="M5 20h14" />
+    </svg>
+  );
+}
+
 const COMMON_WORKOUTS = [
   { id: 'gym', name: 'Gym Workout', icon: Dumbbell, defaultDuration: 60, tone: 'clay' },
-  { id: 'running', name: 'Running / Jogging', icon: Zap, defaultDuration: 45, tone: 'ember' },
-  { id: 'cycling', name: 'Cycling / Bike', icon: Bike, defaultDuration: 50, tone: 'teal' },
-  { id: 'trekking', name: 'Trekking / Hiking', icon: Mountain, defaultDuration: 90, tone: 'clay' },
+  { id: 'running', name: 'Running', icon: RunningIcon, defaultDuration: 45, tone: 'ember' },
+  { id: 'cycling', name: 'Cycling', icon: Bike, defaultDuration: 50, tone: 'teal' },
+  { id: 'hiking', name: 'Hiking', icon: Mountain, defaultDuration: 90, tone: 'clay' },
   { id: 'swimming', name: 'Swimming', icon: Waves, defaultDuration: 45, tone: 'teal' },
-  { id: 'tennis', name: 'Tennis / Padel', icon: Activity, defaultDuration: 60, tone: 'ember' },
-  { id: 'mobility', name: 'Mobility & Stretch', icon: Sparkles, defaultDuration: 30, tone: 'clay' },
-  { id: 'sports', name: 'Sports & Games', icon: Activity, defaultDuration: 60, tone: 'ember' },
-  { id: 'custom', name: '+ Other (Custom)', icon: Plus, defaultDuration: 60, tone: 'custom' },
+  { id: 'tennis', name: 'Tennis', icon: TennisIcon, defaultDuration: 60, tone: 'ember' },
+  { id: 'mobility', name: 'Mobility', icon: MobilityIcon, defaultDuration: 30, tone: 'clay' },
+  { id: 'sports', name: 'Sports', icon: Trophy, defaultDuration: 60, tone: 'ember' },
+  { id: 'custom', name: 'Custom Workout', icon: Plus, defaultDuration: 60, tone: 'custom' },
 ];
 
 const INTENSITY_CHOICES = [
@@ -238,7 +306,7 @@ export function ManualWorkoutLogModal({
       finalTitle = selectedWorkout.name;
       if (['running', 'cycling', 'swimming'].includes(selectedWorkout.id)) {
         category = 'Cardio';
-      } else if (selectedWorkout.id === 'trekking') {
+      } else if (['hiking', 'trekking'].includes(selectedWorkout.id)) {
         category = 'Outdoor';
       } else if (selectedWorkout.id === 'mobility') {
         category = 'Recovery';
@@ -347,13 +415,13 @@ export function ManualWorkoutLogModal({
         {/* Modal Form */}
         <form onSubmit={handleSubmit} className="pure-modal-body">
           {/* Section 1: In-Theme Date Stepper & Calendar */}
-          <div className="pure-date-block">
-            <div className="pure-date-header">
-              <span className="pure-field-label">Date of Workout</span>
+          <div className="pure-field-block">
+            <div className="pure-field-header-row">
+              <label className="pure-field-label">Date of Workout</label>
               {isToday && <span className="pure-today-pill">Today</span>}
             </div>
 
-            <div className="pure-date-stepper-row">
+            <div className="pure-date-stepper-box">
               <button
                 type="button"
                 className="pure-date-nav-btn"
