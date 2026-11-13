@@ -181,6 +181,13 @@ export function ExerciseDatabaseView({
     };
 
     const muscleCounts = {};
+    const lowerBodySet = new Set(['quads', 'hamstrings', 'glutes', 'calves']);
+    const upperBodySet = new Set(['chest', 'back', 'shoulders', 'biceps', 'triceps', 'trapezius', 'forearm']);
+    const coreSet = new Set(['abdomen', 'obliques']);
+
+    let lowerBodyCount = 0;
+    let upperBodyCount = 0;
+    let coreCount = 0;
 
     exercisesList.forEach((ex) => {
       const usesGear = getRequiresEquipment(ex);
@@ -212,12 +219,29 @@ export function ExerciseDatabaseView({
       }
 
       if (ex.muscleKey) {
+        const k = ex.muscleKey.toLowerCase();
         muscleCounts[ex.muscleKey] = (muscleCounts[ex.muscleKey] || 0) + 1;
+        if (lowerBodySet.has(k)) lowerBodyCount++;
+        else if (upperBodySet.has(k)) upperBodyCount++;
+        else if (coreSet.has(k)) coreCount++;
       }
     });
 
     const gearPercent = total > 0 ? Math.round((gearCount / total) * 100) : 0;
     const bwPercent = total > 0 ? 100 - gearPercent : 0;
+
+    const lowerPercent = total > 0 ? Math.round((lowerBodyCount / total) * 100) : 0;
+    const upperPercent = total > 0 ? Math.round((upperBodyCount / total) * 100) : 0;
+    const corePercent = total > 0 ? Math.max(0, 100 - lowerPercent - upperPercent) : 0;
+
+    const gearList = [
+      { key: 'bodyweight', label: 'Bodyweight / Mat', count: gearBreakdown.bodyweight, percent: total > 0 ? Math.round((gearBreakdown.bodyweight / total) * 100) : 0 },
+      { key: 'dumbbells', label: 'Dumbbells', count: gearBreakdown.dumbbells, percent: total > 0 ? Math.round((gearBreakdown.dumbbells / total) * 100) : 0 },
+      { key: 'barbell', label: 'Barbell & Landmine', count: gearBreakdown.barbell, percent: total > 0 ? Math.round((gearBreakdown.barbell / total) * 100) : 0 },
+      { key: 'kettlebell', label: 'Kettlebell', count: gearBreakdown.kettlebell, percent: total > 0 ? Math.round((gearBreakdown.kettlebell / total) * 100) : 0 },
+      { key: 'bench', label: 'Bench & Platform', count: gearBreakdown.bench, percent: total > 0 ? Math.round((gearBreakdown.bench / total) * 100) : 0 },
+      { key: 'bands', label: 'Bands & Straps', count: gearBreakdown.bands, percent: total > 0 ? Math.round((gearBreakdown.bands / total) * 100) : 0 },
+    ];
 
     // Top muscles sorted by frequency for proportional bar and stats list
     const sortedMuscles = Object.entries(muscleCounts)
@@ -236,23 +260,18 @@ export function ExerciseDatabaseView({
       gearPercent,
       bwPercent,
       gearBreakdown,
+      gearList,
       mechanics,
       levels,
       muscleCounts,
       sortedMuscles,
       distinctMusclesCount: Object.keys(muscleCounts).length,
-    };
-  }, [exercisesList]);
-
-  // Per-category counts for anatomy fast-pills
-  const muscleCountMap = useMemo(() => {
-    const map = { All: exercisesList.length };
-    exercisesList.forEach((ex) => {
-      if (ex.muscleKey) {
-        map[ex.muscleKey] = (map[ex.muscleKey] || 0) + 1;
+      regions: {
+        lower: { count: lowerBodyCount, percent: lowerPercent },
+        upper: { count: upperBodyCount, percent: upperPercent },
+        core: { count: coreCount, percent: corePercent },
       }
-    });
-    return map;
+    };
   }, [exercisesList]);
 
   const activeEquipFilter = EQUIPMENT_FILTERS.find(f => f.label === selectedEquipment) || EQUIPMENT_FILTERS[0];
@@ -318,296 +337,228 @@ export function ExerciseDatabaseView({
             </div>
           </div>
 
-          {/* Archive Telemetry Bento (Spacious 2-Card Layout Matching Homepage Spacing, Pure Statistics, No Dummy) */}
+          {/* Archive Telemetry Bento (Spacious 2-Card Layout, Pure Static Informational Telemetry, Zero Pseudo-Buttons) */}
           <div className="db-telemetry-bento">
-            {/* Card 1: Equipment Spectrum & Gear Distribution */}
+            {/* Card 1: Equipment & Setup Profile (Static Pure Telemetry) */}
             <div className="db-telemetry-card equip-card">
               <div className="telemetry-card-header">
                 <span className="telemetry-card-title">
                   <Dumbbell size={15} className="telemetry-title-icon" />
-                  EQUIPMENT SPECTRUM
+                  EQUIPMENT PROFILE
                 </span>
-                <span className="telemetry-badge-count">{telemetry.total} Movements</span>
+                <span className="telemetry-badge-count">{telemetry.total} Total Exercises</span>
               </div>
 
-              {/* Big Split Metric */}
-              <div className="telemetry-split-stats">
-                <div className="split-metric">
-                  <span className="split-num">{telemetry.gearCount}</span>
-                  <span className="split-lbl">Equipment Required ({telemetry.gearPercent}%)</span>
+              {/* High-Level KPI Comparison Cards */}
+              <div className="telemetry-kpi-row">
+                <div className="telemetry-kpi-card gear">
+                  <div className="kpi-card-top">
+                    <span className="kpi-big-num">{telemetry.gearCount}</span>
+                    <span className="kpi-tag gear">{telemetry.gearPercent}%</span>
+                  </div>
+                  <span className="kpi-label">Equipment Required</span>
+                  <span className="kpi-desc">Dumbbells, Barbells, Bands & Benches</span>
                 </div>
-                <div className="split-divider">/</div>
-                <div className="split-metric">
-                  <span className="split-num teal">{telemetry.bwCount}</span>
-                  <span className="split-lbl">Bodyweight Only ({telemetry.bwPercent}%)</span>
+
+                <div className="telemetry-kpi-card bodyweight">
+                  <div className="kpi-card-top">
+                    <span className="kpi-big-num teal">{telemetry.bwCount}</span>
+                    <span className="kpi-tag bodyweight">{telemetry.bwPercent}%</span>
+                  </div>
+                  <span className="kpi-label">Bodyweight Only</span>
+                  <span className="kpi-desc">Zero gear needed · Calisthenics & Mat</span>
                 </div>
               </div>
 
-              {/* Dual segmented split bar */}
-              <div className="telemetry-segmented-bar">
+              {/* Segmented Proportion Bar */}
+              <div className="telemetry-segmented-bar" aria-hidden="true">
                 <div
                   className="segment-fill gear"
                   style={{ width: `${telemetry.gearPercent}%` }}
-                  title={`Equipment: ${telemetry.gearCount} movements (${telemetry.gearPercent}%)`}
+                  title={`Equipment Required: ${telemetry.gearCount} exercises (${telemetry.gearPercent}%)`}
                 />
                 <div
                   className="segment-fill bodyweight"
                   style={{ width: `${telemetry.bwPercent}%` }}
-                  title={`Bodyweight: ${telemetry.bwCount} movements (${telemetry.bwPercent}%)`}
+                  title={`Bodyweight Only: ${telemetry.bwCount} exercises (${telemetry.bwPercent}%)`}
                 />
-              </div>
-
-              {/* Quick Filter Chips */}
-              <div className="telemetry-quick-chips">
-                <button
-                  type="button"
-                  className={`telemetry-chip ${selectedEquipment === 'All Equipment' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment('All Equipment')}
-                >
-                  All ({telemetry.total})
-                </button>
-                <button
-                  type="button"
-                  className={`telemetry-chip ${selectedEquipment === 'Equipment Needed' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment('Equipment Needed')}
-                >
-                  Gear Required ({telemetry.gearCount})
-                </button>
-                <button
-                  type="button"
-                  className={`telemetry-chip ${selectedEquipment === 'Bodyweight Only' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment('Bodyweight Only')}
-                >
-                  Bodyweight ({telemetry.bwCount})
-                </button>
               </div>
 
               <div className="telemetry-section-divider" />
 
-              {/* Gear Breakdown Grid */}
+              {/* Detailed Gear Distribution (Static Informational Tiles, NOT Buttons) */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
-                  <Dumbbell size={13} />
-                  GEAR BREAKDOWN
+                  <SlidersHorizontal size={13} />
+                  DETAILED GEAR INVENTORY
                 </span>
+                <span className="telemetry-sub-meta">6 Categories</span>
               </div>
 
-              <div className="telemetry-gear-grid">
-                <button
-                  type="button"
-                  className={`gear-grid-pill ${selectedEquipment === 'Dumbbells' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Dumbbells' ? 'All Equipment' : 'Dumbbells')}
-                  title="Filter Dumbbell movements"
-                >
-                  <span className="gear-grid-name">Dumbbells</span>
-                  <span className="gear-grid-count">{telemetry.gearBreakdown.dumbbells}</span>
-                </button>
-                <button
-                  type="button"
-                  className={`gear-grid-pill ${selectedEquipment === 'Barbell' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Barbell' ? 'All Equipment' : 'Barbell')}
-                  title="Filter Barbell movements"
-                >
-                  <span className="gear-grid-name">Barbell & Landmine</span>
-                  <span className="gear-grid-count">{telemetry.gearBreakdown.barbell}</span>
-                </button>
-                <button
-                  type="button"
-                  className={`gear-grid-pill ${selectedEquipment === 'Kettlebell' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Kettlebell' ? 'All Equipment' : 'Kettlebell')}
-                  title="Filter Kettlebell movements"
-                >
-                  <span className="gear-grid-name">Kettlebell</span>
-                  <span className="gear-grid-count">{telemetry.gearBreakdown.kettlebell}</span>
-                </button>
-                <button
-                  type="button"
-                  className={`gear-grid-pill ${selectedEquipment === 'Bodyweight Only' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Bodyweight Only' ? 'All Equipment' : 'Bodyweight Only')}
-                  title="Filter Bodyweight / Calisthenics"
-                >
-                  <span className="gear-grid-name">Bodyweight / Mat</span>
-                  <span className="gear-grid-count">{telemetry.gearBreakdown.bodyweight}</span>
-                </button>
-                <button
-                  type="button"
-                  className={`gear-grid-pill ${selectedEquipment === 'Bands / Straps' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Bands / Straps' ? 'All Equipment' : 'Bands / Straps')}
-                  title="Filter Resistance Bands & Cables"
-                >
-                  <span className="gear-grid-name">Bands & Straps</span>
-                  <span className="gear-grid-count">{telemetry.gearBreakdown.bands}</span>
-                </button>
-                <button
-                  type="button"
-                  className={`gear-grid-pill ${selectedEquipment === 'Bench' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Bench' ? 'All Equipment' : 'Bench')}
-                  title="Filter Bench & Step Platforms"
-                >
-                  <span className="gear-grid-name">Bench & Box</span>
-                  <span className="gear-grid-count">{telemetry.gearBreakdown.bench}</span>
-                </button>
+              <div className="telemetry-gear-stat-grid">
+                {telemetry.gearList.map((item, idx) => (
+                  <div key={item.key} className="gear-stat-tile">
+                    <div className="gear-stat-top">
+                      <div className="gear-stat-left">
+                        <span className={`chip-color-dot tone-${idx % 6}`} />
+                        <span className="gear-stat-name">{item.label}</span>
+                      </div>
+                      <div className="gear-stat-right">
+                        <span className="gear-stat-count">{item.count}</span>
+                        <span className="gear-stat-pct">{item.percent}%</span>
+                      </div>
+                    </div>
+                    <div className="gear-stat-track" aria-hidden="true">
+                      <div
+                        className={`gear-stat-fill tone-${idx % 6}`}
+                        style={{ width: `${Math.min(100, Math.max(8, item.percent * 2.2))}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Card 2: Kinesiology & Muscle Distribution (Pure Statistics, No Dummy!) */}
+            {/* Card 2: Biomechanics & Anatomical Coverage (Static Pure Telemetry, Crystal Clear) */}
             <div className="db-telemetry-card anatomy-card">
               <div className="telemetry-card-header">
                 <span className="telemetry-card-title">
-                  <Layers size={15} className="telemetry-title-icon" />
-                  KINESIOLOGY & MUSCLE DISTRIBUTION
+                  <Activity size={15} className="telemetry-title-icon" />
+                  BIOMECHANICS & ANATOMICAL FOCUS
                 </span>
-                <span className="telemetry-badge-count">{telemetry.distinctMusclesCount} Target Areas</span>
+                <span className="telemetry-badge-count">{telemetry.distinctMusclesCount} Muscle Groups</span>
               </div>
 
-              {/* Movement Mechanics & Difficulty */}
+              {/* Section 1: Movement Mechanics & Difficulty */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
-                  <Layers size={13} />
+                  <Activity size={13} />
                   MOVEMENT MECHANICS & DIFFICULTY
                 </span>
+                <span className="telemetry-sub-meta">Lift Classification</span>
               </div>
 
-              {/* Stacked mechanics visual bar */}
-              <div className="telemetry-stacked-bar">
-                <div
-                  className="stacked-seg seg-compound"
-                  style={{ width: `${(telemetry.mechanics.Compound / telemetry.total) * 100}%` }}
-                  title={`Compound: ${telemetry.mechanics.Compound} movements`}
-                />
-                <div
-                  className="stacked-seg seg-isolation"
-                  style={{ width: `${(telemetry.mechanics.Isolation / telemetry.total) * 100}%` }}
-                  title={`Isolation: ${telemetry.mechanics.Isolation} movements`}
-                />
-                <div
-                  className="stacked-seg seg-mobility"
-                  style={{ width: `${(telemetry.mechanics.Mobility / telemetry.total) * 100}%` }}
-                  title={`Mobility: ${telemetry.mechanics.Mobility} movements`}
-                />
-                <div
-                  className="stacked-seg seg-isometric"
-                  style={{ width: `${(telemetry.mechanics.Isometric / telemetry.total) * 100}%` }}
-                  title={`Isometric: ${telemetry.mechanics.Isometric} movements`}
-                />
-              </div>
+              {/* 4-Item Mechanics Stat Tiles */}
+              <div className="telemetry-mech-stat-grid">
+                <div className="mech-stat-tile">
+                  <span className="mech-stat-name">Compound</span>
+                  <div className="mech-stat-val-row">
+                    <span className="mech-stat-num">{telemetry.mechanics.Compound || 0}</span>
+                    <span className="mech-stat-pct">
+                      {telemetry.total > 0 ? Math.round(((telemetry.mechanics.Compound || 0) / telemetry.total) * 100) : 0}%
+                    </span>
+                  </div>
+                  <span className="mech-stat-desc">Multi-joint lifts</span>
+                </div>
 
-              {/* Mechanics Interactive Chips */}
-              <div className="telemetry-quick-chips mechanics-chips">
-                <button
-                  type="button"
-                  className={`telemetry-chip ${selectedMechanic === 'Compound' ? 'active' : ''}`}
-                  onClick={() => setSelectedMechanic(prev => prev === 'Compound' ? 'All' : 'Compound')}
-                  title="Multi-joint movements (Compound)"
-                >
-                  <span className="chip-label">Compound</span>
-                  <span className="chip-count">{telemetry.mechanics.Compound || 0}</span>
-                </button>
-                <button
-                  type="button"
-                  className={`telemetry-chip ${selectedMechanic === 'Isolation' ? 'active' : ''}`}
-                  onClick={() => setSelectedMechanic(prev => prev === 'Isolation' ? 'All' : 'Isolation')}
-                  title="Single-joint movements (Isolation)"
-                >
-                  <span className="chip-label">Isolation</span>
-                  <span className="chip-count">{telemetry.mechanics.Isolation || 0}</span>
-                </button>
-                <button
-                  type="button"
-                  className={`telemetry-chip ${selectedMechanic === 'Mobility' ? 'active' : ''}`}
-                  onClick={() => setSelectedMechanic(prev => prev === 'Mobility' ? 'All' : 'Mobility')}
-                  title="Joint priming & warmup (Mobility)"
-                >
-                  <span className="chip-label">Mobility</span>
-                  <span className="chip-count">{telemetry.mechanics.Mobility || 0}</span>
-                </button>
-                <button
-                  type="button"
-                  className={`telemetry-chip ${selectedMechanic === 'Isometric' ? 'active' : ''}`}
-                  onClick={() => setSelectedMechanic(prev => prev === 'Isometric' ? 'All' : 'Isometric')}
-                  title="Static tension & core (Isometric)"
-                >
-                  <span className="chip-label">Isometric</span>
-                  <span className="chip-count">{telemetry.mechanics.Isometric || 0}</span>
-                </button>
+                <div className="mech-stat-tile">
+                  <span className="mech-stat-name">Isolation</span>
+                  <div className="mech-stat-val-row">
+                    <span className="mech-stat-num">{telemetry.mechanics.Isolation || 0}</span>
+                    <span className="mech-stat-pct">
+                      {telemetry.total > 0 ? Math.round(((telemetry.mechanics.Isolation || 0) / telemetry.total) * 100) : 0}%
+                    </span>
+                  </div>
+                  <span className="mech-stat-desc">Single-joint focus</span>
+                </div>
+
+                <div className="mech-stat-tile">
+                  <span className="mech-stat-name">Mobility</span>
+                  <div className="mech-stat-val-row">
+                    <span className="mech-stat-num">{telemetry.mechanics.Mobility || 0}</span>
+                    <span className="mech-stat-pct">
+                      {telemetry.total > 0 ? Math.round(((telemetry.mechanics.Mobility || 0) / telemetry.total) * 100) : 0}%
+                    </span>
+                  </div>
+                  <span className="mech-stat-desc">Joint priming & range</span>
+                </div>
+
+                <div className="mech-stat-tile">
+                  <span className="mech-stat-name">Isometric</span>
+                  <div className="mech-stat-val-row">
+                    <span className="mech-stat-num">{telemetry.mechanics.Isometric || 0}</span>
+                    <span className="mech-stat-pct">
+                      {telemetry.total > 0 ? Math.round(((telemetry.mechanics.Isometric || 0) / telemetry.total) * 100) : 0}%
+                    </span>
+                  </div>
+                  <span className="mech-stat-desc">Static tension holds</span>
+                </div>
               </div>
 
               {/* Difficulty Spectrum Row */}
-              <div className="telemetry-level-row">
-                <span className="level-label">DIFFICULTY:</span>
-                <div className="level-chips-wrap">
-                  <button
-                    type="button"
-                    className={`level-pill beginner ${selectedLevel === 'Beginner' ? 'active' : ''}`}
-                    onClick={() => setSelectedLevel(prev => prev === 'Beginner' ? 'All' : 'Beginner')}
-                    title="Beginner-friendly movements"
-                  >
-                    <span className="level-pip beginner" /> Beginner ({telemetry.levels.Beginner})
-                  </button>
-                  <button
-                    type="button"
-                    className={`level-pill intermediate ${selectedLevel === 'Intermediate' ? 'active' : ''}`}
-                    onClick={() => setSelectedLevel(prev => prev === 'Intermediate' ? 'All' : 'Intermediate')}
-                    title="Intermediate movements"
-                  >
-                    <span className="level-pip intermediate" /> Intermediate ({telemetry.levels.Intermediate})
-                  </button>
-                  <button
-                    type="button"
-                    className={`level-pill advanced ${selectedLevel === 'Advanced' ? 'active' : ''}`}
-                    onClick={() => setSelectedLevel(prev => prev === 'Advanced' ? 'All' : 'Advanced')}
-                    title="Advanced movements"
-                  >
-                    <span className="level-pip advanced" /> Advanced ({telemetry.levels.Advanced})
-                  </button>
+              <div className="telemetry-level-bar-wrap">
+                <span className="level-bar-label">EXPERIENCE LEVEL:</span>
+                <div className="level-stat-tags">
+                  <span className="level-stat-tag">
+                    <span className="level-pip beginner" /> Beginner <b>{telemetry.levels.Beginner}</b>
+                  </span>
+                  <span className="level-stat-tag">
+                    <span className="level-pip intermediate" /> Intermediate <b>{telemetry.levels.Intermediate}</b>
+                  </span>
+                  <span className="level-stat-tag">
+                    <span className="level-pip advanced" /> Advanced <b>{telemetry.levels.Advanced}</b>
+                  </span>
                 </div>
               </div>
 
               <div className="telemetry-section-divider" />
 
-              {/* Muscle Target Breakdown Grid */}
+              {/* Section 2: Regional & Target Muscle Coverage */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
-                  <Activity size={13} />
-                  TARGET MUSCLE DISTRIBUTION ({telemetry.distinctMusclesCount} GROUPS)
+                  <Layers size={13} />
+                  BODY REGION & TOP TARGET MUSCLES
                 </span>
+                <span className="telemetry-sub-meta">Top 8 Targets</span>
               </div>
 
-              {/* Proportional muscle distribution bar */}
-              <div className="telemetry-anatomy-bar">
-                {telemetry.sortedMuscles.map((item, idx) => (
+              {/* 3-Part Regional Proportion Bar with Clean Direct Legend */}
+              <div className="telemetry-region-block">
+                <div className="telemetry-region-bar" aria-hidden="true">
                   <div
-                    key={item.key}
-                    className={`anatomy-bar-seg seg-tone-${idx % 6}`}
-                    style={{ width: `${item.percent}%` }}
-                    title={`${item.label}: ${item.count} movements (${item.percent}%)`}
+                    className="region-bar-seg seg-lower"
+                    style={{ width: `${telemetry.regions.lower.percent}%` }}
+                    title={`Lower Body: ${telemetry.regions.lower.count} (${telemetry.regions.lower.percent}%)`}
                   />
-                ))}
+                  <div
+                    className="region-bar-seg seg-upper"
+                    style={{ width: `${telemetry.regions.upper.percent}%` }}
+                    title={`Upper Body: ${telemetry.regions.upper.count} (${telemetry.regions.upper.percent}%)`}
+                  />
+                  <div
+                    className="region-bar-seg seg-core"
+                    style={{ width: `${telemetry.regions.core.percent}%` }}
+                    title={`Core & Posture: ${telemetry.regions.core.count} (${telemetry.regions.core.percent}%)`}
+                  />
+                </div>
+
+                <div className="telemetry-region-legend">
+                  <span className="region-leg-item">
+                    <span className="region-leg-dot seg-lower" /> Lower Body <b>{telemetry.regions.lower.count}</b> ({telemetry.regions.lower.percent}%)
+                  </span>
+                  <span className="region-leg-item">
+                    <span className="region-leg-dot seg-upper" /> Upper Body <b>{telemetry.regions.upper.count}</b> ({telemetry.regions.upper.percent}%)
+                  </span>
+                  <span className="region-leg-item">
+                    <span className="region-leg-dot seg-core" /> Core <b>{telemetry.regions.core.count}</b> ({telemetry.regions.core.percent}%)
+                  </span>
+                </div>
               </div>
 
-              {/* Muscle Breakdown Grid (2 Columns, Clean Statistics) */}
+              {/* Muscle Breakdown Grid (2 Columns, Static Informational Tiles) */}
               <div className="telemetry-muscle-grid">
-                {telemetry.sortedMuscles.slice(0, 8).map((item, idx) => {
-                  const isSelected = selectedMuscle === item.key;
-                  return (
-                    <button
-                      key={item.key}
-                      type="button"
-                      className={`muscle-grid-item ${isSelected ? 'active' : ''}`}
-                      onClick={() => setSelectedMuscle(prev => prev === item.key ? 'All' : item.key)}
-                      title={`Filter by ${item.label}`}
-                    >
-                      <div className="muscle-grid-left">
-                        <span className={`chip-color-dot tone-${idx % 6}`} />
-                        <span className="muscle-grid-name">{item.label}</span>
-                      </div>
-                      <div className="muscle-grid-right">
-                        <span className="muscle-grid-count">{item.count}</span>
-                        <span className="muscle-grid-pct">{item.percent}%</span>
-                      </div>
-                    </button>
-                  );
-                })}
+                {telemetry.sortedMuscles.slice(0, 8).map((item, idx) => (
+                  <div key={item.key} className="muscle-stat-tile">
+                    <div className="muscle-stat-left">
+                      <span className={`chip-color-dot tone-${idx % 6}`} />
+                      <span className="muscle-stat-name">{item.label}</span>
+                    </div>
+                    <div className="muscle-stat-right">
+                      <span className="muscle-stat-count">{item.count}</span>
+                      <span className="muscle-stat-pct">{item.percent}%</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -790,24 +741,20 @@ export function ExerciseDatabaseView({
               </div>
             </div>
 
-            {/* Interactive Anatomy Muscle Fast-Pills with Exact Movement Counts */}
+            {/* Anatomy Muscle Fast-Pills (Clean Label-Only Bubbles, Non-Redundant) */}
             <div className="db-rail-row">
               <span className="db-rail-label">ANATOMY</span>
               <div className="db-rail-scroll">
-                {MUSCLE_CATEGORIES.map((cat) => {
-                  const count = muscleCountMap[cat.key] || 0;
-                  return (
-                    <button
-                      key={cat.key}
-                      type="button"
-                      className={`db-pill-btn ${selectedMuscle === cat.key ? 'active' : ''}`}
-                      onClick={() => setSelectedMuscle(cat.key)}
-                    >
-                      <span>{cat.label}</span>
-                      <span className="db-pill-count">{count}</span>
-                    </button>
-                  );
-                })}
+                {MUSCLE_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.key}
+                    type="button"
+                    className={`db-pill-btn ${selectedMuscle === cat.key ? 'active' : ''}`}
+                    onClick={() => setSelectedMuscle(cat.key)}
+                  >
+                    <span>{cat.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
 

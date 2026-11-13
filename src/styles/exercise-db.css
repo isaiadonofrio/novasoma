@@ -95,7 +95,6 @@
   padding: 24px 26px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 16px;
   min-height: 420px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
@@ -146,47 +145,86 @@
   border-radius: var(--radius-full);
 }
 
-/* Equipment Split Stats */
-.telemetry-split-stats {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
+/* ==========================================================================
+   Card 1: Equipment KPI & Detailed Gear Inventory
+   ========================================================================== */
+.telemetry-kpi-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-.split-metric {
+.telemetry-kpi-card {
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
-.split-num {
-  font-size: 1.6rem;
+[data-theme="light"] .telemetry-kpi-card {
+  background: #FAF9F6;
+  border-color: var(--border-hi);
+}
+
+.kpi-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kpi-big-num {
+  font-family: var(--mono);
+  font-size: 1.85rem;
   font-weight: 900;
   line-height: 1;
   color: var(--text);
-  font-family: var(--mono);
 }
 
-.split-num.teal {
+.kpi-big-num.teal {
   color: var(--teal);
 }
 
-.split-lbl {
-  font-size: 0.74rem;
-  color: var(--dim);
-  font-weight: 600;
+.kpi-tag {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
 }
 
-.split-divider {
-  font-size: 1.3rem;
-  color: var(--border-hi);
-  font-weight: 300;
+.kpi-tag.gear {
+  background: var(--clay-soft);
+  color: var(--clay);
+  border: 1px solid color-mix(in srgb, var(--clay) 30%, transparent);
+}
+
+.kpi-tag.bodyweight {
+  background: rgba(42, 107, 109, 0.12);
+  color: var(--teal);
+  border: 1px solid rgba(42, 107, 109, 0.25);
+}
+
+.kpi-label {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.kpi-desc {
+  font-size: 0.72rem;
+  color: var(--dim);
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 /* Dual Segmented Split Bar */
 .telemetry-segmented-bar {
   width: 100%;
-  height: 8px;
+  height: 9px;
   background: var(--raised2);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -205,81 +243,7 @@
   transition: width 0.3s ease;
 }
 
-/* Interactive Quick Filter Chips */
-.telemetry-quick-chips {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
-}
-
-.telemetry-chip {
-  padding: 5px 12px;
-  border-radius: var(--radius-full);
-  background: var(--raised2);
-  border: 1px solid var(--border);
-  color: var(--dim);
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.14s var(--ease);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.telemetry-chip:hover {
-  border-color: var(--clay);
-  color: var(--text);
-  background: var(--raised3);
-}
-
-.telemetry-chip.active {
-  background: var(--clay-soft);
-  border-color: var(--clay);
-  color: var(--clay);
-}
-
-.telemetry-chip .chip-count {
-  font-family: var(--mono);
-  font-size: 0.71rem;
-  color: inherit;
-  opacity: 0.85;
-}
-
-/* Sub-Gear Breakdown Tags */
-.telemetry-sub-breakdown {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
-}
-
-.sub-gear-tag {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--dim);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 3px 8px;
-  cursor: pointer;
-  transition: all 0.12s var(--ease);
-}
-
-.sub-gear-tag:hover {
-  color: var(--text);
-  background: var(--raised2);
-  border-color: var(--border-hi);
-}
-
-.sub-gear-tag.active {
-  color: var(--clay);
-  background: var(--clay-soft);
-  border-color: var(--clay);
-}
-
-/* Section Divider */
+/* Section Divider & Subheaders */
 .telemetry-section-divider {
   height: 1px;
   background: var(--border);
@@ -290,6 +254,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 }
 
 .telemetry-sub-kicker {
@@ -304,30 +269,178 @@
   gap: 6px;
 }
 
-/* Stacked Mechanics Bar */
-.telemetry-stacked-bar {
-  width: 100%;
-  height: 8px;
-  background: var(--raised2);
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  display: flex;
+.telemetry-sub-meta {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--dim);
 }
 
-.stacked-seg.seg-compound { background: var(--clay); }
-.stacked-seg.seg-isolation { background: var(--teal); }
-.stacked-seg.seg-mobility { background: #E5A93C; }
-.stacked-seg.seg-isometric { background: #8C827A; }
+/* Gear Stat Tiles Grid (Card 1 - Static Pure Telemetry) */
+.telemetry-gear-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 12px;
+}
 
-/* Difficulty Spectrum Row */
-.telemetry-level-row {
+.gear-stat-tile {
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+[data-theme="light"] .gear-stat-tile {
+  background: #FAF9F6;
+  border-color: var(--border-hi);
+}
+
+.gear-stat-top {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.level-label {
+.gear-stat-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.gear-stat-name {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gear-stat-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.gear-stat-count {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text);
+  padding: 1px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+
+.gear-stat-pct {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--dim);
+  min-width: 26px;
+  text-align: right;
+}
+
+.gear-stat-track {
+  width: 100%;
+  height: 4px;
+  background: var(--surface);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.gear-stat-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+
+.gear-stat-fill.tone-0 { background: #C28E52; }
+.gear-stat-fill.tone-1 { background: #2A6B6D; }
+.gear-stat-fill.tone-2 { background: #E5674C; }
+.gear-stat-fill.tone-3 { background: #E5A93C; }
+.gear-stat-fill.tone-4 { background: #6E5643; }
+.gear-stat-fill.tone-5 { background: #8C827A; }
+
+/* ==========================================================================
+   Card 2: Biomechanics, Regional Coverage & Target Muscles (Static Pure Telemetry)
+   ========================================================================== */
+.telemetry-mech-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.mech-stat-tile {
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+[data-theme="light"] .mech-stat-tile {
+  background: #FAF9F6;
+  border-color: var(--border-hi);
+}
+
+.mech-stat-name {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+
+.mech-stat-val-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.mech-stat-num {
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+}
+
+.mech-stat-pct {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+
+.mech-stat-desc {
+  font-size: 0.67rem;
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Experience Level Row */
+.telemetry-level-bar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 2px 0;
+}
+
+.level-bar-label {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 800;
@@ -335,37 +448,35 @@
   color: var(--faint);
 }
 
-.level-chips-wrap {
+.level-stat-tags {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
-.level-pill {
+.level-stat-tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  border-radius: var(--radius-full);
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--dim);
+  font-weight: 600;
+  padding: 3px 8px;
   background: var(--raised2);
   border: 1px solid var(--border);
-  color: var(--dim);
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.12s var(--ease);
+  border-radius: var(--radius-full);
 }
 
-.level-pill:hover {
-  color: var(--text);
+[data-theme="light"] .level-stat-tag {
+  background: #FAF9F6;
   border-color: var(--border-hi);
 }
 
-.level-pill.active {
-  border-color: var(--clay);
-  color: var(--clay);
-  background: var(--clay-soft);
+.level-stat-tag b {
+  font-family: var(--mono);
+  font-weight: 800;
+  color: var(--text);
 }
 
 .level-pip {
@@ -378,74 +489,14 @@
 .level-pip.intermediate { background: var(--clay); }
 .level-pip.advanced { background: var(--ember); }
 
-/* ==========================================================================
-   Gear Breakdown Grid (Card 1)
-   ========================================================================== */
-.telemetry-gear-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px 10px;
-}
-
-.gear-grid-pill {
+/* Regional Split Bar & Legend */
+.telemetry-region-block {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 8px;
-  padding: 8px 12px;
-  background: var(--raised2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.14s var(--ease);
 }
 
-.gear-grid-pill:hover {
-  background: var(--raised3);
-  border-color: var(--clay);
-  transform: translateY(-1px);
-}
-
-.gear-grid-pill.active {
-  background: var(--clay-soft);
-  border-color: var(--clay);
-  color: var(--clay);
-}
-
-.gear-grid-name {
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.gear-grid-pill.active .gear-grid-name {
-  color: var(--clay);
-}
-
-.gear-grid-count {
-  font-family: var(--mono);
-  font-size: 0.74rem;
-  font-weight: 800;
-  color: var(--dim);
-  padding: 1px 6px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  flex-shrink: 0;
-}
-
-.gear-grid-pill.active .gear-grid-count {
-  background: var(--clay);
-  color: #FFFFFF;
-  border-color: var(--clay);
-}
-
-/* Anatomical Spectrum Bar & Chips */
-.telemetry-anatomy-bar {
+.telemetry-region-bar {
   width: 100%;
   height: 8px;
   background: var(--raised2);
@@ -454,50 +505,50 @@
   display: flex;
 }
 
-.anatomy-bar-seg.seg-tone-0 { background: #C28E52; }
-.anatomy-bar-seg.seg-tone-1 { background: #2A6B6D; }
-.anatomy-bar-seg.seg-tone-2 { background: #E5674C; }
-.anatomy-bar-seg.seg-tone-3 { background: #E5A93C; }
-.anatomy-bar-seg.seg-tone-4 { background: #6E5643; }
-.anatomy-bar-seg.seg-tone-5 { background: #8C827A; }
+.region-bar-seg.seg-lower { background: #C28E52; }
+.region-bar-seg.seg-upper { background: #2A6B6D; }
+.region-bar-seg.seg-core  { background: #E5A93C; }
 
-.telemetry-muscle-chips-list {
+.telemetry-region-legend {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.muscle-breakdown-chip {
+.region-leg-item {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  border-radius: var(--radius-full);
-  background: var(--raised2);
-  border: 1px solid var(--border);
-  color: var(--dim);
+  gap: 6px;
   font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.12s var(--ease);
+  color: var(--dim);
+  font-weight: 600;
 }
 
-.muscle-breakdown-chip:hover {
+.region-leg-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.region-leg-dot.seg-lower { background: #C28E52; }
+.region-leg-dot.seg-upper { background: #2A6B6D; }
+.region-leg-dot.seg-core  { background: #E5A93C; }
+
+.region-leg-item b {
+  font-family: var(--mono);
+  font-weight: 800;
   color: var(--text);
-  border-color: var(--clay);
 }
 
-.muscle-breakdown-chip.active {
-  background: var(--clay-soft);
-  border-color: var(--clay);
-  color: var(--clay);
-}
-
+/* Color Dots */
 .chip-color-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .chip-color-dot.tone-0 { background: #C28E52; }
@@ -507,22 +558,14 @@
 .chip-color-dot.tone-4 { background: #6E5643; }
 .chip-color-dot.tone-5 { background: #8C827A; }
 
-.chip-muscle-percent {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  opacity: 0.75;
-}
-
-/* ==========================================================================
-   Target Muscle Distribution Grid (Card 2 - Pure Statistics, No Dummy)
-   ========================================================================== */
+/* Target Muscle Stat Tiles (Card 2 - Static Pure Telemetry) */
 .telemetry-muscle-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px 10px;
 }
 
-.muscle-grid-item {
+.muscle-stat-tile {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -531,31 +574,22 @@
   background: var(--raised2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.14s var(--ease);
-  text-align: left;
 }
 
-.muscle-grid-item:hover {
-  background: var(--raised3);
-  border-color: var(--clay);
-  transform: translateY(-1px);
+[data-theme="light"] .muscle-stat-tile {
+  background: #FAF9F6;
+  border-color: var(--border-hi);
 }
 
-.muscle-grid-item.active {
-  background: var(--clay-soft);
-  border-color: var(--clay);
-}
-
-.muscle-grid-left {
+.muscle-stat-left {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-.muscle-grid-name {
-  font-size: 0.76rem;
+.muscle-stat-name {
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
@@ -563,41 +597,31 @@
   text-overflow: ellipsis;
 }
 
-.muscle-grid-item.active .muscle-grid-name {
-  color: var(--clay);
-}
-
-.muscle-grid-right {
+.muscle-stat-right {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
 
-.muscle-grid-count {
+.muscle-stat-count {
   font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 800;
-  color: var(--dim);
+  color: var(--text);
   padding: 1px 6px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
 }
 
-.muscle-grid-pct {
+.muscle-stat-pct {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 700;
   color: var(--faint);
-  min-width: 28px;
+  min-width: 26px;
   text-align: right;
-}
-
-.muscle-grid-item.active .muscle-grid-count {
-  background: var(--clay);
-  color: #FFFFFF;
-  border-color: var(--clay);
 }
 
 .telemetry-bodymap-launch {
@@ -653,13 +677,22 @@
     grid-template-columns: 1fr;
     gap: 18px;
   }
-  .telemetry-gear-grid {
+  .telemetry-gear-stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .telemetry-mech-stat-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 640px) {
-  .telemetry-gear-grid {
+  .telemetry-kpi-row {
+    grid-template-columns: 1fr;
+  }
+  .telemetry-gear-stat-grid {
+    grid-template-columns: 1fr;
+  }
+  .telemetry-mech-stat-grid {
     grid-template-columns: 1fr;
   }
   .telemetry-muscle-grid {
