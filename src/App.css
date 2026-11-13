@@ -12012,41 +12012,403 @@
   gap: 6px;
 }
 
-.pure-select-wrap {
+/* Field Header with optional badges */
+.pure-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pure-volume-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--clay);
+  background: var(--clay-soft);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.pure-custom-select-wrap {
   position: relative;
   width: 100%;
 }
 
-.pure-native-select {
+/* Custom In-Theme Workout Trigger Button */
+.pure-workout-display-btn {
   width: 100%;
-  height: 42px;
-  padding: 0 34px 0 14px;
+  min-height: 48px;
+  padding: 8px 14px;
   border-radius: var(--radius-sm);
   background: var(--raised2);
   border: 1.5px solid var(--border-hi);
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   cursor: pointer;
-  appearance: none;
   transition: all 0.14s var(--ease);
   box-sizing: border-box;
+  text-align: left;
 }
 
-.pure-native-select:focus {
-  outline: none;
+.pure-workout-display-btn:hover {
+  border-color: var(--clay);
+  background: var(--surface);
+}
+
+.pure-workout-display-btn.open {
   border-color: var(--clay);
   box-shadow: 0 0 0 2px var(--clay-soft);
   background: var(--surface);
 }
 
-.select-arrow {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
+.pure-workout-display-btn .trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pure-workout-display-btn .trigger-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.trigger-icon-box.routine {
+  background: var(--clay-soft);
+  color: var(--clay);
+}
+
+.trigger-icon-box.clay {
+  background: var(--clay-soft);
+  color: var(--clay);
+}
+
+.trigger-icon-box.ember {
+  background: var(--ember-soft);
+  color: var(--ember);
+}
+
+.trigger-icon-box.teal {
+  background: rgba(42, 107, 109, 0.12);
+  color: #2A6B6D;
+}
+
+.trigger-icon-box.custom {
+  background: var(--raised3);
   color: var(--dim);
+}
+
+.pure-workout-display-btn .trigger-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.pure-workout-display-btn .trigger-title {
+  font-size: 0.90rem;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pure-workout-display-btn .trigger-meta {
+  font-size: 0.70rem;
+  font-weight: 600;
+  color: var(--dim);
+  font-family: var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pure-workout-display-btn .chevron-indicator {
+  color: var(--dim);
+  flex-shrink: 0;
+  transition: transform 0.16s var(--ease);
+}
+
+.pure-workout-display-btn .chevron-indicator.open {
+  transform: rotate(180deg);
+  color: var(--clay);
+}
+
+/* Custom In-Theme Workout Dropdown Panel */
+.pure-custom-dropdown-panel {
+  background: var(--surface);
+  border: 1.5px solid var(--border-hi);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  margin-top: 6px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dropdown-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 2px;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+
+.dropdown-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dropdown-item-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s var(--ease);
+}
+
+.dropdown-item-btn:hover {
+  background: var(--raised2);
+  border-color: var(--border);
+}
+
+.dropdown-item-btn.active {
+  background: var(--clay-soft);
+  border-color: var(--clay);
+}
+
+.dropdown-item-btn .item-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.dropdown-item-btn .item-icon-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dropdown-item-btn .item-icon-circle.routine {
+  background: var(--clay-soft);
+  color: var(--clay);
+}
+
+.dropdown-item-btn .item-icon-circle.clay {
+  background: var(--clay-soft);
+  color: var(--clay);
+}
+
+.dropdown-item-btn .item-icon-circle.ember {
+  background: var(--ember-soft);
+  color: var(--ember);
+}
+
+.dropdown-item-btn .item-icon-circle.teal {
+  background: rgba(42, 107, 109, 0.12);
+  color: #2A6B6D;
+}
+
+.dropdown-item-btn .item-icon-circle.custom {
+  background: var(--raised3);
+  color: var(--dim);
+}
+
+.dropdown-item-btn .item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.dropdown-item-btn .item-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item-btn.active .item-name {
+  color: var(--clay);
+}
+
+.dropdown-item-btn .item-sub {
+  font-size: 0.68rem;
+  font-family: var(--mono);
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item-btn .item-check {
+  color: var(--clay);
+  flex-shrink: 0;
+}
+
+/* Time of Day Strip */
+.pure-time-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.pure-field-sublabel {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.pure-time-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.time-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+}
+
+.time-pill-btn:hover {
+  color: var(--text);
+  border-color: var(--border-hi);
+}
+
+.time-pill-btn.active {
+  background: rgba(42, 107, 109, 0.14);
+  color: #2A6B6D;
+  border-color: #2A6B6D;
+  font-weight: 800;
+}
+
+/* Optional Session Feel Grid */
+.pure-feel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pure-clear-feel-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.70rem;
+  color: var(--dim);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.pure-clear-feel-btn:hover {
+  color: var(--danger);
+}
+
+.pure-feel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.pure-feel-card {
+  padding: 8px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--raised2);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.12s var(--ease);
+  text-align: center;
+}
+
+.pure-feel-card:hover {
+  border-color: var(--border-hi);
+  background: var(--surface);
+}
+
+.pure-feel-card.active {
+  border-color: var(--clay);
+  background: var(--clay-soft);
+}
+
+.pure-feel-card .feel-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.pure-feel-card.active .feel-icon-row {
+  color: var(--clay);
+}
+
+.pure-feel-card .feel-sub {
+  font-size: 0.64rem;
+  color: var(--dim);
+  font-family: var(--mono);
 }
 
 .pure-text-input {
@@ -12279,5 +12641,17 @@
   }
   .pure-intensity-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .pure-time-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .pure-time-pills {
+    width: 100%;
+  }
+  .time-pill-btn {
+    flex: 1;
+    justify-content: center;
   }
 }
