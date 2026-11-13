@@ -14,6 +14,7 @@ import { StatsDashboard } from './StatsDashboard';
 import { YearHeatmapCard } from './YearHeatmapCard';
 import { RoutinesSection } from './RoutinesSection';
 import { WorkoutEditorModal } from './WorkoutEditorModal';
+import { ManualWorkoutLogModal } from './ManualWorkoutLogModal';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
 import { calculateOverviewDashboardStats } from '../utils/analytics';
 import { formatVolumeCompact } from '../utils/formatting';
@@ -29,9 +30,12 @@ export function HomeView({
   onStartRoutineLive,
   onCreateRoutine,
   onDuplicateRoutine,
-  onDeleteRoutine
+  onDeleteRoutine,
+  onLogManualWorkout,
+  onDeleteSession
 }) {
   const [isCreating, setIsCreating] = useState(false);
+  const [manualLogDateKey, setManualLogDateKey] = useState(null);
 
   const [now, setNow] = useState(() => new Date());
 
@@ -263,11 +267,15 @@ export function HomeView({
               workoutHistory={workoutHistory}
               goalTarget={weeklyGoal}
               onChangeGoalTarget={onChangeWeeklyGoal}
+              onSelectDate={setManualLogDateKey}
             />
           </div>
 
           {/* Full-Width 53-Week Annual Activity Heatmap */}
-          <YearHeatmapCard workoutHistory={workoutHistory} />
+          <YearHeatmapCard
+            workoutHistory={workoutHistory}
+            onSelectDate={setManualLogDateKey}
+          />
         </div>
       </section>
 
@@ -288,6 +296,22 @@ export function HomeView({
             setIsCreating(false);
           }}
           onClose={() => setIsCreating(false)}
+        />
+      )}
+
+      {manualLogDateKey && (
+        <ManualWorkoutLogModal
+          isOpen={Boolean(manualLogDateKey)}
+          initialDateKey={manualLogDateKey}
+          routines={routines}
+          workoutHistory={workoutHistory}
+          onSaveSession={(newSession) => {
+            if (onLogManualWorkout) {
+              onLogManualWorkout(newSession);
+            }
+          }}
+          onDeleteSession={onDeleteSession}
+          onClose={() => setManualLogDateKey(null)}
         />
       )}
     </div>

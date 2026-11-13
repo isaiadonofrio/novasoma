@@ -393,6 +393,10 @@ export function App() {
     setWorkoutHistory(prev => prev.filter(s => (s.id || s.date) !== sessionId));
   };
 
+  const handleLogManualWorkout = (sessionData) => {
+    setWorkoutHistory(prev => [sessionData, ...prev]);
+  };
+
   const handleAddExerciseToRoutine = (routineId, exerciseData) => {
     setRoutines(prev => prev.map(routine => {
       if (routine.id !== routineId) return routine;
@@ -538,6 +542,8 @@ export function App() {
             onCreateRoutine={handleCreateRoutine}
             onDuplicateRoutine={handleDuplicateRoutine}
             onDeleteRoutine={handleDeleteRoutine}
+            onLogManualWorkout={handleLogManualWorkout}
+            onDeleteSession={handleDeleteWorkoutSession}
           />
         )}
 

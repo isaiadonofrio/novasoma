@@ -14,6 +14,7 @@ export function StatsDashboard({
   workoutHistory = [],
   goalTarget = 4,
   onChangeGoalTarget,
+  onSelectDate,
 }) {
   const [now, setNow] = useState(() => new Date());
 
@@ -61,6 +62,22 @@ export function StatsDashboard({
   // Determine today's Monday=0..Sunday=6 index
   const todayJs = now.getDay();
   const todayMondayIdx = todayJs === 0 ? 6 : todayJs - 1;
+  const todayKey = useMemo(() => toLocalDateKey(now), [now]);
+
+  const weekDayDates = useMemo(() => {
+    const dayFromMonday = (now.getDay() + 6) % 7;
+    const monday = new Date(now);
+    monday.setHours(12, 0, 0, 0);
+    monday.setDate(now.getDate() - dayFromMonday);
+
+    return WEEKDAY_NAMES.map((_, idx) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + idx);
+      const key = toLocalDateKey(d);
+      const isFuture = key > todayKey;
+      return { date: d, key, isFuture };
+    });
+  }, [now, todayKey]);
 
   const captionText =
     streak.activeDaysThisWeek >= goalTarget
@@ -117,18 +134,35 @@ export function StatsDashboard({
           <div className="weekly-days-pills" role="list" aria-label="Weekly workout days">
             {streak.weeklyActivityMap.map((done, idx) => {
               const isToday = idx === todayMondayIdx;
+              const dayMeta = weekDayDates[idx];
+              const isFuture = dayMeta?.isFuture;
+              const dateKey = dayMeta?.key;
+
               return (
-                <div
+                <button
                   key={WEEKDAY_NAMES[idx]}
+                  type="button"
+                  disabled={isFuture}
                   role="listitem"
-                  className={`week-day-pill ${done ? 'active' : ''} ${isToday ? 'is-today' : ''}`}
-                  title={`${WEEKDAY_NAMES[idx]}: ${done ? 'Completed' : isToday ? 'Today' : 'Rest / Planned'}`}
+                  className={`week-day-pill ${done ? 'active' : ''} ${isToday ? 'is-today' : ''} ${isFuture ? 'is-future' : 'clickable'}`}
+                  title={`${WEEKDAY_NAMES[idx]}: ${
+                    done
+                      ? 'Completed (Click to view or log another)'
+                      : isFuture
+                      ? 'Future day'
+                      : 'Click to log completed workout'
+                  }`}
+                  onClick={() => {
+                    if (!isFuture && onSelectDate && dateKey) {
+                      onSelectDate(dateKey);
+                    }
+                  }}
                 >
                   <span className="week-day-letter">{WEEKDAY_LETTERS[idx]}</span>
                   <span className="week-day-dot">
                     {done ? <Check size={12} strokeWidth={3} /> : null}
                   </span>
-                </div>
+                </button>
               );
             })}
           </div>
