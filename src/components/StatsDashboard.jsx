@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Flame, Check, Award } from 'lucide-react';
+import { Check } from 'lucide-react';
 import {
   calculateStreak,
   calculateBestStreak,
@@ -54,11 +54,6 @@ export function StatsDashboard({
     };
   }, [workoutHistory, now]);
 
-  const progressRatio = Math.min(1, streak.activeDaysThisWeek / Math.max(1, goalTarget));
-  const ringRadius = 21;
-  const ringCircumference = 2 * Math.PI * ringRadius;
-  const strokeDashoffset = ringCircumference * (1 - progressRatio);
-
   // Determine today's Monday=0..Sunday=6 index
   const todayJs = now.getDay();
   const todayMondayIdx = todayJs === 0 ? 6 : todayJs - 1;
@@ -79,143 +74,130 @@ export function StatsDashboard({
     });
   }, [now, todayKey]);
 
-  const captionText =
-    streak.activeDaysThisWeek >= goalTarget
-      ? `Weekly goal hit — ${streak.activeDaysThisWeek} active days logged`
-      : streak.activeDaysThisWeek > 0
-      ? `${goalTarget - streak.activeDaysThisWeek} more session${goalTarget - streak.activeDaysThisWeek === 1 ? '' : 's'} to reach your ${goalTarget}-day target`
-      : 'Complete your first session to kick off your weekly rhythm';
+  const isGoalMet = streak.activeDaysThisWeek >= goalTarget;
+
+  const captionText = isGoalMet
+    ? `Weekly target reached — ${streak.activeDaysThisWeek} active days logged! 🔥`
+    : streak.activeDaysThisWeek > 0
+    ? `${goalTarget - streak.activeDaysThisWeek} more session${goalTarget - streak.activeDaysThisWeek === 1 ? '' : 's'} to hit your ${goalTarget}-day target`
+    : `Complete your first session to kick off this week's rhythm`;
 
   return (
     <section className="consistency-card" aria-label="Weekly consistency">
       <div className="consistency-top-row">
         <div className="consistency-title-block">
           <span className="consistency-kicker">YOUR WEEK</span>
-          <h3 className="consistency-heading">Consistency</h3>
+          <h3 className="consistency-heading">Weekly Consistency</h3>
         </div>
 
         <div className="consistency-badges-group">
           <span
-            className={`consistency-streak-pill ${streak.currentStreakDays > 0 ? 'hot' : ''}`}
-            title="Current consecutive day streak"
+            className={`consistency-target-badge ${isGoalMet ? 'goal-met' : ''}`}
+            title={`${streak.activeDaysThisWeek} of ${goalTarget} target sessions completed`}
           >
-            <Flame size={14} />
-            {streak.currentStreakDays > 0 ? `${streak.currentStreakDays}d streak` : '0 sess.'}
+            {isGoalMet ? (
+              <>
+                <Check size={12} strokeWidth={3} />
+                <span>{streak.activeDaysThisWeek}/{goalTarget} Target Met</span>
+              </>
+            ) : (
+              <>
+                <span className="target-bullet">●</span>
+                <span>{streak.activeDaysThisWeek}/{goalTarget} Target</span>
+              </>
+            )}
           </span>
-          {bestStreak > 0 && (
-            <span className="consistency-best-pill" title="Longest streak ever">
-              <Award size={13} />
-              Best {bestStreak}d
-            </span>
-          )}
         </div>
       </div>
 
-      <div className="consistency-body-row">
-        <div
-          className="consistency-ring-wrap"
-          title={`${streak.activeDaysThisWeek} of ${goalTarget} weekly target sessions`}
-        >
-          <svg className="consistency-ring-svg" viewBox="0 0 54 54" aria-hidden="true">
-            <circle className="consistency-ring-track" cx="27" cy="27" r={ringRadius} />
-            <circle
-              className="consistency-ring-fill"
-              cx="27"
-              cy="27"
-              r={ringRadius}
-              strokeDasharray={ringCircumference}
-              strokeDashoffset={strokeDashoffset}
-            />
-          </svg>
-          <span className="consistency-ring-val">{streak.activeDaysThisWeek}</span>
-        </div>
+      <div className="consistency-body-row clean">
+        <div className="weekly-days-pills full-width" role="list" aria-label="Weekly workout days">
+          {streak.weeklyActivityMap.map((done, idx) => {
+            const isToday = idx === todayMondayIdx;
+            const dayMeta = weekDayDates[idx];
+            const isFuture = dayMeta?.isFuture;
+            const dateKey = dayMeta?.key;
 
-        <div className="consistency-days-wrap">
-          <div className="weekly-days-pills" role="list" aria-label="Weekly workout days">
-            {streak.weeklyActivityMap.map((done, idx) => {
-              const isToday = idx === todayMondayIdx;
-              const dayMeta = weekDayDates[idx];
-              const isFuture = dayMeta?.isFuture;
-              const dateKey = dayMeta?.key;
-
-              return (
-                <button
-                  key={WEEKDAY_NAMES[idx]}
-                  type="button"
-                  disabled={isFuture}
-                  role="listitem"
-                  className={`week-day-pill ${done ? 'active' : ''} ${isToday ? 'is-today' : ''} ${isFuture ? 'is-future' : 'clickable'}`}
-                  title={`${WEEKDAY_NAMES[idx]}: ${
-                    done
-                      ? 'Completed (Click to view or log another)'
-                      : isFuture
-                      ? 'Future day'
-                      : 'Click to log completed workout'
-                  }`}
-                  onClick={() => {
-                    if (!isFuture && onSelectDate && dateKey) {
-                      onSelectDate(dateKey);
-                    }
-                  }}
-                >
-                  <span className="week-day-letter">{WEEKDAY_LETTERS[idx]}</span>
-                  <span className="week-day-dot">
-                    {done ? <Check size={12} strokeWidth={3} /> : null}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+            return (
+              <button
+                key={WEEKDAY_NAMES[idx]}
+                type="button"
+                disabled={isFuture}
+                role="listitem"
+                className={`week-day-pill ${done ? 'active' : ''} ${isToday ? 'is-today' : ''} ${isFuture ? 'is-future' : 'clickable'}`}
+                title={`${WEEKDAY_NAMES[idx]}: ${
+                  done
+                    ? 'Completed (Click to view or log another)'
+                    : isFuture
+                    ? 'Future day'
+                    : 'Click to log completed workout'
+                }`}
+                onClick={() => {
+                  if (!isFuture && onSelectDate && dateKey) {
+                    onSelectDate(dateKey);
+                  }
+                }}
+              >
+                <span className="week-day-letter">{WEEKDAY_LETTERS[idx]}</span>
+                <span className="week-day-status">
+                  {done ? (
+                    <Check size={12} strokeWidth={3} className="done-check" />
+                  ) : isToday ? (
+                    <span className="today-dot" />
+                  ) : null}
+                </span>
+                {isToday && <span className="today-micro-badge">TODAY</span>}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Compact Weekly Snapshot Strip */}
       <div className="week-mini-stats">
         <div className="week-mini-stat">
-          <span className="week-mini-lbl">This Week</span>
+          <span className="week-mini-lbl">Time This Week</span>
           <span className="week-mini-val">{weekSummary.weekTime}</span>
           <span className="week-mini-sub">
             {weekSummary.weekSessions} session{weekSummary.weekSessions === 1 ? '' : 's'} logged
           </span>
         </div>
         <div className="week-mini-stat">
-          <span className="week-mini-lbl">Streak Record</span>
-          <span className="week-mini-val">{bestStreak}d</span>
+          <span className="week-mini-lbl">Current Streak</span>
+          <span className="week-mini-val">{streak.currentStreakDays}d</span>
           <span className="week-mini-sub">
-            {weekSummary.totalSessions} total completed
+            Best: {bestStreak}d record
           </span>
         </div>
       </div>
 
       <div className="consistency-footer-row">
         <p className="consistency-caption">{captionText}</p>
-        <div className="consistency-goal-controls">
-          {onChangeGoalTarget && (
+
+        {onChangeGoalTarget && (
+          <div className="consistency-target-stepper" title="Set your weekly target frequency">
+            <span className="target-stepper-lbl">Goal:</span>
             <button
               type="button"
-              className="goal-step-btn"
+              className="target-stepper-btn"
               onClick={() => onChangeGoalTarget(Math.max(1, goalTarget - 1))}
               disabled={goalTarget <= 1}
-              aria-label="Decrease weekly goal"
-              title="Decrease weekly target"
+              aria-label="Decrease target"
             >
-              -
+              −
             </button>
-          )}
-          <span className="consistency-goal-chip">{streak.activeDaysThisWeek}/{goalTarget} goal</span>
-          {onChangeGoalTarget && (
+            <span className="target-stepper-val">{goalTarget}d</span>
             <button
               type="button"
-              className="goal-step-btn"
+              className="target-stepper-btn"
               onClick={() => onChangeGoalTarget(Math.min(7, goalTarget + 1))}
               disabled={goalTarget >= 7}
-              aria-label="Increase weekly goal"
-              title="Increase weekly target"
+              aria-label="Increase target"
             >
               +
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

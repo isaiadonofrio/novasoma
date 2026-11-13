@@ -50,6 +50,22 @@
   opacity: 0.88;
 }
 
+/* Weekly Muscle Hit Map Frequency Colors */
+.muscle.hit-1 path {
+  fill: #E5A93C !important; /* 1x: Gold / Yellow */
+  opacity: 0.95;
+}
+
+.muscle.hit-2 path {
+  fill: #C28E52 !important; /* 2x: Bronze / Orange */
+  opacity: 1;
+}
+
+.muscle.hit-3 path {
+  fill: #E5674C !important; /* 3x+: Ember / Red */
+  opacity: 1;
+}
+
 [data-theme="light"] .body-base path {
   fill: #CBC3B8;
 }

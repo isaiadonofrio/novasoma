@@ -8,6 +8,7 @@ import {
   calculateBestStreak,
   calculateOverviewDashboardStats,
   calculateMonthGroupedHeatmap,
+  calculateWeeklyMuscleFrequency,
 } from '../src/utils/analytics.js';
 
 test('toLocalDateKey formats local calendar YYYY-MM-DD and rejects invalid input', () => {
@@ -132,4 +133,31 @@ test('calculateOverviewDashboardStats aggregates planned sets, bodyweight percen
   assert.equal(stats.lastSessionSummary.title, 'Push Day');
   assert.equal(stats.lastSessionSummary.durationLabel, '40 min');
 });
+
+test('calculateWeeklyMuscleFrequency accurately tallies muscle hits for current week', () => {
+  const routines = [
+    {
+      id: 'leg-1',
+      title: 'Leg Day',
+      exercises: [{ muscleKey: 'quads' }, { muscleKey: 'glutes' }],
+    },
+  ];
+
+  const now = new Date();
+  const history = [
+    {
+      id: 'sess-1',
+      date: now.toISOString(),
+      routineId: 'leg-1',
+      routineTitle: 'Leg Day',
+    },
+  ];
+
+  const result = calculateWeeklyMuscleFrequency(history, routines);
+  assert.equal(result.totalSessionsThisWeek, 1);
+  assert.equal(result.frequencyMap.quads, 1);
+  assert.equal(result.frequencyMap.glutes, 1);
+  assert.equal(result.trainedMusclesCount, 2);
+});
+
 

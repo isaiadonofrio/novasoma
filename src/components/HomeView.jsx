@@ -1,13 +1,10 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import {
   History,
-  Clock,
-  Dumbbell,
-  Layers,
-  Database,
   Sparkles,
-  Activity,
-  Calendar
+  Calendar,
+  Play,
+  Check
 } from 'lucide-react';
 import { MiniBodyMap } from './MiniBodyMap';
 import { StatsDashboard } from './StatsDashboard';
@@ -15,13 +12,14 @@ import { YearHeatmapCard } from './YearHeatmapCard';
 import { RoutinesSection } from './RoutinesSection';
 import { WorkoutEditorModal } from './WorkoutEditorModal';
 import { ManualWorkoutLogModal } from './ManualWorkoutLogModal';
-import { MUSCLE_LABELS } from '../data/muscleLabels';
-import { calculateOverviewDashboardStats } from '../utils/analytics';
+import {
+  calculateWeeklyMuscleFrequency,
+  toLocalDateKey
+} from '../utils/analytics';
 import { formatVolumeCompact } from '../utils/formatting';
 
 export function HomeView({
   routines = [],
-  exerciseDatabase = [],
   workoutHistory = [],
   weeklyGoal = 4,
   onChangeWeeklyGoal,
@@ -55,36 +53,54 @@ export function HomeView({
     day: 'numeric'
   });
 
-  const allMuscleCoverage = useMemo(() => {
-    const primary = new Set();
-    const secondary = new Set();
-    routines.forEach((routine) => {
-      (routine.exercises || []).forEach((ex) => {
-        if (ex.muscleKey) primary.add(ex.muscleKey);
-        if (Array.isArray(ex.secondaryKeys)) {
-          ex.secondaryKeys.forEach((k) => secondary.add(k));
-        }
-      });
-    });
-    return {
-      primaryKeys: Array.from(primary),
-      secondaryKeys: Array.from(secondary)
-    };
-  }, [routines]);
+  const todayKey = useMemo(() => toLocalDateKey(now), [now]);
 
-  const stats = useMemo(
-    () =>
-      calculateOverviewDashboardStats(
-        routines,
-        exerciseDatabase,
-        workoutHistory,
-        MUSCLE_LABELS
-      ),
-    [routines, exerciseDatabase, workoutHistory]
+  const weeklyMuscleHits = useMemo(
+    () => calculateWeeklyMuscleFrequency(workoutHistory, routines),
+    [workoutHistory, routines]
   );
 
-  const leadMuscle = stats.muscleBreakdown[0] || null;
-  const visibleBreakdown = stats.muscleBreakdown.slice(0, 5);
+  const todayWorkouts = useMemo(() => {
+    return (workoutHistory || []).filter(
+      (s) => toLocalDateKey(s.date || s.completedAt) === todayKey
+    );
+  }, [workoutHistory, todayKey]);
+
+  const isTrainedToday = todayWorkouts.length > 0;
+
+  const recommendedRoutine = useMemo(() => {
+    if (!routines || routines.length === 0) return null;
+    return routines[0];
+  }, [routines]);
+
+  const recentSessions = useMemo(() => {
+    return [...(workoutHistory || [])]
+      .sort((a, b) => new Date(b.completedAt || b.date || 0) - new Date(a.completedAt || a.date || 0))
+      .slice(0, 3);
+  }, [workoutHistory]);
+
+  const weeklySummaryStats = useMemo(() => {
+    const dayFromMonday = (now.getDay() + 6) % 7;
+    const monday = new Date(now);
+    monday.setHours(0, 0, 0, 0);
+    monday.setDate(now.getDate() - dayFromMonday);
+    const mondayKey = toLocalDateKey(monday);
+
+    let weekVol = 0;
+    let weekCount = 0;
+    (workoutHistory || []).forEach((item) => {
+      const k = toLocalDateKey(item.date || item.completedAt);
+      if (k && k >= mondayKey) {
+        weekCount += 1;
+        weekVol += Number(item.volumeKg) || 0;
+      }
+    });
+
+    return {
+      weekVol,
+      weekCount,
+    };
+  }, [workoutHistory, now]);
 
   return (
     <div className="gymmane-home">
@@ -100,156 +116,210 @@ export function HomeView({
           </div>
 
           <div className="home-hero-bento">
-            {/* Upgraded General Summary Telemetry Card */}
-            <section className="home-summary-panel" aria-label="General training summary">
-              <div className="summary-panel-top">
-                <div className="summary-panel-copy">
-                  <div className="featured-kicker-row">
-                    <span className="featured-kicker">TRAINING TELEMETRY</span>
-                    <span className="featured-cat-pill">
-                      {allMuscleCoverage.primaryKeys.length} target areas
+            {/* Left: Today Focus, Weekly Muscle Hit Map & Recent Sessions */}
+            <section className="home-summary-panel" aria-label="Today focus and weekly muscle stimulus">
+              {/* Top Banner: Today's Focus & Launch Action */}
+              {isTrainedToday ? (
+                <div className="today-focus-banner completed animate-fade">
+                  <div className="today-focus-header">
+                    <span className="today-focus-kicker">
+                      <Check size={13} strokeWidth={3} /> COMPLETED TODAY
                     </span>
-                    {stats.avgDurationMins > 0 && (
-                      <span className="featured-cat-pill">
-                        ~{stats.avgDurationMins}m avg
+                    <span className="today-focus-meta-pill">
+                      {todayWorkouts[0].durationMinutes || 60}m logged
+                    </span>
+                  </div>
+                  <div className="today-focus-body">
+                    <div className="today-focus-info">
+                      <h3 className="today-focus-title">
+                        {todayWorkouts[0].routineTitle || 'Workout Session'}
+                      </h3>
+                      <span className="today-focus-sub">
+                        {todayWorkouts[0].category || 'Training'} session · Great job keeping up your rhythm!
                       </span>
-                    )}
+                    </div>
+                    <div className="today-focus-actions">
+                      <button
+                        type="button"
+                        className="btn-focus-view"
+                        onClick={() => setManualLogDateKey(todayKey)}
+                      >
+                        + Log Another
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : recommendedRoutine ? (
+                <div className="today-focus-banner scheduled animate-fade">
+                  <div className="today-focus-header">
+                    <span className="today-focus-kicker">
+                      <Sparkles size={13} /> TODAY'S SCHEDULED WORKOUT
+                    </span>
+                    <span className="today-focus-meta-pill">
+                      ~{recommendedRoutine.estimatedMinutes || 60}m planned
+                    </span>
+                  </div>
+                  <div className="today-focus-body">
+                    <div className="today-focus-info">
+                      <h3 className="today-focus-title">{recommendedRoutine.title}</h3>
+                      <span className="today-focus-sub">
+                        {recommendedRoutine.exercises?.length || 0} movements · {recommendedRoutine.category || 'Target Session'}
+                      </span>
+                    </div>
+                    <div className="today-focus-actions">
+                      {onStartRoutineLive && (
+                        <button
+                          type="button"
+                          className="btn-focus-start"
+                          onClick={() => onStartRoutineLive(recommendedRoutine)}
+                          title="Start live workout session"
+                        >
+                          <Play size={13} fill="currentColor" />
+                          <span>Start Workout</span>
+                        </button>
+                      )}
+                      {onSelectRoutineToView && (
+                        <button
+                          type="button"
+                          className="btn-focus-view"
+                          onClick={() => onSelectRoutineToView(recommendedRoutine)}
+                          title="View routine details"
+                        >
+                          View Routine
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="today-focus-banner scheduled animate-fade">
+                  <div className="today-focus-header">
+                    <span className="today-focus-kicker">
+                      <Sparkles size={13} /> READY TO TRAIN
+                    </span>
+                    <span className="today-focus-meta-pill">Schedule Free</span>
+                  </div>
+                  <div className="today-focus-body">
+                    <div className="today-focus-info">
+                      <h3 className="today-focus-title">No Routine Scheduled Today</h3>
+                      <span className="today-focus-sub">Choose a workout below or take an active recovery day.</span>
+                    </div>
+                    <div className="today-focus-actions">
+                      <button
+                        type="button"
+                        className="btn-focus-view"
+                        onClick={() => setManualLogDateKey(todayKey)}
+                      >
+                        + Log Workout
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Bottom Split: Weekly Muscle Hit Map + Recent Sessions */}
+              <div className="home-summary-bottom-split">
+                {/* Column 1: Weekly Muscle Hit Map (Color-Coded Frequency) */}
+                <div className="weekly-hitmap-box">
+                  <div className="hitmap-box-header">
+                    <span className="hitmap-title">Weekly Muscle Hits</span>
+                    <span className="hitmap-count-pill">
+                      {weeklyMuscleHits.trainedMusclesCount} hit this week
+                    </span>
                   </div>
 
-                  <div className="summary-title-row">
-                    <h2 className="featured-routine-title">General Summary</h2>
+                  <div className="hitmap-body-wrap" title="Weekly muscle stimulation frequency (1x Gold, 2x Bronze, 3x+ Ember)">
+                    <MiniBodyMap
+                      frequencyMap={weeklyMuscleHits.frequencyMap}
+                      className="hero-hitmap-body"
+                    />
+                  </div>
+
+                  <div className="hitmap-legend-row">
+                    <span className="hit-legend-chip">
+                      <span className="hit-legend-dot hit-1" /> 1x
+                    </span>
+                    <span className="hit-legend-chip">
+                      <span className="hit-legend-dot hit-2" /> 2x
+                    </span>
+                    <span className="hit-legend-chip">
+                      <span className="hit-legend-dot hit-3" /> 3x+
+                    </span>
+                  </div>
+                </div>
+
+                {/* Column 2: Recent Workouts & Basic Stats */}
+                <div className="weekly-recent-box">
+                  <div className="recent-box-header">
+                    <span className="recent-title">Recent Workouts</span>
                     {onOpenHistory && (
                       <button
                         type="button"
                         className="btn-history-dashboard-icon"
                         onClick={onOpenHistory}
-                        title={`Workout History (${workoutHistory.length} sessions logged)`}
+                        title={`Workout History (${workoutHistory.length} total logged)`}
                         aria-label="Workout History"
                       >
-                        <History size={15} />
+                        <History size={14} />
                       </button>
                     )}
                   </div>
 
-                  {stats.lastSessionSummary ? (
-                    <div className="last-session-note">
-                      <Activity size={13} />
-                      <span>
-                        Last trained <b>{stats.lastSessionSummary.whenLabel}</b> ·{' '}
-                        {stats.lastSessionSummary.title} ({stats.lastSessionSummary.durationLabel}
-                        {stats.lastSessionSummary.volumeKg > 0
-                          ? ` · ${formatVolumeCompact(stats.lastSessionSummary.volumeKg)}`
-                          : ''}
-                        )
-                      </span>
-                    </div>
-                  ) : (
-                    <p className="summary-panel-desc">
-                      Active blueprint spans <b>{stats.totalPlannedExercises} movements</b> and{' '}
-                      <b>{stats.totalPlannedSets} programmed sets</b> across {stats.totalRoutines}{' '}
-                      routine{stats.totalRoutines === 1 ? '' : 's'}.
-                    </p>
-                  )}
-                </div>
+                  <div className="recent-sessions-list">
+                    {recentSessions.length > 0 ? (
+                      recentSessions.map((session) => {
+                        const sKey = toLocalDateKey(session.date || session.completedAt);
+                        let dateLabel = sKey || 'Recent';
+                        if (sKey === todayKey) dateLabel = 'Today';
+                        else if (sKey) {
+                          const diff = Math.round((new Date(`${todayKey}T12:00:00`) - new Date(`${sKey}T12:00:00`)) / 86400000);
+                          if (diff === 1) dateLabel = 'Yesterday';
+                          else if (diff > 1 && diff < 7) {
+                            dateLabel = new Date(`${sKey}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short' });
+                          }
+                        }
+                        const mins = Math.max(
+                          1,
+                          Math.round((Number(session.durationSeconds) || (Number(session.durationMinutes) * 60) || 0) / 60)
+                        );
+                        const vol = Number(session.volumeKg) || 0;
 
-                <div className="featured-bodymap-stage" title="Muscle coverage across all active routines">
-                  <MiniBodyMap
-                    primaryKeys={allMuscleCoverage.primaryKeys}
-                    secondaryKeys={allMuscleCoverage.secondaryKeys}
-                    className="hero-mini-body"
-                  />
-                  <span className="bodymap-stage-caption">Plan Coverage</span>
-                </div>
-              </div>
-
-              {/* Muscle Focus Distribution Bar */}
-              {visibleBreakdown.length > 0 && (
-                <div className="summary-focus-strip">
-                  <div className="focus-strip-header">
-                    <span className="focus-strip-kicker">MUSCLE FOCUS BREAKDOWN</span>
-                    {leadMuscle && (
-                      <span className="focus-lead-pill">
-                        <Sparkles size={11} />
-                        Lead: {leadMuscle.label} ({leadMuscle.percent}%)
-                      </span>
+                        return (
+                          <div
+                            key={session.id || session.date}
+                            className="recent-session-card"
+                            onClick={onOpenHistory}
+                            title="Click to open workout history"
+                          >
+                            <div className="session-card-left">
+                              <span className="session-card-title">{session.routineTitle || 'Workout'}</span>
+                              <span className="session-card-date">{dateLabel} · {session.category || 'General'}</span>
+                            </div>
+                            <span className="session-card-meta">
+                              {mins}m{vol > 0 ? ` · ${formatVolumeCompact(vol)}` : ''}
+                            </span>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="recent-empty-prompt">
+                        No workouts logged yet this week. Complete your first session to light up your weekly map!
+                      </p>
                     )}
                   </div>
 
-                  <div
-                    className="focus-dist-bar"
-                    role="img"
-                    aria-label="Muscle group distribution across workout plans"
-                  >
-                    {visibleBreakdown.map((item) => (
-                      <div
-                        key={item.key}
-                        className={`focus-dist-seg tone-${item.toneIndex}`}
-                        style={{ width: `${Math.max(6, item.percent)}%` }}
-                        title={`${item.label}: ${item.count} exercise${item.count === 1 ? '' : 's'} (${item.percent}%)`}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="focus-legend-row">
-                    {visibleBreakdown.map((item) => (
-                      <span key={item.key} className="focus-legend-chip">
-                        <span className={`focus-legend-dot tone-${item.toneIndex}`} aria-hidden="true" />
-                        <span className="focus-legend-name">{item.label}</span>
-                        <span className="focus-legend-pct">{item.percent}%</span>
+                  <div className="recent-stats-bar">
+                    <div className="recent-stat-mini">
+                      <span className="recent-stat-lbl">This Week</span>
+                      <span className="recent-stat-val">
+                        {weeklySummaryStats.weekVol > 0 ? formatVolumeCompact(weeklySummaryStats.weekVol) : `${weeklySummaryStats.weekCount} sess.`}
                       </span>
-                    ))}
+                    </div>
+                    <div className="recent-stat-mini">
+                      <span className="recent-stat-lbl">Total Completed</span>
+                      <span className="recent-stat-val">{workoutHistory.length} sess.</span>
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* 4-Card Telemetry Grid */}
-              <div className="home-summary-metrics">
-                <div className="summary-metric-pill">
-                  <div className="metric-pill-head">
-                    <Clock size={13} />
-                    <span className="metric-pill-lbl">Training Time</span>
-                  </div>
-                  <span className="metric-pill-val">{stats.totalTrainingTime}</span>
-                  <span className="metric-pill-sub">
-                    {stats.completedSessions > 0
-                      ? `${stats.completedSessions} logged session${stats.completedSessions === 1 ? '' : 's'}`
-                      : 'No sessions logged yet'}
-                  </span>
-                </div>
-
-                <div className="summary-metric-pill">
-                  <div className="metric-pill-head">
-                    <Dumbbell size={13} />
-                    <span className="metric-pill-lbl">Volume Lifted</span>
-                  </div>
-                  <span className="metric-pill-val">{formatVolumeCompact(stats.totalVolumeKg)}</span>
-                  <span className="metric-pill-sub">
-                    {stats.totalCompletedSets > 0
-                      ? `${stats.totalCompletedSets} completed sets`
-                      : `${stats.totalPlannedSets} sets in blueprint`}
-                  </span>
-                </div>
-
-                <div className="summary-metric-pill">
-                  <div className="metric-pill-head">
-                    <Layers size={13} />
-                    <span className="metric-pill-lbl">Active Plan</span>
-                  </div>
-                  <span className="metric-pill-val">{stats.totalRoutines}</span>
-                  <span className="metric-pill-sub">
-                    {stats.totalPlannedExercises} ex · {stats.totalPlannedSets} sets
-                  </span>
-                </div>
-
-                <div className="summary-metric-pill">
-                  <div className="metric-pill-head">
-                    <Database size={13} />
-                    <span className="metric-pill-lbl">Exercise Vault</span>
-                  </div>
-                  <span className="metric-pill-val">{stats.libraryCount}</span>
-                  <span className="metric-pill-sub">
-                    {stats.libraryEquipmentCount} gear · {stats.libraryBodyweightCount} bodyweight
-                  </span>
                 </div>
               </div>
             </section>

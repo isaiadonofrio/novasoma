@@ -446,3 +446,85 @@ export function calculateMonthGroupedHeatmap(history = []) {
     rangeLabel: `Jan – Dec ${baseYear}`,
   };
 }
+
+/**
+ * Calculate weekly muscle frequency (number of times each muscle was hit this week).
+ * 1 hit  -> Gold / Yellow ('hit-1')
+ * 2 hits -> Bronze / Orange ('hit-2')
+ * 3+ hits -> Ember / Red ('hit-3')
+ */
+export function calculateWeeklyMuscleFrequency(history = [], routines = []) {
+  const safeHistory = Array.isArray(history) ? history : [];
+  const safeRoutines = Array.isArray(routines) ? routines : [];
+
+  const now = new Date();
+  const dayFromMonday = (now.getDay() + 6) % 7;
+  const monday = new Date(now);
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(now.getDate() - dayFromMonday);
+  const mondayKey = toLocalDateKey(monday);
+
+  const routineMap = new Map();
+  safeRoutines.forEach((r) => {
+    if (r.id) routineMap.set(String(r.id), r);
+    if (r.title) routineMap.set(r.title.toLowerCase().trim(), r);
+  });
+
+  const frequencyMap = {};
+  let totalSessionsThisWeek = 0;
+
+  safeHistory.forEach((session) => {
+    const sDate = session.date || session.completedAt;
+    const sKey = toLocalDateKey(sDate);
+    if (!sKey || sKey < mondayKey) return;
+
+    totalSessionsThisWeek += 1;
+    const sessionMuscles = new Set();
+
+    const matchedRoutine =
+      (session.routineId && routineMap.get(String(session.routineId))) ||
+      (session.routineTitle && routineMap.get(session.routineTitle.toLowerCase().trim()));
+
+    if (matchedRoutine && Array.isArray(matchedRoutine.exercises)) {
+      matchedRoutine.exercises.forEach((ex) => {
+        if (ex.muscleKey) sessionMuscles.add(ex.muscleKey);
+        if (Array.isArray(ex.secondaryKeys)) {
+          ex.secondaryKeys.forEach((sk) => sessionMuscles.add(sk));
+        }
+      });
+    } else {
+      const title = (session.routineTitle || '').toLowerCase();
+      const cat = (session.category || '').toLowerCase();
+
+      if (title.includes('run') || cat.includes('cardio')) {
+        ['quads', 'calves', 'glutes', 'hamstrings'].forEach((m) => sessionMuscles.add(m));
+      } else if (title.includes('cycl') || title.includes('bike')) {
+        ['quads', 'glutes', 'calves'].forEach((m) => sessionMuscles.add(m));
+      } else if (title.includes('swim')) {
+        ['back', 'shoulders', 'chest', 'abdomen'].forEach((m) => sessionMuscles.add(m));
+      } else if (title.includes('tennis')) {
+        ['shoulders', 'forearm', 'calves', 'obliques'].forEach((m) => sessionMuscles.add(m));
+      } else if (title.includes('hik') || title.includes('trek')) {
+        ['glutes', 'quads', 'calves', 'back'].forEach((m) => sessionMuscles.add(m));
+      } else if (title.includes('mobilit') || cat.includes('recovery')) {
+        ['back', 'glutes', 'obliques', 'shoulders'].forEach((m) => sessionMuscles.add(m));
+      } else if (title.includes('gym') || cat.includes('strength')) {
+        ['chest', 'back', 'shoulders', 'biceps', 'triceps', 'quads', 'glutes'].forEach((m) => sessionMuscles.add(m));
+      } else {
+        ['quads', 'calves', 'shoulders', 'abdomen'].forEach((m) => sessionMuscles.add(m));
+      }
+    }
+
+    sessionMuscles.forEach((muscleKey) => {
+      frequencyMap[muscleKey] = (frequencyMap[muscleKey] || 0) + 1;
+    });
+  });
+
+  const trainedMusclesCount = Object.keys(frequencyMap).filter((k) => frequencyMap[k] > 0).length;
+
+  return {
+    frequencyMap,
+    totalSessionsThisWeek,
+    trainedMusclesCount,
+  };
+}
