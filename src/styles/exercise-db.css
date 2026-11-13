@@ -6,7 +6,7 @@
 }
 
 .db-view-header {
-  padding: 24px 0 20px;
+  padding: 28px 0 24px;
   background: var(--page);
   border-bottom: 1px solid var(--border);
 }
@@ -82,20 +82,22 @@
    ========================================================================== */
 .db-telemetry-bento {
   display: grid;
-  grid-template-columns: 1.25fr 1fr;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: 20px;
   align-items: stretch;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .db-telemetry-card {
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 22px 24px;
+  padding: 24px 26px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 16px;
+  min-height: 420px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
 }
@@ -376,43 +378,70 @@
 .level-pip.intermediate { background: var(--clay); }
 .level-pip.advanced { background: var(--ember); }
 
-/* Anatomical Split & Live Silhouette Frame */
-.telemetry-anatomy-split {
+/* ==========================================================================
+   Gear Breakdown Grid (Card 1)
+   ========================================================================== */
+.telemetry-gear-grid {
   display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 18px;
-  align-items: center;
-  flex: 1;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 10px;
 }
 
-.telemetry-sil-frame {
-  height: 220px;
-  padding: 8px 10px;
+.gear-grid-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
   background: var(--raised2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.14s var(--ease);
+}
+
+.gear-grid-pill:hover {
+  background: var(--raised3);
+  border-color: var(--clay);
+  transform: translateY(-1px);
+}
+
+.gear-grid-pill.active {
+  background: var(--clay-soft);
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+.gear-grid-name {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-[data-theme="light"] .telemetry-sil-frame {
-  background: #FAF9F6;
-  border-color: rgba(194, 142, 82, 0.18);
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.02);
+.gear-grid-pill.active .gear-grid-name {
+  color: var(--clay);
 }
 
-.library-anatomy-body {
-  max-height: 204px;
-  width: auto;
+.gear-grid-count {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--dim);
+  padding: 1px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
 }
 
-.telemetry-anatomy-breakdown-col {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  justify-content: center;
+.gear-grid-pill.active .gear-grid-count {
+  background: var(--clay);
+  color: #FFFFFF;
+  border-color: var(--clay);
 }
 
 /* Anatomical Spectrum Bar & Chips */
@@ -484,6 +513,93 @@
   opacity: 0.75;
 }
 
+/* ==========================================================================
+   Target Muscle Distribution Grid (Card 2 - Pure Statistics, No Dummy)
+   ========================================================================== */
+.telemetry-muscle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 10px;
+}
+
+.muscle-grid-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+  text-align: left;
+}
+
+.muscle-grid-item:hover {
+  background: var(--raised3);
+  border-color: var(--clay);
+  transform: translateY(-1px);
+}
+
+.muscle-grid-item.active {
+  background: var(--clay-soft);
+  border-color: var(--clay);
+}
+
+.muscle-grid-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.muscle-grid-name {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.muscle-grid-item.active .muscle-grid-name {
+  color: var(--clay);
+}
+
+.muscle-grid-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.muscle-grid-count {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--dim);
+  padding: 1px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+
+.muscle-grid-pct {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--faint);
+  min-width: 28px;
+  text-align: right;
+}
+
+.muscle-grid-item.active .muscle-grid-count {
+  background: var(--clay);
+  color: #FFFFFF;
+  border-color: var(--clay);
+}
+
 .telemetry-bodymap-launch {
   padding-top: 8px;
   border-top: 1px dashed var(--border);
@@ -537,14 +653,21 @@
     grid-template-columns: 1fr;
     gap: 18px;
   }
+  .telemetry-gear-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-@media (max-width: 600px) {
-  .telemetry-anatomy-split {
+@media (max-width: 640px) {
+  .telemetry-gear-grid {
     grid-template-columns: 1fr;
   }
-  .telemetry-sil-frame {
-    height: 180px;
+  .telemetry-muscle-grid {
+    grid-template-columns: 1fr;
+  }
+  .db-telemetry-card {
+    min-height: auto;
+    padding: 18px 16px;
   }
 }
 

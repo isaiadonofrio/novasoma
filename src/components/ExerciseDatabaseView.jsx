@@ -3,7 +3,6 @@ import {
   Search,
   Dumbbell,
   BookOpen,
-  ArrowLeft,
   X,
   UserCheck,
   Video,
@@ -11,7 +10,7 @@ import {
   RotateCcw,
   ChevronDown,
   Check,
-  Archive,
+  Calendar,
   Layers,
   SlidersHorizontal
 } from 'lucide-react';
@@ -19,7 +18,6 @@ import { MUSCLE_LABELS } from '../data/muscleLabels.js';
 import { isBodyweightEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
 import { ExerciseDetailModal } from './ExerciseDetailModal.jsx';
 import { BodyMap } from './BodyMap.jsx';
-import { MiniBodyMap } from './MiniBodyMap.jsx';
 
 const EQUIPMENT_FILTERS = [
   { label: 'All Equipment', match: () => true },
@@ -91,8 +89,7 @@ export function ExerciseDatabaseView({
   exercisesList = [],
   _routines = [],
   _workoutHistory = [],
-  _onAddExerciseToRoutine,
-  onBack
+  _onAddExerciseToRoutine
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('All');
@@ -105,6 +102,24 @@ export function ExerciseDatabaseView({
   const [isLevelMenuOpen, setIsLevelMenuOpen] = useState(false);
   const [showBodyMap, setShowBodyMap] = useState(false);
   const [activeExerciseDetail, setActiveExerciseDetail] = useState(null);
+
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        setNow(new Date());
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
+
+  const todayDisplay = now.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric'
+  });
 
   const equipMenuRef = useRef(null);
   const mechMenuRef = useRef(null);
@@ -147,7 +162,9 @@ export function ExerciseDatabaseView({
       dumbbells: 0,
       barbell: 0,
       kettlebell: 0,
-      other: 0,
+      bodyweight: 0,
+      bands: 0,
+      bench: 0,
     };
 
     const mechanics = {
@@ -171,11 +188,13 @@ export function ExerciseDatabaseView({
         gearCount++;
         const eq = (ex.equipment || '').toLowerCase();
         if (eq.includes('dumbbell')) gearBreakdown.dumbbells++;
-        else if (eq.includes('barbell')) gearBreakdown.barbell++;
+        else if (eq.includes('barbell') || eq.includes('landmine')) gearBreakdown.barbell++;
         else if (eq.includes('kettlebell')) gearBreakdown.kettlebell++;
-        else gearBreakdown.other++;
+        else if (eq.includes('band') || eq.includes('strap') || eq.includes('rope')) gearBreakdown.bands++;
+        else if (eq.includes('bench') || eq.includes('step') || eq.includes('box')) gearBreakdown.bench++;
       } else {
         bwCount++;
+        gearBreakdown.bodyweight++;
       }
 
       const mech = ex.isWarmup ? 'Mobility' : (ex.mechanics || 'Compound');
@@ -200,7 +219,7 @@ export function ExerciseDatabaseView({
     const gearPercent = total > 0 ? Math.round((gearCount / total) * 100) : 0;
     const bwPercent = total > 0 ? 100 - gearPercent : 0;
 
-    // Top muscles sorted by frequency for proportional bar
+    // Top muscles sorted by frequency for proportional bar and stats list
     const sortedMuscles = Object.entries(muscleCounts)
       .sort((a, b) => b[1] - a[1])
       .map(([key, count]) => ({
@@ -282,47 +301,36 @@ export function ExerciseDatabaseView({
 
   return (
     <div className="gymmane-db-view">
-      {/* Top Header Row (Styled Identically to Main Overview) */}
+      {/* Top Header Row (Identical to Main Homepage: Keep Date, Delete Title & Back Button) */}
       <section className="db-view-header">
         <div className="gymmane-wrap">
           <div className="hero-clean-header-row db-top-nav-row">
-            <div className="db-nav-left-group">
-              <button
-                type="button"
-                className="db-back-btn"
-                onClick={onBack}
-                title="Return to Home Overview"
-              >
-                <ArrowLeft size={14} />
-                <span>Back to Home</span>
-              </button>
-
-              <div className="hero-brand-date-box" title="Archived Exercise Collection">
-                <div className="hero-date-icon-frame">
-                  <Archive size={13} />
-                </div>
-                <span className="home-date-kicker">EXERCISE VAULT · ARCHIVE</span>
+            <div className="hero-brand-date-box" title="Today">
+              <div className="hero-date-icon-frame">
+                <Calendar size={16} />
               </div>
+              <span className="home-date-kicker">TODAY · {todayDisplay}</span>
             </div>
 
             <div className="db-header-stats-badge">
-              <Dumbbell size={13} />
+              <Dumbbell size={14} />
               <span><b>{exercisesList.length}</b> movements indexed</span>
             </div>
           </div>
 
-          {/* Archive Telemetry Bento (Spacious 2-Card Layout Matching Homepage) */}
+          {/* Archive Telemetry Bento (Spacious 2-Card Layout Matching Homepage Spacing, Pure Statistics, No Dummy) */}
           <div className="db-telemetry-bento">
-            {/* Card 1: Equipment & Lift Mechanics */}
-            <div className="db-telemetry-card repertoire-card">
+            {/* Card 1: Equipment Spectrum & Gear Distribution */}
+            <div className="db-telemetry-card equip-card">
               <div className="telemetry-card-header">
                 <span className="telemetry-card-title">
-                  <Dumbbell size={14} className="telemetry-title-icon" />
-                  EQUIPMENT SPECTRUM & GEAR
+                  <Dumbbell size={15} className="telemetry-title-icon" />
+                  EQUIPMENT SPECTRUM
                 </span>
                 <span className="telemetry-badge-count">{telemetry.total} Movements</span>
               </div>
 
+              {/* Big Split Metric */}
               <div className="telemetry-split-stats">
                 <div className="split-metric">
                   <span className="split-num">{telemetry.gearCount}</span>
@@ -340,16 +348,16 @@ export function ExerciseDatabaseView({
                 <div
                   className="segment-fill gear"
                   style={{ width: `${telemetry.gearPercent}%` }}
-                  title={`Equipment: ${telemetry.gearCount} exercises (${telemetry.gearPercent}%)`}
+                  title={`Equipment: ${telemetry.gearCount} movements (${telemetry.gearPercent}%)`}
                 />
                 <div
                   className="segment-fill bodyweight"
                   style={{ width: `${telemetry.bwPercent}%` }}
-                  title={`Bodyweight: ${telemetry.bwCount} exercises (${telemetry.bwPercent}%)`}
+                  title={`Bodyweight: ${telemetry.bwCount} movements (${telemetry.bwPercent}%)`}
                 />
               </div>
 
-              {/* Interactive Quick Filter Chips */}
+              {/* Quick Filter Chips */}
               <div className="telemetry-quick-chips">
                 <button
                   type="button"
@@ -374,50 +382,114 @@ export function ExerciseDatabaseView({
                 </button>
               </div>
 
-              {/* Sub-gear breakdown line */}
-              <div className="telemetry-sub-breakdown">
-                <button
-                  type="button"
-                  className={`sub-gear-tag ${selectedEquipment === 'Dumbbells' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Dumbbells' ? 'All Equipment' : 'Dumbbells')}
-                  title="Filter Dumbbell exercises"
-                >
-                  Dumbbells ({telemetry.gearBreakdown.dumbbells})
-                </button>
-                <button
-                  type="button"
-                  className={`sub-gear-tag ${selectedEquipment === 'Barbell' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Barbell' ? 'All Equipment' : 'Barbell')}
-                  title="Filter Barbell exercises"
-                >
-                  Barbell ({telemetry.gearBreakdown.barbell})
-                </button>
-                <button
-                  type="button"
-                  className={`sub-gear-tag ${selectedEquipment === 'Kettlebell' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Kettlebell' ? 'All Equipment' : 'Kettlebell')}
-                  title="Filter Kettlebell exercises"
-                >
-                  Kettlebell ({telemetry.gearBreakdown.kettlebell})
-                </button>
-                <button
-                  type="button"
-                  className={`sub-gear-tag ${selectedEquipment === 'Bands / Straps' ? 'active' : ''}`}
-                  onClick={() => setSelectedEquipment(prev => prev === 'Bands / Straps' ? 'All Equipment' : 'Bands / Straps')}
-                  title="Filter Bands & Cables"
-                >
-                  Bands/Other ({telemetry.gearBreakdown.other})
-                </button>
-              </div>
-
               <div className="telemetry-section-divider" />
 
-              {/* Mechanics & Difficulty Section */}
+              {/* Gear Breakdown Grid */}
+              <div className="telemetry-sub-header-row">
+                <span className="telemetry-sub-kicker">
+                  <Dumbbell size={13} />
+                  GEAR BREAKDOWN
+                </span>
+              </div>
+
+              <div className="telemetry-gear-grid">
+                <button
+                  type="button"
+                  className={`gear-grid-pill ${selectedEquipment === 'Dumbbells' ? 'active' : ''}`}
+                  onClick={() => setSelectedEquipment(prev => prev === 'Dumbbells' ? 'All Equipment' : 'Dumbbells')}
+                  title="Filter Dumbbell movements"
+                >
+                  <span className="gear-grid-name">Dumbbells</span>
+                  <span className="gear-grid-count">{telemetry.gearBreakdown.dumbbells}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`gear-grid-pill ${selectedEquipment === 'Barbell' ? 'active' : ''}`}
+                  onClick={() => setSelectedEquipment(prev => prev === 'Barbell' ? 'All Equipment' : 'Barbell')}
+                  title="Filter Barbell movements"
+                >
+                  <span className="gear-grid-name">Barbell & Landmine</span>
+                  <span className="gear-grid-count">{telemetry.gearBreakdown.barbell}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`gear-grid-pill ${selectedEquipment === 'Kettlebell' ? 'active' : ''}`}
+                  onClick={() => setSelectedEquipment(prev => prev === 'Kettlebell' ? 'All Equipment' : 'Kettlebell')}
+                  title="Filter Kettlebell movements"
+                >
+                  <span className="gear-grid-name">Kettlebell</span>
+                  <span className="gear-grid-count">{telemetry.gearBreakdown.kettlebell}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`gear-grid-pill ${selectedEquipment === 'Bodyweight Only' ? 'active' : ''}`}
+                  onClick={() => setSelectedEquipment(prev => prev === 'Bodyweight Only' ? 'All Equipment' : 'Bodyweight Only')}
+                  title="Filter Bodyweight / Calisthenics"
+                >
+                  <span className="gear-grid-name">Bodyweight / Mat</span>
+                  <span className="gear-grid-count">{telemetry.gearBreakdown.bodyweight}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`gear-grid-pill ${selectedEquipment === 'Bands / Straps' ? 'active' : ''}`}
+                  onClick={() => setSelectedEquipment(prev => prev === 'Bands / Straps' ? 'All Equipment' : 'Bands / Straps')}
+                  title="Filter Resistance Bands & Cables"
+                >
+                  <span className="gear-grid-name">Bands & Straps</span>
+                  <span className="gear-grid-count">{telemetry.gearBreakdown.bands}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`gear-grid-pill ${selectedEquipment === 'Bench' ? 'active' : ''}`}
+                  onClick={() => setSelectedEquipment(prev => prev === 'Bench' ? 'All Equipment' : 'Bench')}
+                  title="Filter Bench & Step Platforms"
+                >
+                  <span className="gear-grid-name">Bench & Box</span>
+                  <span className="gear-grid-count">{telemetry.gearBreakdown.bench}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Card 2: Kinesiology & Muscle Distribution (Pure Statistics, No Dummy!) */}
+            <div className="db-telemetry-card anatomy-card">
+              <div className="telemetry-card-header">
+                <span className="telemetry-card-title">
+                  <Layers size={15} className="telemetry-title-icon" />
+                  KINESIOLOGY & MUSCLE DISTRIBUTION
+                </span>
+                <span className="telemetry-badge-count">{telemetry.distinctMusclesCount} Target Areas</span>
+              </div>
+
+              {/* Movement Mechanics & Difficulty */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
                   <Layers size={13} />
-                  KINESIOLOGY & DIFFICULTY SPECTRUM
+                  MOVEMENT MECHANICS & DIFFICULTY
                 </span>
+              </div>
+
+              {/* Stacked mechanics visual bar */}
+              <div className="telemetry-stacked-bar">
+                <div
+                  className="stacked-seg seg-compound"
+                  style={{ width: `${(telemetry.mechanics.Compound / telemetry.total) * 100}%` }}
+                  title={`Compound: ${telemetry.mechanics.Compound} movements`}
+                />
+                <div
+                  className="stacked-seg seg-isolation"
+                  style={{ width: `${(telemetry.mechanics.Isolation / telemetry.total) * 100}%` }}
+                  title={`Isolation: ${telemetry.mechanics.Isolation} movements`}
+                />
+                <div
+                  className="stacked-seg seg-mobility"
+                  style={{ width: `${(telemetry.mechanics.Mobility / telemetry.total) * 100}%` }}
+                  title={`Mobility: ${telemetry.mechanics.Mobility} movements`}
+                />
+                <div
+                  className="stacked-seg seg-isometric"
+                  style={{ width: `${(telemetry.mechanics.Isometric / telemetry.total) * 100}%` }}
+                  title={`Isometric: ${telemetry.mechanics.Isometric} movements`}
+                />
               </div>
 
               {/* Mechanics Interactive Chips */}
@@ -460,30 +532,6 @@ export function ExerciseDatabaseView({
                 </button>
               </div>
 
-              {/* Stacked mechanics visual bar */}
-              <div className="telemetry-stacked-bar">
-                <div
-                  className="stacked-seg seg-compound"
-                  style={{ width: `${(telemetry.mechanics.Compound / telemetry.total) * 100}%` }}
-                  title={`Compound: ${telemetry.mechanics.Compound} movements`}
-                />
-                <div
-                  className="stacked-seg seg-isolation"
-                  style={{ width: `${(telemetry.mechanics.Isolation / telemetry.total) * 100}%` }}
-                  title={`Isolation: ${telemetry.mechanics.Isolation} movements`}
-                />
-                <div
-                  className="stacked-seg seg-mobility"
-                  style={{ width: `${(telemetry.mechanics.Mobility / telemetry.total) * 100}%` }}
-                  title={`Mobility: ${telemetry.mechanics.Mobility} movements`}
-                />
-                <div
-                  className="stacked-seg seg-isometric"
-                  style={{ width: `${(telemetry.mechanics.Isometric / telemetry.total) * 100}%` }}
-                  title={`Isometric: ${telemetry.mechanics.Isometric} movements`}
-                />
-              </div>
-
               {/* Difficulty Spectrum Row */}
               <div className="telemetry-level-row">
                 <span className="level-label">DIFFICULTY:</span>
@@ -514,74 +562,52 @@ export function ExerciseDatabaseView({
                   </button>
                 </div>
               </div>
-            </div>
 
-            {/* Card 2: Anatomical Spectrum with Live Silhouette */}
-            <div className="db-telemetry-card anatomy-bento-card">
-              <div className="telemetry-card-header">
-                <span className="telemetry-card-title">
-                  <Activity size={14} className="telemetry-title-icon" />
-                  ANATOMICAL SPECTRUM & MUSCLE VAULT
-                </span>
-                <span className="telemetry-badge-count">{telemetry.distinctMusclesCount} Target Areas</span>
-              </div>
+              <div className="telemetry-section-divider" />
 
-              <div className="telemetry-anatomy-split">
-                {/* Silhouette Frame */}
-                <div className="telemetry-sil-frame" title="Vault Muscle Coverage">
-                  <MiniBodyMap
-                    primaryKeys={selectedMuscle !== 'All' ? [selectedMuscle] : Object.keys(telemetry.muscleCounts)}
-                    className="library-anatomy-body"
-                  />
-                </div>
-
-                {/* Muscle Breakdown Column */}
-                <div className="telemetry-anatomy-breakdown-col">
-                  {/* Proportional muscle distribution bar */}
-                  <div className="telemetry-anatomy-bar">
-                    {telemetry.sortedMuscles.map((item, idx) => (
-                      <div
-                        key={item.key}
-                        className={`anatomy-bar-seg seg-tone-${idx % 6}`}
-                        style={{ width: `${item.percent}%` }}
-                        title={`${item.label}: ${item.count} movements (${item.percent}%)`}
-                      />
-                    ))}
-                  </div>
-
-                  {/* Muscle breakdown chips list */}
-                  <div className="telemetry-muscle-chips-list">
-                    {telemetry.sortedMuscles.slice(0, 8).map((item, idx) => {
-                      const isSelected = selectedMuscle === item.key;
-                      return (
-                        <button
-                          key={item.key}
-                          type="button"
-                          className={`muscle-breakdown-chip ${isSelected ? 'active' : ''}`}
-                          onClick={() => setSelectedMuscle(prev => prev === item.key ? 'All' : item.key)}
-                          title={`Filter by ${item.label} (${item.count} exercises)`}
-                        >
-                          <span className={`chip-color-dot tone-${idx % 6}`} />
-                          <span className="chip-muscle-name">{item.label}</span>
-                          <span className="chip-muscle-percent">{item.percent}%</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Body Map toggle */}
-              <div className="telemetry-bodymap-launch">
-                <button
-                  type="button"
-                  className={`btn-bodymap-drawer-toggle ${showBodyMap ? 'active' : ''}`}
-                  onClick={() => setShowBodyMap(prev => !prev)}
-                  title="Open full interactive 3D anatomical silhouette"
-                >
+              {/* Muscle Target Breakdown Grid */}
+              <div className="telemetry-sub-header-row">
+                <span className="telemetry-sub-kicker">
                   <Activity size={13} />
-                  <span>{showBodyMap ? 'Close Interactive Figure' : 'Detailed 3D Body Map Drawer'}</span>
-                </button>
+                  TARGET MUSCLE DISTRIBUTION ({telemetry.distinctMusclesCount} GROUPS)
+                </span>
+              </div>
+
+              {/* Proportional muscle distribution bar */}
+              <div className="telemetry-anatomy-bar">
+                {telemetry.sortedMuscles.map((item, idx) => (
+                  <div
+                    key={item.key}
+                    className={`anatomy-bar-seg seg-tone-${idx % 6}`}
+                    style={{ width: `${item.percent}%` }}
+                    title={`${item.label}: ${item.count} movements (${item.percent}%)`}
+                  />
+                ))}
+              </div>
+
+              {/* Muscle Breakdown Grid (2 Columns, Clean Statistics) */}
+              <div className="telemetry-muscle-grid">
+                {telemetry.sortedMuscles.slice(0, 8).map((item, idx) => {
+                  const isSelected = selectedMuscle === item.key;
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      className={`muscle-grid-item ${isSelected ? 'active' : ''}`}
+                      onClick={() => setSelectedMuscle(prev => prev === item.key ? 'All' : item.key)}
+                      title={`Filter by ${item.label}`}
+                    >
+                      <div className="muscle-grid-left">
+                        <span className={`chip-color-dot tone-${idx % 6}`} />
+                        <span className="muscle-grid-name">{item.label}</span>
+                      </div>
+                      <div className="muscle-grid-right">
+                        <span className="muscle-grid-count">{item.count}</span>
+                        <span className="muscle-grid-pct">{item.percent}%</span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -738,12 +764,12 @@ export function ExerciseDatabaseView({
                   )}
                 </div>
 
-                {/* Body Map Toggle Pill */}
+                {/* Optional Interactive Drawer Toggle */}
                 <button
                   type="button"
                   className={`db-toggle-bodymap-btn ${showBodyMap || selectedMuscle !== 'All' ? 'active' : ''}`}
                   onClick={() => setShowBodyMap((prev) => !prev)}
-                  title="Filter by tapping muscles on the anatomical figure"
+                  title="Filter by tapping muscles on the interactive 3D anatomy drawer"
                 >
                   <Activity size={14} />
                   <span>Body Map{selectedMuscle !== 'All' ? ` (${MUSCLE_LABELS[selectedMuscle] || selectedMuscle})` : ''}</span>
@@ -785,7 +811,7 @@ export function ExerciseDatabaseView({
               </div>
             </div>
 
-            {/* Expandable Interactive Anatomical Body Map Drawer */}
+            {/* Expandable Interactive Anatomical Body Map Drawer (Only when user explicitly taps Body Map button) */}
             {showBodyMap && (
               <div className="db-bodymap-drawer animate-fade">
                 <BodyMap

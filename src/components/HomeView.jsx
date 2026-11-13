@@ -109,7 +109,7 @@ export function HomeView({
           <div className="hero-clean-header-row">
             <div className="hero-brand-date-box">
               <div className="hero-date-icon-frame" title="Today">
-                <Calendar size={14} />
+                <Calendar size={18} />
               </div>
               <span className="home-date-kicker">TODAY · {todayDisplay}</span>
             </div>

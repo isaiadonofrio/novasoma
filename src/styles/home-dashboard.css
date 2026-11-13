@@ -21,15 +21,15 @@
 .hero-brand-date-box {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .hero-date-icon-frame {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-sm);
   background: var(--clay-soft);
-  border: 1px solid color-mix(in srgb, var(--clay) 28%, transparent);
+  border: 1px solid color-mix(in srgb, var(--clay) 32%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,7 +42,7 @@
   display: inline-flex;
   align-items: center;
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.90rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
