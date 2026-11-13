@@ -6565,9 +6565,12 @@
   color: var(--dim);
   line-height: 1.45;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 3-Cell General Metadata Strip (Replaces Sets/Reps/Rest/RPE) */
