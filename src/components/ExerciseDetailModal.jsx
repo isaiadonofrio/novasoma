@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   X,
   BookOpen,
@@ -24,9 +24,17 @@ export function ExerciseDetailModal({
 }) {
   const [activeTab, setActiveTab] = useState('form'); // 'form' | 'anatomy'
   const trapRef = useFocusTrap(Boolean(exercise));
+  const scrollRef = useRef(null);
 
   // Prevent background scrolling while exercise guide is open
   useBodyScrollLock(Boolean(exercise));
+
+  // Reset scroll to top when toggling between tabs
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
