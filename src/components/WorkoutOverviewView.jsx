@@ -810,25 +810,21 @@ export function WorkoutOverviewView({
                               <div className="table-reps-editor-box">
                                 <input
                                   type="text"
+                                  list={`reps-presets-${exerciseKey}`}
                                   className="table-reps-input"
                                   value={rowReps}
                                   onChange={(e) => handleSetRowReps(idx, sIdx, e.target.value)}
-                                  placeholder="e.g. 10-12, 8/side, 30s"
-                                  title="Edit target reps or duration"
+                                  placeholder="e.g. 10-12"
+                                  title="Target reps or duration (select from dropdown or type)"
                                 />
-                                <div className="table-reps-micro-chips">
-                                  {['8-10', '10-12', '12-15'].map((chip) => (
-                                    <button
-                                      key={chip}
-                                      type="button"
-                                      className={`btn-table-micro-chip ${rowReps === chip ? 'active' : ''}`}
-                                      onClick={() => handleSetRowReps(idx, sIdx, chip)}
-                                      title={`Set to ${chip}`}
-                                    >
-                                      {chip}
-                                    </button>
+                                <datalist id={`reps-presets-${exerciseKey}`}>
+                                  {REP_PRESETS.map((preset) => (
+                                    <option key={preset} value={preset} />
                                   ))}
-                                </div>
+                                  <option value="8-10 reps/side" />
+                                  <option value="10-12 reps/side" />
+                                  <option value="12-15 reps/side" />
+                                </datalist>
                               </div>
                             ) : (
                               <strong>{formatRepsSummary(rowReps)}</strong>
