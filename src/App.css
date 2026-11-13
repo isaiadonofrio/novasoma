@@ -8280,6 +8280,19 @@
   border: 1px solid var(--border-hi);
   color: var(--text);
   font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s var(--ease);
+}
+
+[data-theme="light"] .picker-muscle-select-wrap select {
+  background: #FFFFFF;
+}
+
+.picker-muscle-select-wrap select:focus {
+  border-color: var(--clay);
 }
 
 .picker-phase-toggle {
