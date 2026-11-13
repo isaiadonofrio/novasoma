@@ -70,12 +70,53 @@
   font-weight: 800;
 }
 
-.db-header-content-row {
+.db-nav-left-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Archive Telemetry Bento (Restores and Elevates Library Statistics)
+   ========================================================================== */
+.db-telemetry-bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.15fr;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
-.db-kicker,
-.db-kinesiology-badge {
+.db-telemetry-card {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+[data-theme="light"] .db-telemetry-card {
+  background: #FFFFFF;
+  border-color: var(--border-hi);
+  box-shadow: 0 4px 16px rgba(26, 23, 19, 0.03);
+}
+
+.db-telemetry-card:hover {
+  border-color: rgba(194, 142, 82, 0.35);
+}
+
+.telemetry-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.telemetry-card-title {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -85,23 +126,367 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--clay);
-  margin-bottom: 4px;
 }
 
-.db-view-title {
-  font-size: clamp(1.8rem, 3.2vw, 2.4rem);
-  font-weight: 900;
-  color: var(--text);
-  letter-spacing: -0.025em;
-  margin: 0 0 6px;
+.telemetry-title-icon {
+  color: var(--clay);
 }
 
-.db-view-subtitle {
-  font-size: 0.92rem;
-  line-height: 1.5;
+.telemetry-badge-count {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
   color: var(--dim);
-  max-width: 66ch;
-  margin: 0;
+  padding: 2px 8px;
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+
+/* Equipment Split Stats */
+.telemetry-split-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.split-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.split-num {
+  font-size: 1.45rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--text);
+  font-family: var(--mono);
+}
+
+.split-num.teal {
+  color: var(--teal);
+}
+
+.split-lbl {
+  font-size: 0.72rem;
+  color: var(--dim);
+  font-weight: 600;
+}
+
+.split-divider {
+  font-size: 1.2rem;
+  color: var(--border-hi);
+  font-weight: 300;
+}
+
+/* Dual Segmented Split Bar */
+.telemetry-segmented-bar {
+  width: 100%;
+  height: 7px;
+  background: var(--raised2);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  display: flex;
+}
+
+.segment-fill.gear {
+  background: var(--clay);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.segment-fill.bodyweight {
+  background: var(--teal);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Interactive Quick Filter Chips */
+.telemetry-quick-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.telemetry-chip {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.telemetry-chip:hover {
+  border-color: var(--clay);
+  color: var(--text);
+  background: var(--raised3);
+}
+
+.telemetry-chip.active {
+  background: var(--clay-soft);
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+.telemetry-chip .chip-count {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: inherit;
+  opacity: 0.85;
+}
+
+/* Sub-Gear Breakdown Tags */
+.telemetry-sub-breakdown {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+  border-top: 1px dashed var(--border);
+}
+
+.sub-gear-tag {
+  font-size: 0.69rem;
+  font-weight: 600;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+}
+
+.sub-gear-tag:hover {
+  color: var(--text);
+  background: var(--raised2);
+  border-color: var(--border);
+}
+
+.sub-gear-tag.active {
+  color: var(--clay);
+  background: var(--clay-soft);
+  border-color: var(--clay);
+}
+
+/* Stacked Mechanics Bar */
+.telemetry-stacked-bar {
+  width: 100%;
+  height: 7px;
+  background: var(--raised2);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  display: flex;
+}
+
+.stacked-seg.seg-compound { background: var(--clay); }
+.stacked-seg.seg-isolation { background: var(--teal); }
+.stacked-seg.seg-mobility { background: #E5A93C; }
+.stacked-seg.seg-isometric { background: #8C827A; }
+
+/* Difficulty Spectrum Row */
+.telemetry-level-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--border);
+  flex-wrap: wrap;
+}
+
+.level-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+.level-chips-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.level-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+}
+
+.level-pill:hover {
+  color: var(--text);
+  border-color: var(--border-hi);
+}
+
+.level-pill.active {
+  border-color: var(--clay);
+  color: var(--clay);
+  background: var(--clay-soft);
+}
+
+.level-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.level-pip.beginner { background: var(--teal); }
+.level-pip.intermediate { background: var(--clay); }
+.level-pip.advanced { background: var(--ember); }
+
+/* Anatomical Spectrum Bar & Chips */
+.telemetry-anatomy-bar {
+  width: 100%;
+  height: 7px;
+  background: var(--raised2);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  display: flex;
+}
+
+.anatomy-bar-seg.seg-tone-0 { background: #C28E52; }
+.anatomy-bar-seg.seg-tone-1 { background: #2A6B6D; }
+.anatomy-bar-seg.seg-tone-2 { background: #E5674C; }
+.anatomy-bar-seg.seg-tone-3 { background: #E5A93C; }
+.anatomy-bar-seg.seg-tone-4 { background: #6E5643; }
+.anatomy-bar-seg.seg-tone-5 { background: #8C827A; }
+
+.telemetry-muscle-chips-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.muscle-breakdown-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 0.71rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+}
+
+.muscle-breakdown-chip:hover {
+  color: var(--text);
+  border-color: var(--clay);
+}
+
+.muscle-breakdown-chip.active {
+  background: var(--clay-soft);
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+.chip-color-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.chip-color-dot.tone-0 { background: #C28E52; }
+.chip-color-dot.tone-1 { background: #2A6B6D; }
+.chip-color-dot.tone-2 { background: #E5674C; }
+.chip-color-dot.tone-3 { background: #E5A93C; }
+.chip-color-dot.tone-4 { background: #6E5643; }
+.chip-color-dot.tone-5 { background: #8C827A; }
+
+.chip-muscle-percent {
+  font-family: var(--mono);
+  font-size: 0.67rem;
+  opacity: 0.75;
+}
+
+.telemetry-bodymap-launch {
+  padding-top: 4px;
+  border-top: 1px dashed var(--border);
+}
+
+.btn-bodymap-drawer-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+}
+
+.btn-bodymap-drawer-toggle:hover {
+  background: var(--raised3);
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+.btn-bodymap-drawer-toggle.active {
+  background: var(--clay-soft);
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+/* Fast-Pill exact count badge */
+.db-pill-count {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  opacity: 0.7;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.db-pill-btn.active .db-pill-count {
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 1;
+}
+
+@media (max-width: 1024px) {
+  .db-telemetry-bento {
+    grid-template-columns: 1fr 1fr;
+  }
+  .db-telemetry-card.anatomy-card {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .db-telemetry-bento {
+    grid-template-columns: 1fr;
+  }
+  .db-telemetry-card.anatomy-card {
+    grid-column: span 1;
+  }
 }
 
 /* Modern Filter & Command Cockpit */
