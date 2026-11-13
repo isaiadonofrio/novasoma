@@ -12076,7 +12076,7 @@
 /* Custom In-Theme Workout Trigger Button */
 .pure-workout-display-btn {
   width: 100%;
-  height: 48px;
+  height: 44px;
   padding: 0 14px;
   border-radius: var(--radius-sm);
   background: var(--raised2);
@@ -12105,15 +12105,15 @@
 .pure-workout-display-btn .trigger-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
   flex: 1;
 }
 
 .pure-workout-display-btn .trigger-icon-box {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12141,8 +12141,8 @@
 }
 
 .pure-workout-display-btn .trigger-title {
-  font-size: 0.92rem;
-  font-weight: 800;
+  font-size: 0.86rem;
+  font-weight: 700;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -12253,7 +12253,7 @@
 
 .dropdown-item-btn.active .item-name {
   color: var(--clay);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .dropdown-item-btn .item-check {

@@ -507,9 +507,9 @@ export function ManualWorkoutLogModal({
             )}
           </div>
 
-          {/* Section 2: Workout Type (Classics & Common Only) */}
+          {/* Section 2: Activity (Classics & Common Only) */}
           <div className="pure-field-block" ref={workoutMenuRef}>
-            <label className="pure-field-label">Workout Type</label>
+            <label className="pure-field-label">Activity</label>
 
             <div className="pure-custom-select-wrap">
               <button
@@ -524,7 +524,7 @@ export function ManualWorkoutLogModal({
               >
                 <div className="trigger-left">
                   <div className={`trigger-icon-box ${selectedWorkout.tone}`}>
-                    <WorkoutIcon size={16} />
+                    <WorkoutIcon size={14} />
                   </div>
                   <span className="trigger-title">
                     {selectedWorkoutId === 'custom'
