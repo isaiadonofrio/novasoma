@@ -21,3 +21,4 @@ test('constants.js: sensible exercise defaults are configured', () => {
   assert.equal(DEFAULT_SETS, 3);
   assert.equal(DEFAULT_REPS, '10');
 });
+

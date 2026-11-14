@@ -1069,7 +1069,7 @@
 
 .player-sets-col-heads {
   display: grid;
-  grid-template-columns: 32px minmax(72px, 0.95fr) minmax(0, 1fr) minmax(0, 0.9fr) 38px;
+  grid-template-columns: 32px minmax(64px, 0.8fr) minmax(92px, 1.15fr) minmax(92px, 1.1fr) 38px;
   gap: 8px;
   padding: 0 11px;
   font-family: var(--mono);
@@ -1087,7 +1087,7 @@
 
 .player-set-row {
   display: grid;
-  grid-template-columns: 32px minmax(72px, 0.95fr) minmax(0, 1fr) minmax(0, 0.9fr) 38px;
+  grid-template-columns: 32px minmax(64px, 0.8fr) minmax(92px, 1.15fr) minmax(92px, 1.1fr) 38px;
   gap: 8px;
   align-items: center;
   padding: 8px 10px;
@@ -1157,6 +1157,59 @@
 
 .set-field-group:focus-within {
   border-color: var(--clay);
+}
+
+/* Tactile Gym Steppers */
+.set-stepper-field {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px 4px;
+  min-width: 0;
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+
+.set-stepper-field:focus-within {
+  border-color: var(--clay);
+  box-shadow: 0 0 0 2px var(--clay-soft);
+}
+
+.set-stepper-btn {
+  width: 24px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--dim);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background-color 0.12s var(--ease), color 0.12s var(--ease), transform 0.1s var(--ease);
+}
+
+.set-stepper-btn:hover {
+  background: var(--raised2);
+  color: var(--text);
+}
+
+.set-stepper-btn:active {
+  transform: scale(0.92);
+}
+
+.set-stepper-input-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+  padding: 0 2px;
+  cursor: text;
 }
 
 .player-set-input {
@@ -1377,16 +1430,27 @@
   transition: transform 0.16s var(--ease);
 }
 
+@keyframes advancePulse {
+  0%, 100% {
+    box-shadow: 0 4px 18px rgba(143, 163, 119, 0.35);
+  }
+  50% {
+    box-shadow: 0 6px 26px rgba(143, 163, 119, 0.65);
+    transform: translateY(-1px);
+  }
+}
+
 .player-nav-next.ready-advance {
   background: var(--sage);
   border-color: var(--sage);
   color: #FFFFFF;
   box-shadow: 0 4px 18px rgba(143, 163, 119, 0.35);
+  animation: advancePulse 2.4s infinite ease-in-out;
 }
 
 .player-nav-next.ready-advance:hover {
   filter: brightness(1.06);
-  box-shadow: 0 6px 22px rgba(143, 163, 119, 0.45);
+  box-shadow: 0 6px 24px rgba(143, 163, 119, 0.55);
 }
 
 .player-nav-next.finish-mode {
@@ -1972,6 +2036,134 @@
   background: var(--clay);
 }
 
+.studio-muscle-overlay-pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(18, 17, 15, 0.78);
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.studio-phase-overlay-pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: var(--teal);
+  color: #FFFFFF;
+}
+
+/* Somatic Coaching Anchor Card (Left Column) */
+.studio-somatic-anchor {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--raised);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .studio-somatic-anchor {
+  box-shadow: 0 2px 10px rgba(26, 23, 19, 0.03);
+}
+
+.somatic-anchor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.somatic-anchor-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+
+.somatic-sparkle-icon {
+  color: var(--clay);
+}
+
+.somatic-tempo-badge {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+}
+
+.somatic-anchor-cue {
+  font-size: 0.85rem;
+  line-height: 1.48;
+  color: var(--text);
+  margin: 0;
+  font-weight: 500;
+}
+
+.somatic-breathing-strip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  color: var(--sage);
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  background: var(--sage-soft);
+  border: 1px solid color-mix(in srgb, var(--sage) 35%, var(--border));
+}
+
+.somatic-guide-link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 13px;
+  margin-top: 2px;
+  border-radius: var(--radius-md);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.somatic-guide-link-btn:hover {
+  background: var(--raised3);
+  border-color: var(--border-hi);
+  color: var(--clay);
+}
+
 .studio-media-placeholder {
   aspect-ratio: 4 / 3;
   border-radius: var(--radius-lg);
@@ -2184,6 +2376,22 @@
 
 .studio-tbtn.hold.active {
   background: var(--clay);
+  color: #FFFFFF;
+}
+
+.studio-tbtn.skip-rest-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--clay-soft);
+  border-color: color-mix(in srgb, var(--clay) 40%, var(--border));
+  color: var(--clay);
+  font-weight: 800;
+}
+
+.studio-tbtn.skip-rest-btn:hover {
+  background: var(--clay);
+  border-color: var(--clay);
   color: #FFFFFF;
 }
 

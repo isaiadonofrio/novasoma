@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   X,
   Play,
@@ -26,7 +26,11 @@ import {
   Timer,
   TimerOff,
   ChevronRight,
-  Dumbbell
+  Dumbbell,
+  Sparkles,
+  Plus,
+  Minus,
+  SkipForward
 } from 'lucide-react';
 import { sounds } from '../utils/audio';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
@@ -464,6 +468,24 @@ export function ActiveWorkoutModal({
     }));
   };
 
+  const adjustSetReps = (setIndex, delta) => {
+    const exId = currentExercise.id;
+    const currentSets = [...(loggedSets[exId] || [])];
+    if (!currentSets[setIndex]) return;
+    const currentReps = parseInt(currentSets[setIndex].reps, 10) || 0;
+    const nextReps = Math.max(1, currentReps + delta);
+    updateSetInput(setIndex, 'reps', String(nextReps));
+  };
+
+  const adjustSetWeight = (setIndex, delta) => {
+    const exId = currentExercise.id;
+    const currentSets = [...(loggedSets[exId] || [])];
+    if (!currentSets[setIndex]) return;
+    const currentWeight = parseFloat(String(currentSets[setIndex].weight).replace(',', '.')) || 0;
+    const nextWeight = Math.max(0, Math.round((currentWeight + delta) * 10) / 10);
+    updateSetInput(setIndex, 'weight', nextWeight > 0 ? String(nextWeight) : '');
+  };
+
   const applyPrevToSet = (setIndex) => {
     const exId = currentExercise.id;
     const currentSets = [...(loggedSets[exId] || [])];
@@ -762,6 +784,8 @@ export function ActiveWorkoutModal({
                     <div className={`studio-pose-grid ${hasTwoImages ? 'dual' : 'single'}`}>
                       {currentExercise.illustration && (
                         <div className="studio-pose-box">
+                          <span className="studio-muscle-overlay-pill">✦ {primaryMuscleName}</span>
+                          {currentExercise.isWarmup && <span className="studio-phase-overlay-pill">Warm-Up</span>}
                           {(hasTwoImages || isAnimatedGifUrl(currentExercise.illustration)) && (
                             <span className="studio-pose-tag">
                               {hasTwoImages ? 'Start' : 'GIF'}
@@ -806,6 +830,37 @@ export function ActiveWorkoutModal({
                   <span>{primaryMuscleName}</span>
                 </div>
               )}
+
+              {/* Integrated Somatic Coaching Anchor (Directly docked under visual media) */}
+              <div className="studio-somatic-anchor">
+                <div className="somatic-anchor-header">
+                  <div className="somatic-anchor-title">
+                    <Sparkles size={13} className="somatic-sparkle-icon" />
+                    <span>COACHING &amp; SOMATIC CUE</span>
+                  </div>
+                  {currentExercise.tempo && (
+                    <span className="somatic-tempo-badge">Tempo: {currentExercise.tempo}</span>
+                  )}
+                </div>
+                <p className="somatic-anchor-cue">
+                  {execution.proTip || execution.setup || 'Maintain tension through full range of motion. Control the eccentric phase.'}
+                </p>
+                {execution.breathing && (
+                  <div className="somatic-breathing-strip">
+                    <Wind size={12} />
+                    <span><b>Breathe:</b> {execution.breathing}</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className="somatic-guide-link-btn"
+                  onClick={() => setIsGuideOpen(true)}
+                >
+                  <BookOpen size={13} />
+                  <span>Form, Muscles &amp; Biomechanics Guide (G)</span>
+                  <ChevronRight size={13} />
+                </button>
+              </div>
             </section>
 
             {/* RIGHT COLUMN: Uncluttered Exercise Header + Contextual Timer + Sets + Clear Navigation */}
@@ -933,6 +988,18 @@ export function ActiveWorkoutModal({
                           </button>
                           <button type="button" className="studio-tbtn" onClick={() => adjustRestTime(15)}>
                             +15s
+                          </button>
+                          <button
+                            type="button"
+                            className="studio-tbtn skip-rest-btn"
+                            onClick={() => {
+                              setIsResting(false);
+                              setRestSecondsLeft(0);
+                            }}
+                            title="Skip remaining rest"
+                          >
+                            <SkipForward size={12} />
+                            <span>Skip</span>
                           </button>
                         </>
                       )}
@@ -1097,42 +1164,78 @@ export function ActiveWorkoutModal({
                           <span className="set-prev-empty">—</span>
                         )}
 
-                        <label className="set-field-group">
-                          <input
-                            type="text"
-                            inputMode="decimal"
-                            className="player-set-input"
-                            value={set.reps}
-                            onChange={(e) => updateSetInput(sIdx, 'reps', e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                toggleSetComplete(sIdx);
-                              }
-                            }}
-                            aria-label={`Set ${set.setNum} ${isTimedReps ? 'seconds' : 'reps'}`}
-                          />
-                          <span className="set-field-unit">{isTimedReps ? 's' : 'r'}</span>
-                        </label>
+                        <div className="set-stepper-field reps-field">
+                          <button
+                            type="button"
+                            className="set-stepper-btn minus"
+                            onClick={() => adjustSetReps(sIdx, -1)}
+                            aria-label={`Decrease reps for set ${set.setNum}`}
+                          >
+                            <Minus size={11} />
+                          </button>
+                          <label className="set-stepper-input-wrap">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              className="player-set-input"
+                              value={set.reps}
+                              onChange={(e) => updateSetInput(sIdx, 'reps', e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  toggleSetComplete(sIdx);
+                                }
+                              }}
+                              aria-label={`Set ${set.setNum} ${isTimedReps ? 'seconds' : 'reps'}`}
+                            />
+                            <span className="set-field-unit">{isTimedReps ? 's' : 'r'}</span>
+                          </label>
+                          <button
+                            type="button"
+                            className="set-stepper-btn plus"
+                            onClick={() => adjustSetReps(sIdx, 1)}
+                            aria-label={`Increase reps for set ${set.setNum}`}
+                          >
+                            <Plus size={11} />
+                          </button>
+                        </div>
 
-                        <label className={`set-field-group ${isBodyweightEx ? 'optional-weight' : ''}`}>
-                          <input
-                            type="text"
-                            inputMode="decimal"
-                            className="player-set-input"
-                            placeholder={set.prevWeight || (isBodyweightEx ? 'BW' : '0')}
-                            value={set.weight}
-                            onChange={(e) => updateSetInput(sIdx, 'weight', e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                toggleSetComplete(sIdx);
-                              }
-                            }}
-                            aria-label={`Set ${set.setNum} weight in kg`}
-                          />
-                          <span className="set-field-unit">kg</span>
-                        </label>
+                        <div className={`set-stepper-field weight-field ${isBodyweightEx ? 'optional-weight' : ''}`}>
+                          <button
+                            type="button"
+                            className="set-stepper-btn minus"
+                            onClick={() => adjustSetWeight(sIdx, -2.5)}
+                            aria-label={`Decrease weight for set ${set.setNum}`}
+                          >
+                            <Minus size={11} />
+                          </button>
+                          <label className="set-stepper-input-wrap">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              className="player-set-input"
+                              placeholder={set.prevWeight || (isBodyweightEx ? 'BW' : '0')}
+                              value={set.weight}
+                              onChange={(e) => updateSetInput(sIdx, 'weight', e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  toggleSetComplete(sIdx);
+                                }
+                              }}
+                              aria-label={`Set ${set.setNum} weight in kg`}
+                            />
+                            <span className="set-field-unit">kg</span>
+                          </label>
+                          <button
+                            type="button"
+                            className="set-stepper-btn plus"
+                            onClick={() => adjustSetWeight(sIdx, 2.5)}
+                            aria-label={`Increase weight for set ${set.setNum}`}
+                          >
+                            <Plus size={11} />
+                          </button>
+                        </div>
 
                         <button
                           type="button"
@@ -1148,33 +1251,6 @@ export function ActiveWorkoutModal({
                 </div>
               </div>
             </section>
-          </div>
-
-          {/* Supporting Coach Tip + Form Guide Strip (directly beneath the exercise pair) */}
-          <div className={`studio-meta-row ${isMobileDemoExpanded ? 'mobile-demo-open' : ''}`}>
-            {execution.proTip && (
-              <div className="studio-coach-tip">
-                <Lightbulb size={15} color="var(--clay)" />
-                <p>{execution.proTip}</p>
-              </div>
-            )}
-
-            <button
-              type="button"
-              className="player-guide-pullout-btn"
-              onClick={() => setIsGuideOpen(true)}
-            >
-              <div className="guide-btn-left">
-                <div className="guide-btn-icon">
-                  <BookOpen size={16} />
-                </div>
-                <div>
-                  <span className="guide-btn-title">Form, Muscles &amp; Setup Guide</span>
-                  <span className="guide-btn-sub">Anatomy map, form phases &amp; common mistakes (G)</span>
-                </div>
-              </div>
-              <ChevronRight size={16} color="var(--dim)" />
-            </button>
           </div>
 
           {/* Inline Previous / Next Resting Directly Below the Exercise (Desktop & Tablet Landscape) */}
