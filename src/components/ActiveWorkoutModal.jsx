@@ -881,9 +881,9 @@ export function ActiveWorkoutModal({
 
             {/* RIGHT COLUMN: Unified Studio Console Card */}
             <section className="studio-console-col studio-console-card">
-              {/* Exercise Identity Block */}
-              <div className="studio-exercise-head">
-                <div className="studio-head-main">
+              {/* 2-Column Hero Row: Left Exercise Info + Right Dedicated Rest Timer HUD Box */}
+              <div className="studio-hero-row">
+                <div className="studio-hero-info">
                   {hasAnyImages && currentExercise.illustration && (
                     <button
                       type="button"
@@ -899,202 +899,174 @@ export function ActiveWorkoutModal({
                     </button>
                   )}
 
-                  <div className="studio-head-copy">
-                    <div className="studio-eyebrow">
-                      {currentSuperset && (
-                        <span className="studio-eyebrow-ss">{currentSuperset.code}</span>
-                      )}
-                      <span>{primaryMuscleName}</span>
-                      <span>·</span>
-                      <span>{currentExercise.equipment || 'Bodyweight'}</span>
-                      {currentExercise.rpe && (
-                        <>
-                          <span>·</span>
-                          <span>RPE {currentExercise.rpe}</span>
-                        </>
-                      )}
-                    </div>
-
-                    <h1 className="studio-exercise-title">{currentExercise.name}</h1>
-
-                    <div className="studio-prescription-row">
-                      <span className="prescription-pill">
-                        <b>{currentExerciseSets.length}</b> sets
-                      </span>
-                      <span className="prescription-dot">·</span>
-                      <span className="prescription-pill">
-                        Target <b>{currentExercise.defaultReps || '8-12'}</b>
-                      </span>
-                      {currentExercise.lastRecord && (
-                        <>
-                          <span className="prescription-dot">·</span>
-                          <span className="prescription-ref">Ref: {currentExercise.lastRecord}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mobile quick actions (hidden on desktop) */}
-                <div className="player-mobile-quick-actions">
-                  <div className="mobile-compact-targets">
-                    <span>{isTimerEnabled ? <>Rest <b>{defaultRest}s</b></> : 'No timer'}</span>
-                  </div>
-                  <div className="mobile-quick-btns">
-                    {hasMedia && (
-                      <button
-                        type="button"
-                        className={`player-mini-action-btn ${isMobileDemoExpanded ? 'active' : ''}`}
-                        onClick={() => setIsMobileDemoExpanded((prev) => !prev)}
-                      >
-                        {isMobileDemoExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-                        <span>{isMobileDemoExpanded ? 'Hide' : 'Demo'}</span>
-                      </button>
+                  <div className="studio-eyebrow">
+                    {currentSuperset && (
+                      <span className="studio-eyebrow-ss">{currentSuperset.code}</span>
                     )}
-                    <button
-                      type="button"
-                      className="player-mini-action-btn guide"
-                      onClick={() => setIsGuideOpen(true)}
-                    >
-                      <BookOpen size={12} />
-                      <span>Form</span>
-                    </button>
+                    <span>{primaryMuscleName}</span>
+                    <span>·</span>
+                    <span>{currentExercise.equipment || 'Bodyweight'}</span>
+                    {currentExercise.rpe && (
+                      <>
+                        <span>·</span>
+                        <span>RPE {currentExercise.rpe}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <h1 className="studio-exercise-title">{currentExercise.name}</h1>
+
+                  <div className="studio-prescription-row">
+                    <span className="prescription-pill">
+                      <b>{currentExerciseSets.length}</b> sets
+                    </span>
+                    <span className="prescription-dot">·</span>
+                    <span className="prescription-pill">
+                      Target <b>{currentExercise.defaultReps || '8-12'}</b>
+                    </span>
+                    {currentExercise.lastRecord && (
+                      <>
+                        <span className="prescription-dot">·</span>
+                        <span className="prescription-ref">Ref: {currentExercise.lastRecord}</span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Mobile quick actions (hidden on desktop) */}
+                  <div className="player-mobile-quick-actions">
+                    <div className="mobile-compact-targets">
+                      <span>{isTimerEnabled ? <>Rest <b>{defaultRest}s</b></> : 'No timer'}</span>
+                    </div>
+                    <div className="mobile-quick-btns">
+                      {hasMedia && (
+                        <button
+                          type="button"
+                          className={`player-mini-action-btn ${isMobileDemoExpanded ? 'active' : ''}`}
+                          onClick={() => setIsMobileDemoExpanded((prev) => !prev)}
+                        >
+                          {isMobileDemoExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                          <span>{isMobileDemoExpanded ? 'Hide' : 'Demo'}</span>
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="player-mini-action-btn guide"
+                        onClick={() => setIsGuideOpen(true)}
+                      >
+                        <BookOpen size={12} />
+                        <span>Form</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Clean Contextual 1-Row Rest / Work Timer (expands smoothly only while active!) */}
-              {isTimerEnabled || isResting ? (
-                <div className={`studio-timer-bar ${isResting ? 'running' : ''} ${timerMode === 'work' ? 'work-mode' : ''}`}>
-                  <div className="studio-timer-top">
-                    <div className="studio-timer-readout">
-                      <span className="studio-timer-label">
-                        {isResting
-                          ? (timerMode === 'work' ? 'WORK HOLD' : 'RESTING')
-                          : (timerMode === 'work' ? 'HOLD TIMER' : 'REST TIMER')}
-                      </span>
-                      <strong className="studio-timer-clock">{formatTime(restSecondsLeft)}</strong>
-                    </div>
-
-                    <div className="studio-timer-actions">
-                      {!isResting && targetHoldSeconds && (
-                        <button
-                          type="button"
-                          className={`studio-tbtn hold ${timerMode === 'work' ? 'active' : ''}`}
-                          onClick={() => resetTimer(targetHoldSeconds, 'work', true)}
-                          title={`Start ${targetHoldSeconds}s hold timer`}
-                        >
-                          Hold {targetHoldSeconds}s
-                        </button>
-                      )}
-                      {!isResting && restPresets.map((s) => (
-                        <button
-                          key={s}
-                          type="button"
-                          className={`studio-tbtn preset ${timerMode === 'rest' && restInitialSeconds === s ? 'active' : ''}`}
-                          onClick={() => resetTimer(s, 'rest', false)}
-                        >
-                          {s}s
-                        </button>
-                      ))}
-                      {isResting && (
-                        <>
-                          <button type="button" className="studio-tbtn" onClick={() => adjustRestTime(-15)}>
-                            -15s
-                          </button>
-                          <button type="button" className="studio-tbtn" onClick={() => adjustRestTime(30)}>
-                            +30s
-                          </button>
-                          <button
-                            type="button"
-                            className="studio-tbtn skip-rest-btn"
-                            onClick={() => {
-                              setIsResting(false);
-                              setRestSecondsLeft(0);
-                            }}
-                            title="Skip remaining rest"
-                          >
-                            <SkipForward size={12} />
-                            <span>Skip</span>
-                          </button>
-                        </>
-                      )}
+                {/* Right Side: Dedicated High-Contrast Rest Timer HUD Box (#F2EFE9, 44px clock, play/pause, quick pills) */}
+                <div className={`studio-timer-hud-box ${isResting ? 'is-resting' : ''} ${!isTimerEnabled ? 'is-disabled' : ''}`}>
+                  <div className="timer-hud-header">
+                    <span className="timer-hud-badge">
+                      {isResting
+                        ? (timerMode === 'work' ? 'WORK HOLD' : 'RESTING')
+                        : (timerMode === 'work' ? 'HOLD TIMER' : 'REST TIMER')}
+                    </span>
+                    <div className="timer-hud-ctrls">
                       <button
                         type="button"
-                        className={`studio-timer-main-btn ${isResting ? 'active' : ''}`}
-                        onClick={toggleRestTimer}
-                      >
-                        {isResting ? (
-                          <>
-                            <Pause size={13} />
-                            <span>Pause</span>
-                          </>
-                        ) : (
-                          <>
-                            <Play size={13} fill="currentColor" />
-                            <span>{restSecondsLeft === 0 ? 'Restart' : 'Start'}</span>
-                          </>
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        className="studio-tbtn icon"
+                        className="timer-hud-icon-btn"
                         onClick={() => resetTimer(timerMode === 'work' && targetHoldSeconds ? targetHoldSeconds : defaultRest, timerMode, false)}
                         title="Reset timer"
                         aria-label="Reset timer"
                       >
-                        <RotateCcw size={13} />
+                        <RotateCcw size={12} />
                       </button>
                       <button
                         type="button"
-                        className="player-timer-off-btn studio-tbtn off"
+                        className={`timer-hud-icon-btn ${!isTimerEnabled ? 'off' : ''}`}
                         onClick={toggleExerciseTimerPreference}
-                        title="Turn off timer for this exercise"
-                        aria-label="Turn off timer"
+                        title={isTimerEnabled ? 'Turn off timer' : 'Turn on timer'}
+                        aria-label="Toggle timer preference"
                       >
-                        <TimerOff size={13} />
-                        <span>Off</span>
+                        <TimerOff size={12} />
                       </button>
                     </div>
                   </div>
 
-                  {isResting && (
-                    <div className="studio-timer-progress" aria-hidden="true">
-                      <span style={{ width: `${Math.round(timerRatio * 100)}%` }} />
+                  {isTimerEnabled || isResting ? (
+                    <>
+                      <div className="timer-hud-clock-row">
+                        <strong className="timer-hud-clock">{formatTime(restSecondsLeft)}</strong>
+                        <button
+                          type="button"
+                          className={`timer-hud-play-btn ${isResting ? 'active' : ''}`}
+                          onClick={toggleRestTimer}
+                          aria-label={isResting ? 'Pause timer' : 'Start timer'}
+                        >
+                          {isResting ? <Pause size={18} /> : <Play size={18} fill="currentColor" />}
+                        </button>
+                      </div>
+
+                      <div className="timer-hud-pills">
+                        {isResting ? (
+                          <>
+                            <button type="button" className="timer-hud-pill" onClick={() => adjustRestTime(-15)}>
+                              -15s
+                            </button>
+                            <button type="button" className="timer-hud-pill" onClick={() => adjustRestTime(15)}>
+                              +15s
+                            </button>
+                            <button type="button" className="timer-hud-pill" onClick={() => adjustRestTime(30)}>
+                              +30s
+                            </button>
+                            <button
+                              type="button"
+                              className="timer-hud-pill skip"
+                              onClick={() => {
+                                setIsResting(false);
+                                setRestSecondsLeft(0);
+                              }}
+                              title="Skip rest"
+                            >
+                              <SkipForward size={11} />
+                              <span>Skip</span>
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            {restPresets.map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                className={`timer-hud-pill ${timerMode === 'rest' && restInitialSeconds === s ? 'active' : ''}`}
+                                onClick={() => resetTimer(s, 'rest', false)}
+                              >
+                                {s}s
+                              </button>
+                            ))}
+                            <button type="button" className="timer-hud-pill bump" onClick={() => adjustRestTime(15)}>
+                              +15s
+                            </button>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="timer-hud-progress-track" aria-hidden="true">
+                        <span style={{ width: `${Math.round(timerRatio * 100)}%` }} />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="timer-hud-disabled-state">
+                      <span className="timer-hud-disabled-txt">Timer disabled</span>
+                      <button
+                        type="button"
+                        className="timer-hud-enable-btn"
+                        onClick={toggleExerciseTimerPreference}
+                      >
+                        <Timer size={13} />
+                        <span>Enable Timer</span>
+                      </button>
                     </div>
                   )}
                 </div>
-              ) : (
-                <div className="player-timer-off-card studio-timer-muted">
-                  <div className="timer-off-summary">
-                    <TimerOff size={14} />
-                    <span>No timer needed for this exercise</span>
-                  </div>
-                  <div className="timer-off-actions">
-                    {targetHoldSeconds && (
-                      <button
-                        type="button"
-                        className="player-timer-enable-btn work"
-                        onClick={() => {
-                          toggleExerciseTimerPreference();
-                          resetTimer(targetHoldSeconds, 'work', true);
-                        }}
-                      >
-                        <Play size={11} fill="currentColor" />
-                        <span>Hold {targetHoldSeconds}s</span>
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      className="player-timer-enable-btn"
-                      onClick={toggleExerciseTimerPreference}
-                    >
-                      <Timer size={13} />
-                      <span>Enable Timer</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+              </div>
 
               {/* Focused Set Logger Card */}
               <div className="player-logger-card studio-logger-card">
@@ -1145,9 +1117,9 @@ export function ActiveWorkoutModal({
 
                 <div className="player-sets-col-heads" aria-hidden="true">
                   <span>SET</span>
-                  <span>PREV</span>
-                  <span>{isTimedReps ? 'SEC' : 'REPS'}</span>
-                  <span>{isBodyweightEx ? '+KG' : 'KG'}</span>
+                  <span>PREVIOUS</span>
+                  <span>{isTimedReps ? 'SEC' : `REPS (Target ${currentExercise.defaultReps || '8-12'})`}</span>
+                  <span>{isBodyweightEx ? '+WEIGHT (KG)' : 'WEIGHT (KG)'}</span>
                   <span>DONE</span>
                 </div>
 
@@ -1193,7 +1165,7 @@ export function ActiveWorkoutModal({
                             onClick={() => adjustSetReps(sIdx, -1)}
                             aria-label={`Decrease reps for set ${set.setNum}`}
                           >
-                            <Minus size={12} strokeWidth={2.5} />
+                            <Minus size={15} strokeWidth={2.5} />
                           </button>
                           <label className="set-stepper-input-wrap">
                             <input
@@ -1218,7 +1190,7 @@ export function ActiveWorkoutModal({
                             onClick={() => adjustSetReps(sIdx, 1)}
                             aria-label={`Increase reps for set ${set.setNum}`}
                           >
-                            <Plus size={12} strokeWidth={2.5} />
+                            <Plus size={15} strokeWidth={2.5} />
                           </button>
                         </div>
 
@@ -1229,7 +1201,7 @@ export function ActiveWorkoutModal({
                             onClick={() => adjustSetWeight(sIdx, -2.5)}
                             aria-label={`Decrease weight for set ${set.setNum}`}
                           >
-                            <Minus size={12} strokeWidth={2.5} />
+                            <Minus size={15} strokeWidth={2.5} />
                           </button>
                           <label className="set-stepper-input-wrap">
                             <input
@@ -1255,7 +1227,7 @@ export function ActiveWorkoutModal({
                             onClick={() => adjustSetWeight(sIdx, 2.5)}
                             aria-label={`Increase weight for set ${set.setNum}`}
                           >
-                            <Plus size={12} strokeWidth={2.5} />
+                            <Plus size={15} strokeWidth={2.5} />
                           </button>
                         </div>
 
@@ -1265,7 +1237,7 @@ export function ActiveWorkoutModal({
                           onClick={() => toggleSetComplete(sIdx)}
                           aria-label={`Complete set ${set.setNum}`}
                         >
-                          <Check size={18} strokeWidth={set.completed ? 3 : 2.25} />
+                          <Check size={20} strokeWidth={set.completed ? 3 : 2.5} />
                         </button>
                       </div>
                     );
