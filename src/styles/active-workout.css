@@ -1069,12 +1069,12 @@
 
 .player-sets-col-heads {
   display: grid;
-  grid-template-columns: 48px 130px 1fr 1fr 52px;
-  gap: 12px;
+  grid-template-columns: 44px 120px 1fr 1fr 48px;
+  gap: 10px;
   align-items: center;
-  padding: 0 16px;
+  padding: 0 14px;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--dim);
@@ -1087,11 +1087,11 @@
 
 .player-set-row {
   display: grid;
-  grid-template-columns: 48px 130px 1fr 1fr 52px;
-  gap: 12px;
+  grid-template-columns: 44px 120px 1fr 1fr 48px;
+  gap: 10px;
   align-items: center;
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
+  padding: 5px 14px;
+  border-radius: 18px;
   background: var(--raised2);
   border: 1px solid var(--border);
   transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease);
@@ -1099,16 +1099,16 @@
 
 .set-prev-copy-btn {
   width: 100%;
-  max-width: 116px;
+  max-width: 110px;
   margin: 0 auto;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--dim);
   background: var(--raised);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 5px 8px;
+  border-radius: 10px;
+  padding: 4px 6px;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -1124,7 +1124,7 @@
 
 .set-prev-empty {
   font-family: var(--mono);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--faint);
   text-align: center;
   display: block;
@@ -1138,16 +1138,16 @@
 .set-num-tag,
 .set-num-cell {
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 800;
   color: var(--dim);
   text-align: center;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   margin: 0 auto;
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--raised);
   border: 1px solid var(--border);
 }
@@ -1161,12 +1161,13 @@
 
 .set-num-tag.drop {
   width: auto;
-  padding: 2px 6px;
-  font-size: 0.65rem;
+  padding: 2px 5px;
+  font-size: 0.62rem;
   letter-spacing: 0.05em;
   background: var(--clay-soft);
   border-color: var(--clay);
   color: var(--clay);
+  border-radius: 6px;
 }
 
 .set-field-group {
@@ -1185,19 +1186,19 @@
   border-color: var(--clay);
 }
 
-/* Tactile Gym Steppers - Crisp Segmented Control */
+/* Tactile Gym Steppers - Crisp Pill Control with Circular Buttons */
 .set-stepper-field {
   width: 100%;
-  max-width: 184px;
+  max-width: 168px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--raised);
   border: 1.5px solid var(--border-hi);
-  border-radius: 9px;
-  height: 40px;
-  padding: 2px 4px;
+  border-radius: var(--radius-full);
+  height: 35px;
+  padding: 2px 3px;
   min-width: 0;
   transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
 }
@@ -1208,9 +1209,9 @@
 }
 
 .set-stepper-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 7px;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
   background: var(--raised2);
   border: 1px solid var(--border);
   color: var(--text);
@@ -1238,20 +1239,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
   flex: 1;
-  padding: 0 4px;
+  padding: 0 2px;
   cursor: text;
 }
 
 .player-set-input {
-  width: 48px;
+  width: 42px;
   min-width: 0;
   border: none;
   background: transparent;
   font-family: var(--mono);
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 800;
   color: var(--text);
   text-align: center;
@@ -1272,7 +1273,7 @@
 
 .set-field-unit {
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--dim);
   flex-shrink: 0;
@@ -1284,11 +1285,11 @@
 }
 
 .player-set-check {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--raised);
-  border: 1px solid var(--border-hi);
+  border: 1.5px solid var(--border-hi);
   color: var(--dim);
   display: grid;
   place-items: center;
@@ -1909,7 +1910,7 @@
    Focused Studio Live Workout Player Redesign
    ========================================================= */
 .workout-player-overlay {
-  --player-maxw: 1480px;
+  --player-maxw: 1360px;
 }
 
 .player-header {
@@ -1941,7 +1942,7 @@
 .player-segmented-track {
   width: min(var(--player-maxw), calc(100% - 2 * clamp(16px, 2.5vw, 36px)));
   margin: 0 auto;
-  padding: 12px 0 4px;
+  padding: 10px 0 4px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1954,7 +1955,7 @@
   min-width: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 16px clamp(16px, 2.5vw, 36px) 40px;
+  padding: 12px clamp(16px, 2.5vw, 36px) 24px;
 }
 
 .studio-container {
@@ -1963,14 +1964,14 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .studio-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(380px, 480px) minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+  gap: 20px;
   align-items: stretch;
 }
 
@@ -1979,8 +1980,8 @@
   max-width: var(--player-maxw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(380px, 480px) minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+  gap: 20px;
   align-items: stretch;
 }
 
@@ -1988,24 +1989,24 @@
   width: 100%;
   min-width: 0;
   max-width: none !important;
-  height: 56px;
-  min-height: 56px;
-  border-radius: var(--radius-lg);
-  padding: 0 20px;
+  height: 50px;
+  min-height: 50px;
+  border-radius: 20px;
+  padding: 0 18px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 14px;
+  gap: 12px;
 }
 
 .studio-nav-next {
   width: 100%;
   min-width: 0;
   max-width: none !important;
-  height: 56px;
-  min-height: 56px;
-  border-radius: var(--radius-lg);
-  padding: 0 24px;
+  height: 50px;
+  min-height: 50px;
+  border-radius: 20px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2015,7 +2016,7 @@
 .studio-visual-card {
   background: var(--raised);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: 28px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   display: flex;
@@ -2033,7 +2034,7 @@
   border: none;
   box-shadow: none;
   border-radius: 0;
-  padding: 18px 18px 16px;
+  padding: 14px 14px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2043,7 +2044,7 @@
 
 .studio-pose-grid {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
 }
 
@@ -2057,12 +2058,12 @@
 
 .studio-pose-box {
   position: relative;
-  border-radius: var(--radius-md);
+  border-radius: 20px;
   overflow: hidden;
   background: #FAF9F6;
   width: 100%;
-  height: 350px;
-  max-height: 360px;
+  height: 275px;
+  max-height: 285px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2077,7 +2078,7 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  padding: 12px;
+  padding: 10px;
 }
 
 [data-theme="light"] .studio-pose-img {
@@ -2146,18 +2147,18 @@
   border-radius: 0;
   box-shadow: none;
   background: var(--surface);
-  padding: 18px 24px 22px;
+  padding: 14px 20px 16px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 9px;
 }
 
 .somatic-anchor-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
 .somatic-anchor-title {
@@ -2165,7 +2166,7 @@
   align-items: center;
   gap: 6px;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2178,9 +2179,9 @@
 
 .somatic-tempo-badge {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: var(--radius-full);
   background: var(--raised2);
   border: 1px solid var(--border);
@@ -2188,8 +2189,8 @@
 }
 
 .somatic-anchor-cue {
-  font-size: 0.88rem;
-  line-height: 1.55;
+  font-size: 0.84rem;
+  line-height: 1.48;
   color: var(--text);
   margin: 0;
   font-weight: 500;
@@ -2198,19 +2199,19 @@
 .somatic-breathing-strip {
   display: flex;
   align-items: flex-start;
-  gap: 9px;
-  font-size: 0.8rem;
-  line-height: 1.45;
+  gap: 8px;
+  font-size: 0.78rem;
+  line-height: 1.42;
   color: var(--sage);
-  padding: 8px 13px;
-  border-radius: var(--radius-md);
+  padding: 7px 11px;
+  border-radius: 12px;
   background: var(--sage-soft);
   border: 1px solid color-mix(in srgb, var(--sage) 35%, var(--border));
 }
 
 .somatic-wind-icon {
   flex-shrink: 0;
-  margin-top: 3px;
+  margin-top: 2px;
   color: var(--sage);
 }
 
@@ -2218,14 +2219,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 11px 16px;
+  gap: 8px;
+  padding: 9px 14px;
   margin-top: auto;
-  border-radius: var(--radius-md);
+  border-radius: 14px;
   background: var(--raised2);
   border: 1px solid var(--border);
   color: var(--text);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s var(--ease);
@@ -2257,7 +2258,7 @@
 .studio-console-card {
   background: var(--raised);
   border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
+  border-radius: 28px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   display: flex;
@@ -2271,17 +2272,17 @@
 }
 
 .studio-console-card .studio-exercise-head {
-  padding: 24px 30px 16px;
+  padding: 18px 24px 12px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .studio-head-main {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .studio-head-copy {
@@ -2293,38 +2294,38 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 6px;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--clay);
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 
 .studio-eyebrow-ss {
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: var(--radius-full);
   background: var(--clay-soft);
   border: 1px solid color-mix(in srgb, var(--clay) 45%, var(--border));
 }
 
 .studio-exercise-title {
-  font-size: clamp(1.75rem, 2.5vw, 2.3rem);
+  font-size: clamp(1.5rem, 2.1vw, 1.95rem);
   font-weight: 900;
   letter-spacing: -0.025em;
   line-height: 1.12;
   color: var(--text);
-  margin: 0 0 8px;
+  margin: 0 0 4px;
 }
 
 .studio-prescription-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-  font-size: 0.92rem;
+  gap: 8px;
+  font-size: 0.88rem;
   color: var(--dim);
 }
 
@@ -2339,7 +2340,7 @@
 
 .prescription-ref {
   font-family: var(--mono);
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: var(--sage);
   font-weight: 700;
 }
@@ -2350,10 +2351,10 @@
   border: none;
   border-bottom: 1px solid var(--border);
   border-radius: 0;
-  padding: 12px 30px;
+  padding: 8px 24px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
 }
 
@@ -2399,7 +2400,7 @@
 
 .studio-timer-clock {
   font-family: var(--mono);
-  font-size: 1.42rem;
+  font-size: 1.28rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -2410,17 +2411,17 @@
   display: inline-flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 6px;
 }
 
 .studio-tbtn {
-  padding: 5px 11px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
   background: var(--raised);
   border: 1px solid var(--border);
   color: var(--dim);
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.14s var(--ease);
@@ -2465,8 +2466,8 @@
 }
 
 .studio-tbtn.icon {
-  width: 29px;
-  height: 29px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   display: grid;
   place-items: center;
@@ -2476,11 +2477,11 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 14px;
+  padding: 5px 13px;
   border-radius: var(--radius-full);
   background: var(--ember);
   color: var(--on-ember);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.12s var(--ease), filter 0.14s var(--ease);
@@ -2521,7 +2522,7 @@
   border-bottom: 1px solid var(--border);
   border-radius: 0;
   background: var(--raised2);
-  padding: 10px 30px;
+  padding: 8px 24px;
 }
 
 .timer-off-summary {
@@ -2529,7 +2530,7 @@
   align-items: center;
   gap: 8px;
   color: var(--dim);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
 }
 
@@ -2557,11 +2558,11 @@
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  padding: 20px 30px 24px;
+  padding: 14px 24px 18px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .studio-logger-card .player-logger-header {
