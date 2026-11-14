@@ -1069,11 +1069,11 @@
 
 .player-sets-col-heads {
   display: grid;
-  grid-template-columns: 32px minmax(64px, 0.8fr) minmax(92px, 1.15fr) minmax(92px, 1.1fr) 38px;
-  gap: 8px;
-  padding: 0 11px;
+  grid-template-columns: 36px minmax(64px, 0.75fr) minmax(130px, 1.2fr) minmax(130px, 1.2fr) 42px;
+  gap: 10px;
+  padding: 0 12px;
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--dim);
@@ -1081,16 +1081,15 @@
 }
 
 .player-sets-col-heads span:nth-child(2) {
-  text-align: left;
-  padding-left: 4px;
+  text-align: center;
 }
 
 .player-set-row {
   display: grid;
-  grid-template-columns: 32px minmax(64px, 0.8fr) minmax(92px, 1.15fr) minmax(92px, 1.1fr) 38px;
-  gap: 8px;
+  grid-template-columns: 36px minmax(64px, 0.75fr) minmax(130px, 1.2fr) minmax(130px, 1.2fr) 42px;
+  gap: 10px;
   align-items: center;
-  padding: 8px 10px;
+  padding: 7px 12px;
   border-radius: var(--radius-md);
   background: var(--raised2);
   border: 1px solid var(--border);
@@ -1099,14 +1098,14 @@
 
 .set-prev-copy-btn {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--dim);
   background: var(--raised);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 8px;
-  text-align: left;
+  border-radius: 6px;
+  padding: 5px 6px;
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1121,9 +1120,10 @@
 
 .set-prev-empty {
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.8rem;
   color: var(--faint);
-  padding-left: 8px;
+  text-align: center;
+  display: block;
 }
 
 .player-set-row.completed {
@@ -1159,15 +1159,16 @@
   border-color: var(--clay);
 }
 
-/* Tactile Gym Steppers */
+/* Tactile Gym Steppers - Crisp Segmented Control */
 .set-stepper-field {
   display: flex;
   align-items: center;
-  gap: 1px;
+  justify-content: space-between;
   background: var(--raised);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 3px 4px;
+  border: 1.5px solid var(--border-hi);
+  border-radius: 9px;
+  height: 38px;
+  padding: 2px;
   min-width: 0;
   transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
 }
@@ -1178,12 +1179,12 @@
 }
 
 .set-stepper-btn {
-  width: 24px;
-  height: 28px;
+  width: 30px;
+  height: 32px;
   border-radius: 6px;
-  background: transparent;
-  border: none;
-  color: var(--dim);
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--text);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -1193,11 +1194,14 @@
 }
 
 .set-stepper-btn:hover {
-  background: var(--raised2);
-  color: var(--text);
+  background: var(--raised3);
+  border-color: var(--clay);
+  color: var(--clay);
 }
 
 .set-stepper-btn:active {
+  background: var(--clay);
+  color: #FFFFFF;
   transform: scale(0.92);
 }
 
@@ -1208,21 +1212,22 @@
   gap: 3px;
   min-width: 0;
   flex: 1;
-  padding: 0 2px;
+  padding: 0 4px;
   cursor: text;
 }
 
 .player-set-input {
-  width: 100%;
+  width: 38px;
   min-width: 0;
   border: none;
   background: transparent;
   font-family: var(--mono);
-  font-size: 0.96rem;
-  font-weight: 700;
+  font-size: 0.98rem;
+  font-weight: 800;
   color: var(--text);
-  text-align: right;
+  text-align: center;
   outline: none;
+  padding: 0;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1906,47 +1911,38 @@
 }
 
 .player-main-stage {
-  display: flex;
-  flex-direction: column;
-  padding: 14px clamp(16px, 3vw, 28px) 20px;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 16px clamp(16px, 2.6vw, 32px) 36px;
 }
 
 .studio-container {
   width: 100%;
-  max-width: 1120px;
-  margin: auto;
+  max-width: 1140px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .studio-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 32px;
-  align-items: center;
-}
-
-.studio-meta-row {
-  width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 32px;
+  grid-template-columns: minmax(320px, 410px) minmax(0, 1fr);
+  gap: 24px;
   align-items: stretch;
-}
-
-.studio-meta-row > :only-child {
-  grid-column: 1 / -1;
 }
 
 .studio-inline-nav {
   width: 100%;
-  max-width: 720px;
-  margin: 16px auto 0;
+  max-width: 1140px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(180px, 220px) minmax(260px, 1fr);
-  gap: 14px;
+  grid-template-columns: minmax(180px, 410px) minmax(280px, 1fr);
+  gap: 24px;
   align-items: stretch;
 }
 
@@ -1961,28 +1957,40 @@
   min-width: 0;
 }
 
-.studio-visual-col {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.studio-media-frame {
+/* LEFT COLUMN: Unified Visual & Coaching Card */
+.studio-visual-card {
   background: var(--raised);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
 }
 
-[data-theme="light"] .studio-media-frame {
-  box-shadow: 0 4px 20px rgba(26, 23, 19, 0.05);
+[data-theme="light"] .studio-visual-card {
+  box-shadow: 0 4px 20px rgba(26, 23, 19, 0.04);
+}
+
+.studio-visual-card .studio-media-frame {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 16px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .studio-pose-grid {
   display: grid;
   gap: 12px;
+  width: 100%;
 }
 
 .studio-pose-grid.single {
@@ -1997,8 +2005,13 @@
   position: relative;
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: #F6F5F2;
-  aspect-ratio: 1 / 1;
+  background: #FAF9F6;
+  width: 100%;
+  height: 285px;
+  max-height: 285px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 [data-theme="light"] .studio-pose-box {
@@ -2008,7 +2021,7 @@
 .studio-pose-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -2018,8 +2031,8 @@
 
 .studio-pose-tag {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 12px;
+  left: 12px;
   z-index: 2;
   font-family: var(--mono);
   font-size: 0.64rem;
@@ -2038,13 +2051,13 @@
 
 .studio-muscle-overlay-pill {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
   z-index: 2;
   font-family: var(--mono);
   font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 4px 10px;
   border-radius: var(--radius-full);
@@ -2057,13 +2070,13 @@
 
 .studio-phase-overlay-pill {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 12px;
+  left: 12px;
   z-index: 2;
   font-family: var(--mono);
   font-size: 0.64rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 3px 8px;
   border-radius: var(--radius-full);
@@ -2071,20 +2084,18 @@
   color: #FFFFFF;
 }
 
-/* Somatic Coaching Anchor Card (Left Column) */
-.studio-somatic-anchor {
+/* Somatic Coaching Section (Docked seamlessly inside Visual Card) */
+.studio-visual-card .studio-somatic-anchor {
+  border: none;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--surface);
+  padding: 16px 20px 20px;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  padding: 14px 16px;
-  border-radius: var(--radius-lg);
-  background: var(--raised);
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-}
-
-[data-theme="light"] .studio-somatic-anchor {
-  box-shadow: 0 2px 10px rgba(26, 23, 19, 0.03);
+  gap: 10px;
 }
 
 .somatic-anchor-header {
@@ -2122,8 +2133,8 @@
 }
 
 .somatic-anchor-cue {
-  font-size: 0.85rem;
-  line-height: 1.48;
+  font-size: 0.86rem;
+  line-height: 1.5;
   color: var(--text);
   margin: 0;
   font-weight: 500;
@@ -2135,7 +2146,7 @@
   gap: 7px;
   font-size: 0.78rem;
   color: var(--sage);
-  padding: 6px 10px;
+  padding: 7px 11px;
   border-radius: var(--radius-md);
   background: var(--sage-soft);
   border: 1px solid color-mix(in srgb, var(--sage) 35%, var(--border));
@@ -2147,7 +2158,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 9px 13px;
-  margin-top: 2px;
+  margin-top: auto;
   border-radius: var(--radius-md);
   background: var(--raised2);
   border: 1px solid var(--border);
@@ -2179,37 +2190,29 @@
   font-weight: 700;
 }
 
-.studio-coach-tip {
+/* RIGHT COLUMN: Unified Studio Console Card */
+.studio-console-card {
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 6px 4px;
-  color: var(--dim);
-  font-size: 0.84rem;
-  line-height: 1.5;
-}
-
-.studio-coach-tip svg {
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-
-.studio-coach-tip p {
-  margin: 0;
-}
-
-.studio-console-col {
+  flex-direction: column;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  height: 100%;
 }
 
-.studio-exercise-head {
+[data-theme="light"] .studio-console-card {
+  box-shadow: 0 4px 20px rgba(26, 23, 19, 0.04);
+}
+
+.studio-console-card .studio-exercise-head {
+  padding: 22px 26px 14px;
+  border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 2px 2px 4px;
+  gap: 6px;
 }
 
 .studio-head-main {
@@ -2245,7 +2248,7 @@
 }
 
 .studio-exercise-title {
-  font-size: clamp(1.55rem, 2.5vw, 2.15rem);
+  font-size: clamp(1.65rem, 2.4vw, 2.15rem);
   font-weight: 900;
   letter-spacing: -0.025em;
   line-height: 1.12;
@@ -2278,26 +2281,27 @@
   font-weight: 700;
 }
 
-/* Contextual 1-Row Timer Strip */
-.studio-timer-bar {
-  background: var(--raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 11px 15px;
+/* Contextual Integrated Timer Strip */
+.studio-console-card .studio-timer-bar {
+  background: var(--raised2);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 11px 24px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
 }
 
-.studio-timer-bar.running {
-  border-color: var(--sage);
-  background: color-mix(in srgb, var(--sage) 7%, var(--raised));
+.studio-console-card .studio-timer-bar.running {
+  border-bottom-color: var(--sage);
+  background: color-mix(in srgb, var(--sage) 8%, var(--raised2));
 }
 
-.studio-timer-bar.running.work-mode {
-  border-color: var(--clay);
-  background: color-mix(in srgb, var(--clay) 8%, var(--raised));
+.studio-console-card .studio-timer-bar.running.work-mode {
+  border-bottom-color: var(--clay);
+  background: color-mix(in srgb, var(--clay) 8%, var(--raised2));
 }
 
 .studio-timer-top {
@@ -2332,7 +2336,7 @@
 
 .studio-timer-clock {
   font-family: var(--mono);
-  font-size: 1.38rem;
+  font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -2349,18 +2353,20 @@
 .studio-tbtn {
   padding: 5px 10px;
   border-radius: var(--radius-full);
-  background: var(--raised2);
+  background: var(--raised);
   border: 1px solid var(--border);
   color: var(--dim);
   font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.14s var(--ease);
 }
 
 .studio-tbtn:hover {
   color: var(--text);
   border-color: var(--border-hi);
+  background: var(--raised3);
 }
 
 .studio-tbtn.active {
@@ -2414,6 +2420,12 @@
   font-size: 0.76rem;
   font-weight: 800;
   cursor: pointer;
+  transition: transform 0.12s var(--ease), filter 0.14s var(--ease);
+}
+
+.studio-timer-main-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 .studio-timer-main-btn.active {
@@ -2423,9 +2435,9 @@
 
 .studio-timer-progress {
   width: 100%;
-  height: 4px;
+  height: 3px;
   border-radius: 999px;
-  background: var(--raised2);
+  background: var(--border);
   overflow: hidden;
 }
 
@@ -2441,8 +2453,12 @@
   background: var(--clay);
 }
 
-.studio-timer-muted {
-  padding: 9px 14px;
+.studio-console-card .player-timer-off-card {
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--raised2);
+  padding: 9px 24px;
 }
 
 .timer-off-summary {
@@ -2473,7 +2489,15 @@
   color: var(--clay);
 }
 
-.studio-logger-card {
+.studio-console-card .studio-logger-card {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 18px 24px 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
@@ -2538,22 +2562,17 @@
   }
 
   .studio-grid {
-    grid-template-columns: minmax(250px, 0.85fr) minmax(0, 1.15fr);
-    gap: 18px;
-    align-items: center;
-  }
-
-  .studio-meta-row {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+    grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.15fr);
+    gap: 16px;
+    align-items: stretch;
   }
 
   .studio-inline-nav {
     display: none;
   }
 
-  .studio-timer-bar,
-  .studio-console-col .player-timer-off-card {
+  .studio-console-card .studio-timer-bar,
+  .studio-console-card .player-timer-off-card {
     display: none;
   }
 }
@@ -2575,19 +2594,12 @@
     gap: 14px;
   }
 
-  .studio-visual-col,
-  .studio-meta-row {
+  .studio-visual-card {
     display: none;
   }
 
-  .studio-visual-col.mobile-demo-open {
+  .studio-visual-card.mobile-demo-open {
     display: flex;
-  }
-
-  .studio-meta-row.mobile-demo-open {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
   }
 
   .studio-exercise-title {

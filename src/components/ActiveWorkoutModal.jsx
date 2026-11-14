@@ -777,14 +777,14 @@ export function ActiveWorkoutModal({
 
           <div className="studio-grid">
             {/* LEFT COLUMN: Serene Visual Showcase + Concise Coach Cue + Guide Button */}
-            <section className={`studio-visual-col ${isMobileDemoExpanded ? 'mobile-demo-open' : ''}`}>
+            <section className={`studio-visual-col studio-visual-card ${isMobileDemoExpanded ? 'mobile-demo-open' : ''}`}>
               {hasMedia ? (
                 <div className="studio-media-frame">
                   {hasAnyImages && (
                     <div className={`studio-pose-grid ${hasTwoImages ? 'dual' : 'single'}`}>
                       {currentExercise.illustration && (
                         <div className="studio-pose-box">
-                          <span className="studio-muscle-overlay-pill">✦ {primaryMuscleName}</span>
+                          <span className="studio-muscle-overlay-pill">{primaryMuscleName}</span>
                           {currentExercise.isWarmup && <span className="studio-phase-overlay-pill">Warm-Up</span>}
                           {(hasTwoImages || isAnimatedGifUrl(currentExercise.illustration)) && (
                             <span className="studio-pose-tag">
@@ -863,8 +863,8 @@ export function ActiveWorkoutModal({
               </div>
             </section>
 
-            {/* RIGHT COLUMN: Uncluttered Exercise Header + Contextual Timer + Sets + Clear Navigation */}
-            <section className="studio-console-col">
+            {/* RIGHT COLUMN: Unified Studio Console Card */}
+            <section className="studio-console-col studio-console-card">
               {/* Exercise Identity Block */}
               <div className="studio-exercise-head">
                 <div className="studio-head-main">
@@ -1171,7 +1171,7 @@ export function ActiveWorkoutModal({
                             onClick={() => adjustSetReps(sIdx, -1)}
                             aria-label={`Decrease reps for set ${set.setNum}`}
                           >
-                            <Minus size={11} />
+                            <Minus size={12} strokeWidth={2.5} />
                           </button>
                           <label className="set-stepper-input-wrap">
                             <input
@@ -1196,7 +1196,7 @@ export function ActiveWorkoutModal({
                             onClick={() => adjustSetReps(sIdx, 1)}
                             aria-label={`Increase reps for set ${set.setNum}`}
                           >
-                            <Plus size={11} />
+                            <Plus size={12} strokeWidth={2.5} />
                           </button>
                         </div>
 
@@ -1207,7 +1207,7 @@ export function ActiveWorkoutModal({
                             onClick={() => adjustSetWeight(sIdx, -2.5)}
                             aria-label={`Decrease weight for set ${set.setNum}`}
                           >
-                            <Minus size={11} />
+                            <Minus size={12} strokeWidth={2.5} />
                           </button>
                           <label className="set-stepper-input-wrap">
                             <input
@@ -1233,7 +1233,7 @@ export function ActiveWorkoutModal({
                             onClick={() => adjustSetWeight(sIdx, 2.5)}
                             aria-label={`Increase weight for set ${set.setNum}`}
                           >
-                            <Plus size={11} />
+                            <Plus size={12} strokeWidth={2.5} />
                           </button>
                         </div>
 
