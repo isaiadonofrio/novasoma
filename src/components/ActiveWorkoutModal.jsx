@@ -847,7 +847,7 @@ export function ActiveWorkoutModal({
                 </p>
                 {execution.breathing && (
                   <div className="somatic-breathing-strip">
-                    <Wind size={12} />
+                    <Wind size={13} className="somatic-wind-icon" />
                     <span><b>Breathe:</b> {execution.breathing}</span>
                   </div>
                 )}

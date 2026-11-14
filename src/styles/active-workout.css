@@ -1069,27 +1069,28 @@
 
 .player-sets-col-heads {
   display: grid;
-  grid-template-columns: 36px minmax(64px, 0.75fr) minmax(130px, 1.2fr) minmax(130px, 1.2fr) 42px;
-  gap: 10px;
-  padding: 0 12px;
+  grid-template-columns: 48px 130px 1fr 1fr 52px;
+  gap: 12px;
+  align-items: center;
+  padding: 0 16px;
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--dim);
   text-align: center;
 }
 
-.player-sets-col-heads span:nth-child(2) {
+.player-sets-col-heads span {
   text-align: center;
 }
 
 .player-set-row {
   display: grid;
-  grid-template-columns: 36px minmax(64px, 0.75fr) minmax(130px, 1.2fr) minmax(130px, 1.2fr) 42px;
-  gap: 10px;
+  grid-template-columns: 48px 130px 1fr 1fr 52px;
+  gap: 12px;
   align-items: center;
-  padding: 7px 12px;
+  padding: 8px 16px;
   border-radius: var(--radius-md);
   background: var(--raised2);
   border: 1px solid var(--border);
@@ -1097,14 +1098,17 @@
 }
 
 .set-prev-copy-btn {
+  width: 100%;
+  max-width: 116px;
+  margin: 0 auto;
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--dim);
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 5px 6px;
+  padding: 5px 8px;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -1120,7 +1124,7 @@
 
 .set-prev-empty {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--faint);
   text-align: center;
   display: block;
@@ -1131,16 +1135,38 @@
   border-color: color-mix(in srgb, var(--sage) 48%, var(--border));
 }
 
+.set-num-tag,
 .set-num-cell {
   font-family: var(--mono);
   font-size: 0.82rem;
   font-weight: 800;
   color: var(--dim);
   text-align: center;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  border-radius: 6px;
+  background: var(--raised);
+  border: 1px solid var(--border);
 }
 
+.player-set-row.completed .set-num-tag,
 .player-set-row.completed .set-num-cell {
   color: var(--sage);
+  border-color: color-mix(in srgb, var(--sage) 35%, var(--border));
+  background: var(--surface);
+}
+
+.set-num-tag.drop {
+  width: auto;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  background: var(--clay-soft);
+  border-color: var(--clay);
+  color: var(--clay);
 }
 
 .set-field-group {
@@ -1161,14 +1187,17 @@
 
 /* Tactile Gym Steppers - Crisp Segmented Control */
 .set-stepper-field {
+  width: 100%;
+  max-width: 184px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--raised);
   border: 1.5px solid var(--border-hi);
   border-radius: 9px;
-  height: 38px;
-  padding: 2px;
+  height: 40px;
+  padding: 2px 4px;
   min-width: 0;
   transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
 }
@@ -1179,9 +1208,9 @@
 }
 
 .set-stepper-btn {
-  width: 30px;
-  height: 32px;
-  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
   background: var(--raised2);
   border: 1px solid var(--border);
   color: var(--text);
@@ -1209,7 +1238,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   min-width: 0;
   flex: 1;
   padding: 0 4px;
@@ -1217,12 +1246,12 @@
 }
 
 .player-set-input {
-  width: 38px;
+  width: 48px;
   min-width: 0;
   border: none;
   background: transparent;
   font-family: var(--mono);
-  font-size: 0.98rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--text);
   text-align: center;
@@ -1879,13 +1908,17 @@
 /* =========================================================
    Focused Studio Live Workout Player Redesign
    ========================================================= */
+.workout-player-overlay {
+  --player-maxw: 1480px;
+}
+
 .player-header {
-  padding: 0 clamp(16px, 3vw, 28px);
+  padding: 0 clamp(16px, 2.5vw, 36px);
 }
 
 .player-header-inner {
   width: 100%;
-  max-width: 1120px;
+  max-width: var(--player-maxw);
   margin: 0 auto;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -1906,8 +1939,13 @@
 }
 
 .player-segmented-track {
-  max-width: 1120px;
-  padding: 12px clamp(16px, 3vw, 28px) 2px;
+  width: min(var(--player-maxw), calc(100% - 2 * clamp(16px, 2.5vw, 36px)));
+  margin: 0 auto;
+  padding: 12px 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .player-main-stage {
@@ -1916,45 +1954,61 @@
   min-width: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 16px clamp(16px, 2.6vw, 32px) 36px;
+  padding: 16px clamp(16px, 2.5vw, 36px) 40px;
 }
 
 .studio-container {
   width: 100%;
-  max-width: 1140px;
+  max-width: var(--player-maxw);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .studio-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(320px, 410px) minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(380px, 480px) minmax(0, 1fr);
+  gap: 28px;
   align-items: stretch;
 }
 
 .studio-inline-nav {
   width: 100%;
-  max-width: 1140px;
+  max-width: var(--player-maxw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(180px, 410px) minmax(280px, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(380px, 480px) minmax(0, 1fr);
+  gap: 28px;
   align-items: stretch;
 }
 
 .studio-nav-prev {
   width: 100%;
   min-width: 0;
-  max-width: none;
+  max-width: none !important;
+  height: 56px;
+  min-height: 56px;
+  border-radius: var(--radius-lg);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
 }
 
 .studio-nav-next {
   width: 100%;
   min-width: 0;
+  max-width: none !important;
+  height: 56px;
+  min-height: 56px;
+  border-radius: var(--radius-lg);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* LEFT COLUMN: Unified Visual & Coaching Card */
@@ -1979,7 +2033,7 @@
   border: none;
   box-shadow: none;
   border-radius: 0;
-  padding: 16px 16px 14px;
+  padding: 18px 18px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2007,8 +2061,8 @@
   overflow: hidden;
   background: #FAF9F6;
   width: 100%;
-  height: 285px;
-  max-height: 285px;
+  height: 350px;
+  max-height: 360px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2023,6 +2077,7 @@
   height: 100%;
   object-fit: contain;
   display: block;
+  padding: 12px;
 }
 
 [data-theme="light"] .studio-pose-img {
@@ -2031,8 +2086,8 @@
 
 .studio-pose-tag {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 14px;
+  left: 14px;
   z-index: 2;
   font-family: var(--mono);
   font-size: 0.64rem;
@@ -2051,8 +2106,8 @@
 
 .studio-muscle-overlay-pill {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 14px;
+  right: 14px;
   z-index: 2;
   font-family: var(--mono);
   font-size: 0.68rem;
@@ -2070,8 +2125,8 @@
 
 .studio-phase-overlay-pill {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 14px;
+  left: 14px;
   z-index: 2;
   font-family: var(--mono);
   font-size: 0.64rem;
@@ -2091,11 +2146,11 @@
   border-radius: 0;
   box-shadow: none;
   background: var(--surface);
-  padding: 16px 20px 20px;
+  padding: 18px 24px 22px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .somatic-anchor-header {
@@ -2133,8 +2188,8 @@
 }
 
 .somatic-anchor-cue {
-  font-size: 0.86rem;
-  line-height: 1.5;
+  font-size: 0.88rem;
+  line-height: 1.55;
   color: var(--text);
   margin: 0;
   font-weight: 500;
@@ -2142,37 +2197,45 @@
 
 .somatic-breathing-strip {
   display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.78rem;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.8rem;
+  line-height: 1.45;
   color: var(--sage);
-  padding: 7px 11px;
+  padding: 8px 13px;
   border-radius: var(--radius-md);
   background: var(--sage-soft);
   border: 1px solid color-mix(in srgb, var(--sage) 35%, var(--border));
+}
+
+.somatic-wind-icon {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--sage);
 }
 
 .somatic-guide-link-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 9px 13px;
+  gap: 10px;
+  padding: 11px 16px;
   margin-top: auto;
   border-radius: var(--radius-md);
   background: var(--raised2);
   border: 1px solid var(--border);
   color: var(--text);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease);
+  transition: all 0.15s var(--ease);
 }
 
 .somatic-guide-link-btn:hover {
   background: var(--raised3);
-  border-color: var(--border-hi);
+  border-color: var(--clay);
   color: var(--clay);
+  transform: translateY(-1px);
 }
 
 .studio-media-placeholder {
@@ -2208,7 +2271,7 @@
 }
 
 .studio-console-card .studio-exercise-head {
-  padding: 22px 26px 14px;
+  padding: 24px 30px 16px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -2232,9 +2295,9 @@
   flex-wrap: wrap;
   gap: 7px;
   font-family: var(--mono);
-  font-size: 0.73rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--clay);
   margin-bottom: 6px;
@@ -2248,7 +2311,7 @@
 }
 
 .studio-exercise-title {
-  font-size: clamp(1.65rem, 2.4vw, 2.15rem);
+  font-size: clamp(1.75rem, 2.5vw, 2.3rem);
   font-weight: 900;
   letter-spacing: -0.025em;
   line-height: 1.12;
@@ -2260,8 +2323,8 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  font-size: 0.88rem;
+  gap: 10px;
+  font-size: 0.92rem;
   color: var(--dim);
 }
 
@@ -2287,7 +2350,7 @@
   border: none;
   border-bottom: 1px solid var(--border);
   border-radius: 0;
-  padding: 11px 24px;
+  padding: 12px 30px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -2336,7 +2399,7 @@
 
 .studio-timer-clock {
   font-family: var(--mono);
-  font-size: 1.35rem;
+  font-size: 1.42rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -2347,11 +2410,11 @@
   display: inline-flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 7px;
 }
 
 .studio-tbtn {
-  padding: 5px 10px;
+  padding: 5px 11px;
   border-radius: var(--radius-full);
   background: var(--raised);
   border: 1px solid var(--border);
@@ -2413,11 +2476,11 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 13px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
   background: var(--ember);
   color: var(--on-ember);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 800;
   cursor: pointer;
   transition: transform 0.12s var(--ease), filter 0.14s var(--ease);
@@ -2458,7 +2521,7 @@
   border-bottom: 1px solid var(--border);
   border-radius: 0;
   background: var(--raised2);
-  padding: 9px 24px;
+  padding: 10px 30px;
 }
 
 .timer-off-summary {
@@ -2494,11 +2557,11 @@
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  padding: 18px 24px 22px;
+  padding: 20px 30px 24px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .studio-logger-card .player-logger-header {
@@ -2623,6 +2686,28 @@
   .studio-logger-card .studio-logger-tools {
     flex-wrap: nowrap;
     gap: 5px;
+  }
+
+  .player-sets-col-heads,
+  .player-set-row {
+    grid-template-columns: 36px minmax(52px, 0.8fr) minmax(110px, 1.2fr) minmax(110px, 1.2fr) 38px;
+    gap: 6px;
+    padding: 6px 8px;
+  }
+
+  .set-stepper-field {
+    max-width: none;
+    height: 36px;
+  }
+
+  .set-stepper-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .player-set-input {
+    width: 34px;
+    font-size: 0.92rem;
   }
 
   .player-superset-banner {
