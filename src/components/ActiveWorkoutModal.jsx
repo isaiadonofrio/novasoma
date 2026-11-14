@@ -410,6 +410,22 @@ export function ActiveWorkoutModal({
     const targetSet = { ...currentSets[setIndex], completed: !currentSets[setIndex].completed };
     currentSets[setIndex] = targetSet;
 
+    // Auto-prefill next incomplete set in this exercise for zero-friction 1-tap logging
+    if (targetSet.completed) {
+      const nextSetInExercise = currentSets[setIndex + 1];
+      if (nextSetInExercise && !nextSetInExercise.completed) {
+        const shouldPrefillWeight = !nextSetInExercise.weight || nextSetInExercise.weight === '0';
+        const shouldPrefillReps = !nextSetInExercise.reps || nextSetInExercise.reps === '0';
+        if (shouldPrefillWeight || shouldPrefillReps) {
+          currentSets[setIndex + 1] = {
+            ...nextSetInExercise,
+            weight: shouldPrefillWeight ? (targetSet.weight || '') : nextSetInExercise.weight,
+            reps: shouldPrefillReps ? (targetSet.reps || '') : nextSetInExercise.reps
+          };
+        }
+      }
+    }
+
     setLoggedSets((prev) => ({
       ...prev,
       [exId]: currentSets
@@ -986,8 +1002,8 @@ export function ActiveWorkoutModal({
                           <button type="button" className="studio-tbtn" onClick={() => adjustRestTime(-15)}>
                             -15s
                           </button>
-                          <button type="button" className="studio-tbtn" onClick={() => adjustRestTime(15)}>
-                            +15s
+                          <button type="button" className="studio-tbtn" onClick={() => adjustRestTime(30)}>
+                            +30s
                           </button>
                           <button
                             type="button"
@@ -1139,17 +1155,21 @@ export function ActiveWorkoutModal({
                   {currentExerciseSets.map((set, sIdx) => {
                     const hasPrevData = set.prev && set.prev !== '-';
                     const isNextUp = sIdx === nextIncompleteSetIndex;
+                    const isUpcoming = !set.completed && sIdx > nextIncompleteSetIndex;
                     return (
                       <div
                         key={set.setNum}
-                        className={`player-set-row ${set.completed ? 'completed' : ''} ${set.isDropset ? 'is-dropset' : ''} ${isNextUp ? 'next-up' : ''}`}
+                        className={`player-set-row ${set.completed ? 'completed' : ''} ${set.isDropset ? 'is-dropset' : ''} ${isNextUp ? 'next-up' : ''} ${isUpcoming ? 'is-upcoming' : ''}`}
                       >
-                        <span
-                          className={`set-num-tag ${set.isDropset ? 'drop' : ''}`}
-                          title={set.isDropset ? 'Planned Drop Set' : `Set #${set.setNum}`}
-                        >
-                          {set.isDropset ? 'DROP' : `${set.setNum}`}
-                        </span>
+                        <div className="set-num-cell-wrap">
+                          <span
+                            className={`set-num-tag ${set.isDropset ? 'drop' : ''} ${isNextUp ? 'active-num' : ''}`}
+                            title={set.isDropset ? 'Planned Drop Set' : `Set #${set.setNum}`}
+                          >
+                            {set.isDropset ? 'DROP' : `${set.setNum}`}
+                          </span>
+                          {isNextUp && <span className="set-next-indicator">NEXT</span>}
+                        </div>
 
                         {hasPrevData ? (
                           <button
@@ -1158,10 +1178,12 @@ export function ActiveWorkoutModal({
                             onClick={() => applyPrevToSet(sIdx)}
                             title={`Copy previous (${set.prev})`}
                           >
-                            {set.prev}
+                            <span className="set-prev-val">{set.prev}</span>
                           </button>
                         ) : (
-                          <span className="set-prev-empty">—</span>
+                          <span className="set-prev-empty" title={currentExercise.defaultReps ? `Target: ${currentExercise.defaultReps}` : 'First set'}>
+                            —
+                          </span>
                         )}
 
                         <div className="set-stepper-field reps-field">
@@ -1214,7 +1236,7 @@ export function ActiveWorkoutModal({
                               type="text"
                               inputMode="decimal"
                               className="player-set-input"
-                              placeholder={set.prevWeight || (isBodyweightEx ? 'BW' : '0')}
+                              placeholder={set.prevWeight || (isBodyweightEx ? 'BW' : '')}
                               value={set.weight}
                               onChange={(e) => updateSetInput(sIdx, 'weight', e.target.value)}
                               onKeyDown={(e) => {
@@ -1250,65 +1272,65 @@ export function ActiveWorkoutModal({
                   })}
                 </div>
               </div>
+
+              {/* Console Baseline Flow Bar (Desktop & Tablet Landscape) */}
+              <div className="studio-console-nav">
+                <button
+                  type="button"
+                  className="player-nav-prev studio-nav-prev"
+                  onClick={goToPrev}
+                  disabled={currentIndex === 0}
+                  title={currentIndex === 0 ? 'First exercise in workout' : `Previous: ${prevExercise?.name}`}
+                  aria-label={currentIndex === 0 ? 'First exercise in workout' : `Previous exercise: ${prevExercise?.name}`}
+                >
+                  <span className="nav-prev-icon-wrap" aria-hidden="true">
+                    <ArrowLeft size={16} />
+                  </span>
+                  <span className="nav-btn-copy">
+                    <small className="nav-btn-kicker">
+                      {currentIndex === 0 ? 'START' : 'PREVIOUS'}
+                    </small>
+                    <strong className="nav-btn-name">
+                      {currentIndex === 0 ? 'First Exercise' : (prevExercise ? prevExercise.name : 'Start')}
+                    </strong>
+                  </span>
+                </button>
+
+                {nextExercise ? (
+                  <button
+                    type="button"
+                    className={`player-nav-next studio-nav-next ${allCurrentSetsDone ? 'ready-advance' : ''}`}
+                    onClick={goToNext}
+                    aria-label={`Next exercise: ${nextExercise.name}`}
+                  >
+                    <span className="nav-btn-copy">
+                      <small className="nav-btn-kicker">
+                        {allCurrentSetsDone ? 'ALL SETS DONE · NEXT' : 'NEXT EXERCISE'}
+                      </small>
+                      <strong className="nav-btn-name">{nextExercise.name}</strong>
+                    </span>
+                    <span className="nav-next-arrow-badge" aria-hidden="true">
+                      <ArrowRight size={17} />
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="player-nav-next finish-mode ready-advance studio-nav-next"
+                    onClick={() => onCompleteWorkout(finishPayload)}
+                    aria-label="Finish and save workout"
+                  >
+                    <span className="nav-btn-copy">
+                      <small className="nav-btn-kicker">FINAL EXERCISE</small>
+                      <strong className="nav-btn-name">Finish &amp; Save Workout</strong>
+                    </span>
+                    <span className="nav-next-arrow-badge" aria-hidden="true">
+                      <Trophy size={17} />
+                    </span>
+                  </button>
+                )}
+              </div>
             </section>
-          </div>
-
-          {/* Inline Previous / Next Resting Directly Below the Exercise (Desktop & Tablet Landscape) */}
-          <div className="studio-inline-nav">
-            <button
-              type="button"
-              className="player-nav-prev studio-nav-prev"
-              onClick={goToPrev}
-              disabled={currentIndex === 0}
-              title={currentIndex === 0 ? 'First exercise in workout' : `Previous: ${prevExercise?.name}`}
-              aria-label={currentIndex === 0 ? 'First exercise in workout' : `Previous exercise: ${prevExercise?.name}`}
-            >
-              <span className="nav-prev-icon-wrap" aria-hidden="true">
-                <ArrowLeft size={16} />
-              </span>
-              <span className="nav-btn-copy">
-                <small className="nav-btn-kicker">
-                  {currentIndex === 0 ? 'START' : 'PREVIOUS'}
-                </small>
-                <strong className="nav-btn-name">
-                  {currentIndex === 0 ? 'First Exercise' : (prevExercise ? prevExercise.name : 'Start')}
-                </strong>
-              </span>
-            </button>
-
-            {nextExercise ? (
-              <button
-                type="button"
-                className={`player-nav-next studio-nav-next ${allCurrentSetsDone ? 'ready-advance' : ''}`}
-                onClick={goToNext}
-                aria-label={`Next exercise: ${nextExercise.name}`}
-              >
-                <span className="nav-btn-copy">
-                  <small className="nav-btn-kicker">
-                    {allCurrentSetsDone ? 'ALL SETS DONE · NEXT' : 'NEXT EXERCISE'}
-                  </small>
-                  <strong className="nav-btn-name">{nextExercise.name}</strong>
-                </span>
-                <span className="nav-next-arrow-badge" aria-hidden="true">
-                  <ArrowRight size={17} />
-                </span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="player-nav-next finish-mode ready-advance studio-nav-next"
-                onClick={() => onCompleteWorkout(finishPayload)}
-                aria-label="Finish and save workout"
-              >
-                <span className="nav-btn-copy">
-                  <small className="nav-btn-kicker">FINAL EXERCISE</small>
-                  <strong className="nav-btn-name">Finish &amp; Save Workout</strong>
-                </span>
-                <span className="nav-next-arrow-badge" aria-hidden="true">
-                  <Trophy size={17} />
-                </span>
-              </button>
-            )}
           </div>
         </div>
       </main>

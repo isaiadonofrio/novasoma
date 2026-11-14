@@ -1069,7 +1069,7 @@
 
 .player-sets-col-heads {
   display: grid;
-  grid-template-columns: 44px 120px 1fr 1fr 48px;
+  grid-template-columns: 50px minmax(75px, 100px) 1fr 1fr 44px;
   gap: 10px;
   align-items: center;
   padding: 0 14px;
@@ -1087,52 +1087,55 @@
 
 .player-set-row {
   display: grid;
-  grid-template-columns: 44px 120px 1fr 1fr 48px;
+  grid-template-columns: 50px minmax(75px, 100px) 1fr 1fr 44px;
   gap: 10px;
   align-items: center;
-  padding: 5px 14px;
-  border-radius: 18px;
+  padding: 6px 14px;
+  border-radius: 20px;
   background: var(--raised2);
   border: 1px solid var(--border);
-  transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease);
+  transition: all 0.18s var(--ease);
+  position: relative;
 }
 
-.set-prev-copy-btn {
-  width: 100%;
-  max-width: 110px;
-  margin: 0 auto;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--dim);
-  background: var(--raised);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 4px 6px;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  transition: border-color 0.14s var(--ease), color 0.14s var(--ease);
-}
-
-.set-prev-copy-btn:hover {
+/* Active Set Spotlight */
+.player-set-row.next-up {
   border-color: var(--clay);
-  color: var(--clay);
+  background: color-mix(in srgb, var(--clay) 7%, var(--raised2));
+  box-shadow: 0 0 0 2px var(--clay-soft), 0 4px 16px rgba(0, 0, 0, 0.04);
+  z-index: 1;
 }
 
-.set-prev-empty {
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  color: var(--faint);
-  text-align: center;
-  display: block;
+.player-set-row.is-upcoming {
+  opacity: 0.72;
+}
+
+.player-set-row.is-upcoming:hover {
+  opacity: 1;
 }
 
 .player-set-row.completed {
   background: var(--sage-soft);
-  border-color: color-mix(in srgb, var(--sage) 48%, var(--border));
+  border-color: color-mix(in srgb, var(--sage) 38%, var(--border));
+  opacity: 0.9;
+}
+
+.set-num-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.set-next-indicator {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  color: var(--clay);
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .set-num-tag,
@@ -1147,9 +1150,16 @@
   width: 28px;
   height: 28px;
   margin: 0 auto;
-  border-radius: 8px;
+  border-radius: 9px;
   background: var(--raised);
   border: 1px solid var(--border);
+}
+
+.set-num-tag.active-num {
+  border-color: var(--clay);
+  color: var(--clay);
+  background: var(--clay-soft);
+  font-weight: 900;
 }
 
 .player-set-row.completed .set-num-tag,
@@ -1170,26 +1180,45 @@
   border-radius: 6px;
 }
 
-.set-field-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border-radius: 10px;
+.set-prev-copy-btn {
+  width: 100%;
+  max-width: 95px;
+  margin: 0 auto;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--dim);
   background: var(--raised);
   border: 1px solid var(--border);
-  cursor: text;
+  border-radius: 10px;
+  padding: 4px 6px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
 }
 
-.set-field-group:focus-within {
+.set-prev-copy-btn:hover {
   border-color: var(--clay);
+  color: var(--clay);
+  background: var(--clay-soft);
+  transform: translateY(-1px);
 }
 
-/* Tactile Gym Steppers - Crisp Pill Control with Circular Buttons */
+.set-prev-empty {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--faint);
+  text-align: center;
+  display: block;
+}
+
+/* Tactile Gym Steppers - Crisp Pill Control with 32px Circular Buttons */
 .set-stepper-field {
   width: 100%;
-  max-width: 168px;
+  max-width: 175px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -1197,7 +1226,7 @@
   background: var(--raised);
   border: 1.5px solid var(--border-hi);
   border-radius: var(--radius-full);
-  height: 35px;
+  height: 38px;
   padding: 2px 3px;
   min-width: 0;
   transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
@@ -1209,8 +1238,8 @@
 }
 
 .set-stepper-btn {
-  width: 29px;
-  height: 29px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--raised2);
   border: 1px solid var(--border);
@@ -1247,12 +1276,12 @@
 }
 
 .player-set-input {
-  width: 42px;
+  width: 44px;
   min-width: 0;
   border: none;
   background: transparent;
   font-family: var(--mono);
-  font-size: 0.98rem;
+  font-size: 1.02rem;
   font-weight: 800;
   color: var(--text);
   text-align: center;
@@ -1285,8 +1314,8 @@
 }
 
 .player-set-check {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--raised);
   border: 1.5px solid var(--border-hi);
@@ -1295,6 +1324,11 @@
   place-items: center;
   cursor: pointer;
   transition: background-color 0.16s var(--ease), border-color 0.16s var(--ease), color 0.16s var(--ease), transform 0.14s var(--ease);
+}
+
+.player-set-check.next-up-check {
+  border-color: color-mix(in srgb, var(--clay) 65%, var(--border));
+  color: var(--clay);
 }
 
 .player-set-check:hover:not(.checked) {
@@ -1975,44 +2009,67 @@
   align-items: stretch;
 }
 
-.studio-inline-nav {
-  width: 100%;
-  max-width: var(--player-maxw);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
-  gap: 20px;
-  align-items: stretch;
-}
-
-.studio-nav-prev {
-  width: 100%;
-  min-width: 0;
-  max-width: none !important;
-  height: 50px;
-  min-height: 50px;
-  border-radius: 20px;
-  padding: 0 18px;
+/* Console Baseline Navigation (Cleanly docked into Studio Console footer) */
+.studio-console-nav {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 12px 20px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
   gap: 12px;
 }
 
-.studio-nav-next {
-  width: 100%;
+.studio-console-nav .studio-nav-prev {
+  flex: 0 0 auto;
+  min-width: 130px;
+  max-width: 190px;
+  height: 48px;
+  min-height: 48px;
+  border-radius: 16px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  transition: all 0.15s var(--ease);
+}
+
+.studio-console-nav .studio-nav-prev:hover:not(:disabled) {
+  background: var(--raised3);
+  border-color: var(--border-hi);
+  transform: translateY(-1px);
+}
+
+.studio-console-nav .studio-nav-next {
+  flex: 1;
   min-width: 0;
-  max-width: none !important;
-  height: 50px;
-  min-height: 50px;
-  border-radius: 20px;
-  padding: 0 20px;
+  height: 48px;
+  min-height: 48px;
+  border-radius: 16px;
+  padding: 0 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: var(--teal);
+  color: #FFFFFF;
+  border: none;
+  transition: all 0.15s var(--ease);
 }
 
-/* LEFT COLUMN: Unified Visual & Coaching Card */
+.studio-console-nav .studio-nav-next:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.studio-console-nav .studio-nav-next.ready-advance {
+  background: var(--sage);
+  box-shadow: 0 0 0 2px var(--sage-soft);
+}
+
+/* LEFT COLUMN: Unified Visual & Coaching Card (Zero Box-in-Box Nesting) */
 .studio-visual-card {
   background: var(--raised);
   border: 1px solid var(--border);
@@ -2060,7 +2117,8 @@
   position: relative;
   border-radius: 20px;
   overflow: hidden;
-  background: #FAF9F6;
+  background: transparent;
+  border: none;
   width: 100%;
   height: 275px;
   max-height: 285px;
@@ -2070,7 +2128,7 @@
 }
 
 [data-theme="light"] .studio-pose-box {
-  background: #FFFFFF;
+  background: transparent;
 }
 
 .studio-pose-img {
@@ -2140,15 +2198,15 @@
   color: #FFFFFF;
 }
 
-/* Somatic Coaching Section (Docked seamlessly inside Visual Card) */
+/* Somatic Coaching Section (Seamlessly docked inside Visual Card without extra box borders) */
 .studio-visual-card .studio-somatic-anchor {
   border: none;
   border-top: 1px solid var(--border);
   border-radius: 0;
   box-shadow: none;
-  background: var(--surface);
+  background: transparent;
   padding: 14px 20px 16px;
-  flex: 1;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   gap: 9px;
@@ -2631,7 +2689,7 @@
     align-items: stretch;
   }
 
-  .studio-inline-nav {
+  .studio-console-nav {
     display: none;
   }
 
