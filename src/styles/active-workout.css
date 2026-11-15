@@ -1069,10 +1069,10 @@
 
 .player-sets-col-heads {
   display: grid;
-  grid-template-columns: 48px 120px minmax(180px, 1fr) minmax(180px, 1fr) 76px;
-  gap: 16px;
+  grid-template-columns: 36px 76px 1fr 1fr 64px;
+  gap: 10px;
   align-items: center;
-  padding: 0 18px;
+  padding: 0 12px;
   font-family: var(--mono);
   font-size: 0.65rem;
   font-weight: 800;
@@ -1087,16 +1087,16 @@
 
 .player-set-row {
   display: grid;
-  grid-template-columns: 48px 120px minmax(180px, 1fr) minmax(180px, 1fr) 76px;
-  gap: 16px;
+  grid-template-columns: 36px 76px 1fr 1fr 64px;
+  gap: 10px;
   align-items: center;
-  padding: 0 18px;
-  height: 68px;
-  min-height: 68px;
-  border-radius: 20px;
+  padding: 0 12px;
+  height: 48px;
+  min-height: 48px;
+  border-radius: 14px;
   background: var(--raised2);
   border: 1px solid var(--border);
-  transition: all 0.18s var(--ease);
+  transition: all 0.15s var(--ease);
   position: relative;
 }
 
@@ -1217,19 +1217,19 @@
   display: block;
 }
 
-/* Tactile Gym Steppers - Crisp Pill Control with 42px x 42px Circular Buttons */
+/* Tactile Gym Steppers - Crisp Compact Pill Control with 30px x 30px Circular Buttons */
 .set-stepper-field {
   width: 100%;
-  max-width: 210px;
+  max-width: 144px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--raised);
-  border: 1.5px solid var(--border-hi);
+  border: 1px solid var(--border-hi);
   border-radius: var(--radius-full);
-  height: 48px;
-  padding: 3px;
+  height: 36px;
+  padding: 2px;
   min-width: 0;
   transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
 }
@@ -1240,10 +1240,10 @@
 }
 
 .set-stepper-btn {
-  width: 42px;
-  height: 42px;
-  min-width: 42px;
-  min-height: 42px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
   border-radius: 50%;
   background: var(--raised2);
   border: 1px solid var(--border);
@@ -1280,12 +1280,12 @@
 }
 
 .player-set-input {
-  width: 48px;
+  width: 36px;
   min-width: 0;
   border: none;
   background: transparent;
   font-family: var(--mono);
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--text);
   text-align: center;
@@ -1317,13 +1317,13 @@
   color: var(--faint);
 }
 
-/* Wide pill button 72px x 44px that fills with #176A63 and white checkmark icon */
+/* Compact pill button 60px x 36px that fills with #176A63 and white checkmark icon */
 .player-set-check {
-  width: 72px;
-  height: 44px;
-  min-width: 72px;
-  min-height: 44px;
-  border-radius: 22px;
+  width: 60px;
+  height: 36px;
+  min-width: 60px;
+  min-height: 36px;
+  border-radius: 18px;
   background: var(--raised);
   border: 1.5px solid var(--border-hi);
   color: var(--dim);
@@ -2013,70 +2013,82 @@
 .studio-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(420px, 490px);
-  gap: 22px;
+  grid-template-columns: minmax(460px, 510px) minmax(0, 1fr);
+  gap: 24px;
   align-items: stretch;
 }
 
-/* Console Baseline Navigation: Full-width 1fr 2fr grid layout */
+/* Studio Baseline Navigation: Spanning Both Columns Below Grid */
+.studio-inline-nav,
 .studio-console-nav {
-  margin-top: auto;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-  padding: 16px 24px;
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 16px;
   width: 100%;
-  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(460px, 510px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
 }
 
+.studio-inline-nav .studio-nav-prev,
 .studio-console-nav .studio-nav-prev {
   width: 100%;
+  min-width: 0;
   max-width: none !important;
   height: 52px;
   min-height: 52px;
   border-radius: 16px;
-  padding: 0 16px;
+  padding: 0 18px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 12px;
-  background: var(--raised2);
+  background: #FFFFFF;
   border: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
   transition: all 0.15s var(--ease);
 }
 
+[data-theme="dark"] .studio-inline-nav .studio-nav-prev,
+[data-theme="dark"] .studio-console-nav .studio-nav-prev {
+  background: var(--raised2);
+  border-color: var(--border);
+}
+
+.studio-inline-nav .studio-nav-prev:hover:not(:disabled),
 .studio-console-nav .studio-nav-prev:hover:not(:disabled) {
-  background: var(--raised3);
+  background: var(--raised2);
   border-color: var(--border-hi);
   transform: translateY(-1px);
 }
 
+.studio-inline-nav .studio-nav-next,
 .studio-console-nav .studio-nav-next {
   width: 100%;
+  min-width: 0;
   max-width: none !important;
   height: 52px;
   min-height: 52px;
   border-radius: 16px;
-  padding: 0 20px;
+  padding: 0 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: #176A63;
   color: #FFFFFF;
   border: none;
+  box-shadow: 0 4px 16px rgba(23, 106, 99, 0.25);
   transition: all 0.15s var(--ease);
 }
 
+.studio-inline-nav .studio-nav-next:hover,
 .studio-console-nav .studio-nav-next:hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
 }
 
+.studio-inline-nav .studio-nav-next.ready-advance,
 .studio-console-nav .studio-nav-next.ready-advance {
   background: #176A63;
-  box-shadow: 0 0 0 3px rgba(23, 106, 99, 0.25);
+  box-shadow: 0 0 0 3px rgba(23, 106, 99, 0.28);
 }
 
 /* LEFT COLUMN: Upgraded Media Card with Full-Bleed 4:3 Radial Blend */
@@ -2104,8 +2116,8 @@
   border-radius: 20px 20px 0 0;
   padding: 0;
   width: 100%;
-  aspect-ratio: 16 / 11;
-  min-height: 310px;
+  aspect-ratio: 4 / 3;
+  min-height: 330px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2134,7 +2146,7 @@
   position: relative;
   border-radius: 20px 20px 0 0;
   overflow: hidden;
-  background: radial-gradient(circle, #ffffff 40%, #f0ede6 100%);
+  background: radial-gradient(circle at 50% 50%, #ffffff 45%, #f1eee7 100%);
   width: 100%;
   height: 100%;
   display: flex;
@@ -2143,11 +2155,11 @@
 }
 
 [data-theme="light"] .studio-pose-box {
-  background: radial-gradient(circle, #ffffff 40%, #f0ede6 100%);
+  background: radial-gradient(circle at 50% 50%, #ffffff 45%, #f1eee7 100%);
 }
 
 [data-theme="dark"] .studio-pose-box {
-  background: radial-gradient(circle, #252320 40%, #151412 100%);
+  background: radial-gradient(circle at 50% 50%, #252320 45%, #151412 100%);
 }
 
 .studio-pose-img {
@@ -2155,7 +2167,7 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  padding: 12px;
+  padding: 16px;
 }
 
 [data-theme="light"] .studio-pose-img {
@@ -2223,35 +2235,36 @@
 
 /* Nova Soma Inspired Circular Ring Timer (Directly docked underneath movement visual) */
 .studio-ring-timer-box {
-  border-top: 1px solid var(--border);
-  background: #FAF9F6;
-  padding: 20px 20px 22px;
+  border-top: 1px solid rgba(140, 103, 58, 0.14);
+  background: linear-gradient(180deg, #FAF8F4 0%, #FFFFFF 100%);
+  padding: 24px 24px 26px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 16px;
   flex: 1;
   min-height: 0;
   transition: all 0.2s var(--ease);
 }
 
 [data-theme="dark"] .studio-ring-timer-box {
-  background: var(--raised2);
+  background: linear-gradient(180deg, var(--raised2) 0%, var(--raised) 100%);
+  border-top-color: var(--border);
 }
 
 .studio-ring-timer-box.is-resting {
-  background: color-mix(in srgb, #176A63 5%, #FAF9F6);
+  background: color-mix(in srgb, #176A63 6%, #FAF8F4);
 }
 
 [data-theme="dark"] .studio-ring-timer-box.is-resting {
-  background: color-mix(in srgb, #176A63 10%, var(--raised2));
+  background: color-mix(in srgb, #176A63 12%, var(--raised2));
 }
 
 .ring-timer-svg-wrap {
   position: relative;
-  width: 190px;
-  height: 190px;
+  width: 220px;
+  height: 220px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -2265,7 +2278,7 @@
 
 .ring-timer-progress-arc {
   transform: rotate(-90deg);
-  transform-origin: 95px 95px;
+  transform-origin: 110px 110px;
   transition: stroke-dashoffset 0.35s linear;
 }
 
@@ -2283,9 +2296,9 @@
 
 .ring-timer-kicker {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #8C673A;
   margin-bottom: 2px;
@@ -2297,13 +2310,13 @@
 
 .ring-timer-clock {
   font-family: var(--mono);
-  font-size: 38px;
+  font-size: 46px;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   color: var(--text);
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  margin: 1px 0 8px;
+  margin: 2px 0 8px;
 }
 
 .ring-timer-play-btn {
@@ -2319,7 +2332,7 @@
   place-items: center;
   cursor: pointer;
   transition: all 0.15s var(--ease);
-  box-shadow: 0 4px 14px rgba(23, 106, 99, 0.28);
+  box-shadow: 0 3px 12px rgba(23, 106, 99, 0.3);
 }
 
 .ring-timer-play-btn:hover {
@@ -2333,7 +2346,7 @@
 
 .ring-timer-play-btn.active {
   background: #8C673A;
-  box-shadow: 0 4px 14px rgba(140, 103, 58, 0.28);
+  box-shadow: 0 3px 12px rgba(140, 103, 58, 0.3);
 }
 
 .ring-timer-off-content {
@@ -2563,20 +2576,28 @@
 
 /* Somatic Coaching & Exercise Information Strip */
 .studio-info-strip {
-  margin: 10px 24px 4px;
+  margin: 10px 24px 2px;
   padding: 10px 14px;
   border-radius: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: rgba(23, 106, 99, 0.035);
+  border: 1px solid color-mix(in srgb, #176A63 18%, var(--border));
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
+[data-theme="dark"] .studio-info-strip {
+  background: var(--raised2);
+  border-color: var(--border);
+}
+
 .info-strip-main {
   display: flex;
   align-items: flex-start;
-  gap: 7px;
+  gap: 8px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text);
 }
 
 .info-cue-sparkle {
@@ -2586,33 +2607,29 @@
 }
 
 .info-cue-text {
-  font-size: 0.8rem;
-  line-height: 1.4;
-  color: var(--text);
-  margin: 0;
-  font-weight: 500;
   flex: 1;
   min-width: 0;
+  font-weight: 500;
 }
 
-.info-strip-sub {
+.info-strip-meta {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.info-strip-breathing {
+.info-breathing-pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   font-size: 0.74rem;
+  line-height: 1.3;
   color: #176A63;
-  background: var(--sage-soft);
-  border: 1px solid color-mix(in srgb, #176A63 25%, var(--border));
   padding: 3px 8px;
   border-radius: 8px;
-  font-weight: 600;
+  background: var(--sage-soft);
+  border: 1px solid color-mix(in srgb, #176A63 24%, var(--border));
 }
 
 .info-wind-icon {
@@ -2624,15 +2641,16 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--dim);
+  padding: 3px 10px;
+  border-radius: 999px;
   background: var(--raised2);
   border: 1px solid var(--border);
-  padding: 3px 8px;
-  border-radius: 8px;
+  color: var(--dim);
+  font-size: 0.72rem;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.12s var(--ease);
+  margin-left: auto;
 }
 
 .info-strip-guide-btn:hover {
@@ -2666,15 +2684,16 @@
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  padding: 8px 24px 12px;
+  padding: 10px 24px 14px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
 .studio-logger-card .player-logger-header {
   gap: 8px;
+  max-width: 640px;
 }
 
 .studio-logger-card .player-sets-progress {
@@ -2686,11 +2705,17 @@
   flex-shrink: 0;
 }
 
+.studio-logger-card .player-sets-list,
+.studio-logger-card .player-sets-col-heads {
+  max-width: 640px;
+  width: 100%;
+}
+
 .studio-logger-card .player-sets-col-heads {
   display: grid;
-  grid-template-columns: 40px minmax(64px, 84px) minmax(120px, 140px) minmax(120px, 140px) 64px;
+  grid-template-columns: 36px 76px 1fr 1fr 64px;
   gap: 10px;
-  padding: 0 14px;
+  padding: 0 12px;
   font-family: var(--mono);
   font-size: 0.68rem;
   font-weight: 800;
@@ -2701,13 +2726,13 @@
 
 .studio-logger-card .player-set-row {
   display: grid;
-  grid-template-columns: 40px minmax(64px, 84px) minmax(120px, 140px) minmax(120px, 140px) 64px;
+  grid-template-columns: 36px 76px 1fr 1fr 64px;
   gap: 10px;
   align-items: center;
-  padding: 0 14px;
-  height: 50px;
-  min-height: 50px;
-  border-radius: 12px;
+  padding: 0 12px;
+  height: 48px;
+  min-height: 48px;
+  border-radius: 14px;
   background: var(--raised2);
   border: 1px solid var(--border);
   transition: all 0.15s var(--ease);
@@ -2726,7 +2751,8 @@
 
 .studio-logger-card .set-stepper-field {
   height: 36px;
-  max-width: 140px;
+  max-width: 150px;
+  margin: 0 auto;
 }
 
 .studio-logger-card .set-stepper-btn {
@@ -2737,7 +2763,7 @@
 }
 
 .studio-logger-card .player-set-input {
-  width: 34px;
+  width: 36px;
   font-size: 1rem;
 }
 
@@ -2797,9 +2823,18 @@
   }
 
   .studio-grid {
-    grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
     gap: 16px;
     align-items: stretch;
+  }
+
+  .ring-timer-svg-wrap {
+    width: 190px;
+    height: 190px;
+  }
+
+  .ring-timer-clock {
+    font-size: 38px;
   }
 
   .studio-console-header {
@@ -2815,12 +2850,19 @@
     padding: 10px 18px 14px;
   }
 
+  .studio-inline-nav,
   .studio-console-nav {
-    display: none;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+    gap: 16px;
   }
 }
 
 @media (max-width: 720px) {
+  .studio-inline-nav,
+  .studio-console-nav {
+    display: none;
+  }
+
   .player-header-inner {
     display: flex;
     align-items: center;
