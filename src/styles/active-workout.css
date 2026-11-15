@@ -2013,8 +2013,8 @@
 .studio-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.08fr) minmax(420px, 490px);
+  gap: 22px;
   align-items: stretch;
 }
 
@@ -2104,13 +2104,15 @@
   border-radius: 20px 20px 0 0;
   padding: 0;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 11;
+  min-height: 310px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .studio-pose-grid {
@@ -2248,8 +2250,8 @@
 
 .ring-timer-svg-wrap {
   position: relative;
-  width: 170px;
-  height: 170px;
+  width: 190px;
+  height: 190px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -2263,7 +2265,7 @@
 
 .ring-timer-progress-arc {
   transform: rotate(-90deg);
-  transform-origin: 85px 85px;
+  transform-origin: 95px 95px;
   transition: stroke-dashoffset 0.35s linear;
 }
 
@@ -2281,7 +2283,7 @@
 
 .ring-timer-kicker {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -2295,20 +2297,20 @@
 
 .ring-timer-clock {
   font-family: var(--mono);
-  font-size: 34px;
+  font-size: 38px;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--text);
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  margin: 1px 0 6px;
+  margin: 1px 0 8px;
 }
 
 .ring-timer-play-btn {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  min-height: 38px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   background: #176A63;
   color: #FFFFFF;
@@ -2317,7 +2319,7 @@
   place-items: center;
   cursor: pointer;
   transition: all 0.15s var(--ease);
-  box-shadow: 0 2px 10px rgba(23, 106, 99, 0.28);
+  box-shadow: 0 4px 14px rgba(23, 106, 99, 0.28);
 }
 
 .ring-timer-play-btn:hover {
@@ -2331,7 +2333,7 @@
 
 .ring-timer-play-btn.active {
   background: #8C673A;
-  box-shadow: 0 2px 10px rgba(140, 103, 58, 0.28);
+  box-shadow: 0 4px 14px rgba(140, 103, 58, 0.28);
 }
 
 .ring-timer-off-content {
@@ -2561,23 +2563,20 @@
 
 /* Somatic Coaching & Exercise Information Strip */
 .studio-info-strip {
-  margin: 12px 24px 4px;
-  padding: 12px 16px;
-  border-radius: 14px;
+  margin: 10px 24px 4px;
+  padding: 10px 14px;
+  border-radius: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
-.info-strip-cue {
+.info-strip-main {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: var(--text);
+  gap: 7px;
 }
 
 .info-cue-sparkle {
@@ -2587,23 +2586,33 @@
 }
 
 .info-cue-text {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text);
+  margin: 0;
+  font-weight: 500;
   flex: 1;
   min-width: 0;
-  font-weight: 500;
+}
+
+.info-strip-sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .info-strip-breathing {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.76rem;
-  line-height: 1.35;
+  gap: 5px;
+  font-size: 0.74rem;
   color: #176A63;
-  padding: 5px 10px;
-  border-radius: 10px;
   background: var(--sage-soft);
-  border: 1px solid color-mix(in srgb, #176A63 28%, var(--border));
-  align-self: flex-start;
+  border: 1px solid color-mix(in srgb, #176A63 25%, var(--border));
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
 .info-wind-icon {
@@ -2614,18 +2623,16 @@
 .info-strip-guide-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 7px 12px;
-  border-radius: 10px;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dim);
   background: var(--raised2);
   border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.76rem;
-  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.12s var(--ease);
-  align-self: flex-start;
 }
 
 .info-strip-guide-btn:hover {
@@ -2659,11 +2666,11 @@
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  padding: 10px 24px 14px;
+  padding: 8px 24px 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .studio-logger-card .player-logger-header {
@@ -2681,9 +2688,9 @@
 
 .studio-logger-card .player-sets-col-heads {
   display: grid;
-  grid-template-columns: 44px minmax(72px, 92px) minmax(130px, 160px) minmax(130px, 160px) 68px;
-  gap: 12px;
-  padding: 0 16px;
+  grid-template-columns: 40px minmax(64px, 84px) minmax(120px, 140px) minmax(120px, 140px) 64px;
+  gap: 10px;
+  padding: 0 14px;
   font-family: var(--mono);
   font-size: 0.68rem;
   font-weight: 800;
@@ -2694,13 +2701,13 @@
 
 .studio-logger-card .player-set-row {
   display: grid;
-  grid-template-columns: 44px minmax(72px, 92px) minmax(130px, 160px) minmax(130px, 160px) 68px;
-  gap: 12px;
+  grid-template-columns: 40px minmax(64px, 84px) minmax(120px, 140px) minmax(120px, 140px) 64px;
+  gap: 10px;
   align-items: center;
-  padding: 0 16px;
-  height: 52px;
-  min-height: 52px;
-  border-radius: 14px;
+  padding: 0 14px;
+  height: 50px;
+  min-height: 50px;
+  border-radius: 12px;
   background: var(--raised2);
   border: 1px solid var(--border);
   transition: all 0.15s var(--ease);
@@ -2718,28 +2725,28 @@
 }
 
 .studio-logger-card .set-stepper-field {
-  height: 38px;
-  max-width: 160px;
+  height: 36px;
+  max-width: 140px;
 }
 
 .studio-logger-card .set-stepper-btn {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
 }
 
 .studio-logger-card .player-set-input {
-  width: 38px;
-  font-size: 1.05rem;
+  width: 34px;
+  font-size: 1rem;
 }
 
 .studio-logger-card .player-set-check {
-  width: 64px;
-  height: 38px;
-  min-width: 64px;
-  min-height: 38px;
-  border-radius: 19px;
+  width: 60px;
+  height: 36px;
+  min-width: 60px;
+  min-height: 36px;
+  border-radius: 18px;
 }
 
 /* Left Slide-Over Outline Drawer */

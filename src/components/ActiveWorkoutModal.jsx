@@ -25,7 +25,6 @@ import {
   Link2,
   Timer,
   TimerOff,
-  ChevronRight,
   Dumbbell,
   Sparkles,
   Plus,
@@ -792,214 +791,7 @@ export function ActiveWorkoutModal({
           )}
 
           <div className="studio-grid">
-            {/* LEFT COLUMN: Movement Visual + Circular Ring Timer directly underneath */}
-            <section className={`studio-visual-col studio-visual-card ${isMobileDemoExpanded ? 'mobile-demo-open' : ''}`}>
-              {hasMedia ? (
-                <div className="studio-media-frame">
-                  {hasAnyImages && (
-                    <div className={`studio-pose-grid ${hasTwoImages ? 'dual' : 'single'}`}>
-                      {currentExercise.illustration && (
-                        <div className="studio-pose-box">
-                          <span className="studio-muscle-overlay-pill">{primaryMuscleName}</span>
-                          {currentExercise.isWarmup && <span className="studio-phase-overlay-pill">Warm-Up</span>}
-                          {(hasTwoImages || isAnimatedGifUrl(currentExercise.illustration)) && (
-                            <span className="studio-pose-tag">
-                              {hasTwoImages ? 'Start' : 'GIF'}
-                            </span>
-                          )}
-                          <img
-                            src={currentExercise.illustration}
-                            alt={`${currentExercise.name} demonstration`}
-                            className="studio-pose-img"
-                            loading="eager"
-                          />
-                        </div>
-                      )}
-                      {currentExercise.illustrationEnd && (
-                        <div className="studio-pose-box">
-                          <span className="studio-pose-tag highlight">Peak</span>
-                          <img
-                            src={currentExercise.illustrationEnd}
-                            alt={`${currentExercise.name} peak position`}
-                            className="studio-pose-img"
-                            loading="eager"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {currentExercise.customVideoUrl && (
-                    <div className="spotlight-video-wrapper">
-                      <MediaViewer
-                        src={currentExercise.customVideoUrl}
-                        alt={currentExercise.name}
-                        className="spotlight-video-frame"
-                        autoPlay={false}
-                      />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="studio-media-placeholder">
-                  <Dumbbell size={36} color="var(--faint)" />
-                  <span>{primaryMuscleName}</span>
-                </div>
-              )}
-
-              {/* Circular Ouroboros Ring Timer (Directly docked under movement demo) */}
-              <div className={`studio-ring-timer-box ${isResting ? 'is-resting' : ''} ${!isTimerEnabled ? 'is-disabled' : ''}`}>
-                <div className="ring-timer-svg-wrap">
-                  <svg className="ring-timer-svg" viewBox="0 0 170 170" width="170" height="170" aria-hidden="true">
-                    <defs>
-                      <linearGradient id="novaSomaTimerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#176A63" />
-                        <stop offset="65%" stopColor="#22897F" />
-                        <stop offset="100%" stopColor="#8C673A" />
-                      </linearGradient>
-                    </defs>
-                    {/* Background track circle with vertebrae / spine dashed accent */}
-                    <circle
-                      cx="85"
-                      cy="85"
-                      r="70"
-                      fill="none"
-                      stroke="rgba(140, 103, 58, 0.16)"
-                      strokeWidth="7"
-                      strokeDasharray="3 4"
-                    />
-                    <circle
-                      cx="85"
-                      cy="85"
-                      r="70"
-                      fill="none"
-                      stroke="rgba(140, 103, 58, 0.22)"
-                      strokeWidth="7"
-                    />
-                    {/* Active depleting arc */}
-                    {(isTimerEnabled || isResting) && (
-                      <circle
-                        cx="85"
-                        cy="85"
-                        r="70"
-                        fill="none"
-                        stroke="url(#novaSomaTimerGrad)"
-                        strokeWidth="8"
-                        strokeLinecap="round"
-                        strokeDasharray="439.82"
-                        strokeDashoffset={439.82 * (1 - Math.max(0, Math.min(1, timerRatio)))}
-                        className="ring-timer-progress-arc"
-                      />
-                    )}
-                  </svg>
-
-                  <div className="ring-timer-center-content">
-                    {isTimerEnabled || isResting ? (
-                      <>
-                        <span className="ring-timer-kicker">
-                          {isResting
-                            ? (timerMode === 'work' ? 'WORK HOLD' : 'RESTING')
-                            : (timerMode === 'work' ? 'HOLD TIMER' : 'REST TIMER')}
-                        </span>
-                        <strong className="ring-timer-clock">{formatTime(restSecondsLeft)}</strong>
-                        <button
-                          type="button"
-                          className={`ring-timer-play-btn ${isResting ? 'active' : ''}`}
-                          onClick={toggleRestTimer}
-                          title={isResting ? 'Pause rest timer (Space)' : 'Start rest timer (Space)'}
-                          aria-label={isResting ? 'Pause rest timer' : 'Start rest timer'}
-                        >
-                          {isResting ? <Pause size={18} /> : <Play size={18} fill="currentColor" />}
-                        </button>
-                      </>
-                    ) : (
-                      <div className="ring-timer-off-content">
-                        <TimerOff size={22} className="ring-timer-off-icon" />
-                        <span className="ring-timer-off-txt">Timer Off</span>
-                        <button
-                          type="button"
-                          className="ring-timer-enable-btn"
-                          onClick={toggleExerciseTimerPreference}
-                        >
-                          Enable
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Quick select presets and controls tray */}
-                <div className="ring-timer-controls-tray">
-                  <button
-                    type="button"
-                    className="ring-timer-icon-btn"
-                    onClick={() => resetTimer(timerMode === 'work' && targetHoldSeconds ? targetHoldSeconds : defaultRest, timerMode, false)}
-                    title="Reset timer"
-                    aria-label="Reset timer"
-                  >
-                    <RotateCcw size={13} />
-                  </button>
-
-                  {(isTimerEnabled || isResting) && (
-                    <div className="ring-timer-pills">
-                      {isResting ? (
-                        <>
-                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(-15)}>
-                            -15s
-                          </button>
-                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(15)}>
-                            +15s
-                          </button>
-                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(30)}>
-                            +30s
-                          </button>
-                          <button
-                            type="button"
-                            className="ring-timer-chip skip"
-                            onClick={() => {
-                              setIsResting(false);
-                              setRestSecondsLeft(0);
-                            }}
-                            title="Skip rest"
-                          >
-                            <SkipForward size={11} />
-                            <span>Skip</span>
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          {restPresets.map((s) => (
-                            <button
-                              key={s}
-                              type="button"
-                              className={`ring-timer-chip ${timerMode === 'rest' && restInitialSeconds === s ? 'active' : ''}`}
-                              onClick={() => resetTimer(s, 'rest', false)}
-                            >
-                              {s}s
-                            </button>
-                          ))}
-                          <button type="button" className="ring-timer-chip bump" onClick={() => adjustRestTime(15)}>
-                            +15s
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  )}
-
-                  <button
-                    type="button"
-                    className={`ring-timer-icon-btn ${!isTimerEnabled ? 'off' : ''}`}
-                    onClick={toggleExerciseTimerPreference}
-                    title={isTimerEnabled ? 'Turn off timer' : 'Turn on timer'}
-                    aria-label="Toggle timer preference"
-                  >
-                    <TimerOff size={13} />
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            {/* RIGHT COLUMN: Unified Studio Console Card */}
+            {/* LEFT COLUMN: Focused, Decluttered Workout Console */}
             <section className="studio-console-col studio-console-card">
               {/* Header: Exercise Breadcrumb, Title & Targets */}
               <div className="studio-console-header">
@@ -1081,32 +873,36 @@ export function ActiveWorkoutModal({
                 </div>
               </div>
 
-              {/* Somatic Coaching & Exercise Information Strip */}
+              {/* Serene Somatic Guidance Strip (Decluttered, single calm tier) */}
               <div className="studio-info-strip">
-                <div className="info-strip-cue">
-                  <Sparkles size={13} className="info-cue-sparkle" />
-                  <span className="info-cue-text">
+                <div className="info-strip-main">
+                  <Sparkles size={14} className="info-cue-sparkle" />
+                  <p className="info-cue-text">
                     {execution.proTip || execution.setup || 'Maintain tension through full range of motion. Control the eccentric phase.'}
-                  </span>
-                  {currentExercise.tempo && (
-                    <span className="somatic-tempo-badge">Tempo: {currentExercise.tempo}</span>
-                  )}
+                  </p>
                 </div>
-                {execution.breathing && (
-                  <div className="info-strip-breathing">
-                    <Wind size={13} className="info-wind-icon" />
-                    <span><b>Breathe:</b> {execution.breathing}</span>
+                {(execution.breathing || currentExercise.tempo) && (
+                  <div className="info-strip-sub">
+                    {execution.breathing && (
+                      <span className="info-strip-breathing">
+                        <Wind size={12} className="info-wind-icon" />
+                        <span><b>Breathe:</b> {execution.breathing}</span>
+                      </span>
+                    )}
+                    {currentExercise.tempo && (
+                      <span className="somatic-tempo-badge">Tempo: {currentExercise.tempo}</span>
+                    )}
+                    <button
+                      type="button"
+                      className="info-strip-guide-btn"
+                      onClick={() => setIsGuideOpen(true)}
+                      title="Form & Biomechanics Guide (G)"
+                    >
+                      <BookOpen size={12} />
+                      <span>Guide (G)</span>
+                    </button>
                   </div>
                 )}
-                <button
-                  type="button"
-                  className="info-strip-guide-btn"
-                  onClick={() => setIsGuideOpen(true)}
-                >
-                  <BookOpen size={13} />
-                  <span>Form, Muscles &amp; Biomechanics Guide (G)</span>
-                  <ChevronRight size={13} />
-                </button>
               </div>
 
               {/* Focused Set Logger Card */}
@@ -1159,7 +955,7 @@ export function ActiveWorkoutModal({
                 <div className="player-sets-col-heads" aria-hidden="true">
                   <span>SET</span>
                   <span>PREVIOUS</span>
-                  <span>{isTimedReps ? 'SEC' : `REPS (Target ${currentExercise.defaultReps || '8-12'})`}</span>
+                  <span>{isTimedReps ? 'SEC' : 'REPS'}</span>
                   <span>{isBodyweightEx ? '+WEIGHT (KG)' : 'WEIGHT (KG)'}</span>
                   <span>DONE</span>
                 </div>
@@ -1342,6 +1138,214 @@ export function ActiveWorkoutModal({
                     </span>
                   </button>
                 )}
+              </div>
+            </section>
+
+            {/* RIGHT COLUMN: Movement Visual + Circular Ring Timer (Integrated Studio Showcase) */}
+            <section className={`studio-visual-col studio-visual-card ${isMobileDemoExpanded ? 'mobile-demo-open' : ''}`}>
+              {hasMedia ? (
+                <div className="studio-media-frame">
+                  {hasAnyImages && (
+                    <div className={`studio-pose-grid ${hasTwoImages ? 'dual' : 'single'}`}>
+                      {currentExercise.illustration && (
+                        <div className="studio-pose-box">
+                          <span className="studio-muscle-overlay-pill">{primaryMuscleName}</span>
+                          {currentExercise.isWarmup && <span className="studio-phase-overlay-pill">Warm-Up</span>}
+                          {(hasTwoImages || isAnimatedGifUrl(currentExercise.illustration)) && (
+                            <span className="studio-pose-tag">
+                              {hasTwoImages ? 'Start' : 'GIF'}
+                            </span>
+                          )}
+                          <img
+                            src={currentExercise.illustration}
+                            alt={`${currentExercise.name} demonstration`}
+                            className="studio-pose-img"
+                            loading="eager"
+                          />
+                        </div>
+                      )}
+                      {currentExercise.illustrationEnd && (
+                        <div className="studio-pose-box">
+                          <span className="studio-pose-tag highlight">Peak</span>
+                          <img
+                            src={currentExercise.illustrationEnd}
+                            alt={`${currentExercise.name} peak position`}
+                            className="studio-pose-img"
+                            loading="eager"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {currentExercise.customVideoUrl && (
+                    <div className="spotlight-video-wrapper">
+                      <MediaViewer
+                        src={currentExercise.customVideoUrl}
+                        alt={currentExercise.name}
+                        className="spotlight-video-frame"
+                        autoPlay={false}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="studio-media-placeholder">
+                  <Dumbbell size={36} color="var(--faint)" />
+                  <span>{primaryMuscleName}</span>
+                </div>
+              )}
+
+              {/* Circular Ouroboros Ring Timer (Integrated Cadence & Breathing HUD) */}
+              <div className={`studio-ring-timer-box ${isResting ? 'is-resting' : ''} ${!isTimerEnabled ? 'is-disabled' : ''}`}>
+                <div className="ring-timer-svg-wrap">
+                  <svg className="ring-timer-svg" viewBox="0 0 190 190" width="190" height="190" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="novaSomaTimerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#176A63" />
+                        <stop offset="65%" stopColor="#22897F" />
+                        <stop offset="100%" stopColor="#8C673A" />
+                      </linearGradient>
+                    </defs>
+                    {/* Background track circle with vertebrae / spine dashed accent */}
+                    <circle
+                      cx="95"
+                      cy="95"
+                      r="78"
+                      fill="none"
+                      stroke="rgba(140, 103, 58, 0.16)"
+                      strokeWidth="7"
+                      strokeDasharray="3 4"
+                    />
+                    <circle
+                      cx="95"
+                      cy="95"
+                      r="78"
+                      fill="none"
+                      stroke="rgba(140, 103, 58, 0.22)"
+                      strokeWidth="7"
+                    />
+                    {/* Active depleting arc */}
+                    {(isTimerEnabled || isResting) && (
+                      <circle
+                        cx="95"
+                        cy="95"
+                        r="78"
+                        fill="none"
+                        stroke="url(#novaSomaTimerGrad)"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeDasharray="490.09"
+                        strokeDashoffset={490.09 * (1 - Math.max(0, Math.min(1, timerRatio)))}
+                        className="ring-timer-progress-arc"
+                        style={{ transformOrigin: '95px 95px' }}
+                      />
+                    )}
+                  </svg>
+
+                  <div className="ring-timer-center-content">
+                    {isTimerEnabled || isResting ? (
+                      <>
+                        <span className="ring-timer-kicker">
+                          {isResting
+                            ? (timerMode === 'work' ? 'WORK HOLD' : 'RESTING')
+                            : (timerMode === 'work' ? 'HOLD TIMER' : 'REST TIMER')}
+                        </span>
+                        <strong className="ring-timer-clock">{formatTime(restSecondsLeft)}</strong>
+                        <button
+                          type="button"
+                          className={`ring-timer-play-btn ${isResting ? 'active' : ''}`}
+                          onClick={toggleRestTimer}
+                          title={isResting ? 'Pause rest timer (Space)' : 'Start rest timer (Space)'}
+                          aria-label={isResting ? 'Pause rest timer' : 'Start rest timer'}
+                        >
+                          {isResting ? <Pause size={20} /> : <Play size={20} fill="currentColor" />}
+                        </button>
+                      </>
+                    ) : (
+                      <div className="ring-timer-off-content">
+                        <TimerOff size={24} className="ring-timer-off-icon" />
+                        <span className="ring-timer-off-txt">Timer Off</span>
+                        <button
+                          type="button"
+                          className="ring-timer-enable-btn"
+                          onClick={toggleExerciseTimerPreference}
+                        >
+                          Enable
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick select presets and controls tray */}
+                <div className="ring-timer-controls-tray">
+                  <button
+                    type="button"
+                    className="ring-timer-icon-btn"
+                    onClick={() => resetTimer(timerMode === 'work' && targetHoldSeconds ? targetHoldSeconds : defaultRest, timerMode, false)}
+                    title="Reset timer"
+                    aria-label="Reset timer"
+                  >
+                    <RotateCcw size={13} />
+                  </button>
+
+                  {(isTimerEnabled || isResting) && (
+                    <div className="ring-timer-pills">
+                      {isResting ? (
+                        <>
+                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(-15)}>
+                            -15s
+                          </button>
+                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(15)}>
+                            +15s
+                          </button>
+                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(30)}>
+                            +30s
+                          </button>
+                          <button
+                            type="button"
+                            className="ring-timer-chip skip"
+                            onClick={() => {
+                              setIsResting(false);
+                              setRestSecondsLeft(0);
+                            }}
+                            title="Skip rest"
+                          >
+                            <SkipForward size={11} />
+                            <span>Skip</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {restPresets.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              className={`ring-timer-chip ${timerMode === 'rest' && restInitialSeconds === s ? 'active' : ''}`}
+                              onClick={() => resetTimer(s, 'rest', false)}
+                            >
+                              {s}s
+                            </button>
+                          ))}
+                          <button type="button" className="ring-timer-chip bump" onClick={() => adjustRestTime(15)}>
+                            +15s
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    className={`ring-timer-icon-btn ${!isTimerEnabled ? 'off' : ''}`}
+                    onClick={toggleExerciseTimerPreference}
+                    title={isTimerEnabled ? 'Turn off timer' : 'Turn on timer'}
+                    aria-label="Toggle timer preference"
+                  >
+                    <TimerOff size={13} />
+                  </button>
+                </div>
               </div>
             </section>
           </div>
