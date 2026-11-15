@@ -2013,7 +2013,7 @@
 .studio-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
   gap: 20px;
   align-items: stretch;
 }
@@ -2219,104 +2219,243 @@
   color: #FFFFFF;
 }
 
-/* Somatic Coaching Section */
-.studio-visual-card .studio-somatic-anchor {
-  border: none;
+/* Nova Soma Inspired Circular Ring Timer (Directly docked underneath movement visual) */
+.studio-ring-timer-box {
   border-top: 1px solid var(--border);
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
-  padding: 16px 20px 20px;
-  margin-top: 0;
-  flex: 1;
+  background: #FAF9F6;
+  padding: 20px 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  transition: all 0.2s var(--ease);
 }
 
-.somatic-anchor-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+[data-theme="dark"] .studio-ring-timer-box {
+  background: var(--raised2);
 }
 
-.somatic-anchor-title {
+.studio-ring-timer-box.is-resting {
+  background: color-mix(in srgb, #176A63 5%, #FAF9F6);
+}
+
+[data-theme="dark"] .studio-ring-timer-box.is-resting {
+  background: color-mix(in srgb, #176A63 10%, var(--raised2));
+}
+
+.ring-timer-svg-wrap {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ring-timer-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ring-timer-progress-arc {
+  transform: rotate(-90deg);
+  transform-origin: 85px 85px;
+  transition: stroke-dashoffset 0.35s linear;
+}
+
+.ring-timer-center-content {
+  position: absolute;
+  inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  text-align: center;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.ring-timer-kicker {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.65rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: #8C673A;
+  margin-bottom: 2px;
 }
 
-.somatic-sparkle-icon {
-  color: #8C673A;
+.studio-ring-timer-box.is-resting .ring-timer-kicker {
+  color: #176A63;
 }
 
-.somatic-tempo-badge {
+.ring-timer-clock {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin: 1px 0 6px;
+}
+
+.ring-timer-play-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50%;
+  background: #176A63;
+  color: #FFFFFF;
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  box-shadow: 0 2px 10px rgba(23, 106, 99, 0.28);
+}
+
+.ring-timer-play-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.06);
+}
+
+.ring-timer-play-btn:active {
+  transform: scale(0.94);
+}
+
+.ring-timer-play-btn.active {
+  background: #8C673A;
+  box-shadow: 0 2px 10px rgba(140, 103, 58, 0.28);
+}
+
+.ring-timer-off-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.ring-timer-off-icon {
+  color: var(--faint);
+}
+
+.ring-timer-off-txt {
+  font-size: 0.74rem;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: var(--radius-full);
-  background: var(--raised2);
-  border: 1px solid var(--border);
   color: var(--dim);
 }
 
-.somatic-anchor-cue {
-  font-size: 0.84rem;
-  line-height: 1.48;
-  color: var(--text);
-  margin: 0;
-  font-weight: 500;
+.ring-timer-enable-btn {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: #176A63;
+  color: #FFFFFF;
+  border: none;
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
 }
 
-.somatic-breathing-strip {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 0.78rem;
-  line-height: 1.42;
-  color: #176A63;
-  padding: 7px 11px;
-  border-radius: 12px;
-  background: var(--sage-soft);
-  border: 1px solid color-mix(in srgb, #176A63 35%, var(--border));
+.ring-timer-enable-btn:hover {
+  filter: brightness(1.1);
 }
 
-.somatic-wind-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: #176A63;
-}
-
-.somatic-guide-link-btn {
+.ring-timer-controls-tray {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 9px 14px;
-  margin-top: auto;
-  border-radius: 14px;
-  background: var(--raised2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s var(--ease);
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
-.somatic-guide-link-btn:hover {
+.ring-timer-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.12s var(--ease);
+}
+
+.ring-timer-icon-btn:hover {
   background: var(--raised3);
+  color: var(--text);
+  border-color: var(--border-hi);
+}
+
+.ring-timer-icon-btn.off {
+  color: var(--faint);
+}
+
+.ring-timer-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ring-timer-chip {
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s var(--ease);
+}
+
+[data-theme="dark"] .ring-timer-chip {
+  background: var(--raised3);
+}
+
+.ring-timer-chip:hover {
   border-color: #8C673A;
   color: #8C673A;
-  transform: translateY(-1px);
+}
+
+.ring-timer-chip.active {
+  background: #176A63;
+  color: #FFFFFF;
+  border-color: #176A63;
+}
+
+.ring-timer-chip.bump {
+  color: #8C673A;
+  border-color: rgba(140, 103, 58, 0.35);
+}
+
+.ring-timer-chip.skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(140, 103, 58, 0.1);
+  color: #8C673A;
+  border-color: rgba(140, 103, 58, 0.3);
+  font-weight: 800;
+}
+
+.ring-timer-chip.skip:hover {
+  background: #8C673A;
+  color: #FFFFFF;
+  border-color: #8C673A;
 }
 
 .studio-media-placeholder {
@@ -2352,14 +2491,10 @@
   box-shadow: 0 4px 20px rgba(26, 23, 19, 0.04);
 }
 
-/* Split Right Card Header into 2-Column Hero Row (grid-template-columns: 1fr 340px) */
-.studio-hero-row {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 20px;
-  padding: 20px 24px 18px;
+/* RIGHT COLUMN: Header Row */
+.studio-console-header {
+  padding: 20px 24px 14px;
   border-bottom: 1px solid var(--border);
-  align-items: center;
 }
 
 .studio-hero-info {
@@ -2391,12 +2526,12 @@
 }
 
 .studio-exercise-title {
-  font-size: 36px;
+  font-size: 30px;
   font-weight: 900;
   letter-spacing: -0.025em;
   line-height: 1.15;
   color: var(--text);
-  margin: 0 0 6px;
+  margin: 0 0 5px;
 }
 
 .studio-prescription-row {
@@ -2404,7 +2539,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: var(--dim);
 }
 
@@ -2424,234 +2559,79 @@
   font-weight: 700;
 }
 
-/* Dedicated Rest Timer HUD Box (#F2EFE9, border-radius: 16px, padding: 16px) */
-.studio-timer-hud-box {
-  background: #F2EFE9;
-  border-radius: 16px;
-  padding: 16px;
-  border: 1px solid color-mix(in srgb, #8C673A 18%, var(--border));
+/* Somatic Coaching & Exercise Information Strip */
+.studio-info-strip {
+  margin: 12px 24px 4px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  transition: all 0.2s var(--ease);
-}
-
-[data-theme="dark"] .studio-timer-hud-box {
-  background: var(--raised2);
-  border-color: var(--border);
-}
-
-.studio-timer-hud-box.is-resting {
-  border-color: #176A63;
-  background: color-mix(in srgb, #176A63 8%, #F2EFE9);
-}
-
-[data-theme="dark"] .studio-timer-hud-box.is-resting {
-  background: color-mix(in srgb, #176A63 12%, var(--raised2));
-}
-
-.timer-hud-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 8px;
 }
 
-.timer-hud-badge {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #8C673A;
-}
-
-.studio-timer-hud-box.is-resting .timer-hud-badge {
-  color: #176A63;
-}
-
-.timer-hud-ctrls {
+.info-strip-cue {
   display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.timer-hud-icon-btn {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--dim);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  padding: 0;
-  transition: all 0.12s var(--ease);
-}
-
-.timer-hud-icon-btn:hover {
-  background: rgba(0, 0, 0, 0.06);
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.82rem;
+  line-height: 1.45;
   color: var(--text);
 }
 
-.timer-hud-icon-btn.off {
-  color: var(--faint);
-}
-
-.timer-hud-clock-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-/* 44px bold monospace clock (tabular-nums) */
-.timer-hud-clock {
-  font-family: var(--mono);
-  font-size: 44px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-
-/* Prominent circular Play/Pause button */
-.timer-hud-play-btn {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  min-height: 48px;
-  border-radius: 50%;
-  background: #176A63;
-  color: #FFFFFF;
-  border: none;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  transition: all 0.14s var(--ease);
-  box-shadow: 0 2px 8px rgba(23, 106, 99, 0.28);
-}
-
-.timer-hud-play-btn:hover {
-  filter: brightness(1.1);
-  transform: scale(1.05);
-}
-
-.timer-hud-play-btn:active {
-  transform: scale(0.95);
-}
-
-.timer-hud-play-btn.active {
-  background: #8C673A;
-  box-shadow: 0 2px 8px rgba(140, 103, 58, 0.28);
-}
-
-/* Quick-select pills (60s, 90s, 120s, +15s) */
-.timer-hud-pills {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.timer-hud-pill {
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  background: #FFFFFF;
-  border: 1px solid var(--border);
-  color: var(--dim);
-  font-family: var(--mono);
-  font-size: 0.74rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.14s var(--ease);
-}
-
-.timer-hud-pill:hover {
-  border-color: #8C673A;
+.info-cue-sparkle {
   color: #8C673A;
-}
-
-.timer-hud-pill.active {
-  background: #176A63;
-  color: #FFFFFF;
-  border-color: #176A63;
-}
-
-.timer-hud-pill.bump {
-  color: #8C673A;
-  border-color: rgba(140, 103, 58, 0.35);
-}
-
-.timer-hud-pill.skip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(140, 103, 58, 0.1);
-  color: #8C673A;
-  border-color: rgba(140, 103, 58, 0.25);
-  font-weight: 800;
-}
-
-.timer-hud-pill.skip:hover {
-  background: #8C673A;
-  color: #FFFFFF;
-  border-color: #8C673A;
-}
-
-/* Thin bottom progress bar inside timer box that visually depletes */
-.timer-hud-progress-track {
-  width: 100%;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  flex-shrink: 0;
   margin-top: 2px;
 }
 
-.timer-hud-progress-track span {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: #176A63;
-  transition: width 0.35s linear;
+.info-cue-text {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
 }
 
-.timer-hud-disabled-state {
-  display: flex;
+.info-strip-breathing {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: #176A63;
+  padding: 5px 10px;
+  border-radius: 10px;
+  background: var(--sage-soft);
+  border: 1px solid color-mix(in srgb, #176A63 28%, var(--border));
+  align-self: flex-start;
+}
+
+.info-wind-icon {
+  flex-shrink: 0;
+  color: #176A63;
+}
+
+.info-strip-guide-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 0 2px;
-}
-
-.timer-hud-disabled-txt {
-  font-size: 0.8rem;
-  color: var(--dim);
-  font-weight: 600;
-}
-
-.timer-hud-enable-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
-  border-radius: var(--radius-full);
-  background: #176A63;
-  color: #FFFFFF;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  color: var(--text);
   font-size: 0.76rem;
   font-weight: 700;
-  border: none;
   cursor: pointer;
-  transition: all 0.14s var(--ease);
+  transition: all 0.12s var(--ease);
+  align-self: flex-start;
 }
 
-.timer-hud-enable-btn:hover {
-  filter: brightness(1.1);
+.info-strip-guide-btn:hover {
+  background: var(--raised3);
+  border-color: #8C673A;
+  color: #8C673A;
 }
 
 .studio-logger-tools {
@@ -2673,16 +2653,17 @@
   color: var(--clay);
 }
 
+/* Compact, ergonomic Sets Logger: perfectly balanced height & spacing */
 .studio-console-card .studio-logger-card {
   border: none;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  padding: 14px 24px 18px;
+  padding: 10px 24px 14px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .studio-logger-card .player-logger-header {
@@ -2696,6 +2677,69 @@
 
 .studio-logger-card .studio-logger-tools {
   flex-shrink: 0;
+}
+
+.studio-logger-card .player-sets-col-heads {
+  display: grid;
+  grid-template-columns: 44px minmax(72px, 92px) minmax(130px, 160px) minmax(130px, 160px) 68px;
+  gap: 12px;
+  padding: 0 16px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--dim);
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.studio-logger-card .player-set-row {
+  display: grid;
+  grid-template-columns: 44px minmax(72px, 92px) minmax(130px, 160px) minmax(130px, 160px) 68px;
+  gap: 12px;
+  align-items: center;
+  padding: 0 16px;
+  height: 52px;
+  min-height: 52px;
+  border-radius: 14px;
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  transition: all 0.15s var(--ease);
+}
+
+.studio-logger-card .player-set-row.next-up {
+  border-color: #8C673A;
+  background: color-mix(in srgb, #8C673A 7%, var(--raised2));
+  box-shadow: 0 0 0 2px rgba(140, 103, 58, 0.2);
+}
+
+.studio-logger-card .player-set-row.completed {
+  background: var(--sage-soft);
+  border-color: color-mix(in srgb, #176A63 35%, var(--border));
+}
+
+.studio-logger-card .set-stepper-field {
+  height: 38px;
+  max-width: 160px;
+}
+
+.studio-logger-card .set-stepper-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.studio-logger-card .player-set-input {
+  width: 38px;
+  font-size: 1.05rem;
+}
+
+.studio-logger-card .player-set-check {
+  width: 64px;
+  height: 38px;
+  min-width: 64px;
+  min-height: 38px;
+  border-radius: 19px;
 }
 
 /* Left Slide-Over Outline Drawer */
@@ -2746,19 +2790,22 @@
   }
 
   .studio-grid {
-    grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
     gap: 16px;
     align-items: stretch;
   }
 
-  .studio-hero-row {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    padding: 16px 18px 14px;
+  .studio-console-header {
+    padding: 16px 18px 12px;
   }
 
-  .studio-timer-hud-box {
-    max-width: 100%;
+  .studio-info-strip {
+    margin: 10px 18px 4px;
+    padding: 10px 14px;
+  }
+
+  .studio-console-card .studio-logger-card {
+    padding: 10px 18px 14px;
   }
 
   .studio-console-nav {
@@ -2791,14 +2838,13 @@
     display: flex;
   }
 
-  .studio-hero-row {
-    grid-template-columns: 1fr;
-    gap: 12px;
+  .studio-console-header {
     padding: 14px 14px 10px;
   }
 
-  .studio-timer-hud-box {
-    display: none;
+  .studio-info-strip {
+    margin: 8px 12px 4px;
+    padding: 10px 12px;
   }
 
   .studio-exercise-title {
