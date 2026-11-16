@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, Download, Upload, HardDrive, Check, AlertTriangle, Trash2 } from 'lucide-react';
+import { X, Download, Upload, HardDrive, Check, AlertTriangle, Trash2, Sparkles } from 'lucide-react';
 import {
   buildBackupPayload,
   clearActiveWorkoutDraft,
@@ -18,6 +18,8 @@ export function DataBackupModal({
   weeklyGoal = 4,
   activeDraft: activeDraftProp,
   onDiscardDraft,
+  onLoadDemoHistory,
+  onClearDemoHistory,
   onRestoreBackup,
   onClose,
 }) {
@@ -31,6 +33,7 @@ export function DataBackupModal({
   const draftRoutineTitle = activeDraft?.routineId
     ? (routines.find((r) => r.id === activeDraft.routineId)?.title || 'Saved session')
     : '';
+  const hasDemoSessions = workoutHistory.some((s) => String(s?.id || '').startsWith('demo-'));
 
   useBodyScrollLock();
 
@@ -212,6 +215,52 @@ export function DataBackupModal({
             aria-label="Choose backup JSON file"
           />
         </div>
+
+        {(onLoadDemoHistory || onClearDemoHistory) && (
+          <div className="data-backup-demo-box">
+            <div className="data-backup-demo-copy">
+              <span className="data-backup-demo-kicker">
+                <Sparkles size={12} /> SHOWCASE &amp; PREVIEW
+              </span>
+              <p>
+                {hasDemoSessions
+                  ? 'Sample 5-week training logs are currently active in your history.'
+                  : 'Populate 5 weeks of realistic training sessions to preview heatmaps, streaks, and muscle frequency.'}
+              </p>
+            </div>
+            {hasDemoSessions && onClearDemoHistory ? (
+              <button
+                type="button"
+                className="data-backup-discard-btn"
+                onClick={() => {
+                  onClearDemoHistory();
+                  setStatus({
+                    type: 'success',
+                    message: 'Sample demo sessions removed cleanly (your personal logs remain intact).',
+                  });
+                }}
+              >
+                <Trash2 size={13} />
+                <span>Clear Demo Data</span>
+              </button>
+            ) : onLoadDemoHistory ? (
+              <button
+                type="button"
+                className="data-backup-demo-btn"
+                onClick={() => {
+                  const added = onLoadDemoHistory();
+                  setStatus({
+                    type: 'success',
+                    message: `Loaded ${added || 15} sample sessions across the past 5 weeks.`,
+                  });
+                }}
+              >
+                <Sparkles size={13} />
+                <span>Load Demo Data</span>
+              </button>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

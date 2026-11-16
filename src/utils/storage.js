@@ -184,7 +184,7 @@ export function getLocalStorageUsageKb() {
  * Builds a portable JSON backup object containing all personal training data.
  */
 export function buildBackupPayload({ routines, exerciseDatabase, workoutHistory, theme, weeklyGoal = 4 }) {
-  const safeGoal = Math.min(7, Math.max(1, parseInt(weeklyGoal, 10) || 4));
+  const safeGoal = Math.min(7, Math.max(1, parseInt(String(weeklyGoal), 10) || 4));
   return {
     app: 'Nova Soma',
     schemaVersion: 1,
@@ -324,7 +324,7 @@ export function parseBackupPayload(rawText) {
     .filter((h) => h && typeof h === 'object' && !Array.isArray(h))
     .map((h, idx) => sanitizeHistoryRecord(h, idx));
 
-  const safeGoal = Math.min(7, Math.max(1, parseInt(weeklyGoal, 10) || 4));
+  const safeGoal = Math.min(7, Math.max(1, parseInt(String(weeklyGoal), 10) || 4));
 
   return {
     routines: sanitizedRoutines,

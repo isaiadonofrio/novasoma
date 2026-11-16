@@ -84,6 +84,7 @@ import kettlebellSuitcaseCarry from '../assets/kettlebell-suitcase-carry.jpg';
 import kettlebellSumoDeadlift from '../assets/kettlebell-sumo-deadlift.webp';
 import kettlebellWindmill from '../assets/kettlebell-windmill.jpg';
 import lyingDumbbellTricepsExtension from '../assets/lying-dumbbell-triceps-extension.webp';
+import mcgillCurlUp from '../assets/mcgill-curl-up.jpg';
 import medicineBallRussianTwist from '../assets/medicine-ball-russian-twist.webp';
 import medicineBallSlam from '../assets/medicine-ball-slam.webp';
 import mountainClimber from '../assets/mountain-climber.webp';
@@ -250,6 +251,7 @@ export const EXERCISE_MEDIA = {
   'ex-copenhagen-plank': copenhagenPlank,
   'ex-kettlebell-windmill': kettlebellWindmill,
   'ex-bird-dog': birdDog,
+  'ex-mcgill-curl-up': mcgillCurlUp,
   'ex-banded-pallof-press': bandedPallofPress,
   'ex-bicycle-crunch': bicycleCrunch,
   'ex-medicine-ball-russian-twist': medicineBallRussianTwist,

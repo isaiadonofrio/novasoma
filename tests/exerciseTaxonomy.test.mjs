@@ -72,7 +72,7 @@ test('every canonical exercise has complete standardized scientific taxonomy & b
   }
 });
 
-test('all 126 illustrated exercises have valid EXERCISE_MEDIA mappings and existing files on disk', () => {
+test('all 127 illustrated exercises have valid EXERCISE_MEDIA mappings and existing files on disk', () => {
   const mediaFilePath = path.join(ROOT_DIR, 'src', 'data', 'exerciseMedia.js');
   const mediaSource = fs.readFileSync(mediaFilePath, 'utf8');
 
@@ -88,8 +88,8 @@ test('all 126 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
     mappedIds.set(match[1], match[2]);
   }
 
-  assert.equal(importedVars.size, 126, 'Expected 126 imported exercise asset files');
-  assert.equal(mappedIds.size, 126, 'Expected 126 EXERCISE_MEDIA entries');
+  assert.equal(importedVars.size, 127, 'Expected 127 imported exercise asset files');
+  assert.equal(mappedIds.size, 127, 'Expected 127 EXERCISE_MEDIA entries');
 
   for (const [varName, assetFilename] of importedVars.entries()) {
     const absAssetPath = path.join(ROOT_DIR, 'src', 'assets', assetFilename);
@@ -103,7 +103,7 @@ test('all 126 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
     .map((ex) => ex.id)
     .filter((id) => !mappedIds.has(id));
 
-  assert.deepEqual(rawIdsWithoutIllustration, ['ex-mcgill-curl-up']);
+  assert.deepEqual(rawIdsWithoutIllustration, []);
 
   for (const [id, varName] of mappedIds.entries()) {
     assert.ok(importedVars.has(varName), `Unimported variable "${varName}" referenced by "${id}"`);

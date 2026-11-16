@@ -177,7 +177,7 @@ export function calculateBestStreak(history = []) {
   for (let i = 1; i < uniqueKeys.length; i++) {
     const prev = new Date(`${uniqueKeys[i - 1]}T12:00:00`);
     const next = new Date(`${uniqueKeys[i]}T12:00:00`);
-    const diffDays = Math.round((next - prev) / MS_PER_DAY);
+    const diffDays = Math.round((next.getTime() - prev.getTime()) / MS_PER_DAY);
     if (diffDays === 1) {
       current += 1;
       if (current > best) best = current;
@@ -284,7 +284,7 @@ export function calculateOverviewDashboardStats(routines = [], exerciseLibrary =
     if (latestKey === todayKey) {
       whenLabel = 'Today';
     } else if (latestKey) {
-      const diffDays = Math.round((new Date(`${todayKey}T12:00:00`) - new Date(`${latestKey}T12:00:00`)) / MS_PER_DAY);
+      const diffDays = Math.round((new Date(`${todayKey}T12:00:00`).getTime() - new Date(`${latestKey}T12:00:00`).getTime()) / MS_PER_DAY);
       if (diffDays === 1) whenLabel = 'Yesterday';
       else if (diffDays > 1 && diffDays < 30) whenLabel = `${diffDays}d ago`;
     }

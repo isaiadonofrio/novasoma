@@ -1,25 +1,15 @@
-import { Fragment, useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
-  X,
   Play,
   Pause,
   RotateCcw,
   Check,
-  Volume2,
-  VolumeX,
-  Clock,
   Trophy,
-  Wind,
-  AlertTriangle,
-  ArrowRight,
   ArrowLeft,
+  ArrowRight,
   BookOpen,
-  Lightbulb,
-  Activity,
-  ListChecks,
   Maximize2,
   Minimize2,
-  Flame,
   Link2,
   Timer,
   TimerOff,
@@ -50,7 +40,10 @@ import {
   shouldShowExerciseRpe
 } from '../utils/workoutSets';
 import { MediaViewer } from './MediaViewer';
-import { MiniBodyMap } from './MiniBodyMap';
+import { PlayerHeader } from './player/PlayerHeader';
+import { PlayerQueueDrawer } from './player/PlayerQueueDrawer';
+import { PlayerGuideDrawer } from './player/PlayerGuideDrawer';
+import { FinishWorkoutModal } from './player/FinishWorkoutModal';
 
 const EMPTY_EXERCISES = [];
 
@@ -1495,168 +1488,28 @@ export function ActiveWorkoutModal({
 
   return (
     <div className="workout-player-overlay">
-      {/* Balanced Studio Top Navigation Bar */}
-      <header className="player-header">
-        <div className="player-header-inner">
-          <div className="player-header-left">
-            <button
-              type="button"
-              className="player-icon-btn"
-              onClick={handleClose}
-              title="Close session (Esc)"
-              aria-label="Close session"
-            >
-              <X size={18} />
-            </button>
-            <span className="player-elapsed-clock">
-              <Clock size={12} />
-              {formatTime(workoutElapsedSeconds)}
-            </span>
-          </div>
-
-          <div className="player-session-meta">
-            <span className="player-routine-name">{routine.title}</span>
-          </div>
-
-          <div className="player-header-right">
-            {sessionVolumeKg > 0 && (
-              <span className="player-volume-chip" title="Session tonnage lifted">
-                {sessionVolumeKg.toLocaleString()} kg
-              </span>
-            )}
-            <button
-              type="button"
-              className="player-icon-btn"
-              onClick={() => setSoundEnabled((prev) => !prev)}
-              title={soundEnabled ? 'Mute sound' : 'Unmute sound'}
-              aria-label="Audio"
-            >
-              {soundEnabled ? <Volume2 size={17} /> : <VolumeX size={17} />}
-            </button>
-            <button
-              type="button"
-              className="player-finish-btn"
-              onClick={handleRequestFinish}
-            >
-              <Trophy size={15} />
-              <span>Finish</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Unified Exercise Progress Ribbon (Outline Trigger + Full-Width Progress Track + Prev/Next Cluster) */}
-      <nav className="player-workout-ribbon" aria-label="Workout timeline and navigation">
-        <button
-          type="button"
-          className={`ribbon-outline-trigger ${isQueueOpen ? 'open' : ''}`}
-          onClick={toggleQueueDrawer}
-          aria-expanded={isQueueOpen}
-          title="Open detailed Workout Outline (Q)"
-          aria-label="Toggle workout outline"
-        >
-          <ListChecks size={15} />
-          <span className="ribbon-outline-label">Outline</span>
-          <span className="ribbon-outline-count">{completedSetsCount}/{totalSetsAcrossWorkout}</span>
-        </button>
-
-        <button
-          type="button"
-          className="ribbon-step-arrow prev"
-          onClick={goToPrevBlock}
-          disabled={!prevBlockExercise}
-          title={prevBlockExercise ? `Previous: ${prevBlockExercise.name} (Left Arrow)` : 'First block in workout'}
-          aria-label={prevBlockExercise ? `Previous: ${prevBlockExercise.name}` : 'First block'}
-        >
-          <ArrowLeft size={15} />
-        </button>
-
-        <div className="ribbon-segments-track" role="list" aria-label="Exercise progress track">
-          {ribbonNodes.map((node, nodeIdx) => {
-            const pct = node.totalSets > 0 ? Math.round((node.doneSets / node.totalSets) * 100) : 0;
-            const showPhaseTag =
-              nodeIdx === 0 || ribbonNodes[nodeIdx - 1].phaseInfo.key !== node.phaseInfo.key;
-
-            return (
-              <Fragment key={node.key}>
-                {showPhaseTag && (
-                  <span className={`ribbon-phase-tag is-${node.phaseInfo.key}`}>
-                    {node.phaseInfo.shortLabel}
-                  </span>
-                )}
-                {node.type === 'superset' ? (
-                  <button
-                    ref={node.isCurrent ? activeRibbonRef : null}
-                    type="button"
-                    role="listitem"
-                    className={`ribbon-node-pill is-superset ${node.isCurrent ? 'is-current' : ''} ${node.isDone ? 'is-done' : ''} ${node.isWarmup ? 'is-warmup' : ''}`}
-                    onClick={() => goToExercise(node.startIdx)}
-                    title={`Superset ${node.ss.rangeLabel || node.ss.letter}: ${node.members.map((m, pos) => `#${node.ss.memberIndices[pos] + 1} ${m.name}`).join(' + ')} (${node.doneSets}/${node.totalSets} sets)`}
-                    aria-label={`Superset ${node.ss.rangeLabel || node.ss.letter}, ${node.doneSets} of ${node.totalSets} sets`}
-                  >
-                    {!node.isCurrent && pct > 0 && (
-                      <span className="ribbon-node-fill" style={{ width: `${pct}%` }} aria-hidden="true" />
-                    )}
-                    <span className="ribbon-node-content">
-                      <span className="ribbon-ss-tag">
-                        <Link2 size={10} />
-                        <span>{node.ss.rangeLabel || node.ss.letter}</span>
-                      </span>
-                      <span className="ribbon-node-prog">
-                        {node.isDone ? <Check size={11} strokeWidth={3} /> : `${node.doneSets}/${node.totalSets}`}
-                      </span>
-                    </span>
-                  </button>
-                ) : (
-                  <button
-                    ref={node.isCurrent ? activeRibbonRef : null}
-                    type="button"
-                    role="listitem"
-                    className={`ribbon-node-pill ${node.isCurrent ? 'is-current' : ''} ${node.isDone ? 'is-done' : ''} ${node.isWarmup ? 'is-warmup' : ''}`}
-                    onClick={() => goToExercise(node.idx)}
-                    title={`${node.idx + 1}. ${node.ex.name} (${node.doneSets}/${node.totalSets} sets)`}
-                    aria-label={`Exercise ${node.idx + 1}: ${node.ex.name}, ${node.doneSets} of ${node.totalSets} sets`}
-                  >
-                    {!node.isCurrent && pct > 0 && (
-                      <span className="ribbon-node-fill" style={{ width: `${pct}%` }} aria-hidden="true" />
-                    )}
-                    <span className="ribbon-node-content">
-                      <span className="ribbon-num-tag">
-                        {node.isDone ? <Check size={10} strokeWidth={3} /> : node.idx + 1}
-                      </span>
-                      <span className="ribbon-node-prog">
-                        {node.doneSets}/{node.totalSets}
-                      </span>
-                    </span>
-                  </button>
-                )}
-              </Fragment>
-            );
-          })}
-        </div>
-
-        {nextBlockExercise ? (
-          <button
-            type="button"
-            className={`ribbon-step-arrow next ${activeNavSetsDone ? 'ready-advance' : ''}`}
-            onClick={goToNextBlock}
-            title={`Next: ${nextBlockExercise.name} (Right Arrow)`}
-            aria-label={`Next: ${nextBlockExercise.name}`}
-          >
-            <ArrowRight size={15} />
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="ribbon-step-arrow next finish-mode ready-advance"
-            onClick={handleRequestFinish}
-            title="Finish & Save Workout"
-            aria-label="Finish and save workout"
-          >
-            <Trophy size={14} />
-          </button>
-        )}
-      </nav>
+      <PlayerHeader
+        routineTitle={routine.title}
+        workoutElapsedSeconds={workoutElapsedSeconds}
+        sessionVolumeKg={sessionVolumeKg}
+        soundEnabled={soundEnabled}
+        onToggleSound={() => setSoundEnabled((prev) => !prev)}
+        onClose={handleClose}
+        onRequestFinish={handleRequestFinish}
+        formatTime={formatTime}
+        isQueueOpen={isQueueOpen}
+        onToggleQueueDrawer={toggleQueueDrawer}
+        completedSetsCount={completedSetsCount}
+        totalSetsAcrossWorkout={totalSetsAcrossWorkout}
+        prevBlockExercise={prevBlockExercise}
+        nextBlockExercise={nextBlockExercise}
+        onGoToPrevBlock={goToPrevBlock}
+        onGoToNextBlock={goToNextBlock}
+        ribbonNodes={ribbonNodes}
+        activeRibbonRef={activeRibbonRef}
+        onGoToExercise={goToExercise}
+        activeNavSetsDone={activeNavSetsDone}
+      />
 
       {/* Main Focused Studio Stage */}
       <main className="player-main-stage">
@@ -2118,447 +1971,48 @@ export function ActiveWorkoutModal({
         </div>
       </div>
 
-      {/* Slide-Over Workout Outline Drawer (opens via Ribbon Outline trigger or 'Q') */}
-      {isQueueOpen && (
-        <div
-          className="guide-drawer-backdrop queue-overlay-left"
-          onClick={() => setIsQueueOpen(false)}
-          role="presentation"
-        >
-          <aside
-            className="player-queue-rail overlay-drawer"
-            role="dialog"
-            aria-modal="true"
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Workout exercise outline"
-          >
-            <div className="player-queue-head">
-              <div className="queue-head-top-row">
-                <div className="queue-head-title-stack">
-                  <div className="queue-kicker-row">
-                    <div className="player-queue-head-title">
-                      <ListChecks size={15} />
-                      <span>WORKOUT OUTLINE</span>
-                    </div>
-                    <span className={`player-phase-tag is-${currentPhase.key}`}>{currentPhase.label}</span>
-                  </div>
-                  <h2 className="queue-routine-title">{routine.title}</h2>
-                </div>
-                <button
-                  type="button"
-                  className="player-queue-close-btn"
-                  onClick={() => setIsQueueOpen(false)}
-                  aria-label="Close outline"
-                >
-                  <X size={16} />
-                </button>
-              </div>
+      <PlayerQueueDrawer
+        isOpen={isQueueOpen}
+        onClose={() => setIsQueueOpen(false)}
+        currentPhase={currentPhase}
+        routineTitle={routine.title}
+        completedSetsCount={completedSetsCount}
+        totalSetsAcrossWorkout={totalSetsAcrossWorkout}
+        completedExercisesCount={completedExercisesCount}
+        totalExercisesCount={exercises.length}
+        workoutElapsedSeconds={workoutElapsedSeconds}
+        formatTime={formatTime}
+        warmupQueueItems={warmupQueueItems}
+        mainQueueItems={mainQueueItems}
+        decompressionQueueItems={decompressionQueueItems}
+        renderPhaseQueueEntries={renderPhaseQueueEntries}
+      />
 
-              <div className="queue-stats-strip">
-                <div className="queue-stat-box">
-                  <span className="queue-stat-label">SETS</span>
-                  <strong className="queue-stat-value">{completedSetsCount}/{totalSetsAcrossWorkout}</strong>
-                </div>
-                <div className="queue-stat-box">
-                  <span className="queue-stat-label">EXERCISES</span>
-                  <strong className="queue-stat-value">{completedExercisesCount}/{exercises.length}</strong>
-                </div>
-                <div className="queue-stat-box">
-                  <span className="queue-stat-label">ELAPSED</span>
-                  <strong className="queue-stat-value">{formatTime(workoutElapsedSeconds)}</strong>
-                </div>
-              </div>
+      <PlayerGuideDrawer
+        isOpen={isGuideOpen}
+        onClose={closeGuideDrawer}
+        guideExercise={guideExercise}
+        guidePhaseInfo={guidePhaseInfo}
+        guidePrimaryMuscleName={guidePrimaryMuscleName}
+        guideVariations={guideVariations}
+        currentSuperset={currentSuperset}
+        supersetMembers={supersetMembers}
+        resolvedGuideIdx={resolvedGuideIdx}
+        onSelectGuideExercise={setGuideExerciseIdx}
+        guideTab={guideTab}
+        onSelectGuideTab={setGuideTab}
+        guideExecution={guideExecution}
+        guideCommonMistakes={guideCommonMistakes}
+      />
 
-              <div className="queue-overall-progress">
-                <div className="queue-overall-meta">
-                  <span>Session Completion</span>
-                  <strong>{totalSetsAcrossWorkout > 0 ? Math.round((completedSetsCount / totalSetsAcrossWorkout) * 100) : 0}%</strong>
-                </div>
-                <div className="queue-overall-bar" aria-hidden="true">
-                  <span style={{ width: `${totalSetsAcrossWorkout > 0 ? Math.round((completedSetsCount / totalSetsAcrossWorkout) * 100) : 0}%` }} />
-                </div>
-              </div>
-            </div>
-
-            <div className="player-queue-scroll">
-              {warmupQueueItems.length > 0 && (
-                <div className="player-queue-group">
-                  <div className="player-queue-group-label is-warmup">
-                    <Flame size={13} />
-                    <span>WARM-UP &amp; MOBILITY</span>
-                    <small>{warmupQueueItems.length}</small>
-                  </div>
-                  <div className="player-queue-items">
-                    {renderPhaseQueueEntries(warmupQueueItems)}
-                  </div>
-                </div>
-              )}
-
-              {mainQueueItems.length > 0 && (
-                <div className="player-queue-group">
-                  <div className="player-queue-group-label is-main">
-                    <Dumbbell size={13} />
-                    <span>MAIN WORKOUT</span>
-                    <small>{mainQueueItems.length}</small>
-                  </div>
-                  <div className="player-queue-items">
-                    {renderPhaseQueueEntries(mainQueueItems)}
-                  </div>
-                </div>
-              )}
-
-              {decompressionQueueItems.length > 0 && (
-                <div className="player-queue-group">
-                  <div className="player-queue-group-label is-decompression">
-                    <Wind size={13} />
-                    <span>DECOMPRESSION</span>
-                    <small>{decompressionQueueItems.length}</small>
-                  </div>
-                  <div className="player-queue-items">
-                    {renderPhaseQueueEntries(decompressionQueueItems)}
-                  </div>
-                </div>
-              )}
-            </div>
-          </aside>
-        </div>
-      )}
-
-      {/* Pull-Out Form, Anatomy & Guide Drawer (opens via Form button or 'G') */}
-      {isGuideOpen && (
-        <div
-          className="guide-drawer-backdrop"
-          onClick={closeGuideDrawer}
-          role="presentation"
-        >
-          <aside
-            className="guide-pullout-drawer"
-            role="dialog"
-            aria-modal="true"
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Exercise Technique & Anatomy Guide"
-          >
-            <div className="drawer-sheet-handle" aria-hidden="true" />
-            <div className="guide-drawer-header">
-              <div className="guide-header-copy">
-                <div className="guide-kicker-row">
-                  <span className={`guide-phase-pill is-${guidePhaseInfo.key}`}>{guidePhaseInfo.label}</span>
-                  <span className="guide-drawer-kicker">
-                    {guideExercise.pattern || guidePrimaryMuscleName}
-                  </span>
-                </div>
-                <h2>{guideExercise.name}</h2>
-                {guideExercise.scientificName && (
-                  <p className="guide-drawer-sci">{guideExercise.scientificName}</p>
-                )}
-
-                <div className="guide-meta-pills">
-                  <span className="guide-meta-pill">{guideExercise.equipment || 'Bodyweight'}</span>
-                  {guideExercise.mechanics && <span className="guide-meta-pill">{guideExercise.mechanics}</span>}
-                  {guideExercise.level && <span className="guide-meta-pill">{guideExercise.level}</span>}
-                  <span className="guide-meta-pill">Target {formatTargetPrescription(guideExercise)}</span>
-                  {shouldShowExerciseRpe(guideExercise) && (
-                    <span className="guide-meta-pill is-accent">RPE {guideExercise.rpe}</span>
-                  )}
-                </div>
-
-                {guideExercise.biomechanics && (
-                  <div className="guide-biomech-strip">
-                    <div className="guide-biomech-cell">
-                      <span className="guide-biomech-label">Joint Action</span>
-                      <span className="guide-biomech-val">{guideExercise.biomechanics.jointActions}</span>
-                    </div>
-                    <div className="guide-biomech-cell">
-                      <span className="guide-biomech-label">Plane &amp; Vector</span>
-                      <span className="guide-biomech-val">
-                        {guideExercise.biomechanics.plane} · {guideExercise.biomechanics.loadVector}
-                      </span>
-                    </div>
-                    <div className="guide-biomech-cell">
-                      <span className="guide-biomech-label">Resistance Profile</span>
-                      <span className="guide-biomech-val">{guideExercise.biomechanics.resistanceProfile}</span>
-                    </div>
-                  </div>
-                )}
-
-                {guideVariations.length > 0 && (
-                  <div className="guide-family-strip">
-                    <span className="guide-family-label">
-                      Movement Family: {guideExercise.familyName}
-                    </span>
-                    <div className="guide-family-chips">
-                      {guideVariations.slice(0, 4).map((v) => (
-                        <span key={v.id} className="guide-family-chip">
-                          <b>{v.variationType}</b> {v.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {currentSuperset && supersetMembers.length > 1 && (
-                  <div className="guide-partner-switcher" role="group" aria-label={`Inspect Superset ${currentSuperset.rangeLabel || currentSuperset.letter} form guide`}>
-                    {supersetMembers.map((m) => (
-                      <button
-                        key={m.ex.id || m.mIdx}
-                        type="button"
-                        className={`guide-partner-pill ${resolvedGuideIdx === m.mIdx ? 'active' : ''}`}
-                        onClick={() => setGuideExerciseIdx(m.mIdx)}
-                      >
-                        <span className="guide-partner-num">#{m.code}</span>
-                        <span>{m.ex.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <button
-                type="button"
-                className="player-icon-btn guide-close-btn"
-                onClick={closeGuideDrawer}
-                aria-label="Close guide"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {(guideExercise.illustration || guideExercise.muscleKey || guideExercise.targetMuscles) && (
-              <div className="guide-muscles-block guide-anatomy-showcase">
-                <div className="guide-visual-pair">
-                  {guideExercise.illustration && (
-                    <div className="guide-visual-thumb">
-                      <img src={guideExercise.illustration} alt={guideExercise.name} loading="eager" />
-                    </div>
-                  )}
-                  {guideExercise.muscleKey && (
-                    <div className="guide-anatomy-bodymap">
-                      <MiniBodyMap
-                        primaryKeys={[guideExercise.muscleKey]}
-                        secondaryKeys={guideExercise.secondaryKeys || []}
-                        className="guide-mini-body"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {guideExercise.targetMuscles && (
-                  <div className="guide-anatomy-tags">
-                    <div className="guide-muscles-title">
-                      <Activity size={13} />
-                      <span>TARGET MUSCLES</span>
-                    </div>
-                    {(guideExercise.targetMuscles.primary || []).length > 0 && (
-                      <div className="guide-muscle-group">
-                        <span className="guide-muscle-group-label">Primary</span>
-                        <div className="guide-muscle-chips">
-                          {guideExercise.targetMuscles.primary.map((m, i) => (
-                            <span key={`p-${i}`} className="guide-chip primary">{m}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {(guideExercise.targetMuscles.secondary || []).length > 0 && (
-                      <div className="guide-muscle-group">
-                        <span className="guide-muscle-group-label">Secondary</span>
-                        <div className="guide-muscle-chips">
-                          {guideExercise.targetMuscles.secondary.map((m, i) => (
-                            <span key={`s-${i}`} className="guide-chip secondary">{m}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {(guideExercise.targetMuscles.stabilizers || []).length > 0 && (
-                      <div className="guide-muscle-group">
-                        <span className="guide-muscle-group-label">Stabilizers</span>
-                        <div className="guide-muscle-chips">
-                          {guideExercise.targetMuscles.stabilizers.map((m, i) => (
-                            <span key={`st-${i}`} className="guide-chip">{m}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="guide-tabs-bar-wrap">
-              <div className="guide-tabs-bar" role="tablist">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={guideTab === 'cues'}
-                  className={`guide-tab-btn ${guideTab === 'cues' ? 'active' : ''}`}
-                  onClick={() => setGuideTab('cues')}
-                >
-                  Execution &amp; Phases
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={guideTab === 'mistakes'}
-                  className={`guide-tab-btn ${guideTab === 'mistakes' ? 'active' : ''}`}
-                  onClick={() => setGuideTab('mistakes')}
-                >
-                  Mistakes &amp; Coach Cue
-                </button>
-              </div>
-            </div>
-
-            <div className="guide-drawer-scroll">
-              {guideTab === 'cues' ? (
-                <div className="cues-list">
-                  {guideExecution.setup && (
-                    <div className="cue-row">
-                      <span className="cue-num">1</span>
-                      <div>
-                        <strong>Setup &amp; Alignment</strong>
-                        <p>{guideExecution.setup}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {guideExecution.eccentric && (
-                    <div className="cue-row">
-                      <span className="cue-num">2</span>
-                      <div>
-                        <strong>Lowering Phase (Eccentric)</strong>
-                        <p>{guideExecution.eccentric}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {guideExecution.concentric && (
-                    <div className="cue-row">
-                      <span className="cue-num">3</span>
-                      <div>
-                        <strong>Drive Phase (Concentric)</strong>
-                        <p>{guideExecution.concentric}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {guideExecution.breathing && (
-                    <div className="cues-breathing-pill">
-                      <Wind size={15} />
-                      <span><strong>Breathing:</strong> {guideExecution.breathing}</span>
-                    </div>
-                  )}
-
-                  {guideExecution.proTip && (
-                    <div className="pro-tip-footer">
-                      <div className="protip-label-row">
-                        <Lightbulb size={14} />
-                        <strong>COACH CUE</strong>
-                      </div>
-                      <p>{guideExecution.proTip}</p>
-                    </div>
-                  )}
-
-                  {!guideExecution.setup && !guideExecution.eccentric && !guideExecution.concentric && !guideExecution.breathing && !guideExecution.proTip && (
-                    <p className="cues-empty-note">No technique notes entered for this exercise.</p>
-                  )}
-                </div>
-              ) : (
-                <div className="mistakes-pane-inner">
-                  <div className="mistakes-heading">
-                    <AlertTriangle size={15} color="var(--danger)" />
-                    <span>Common Mistakes to Avoid</span>
-                  </div>
-                  {guideCommonMistakes.length > 0 ? (
-                    <div className="guide-mistakes-cards">
-                      {guideCommonMistakes.map((err, i) => (
-                        <div key={i} className="guide-mistake-card">
-                          <span className="guide-mistake-icon" aria-hidden="true">
-                            <AlertTriangle size={14} />
-                          </span>
-                          <p>{err}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="cues-empty-note">No common mistakes recorded.</p>
-                  )}
-                  {guideExecution.proTip && (
-                    <div className="pro-tip-footer">
-                      <div className="protip-label-row">
-                        <Lightbulb size={14} />
-                        <strong>COACH CUE</strong>
-                      </div>
-                      <p>{guideExecution.proTip}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </aside>
-        </div>
-      )}
-
-      {/* Finish Confirmation Guard Dialog */}
-      {confirmFinishOpen && (
-        <div className="modal-backdrop finish-confirm-backdrop" role="dialog" aria-modal="true" aria-labelledby="finish-dialog-title">
-          <div className="finish-confirm-card">
-            <div className="finish-confirm-header">
-              <div className="finish-confirm-icon-wrap">
-                {completedSetsCount === 0 ? <AlertTriangle size={22} color="var(--warn)" /> : <Trophy size={22} color="var(--bronze)" />}
-              </div>
-              <h3 id="finish-dialog-title" className="finish-confirm-title">
-                {completedSetsCount === 0 ? 'No Sets Completed' : 'Finish Workout Early?'}
-              </h3>
-            </div>
-            <p className="finish-confirm-desc">
-              {completedSetsCount === 0
-                ? 'You have not checked off any completed sets yet. Would you like to discard this workout or save an empty session to history?'
-                : `You have completed ${completedSetsCount} of ${totalSetsAcrossWorkout} planned sets. Would you like to finish and save your progress now?`}
-            </p>
-            <div className="finish-confirm-actions">
-              {completedSetsCount === 0 ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn-gymmane-secondary finish-btn-cancel"
-                    onClick={() => setConfirmFinishOpen(false)}
-                  >
-                    Keep Working
-                  </button>
-                  <button
-                    type="button"
-                    className="finish-btn-discard"
-                    onClick={handleDiscardWorkout}
-                  >
-                    Discard Session
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-gymmane-primary finish-btn-save"
-                    onClick={handleConfirmFinish}
-                  >
-                    Save Anyway
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    className="btn-gymmane-secondary finish-btn-cancel"
-                    onClick={() => setConfirmFinishOpen(false)}
-                  >
-                    Resume Workout
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-gymmane-primary finish-btn-save"
-                    onClick={handleConfirmFinish}
-                  >
-                    Finish &amp; Save ({completedSetsCount}/{totalSetsAcrossWorkout})
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <FinishWorkoutModal
+        isOpen={confirmFinishOpen}
+        completedSetsCount={completedSetsCount}
+        totalSetsAcrossWorkout={totalSetsAcrossWorkout}
+        onClose={() => setConfirmFinishOpen(false)}
+        onDiscard={handleDiscardWorkout}
+        onConfirmFinish={handleConfirmFinish}
+      />
     </div>
   );
 }

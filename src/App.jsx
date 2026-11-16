@@ -5,6 +5,7 @@ import { EXERCISE_DATABASE } from './data/exerciseDatabase';
 import { calculateSessionVolumeKg } from './utils/analytics';
 import { formatLoggedSetSummary } from './utils/workoutSets';
 import { getRoundedDurationMinutes, getSessionDurationSeconds } from './utils/formatting';
+import { buildDemoWorkoutHistory } from './utils/demoData';
 import {
   STORAGE_KEYS,
   STORAGE_ERROR_EVENT,
@@ -478,6 +479,21 @@ export function App() {
     setWorkoutHistory(prev => [sessionData, ...prev]);
   };
 
+  const handleLoadDemoHistory = () => {
+    const demoEntries = buildDemoWorkoutHistory(routines);
+    setWorkoutHistory(prev => {
+      const nonDemo = prev.filter((s) => !String(s?.id || '').startsWith('demo-'));
+      return [...demoEntries, ...nonDemo].sort(
+        (a, b) => new Date(b.date || b.completedAt || 0).getTime() - new Date(a.date || a.completedAt || 0).getTime()
+      );
+    });
+    return demoEntries.length;
+  };
+
+  const handleClearDemoHistory = () => {
+    setWorkoutHistory(prev => prev.filter((s) => !String(s?.id || '').startsWith('demo-')));
+  };
+
   const handleWorkoutComplete = (summaryData) => {
     const nowIso = new Date().toISOString();
     const durationSeconds = getSessionDurationSeconds(summaryData);
@@ -697,6 +713,8 @@ export function App() {
           weeklyGoal={weeklyGoal}
           activeDraft={activeDraft}
           onDiscardDraft={handleDiscardDraft}
+          onLoadDemoHistory={handleLoadDemoHistory}
+          onClearDemoHistory={handleClearDemoHistory}
           onRestoreBackup={handleRestoreBackup}
           onClose={() => setIsDataModalOpen(false)}
         />
