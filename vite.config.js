@@ -20,7 +20,7 @@ export default defineConfig({
             },
             {
               name: 'exercise-data',
-              test: /[\\/]src[\\/]data[\\/]exercise(Database|Media)\.js$/,
+              test: /[\\/]src[\\/]data[\\/](exerciseDatabase|exerciseMedia|exerciseTaxonomy|exerciseConstants|exercises[\\/]).*\.js$/,
             },
           ],
         },

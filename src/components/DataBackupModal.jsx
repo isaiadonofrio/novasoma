@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, Download, Upload, HardDrive, Check, AlertTriangle } from 'lucide-react';
+import { X, Download, Upload, HardDrive, Check, AlertTriangle, Trash2 } from 'lucide-react';
 import {
-  STORAGE_KEYS,
   buildBackupPayload,
+  clearActiveWorkoutDraft,
   getLocalStorageUsageKb,
   parseBackupPayload,
-  safeReadJson,
+  readActiveWorkoutDraft,
 } from '../utils/storage';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 import { useFocusTrap } from '../utils/useFocusTrap';
@@ -16,14 +16,21 @@ export function DataBackupModal({
   workoutHistory,
   theme,
   weeklyGoal = 4,
+  activeDraft: activeDraftProp,
+  onDiscardDraft,
   onRestoreBackup,
   onClose,
 }) {
   const fileInputRef = useRef(null);
   const trapRef = useFocusTrap(true);
   const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: string }
+  const [draftDismissed, setDraftDismissed] = useState(false);
   const usageKb = getLocalStorageUsageKb();
-  const activeDraft = safeReadJson(STORAGE_KEYS.ACTIVE_DRAFT, null);
+  const resolvedDraft = activeDraftProp !== undefined ? activeDraftProp : readActiveWorkoutDraft();
+  const activeDraft = draftDismissed ? null : resolvedDraft;
+  const draftRoutineTitle = activeDraft?.routineId
+    ? (routines.find((r) => r.id === activeDraft.routineId)?.title || 'Saved session')
+    : '';
 
   useBodyScrollLock();
 
@@ -143,8 +150,28 @@ export function DataBackupModal({
 
         {activeDraft?.routineId && (
           <div className="data-backup-draft-note">
-            <HardDrive size={14} />
-            <span>An unfinished workout session draft is saved locally and will resume automatically.</span>
+            <div className="data-backup-draft-info">
+              <HardDrive size={14} />
+              <span>
+                Unfinished draft saved for <strong>{draftRoutineTitle}</strong> — will resume automatically when opened.
+              </span>
+            </div>
+            <button
+              type="button"
+              className="data-backup-discard-btn"
+              onClick={() => {
+                clearActiveWorkoutDraft();
+                setDraftDismissed(true);
+                onDiscardDraft?.();
+                setStatus({
+                  type: 'success',
+                  message: 'Saved unfinished workout draft discarded.',
+                });
+              }}
+            >
+              <Trash2 size={13} />
+              <span>Discard Draft</span>
+            </button>
           </div>
         )}
 
@@ -175,6 +202,8 @@ export function DataBackupModal({
           </button>
 
           <input
+            id="backup-restore-file"
+            name="backup-restore-file"
             ref={fileInputRef}
             type="file"
             accept=".json,application/json"

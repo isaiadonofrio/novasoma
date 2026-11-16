@@ -11,6 +11,7 @@ export const DEFAULT_REST_SECONDS = 60;
 export const DEFAULT_SUPERSET_REST_SECONDS = 90;
 export const DEFAULT_SETS = 3;
 export const DEFAULT_REPS = '10';
+export const DEFAULT_RPE = '8';
 
 export const DRAFT_AUTOSAVE_INTERVAL_MS = 30_000;
 export const SAVE_NOTICE_TIMEOUT_MS = 3200;

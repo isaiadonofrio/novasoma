@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   X,
   BookOpen,
@@ -9,32 +9,43 @@ import {
   Lightbulb,
   Clock,
   Flame,
-  Repeat
+  Repeat,
+  GitBranch,
+  GraduationCap
 } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels.js';
+import {
+  enrichExerciseWithTaxonomy,
+  getExerciseVariations,
+  SCIENTIFIC_SOURCES
+} from '../data/exerciseTaxonomy.js';
 import { MediaViewer } from './MediaViewer.jsx';
 import { MiniBodyMap } from './MiniBodyMap.jsx';
-import { isBodyweightEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
+import { getRequiresEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
+import { shouldShowExerciseRpe } from '../utils/workoutSets.js';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock.js';
 import { useFocusTrap } from '../utils/useFocusTrap.js';
 
 export function ExerciseDetailModal({
   exercise,
+  allExercises = [],
+  onSelectExercise,
   onClose
 }) {
   const [activeTab, setActiveTab] = useState('form'); // 'form' | 'anatomy'
+  const [showSourcesInfo, setShowSourcesInfo] = useState(false);
   const trapRef = useFocusTrap(Boolean(exercise));
   const scrollRef = useRef(null);
 
   // Prevent background scrolling while exercise guide is open
   useBodyScrollLock(Boolean(exercise));
 
-  // Reset scroll to top when toggling between tabs
+  // Reset scroll to top when toggling between tabs or switching exercises
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = 0;
     }
-  }, [activeTab]);
+  }, [activeTab, exercise?.id]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -44,45 +55,55 @@ export function ExerciseDetailModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  if (!exercise) return null;
+  const enrichedExercise = useMemo(() => {
+    if (!exercise) return null;
+    if (exercise.biomechanics && exercise.familyId) return exercise;
+    return enrichExerciseWithTaxonomy(exercise);
+  }, [exercise]);
 
-  const usesGear = typeof exercise.requiresEquipment === 'boolean'
-    ? exercise.requiresEquipment
-    : !isBodyweightEquipment(exercise.equipment);
+  const siblingVariations = useMemo(
+    () => getExerciseVariations(enrichedExercise, allExercises),
+    [enrichedExercise, allExercises]
+  );
 
-  const primaryMuscle = MUSCLE_LABELS[exercise.muscleKey] || exercise.muscleKey || 'Full Body';
-  const mechanicsLabel = exercise.mechanics || (exercise.isWarmup ? 'Mobility' : 'Compound');
-  const levelLabel = exercise.level || 'Intermediate';
-  const equipLabel = usesGear ? (exercise.equipment || 'Equipment') : 'Bodyweight';
-  const isGif = isAnimatedGifUrl(exercise.illustration);
+  if (!enrichedExercise) return null;
 
-  const executionSteps = exercise.execution
+  const usesGear = getRequiresEquipment(enrichedExercise);
+
+  const primaryMuscle = MUSCLE_LABELS[enrichedExercise.muscleKey] || enrichedExercise.muscleKey || 'Full Body';
+  const mechanicsLabel = enrichedExercise.mechanics || (enrichedExercise.isWarmup ? 'Mobility' : 'Compound');
+  const levelLabel = enrichedExercise.level || 'Intermediate';
+  const equipLabel = usesGear ? (enrichedExercise.equipment || 'Equipment') : 'Bodyweight';
+  const isGif = isAnimatedGifUrl(enrichedExercise.illustration);
+  const bio = enrichedExercise.biomechanics || null;
+
+  const executionSteps = enrichedExercise.execution
     ? [
-        exercise.execution.setup && {
+        enrichedExercise.execution.setup && {
           step: '01',
-          title: 'Setup & Stance',
-          text: exercise.execution.setup
+          title: 'Setup & Alignment',
+          text: enrichedExercise.execution.setup
         },
-        exercise.execution.eccentric && {
+        enrichedExercise.execution.eccentric && {
           step: '02',
-          title: 'Lowering (Eccentric)',
-          text: exercise.execution.eccentric
+          title: 'Lowering Phase (Eccentric)',
+          text: enrichedExercise.execution.eccentric
         },
-        exercise.execution.concentric && {
+        enrichedExercise.execution.concentric && {
           step: '03',
-          title: 'Execution & Lockout (Concentric)',
-          text: exercise.execution.concentric
+          title: 'Drive & Lockout (Concentric)',
+          text: enrichedExercise.execution.concentric
         },
-        exercise.execution.breathing && {
+        enrichedExercise.execution.breathing && {
           step: '04',
-          title: 'Breathing Cadence',
-          text: exercise.execution.breathing
+          title: 'Breathing & Bracing',
+          text: enrichedExercise.execution.breathing
         }
       ].filter(Boolean)
     : [];
 
-  const formattedRest = exercise.defaultRestSeconds
-    ? `${Math.floor(exercise.defaultRestSeconds / 60)}m${exercise.defaultRestSeconds % 60 ? ` ${exercise.defaultRestSeconds % 60}s` : ''}`
+  const formattedRest = enrichedExercise.defaultRestSeconds
+    ? `${Math.floor(enrichedExercise.defaultRestSeconds / 60)}m${enrichedExercise.defaultRestSeconds % 60 ? ` ${enrichedExercise.defaultRestSeconds % 60}s` : ''}`
     : '90s';
 
   return (
@@ -103,15 +124,22 @@ export function ExerciseDetailModal({
           <div className="db-dialog-header-info">
             <div className="db-detail-badges-row">
               <span className="detail-pattern-kicker">
-                {exercise.pattern || 'Movement Guide'}
+                {enrichedExercise.pattern || 'Movement Guide'}
               </span>
-              {exercise.isWarmup && (
+              {enrichedExercise.isWarmup && (
                 <span className="detail-warmup-tag">Warm-Up</span>
               )}
+              <span className="detail-meta-chip">{mechanicsLabel}</span>
+              <span className="detail-meta-chip">{levelLabel}</span>
+              {enrichedExercise.variationType && (
+                <span className="detail-variation-type-chip" title={enrichedExercise.variationLabel || ''}>
+                  {enrichedExercise.variationType}
+                </span>
+              )}
             </div>
-            <h2 id="exercise-detail-title" className="db-dialog-title">{exercise.name}</h2>
+            <h2 id="exercise-detail-title" className="db-dialog-title">{enrichedExercise.name}</h2>
             <p className="db-dialog-scientific">
-              {exercise.scientificName || exercise.subtitle}
+              {enrichedExercise.scientificName || enrichedExercise.subtitle}
             </p>
           </div>
 
@@ -133,11 +161,11 @@ export function ExerciseDetailModal({
           {/* Left Stage: Media & Functional Biomechanical Dossier */}
           <aside className="db-guide-left-stage">
             <div className="db-guide-media-frame">
-              {exercise.illustration ? (
+              {enrichedExercise.illustration ? (
                 <>
                   <img
-                    src={exercise.illustration}
-                    alt={`${exercise.name} movement demonstration`}
+                    src={enrichedExercise.illustration}
+                    alt={`${enrichedExercise.name} movement demonstration`}
                     className="db-detail-media-img"
                   />
                   {isGif && (
@@ -152,11 +180,11 @@ export function ExerciseDetailModal({
               )}
             </div>
 
-            {exercise.customVideoUrl && (
+            {enrichedExercise.customVideoUrl && (
               <div className="spotlight-video-wrapper">
                 <MediaViewer
-                  src={exercise.customVideoUrl}
-                  alt={exercise.name}
+                  src={enrichedExercise.customVideoUrl}
+                  alt={enrichedExercise.name}
                   className="spotlight-video-frame"
                   autoPlay={false}
                 />
@@ -173,23 +201,31 @@ export function ExerciseDetailModal({
                 </span>
               </div>
 
-              {/* Functional Specs Grid */}
+              {/* Authoritative Kinesiology Specs Grid */}
               <div className="guide-overview-specs-grid">
                 <div className="guide-spec-tile">
-                  <span className="spec-tile-label">MOVEMENT PATTERN</span>
-                  <span className="spec-tile-value highlight">{exercise.pattern || 'Functional'}</span>
+                  <span className="spec-tile-label">JOINT ARTICULATION</span>
+                  <span className="spec-tile-value wrap highlight">
+                    {bio?.jointActions || enrichedExercise.pattern || 'Functional'}
+                  </span>
                 </div>
                 <div className="guide-spec-tile">
-                  <span className="spec-tile-label">TARGET AGONIST</span>
-                  <span className="spec-tile-value primary-muscle">{primaryMuscle}</span>
+                  <span className="spec-tile-label">PLANE &amp; LOAD VECTOR</span>
+                  <span className="spec-tile-value wrap">
+                    {bio ? `${bio.plane} · ${bio.loadVector}` : primaryMuscle}
+                  </span>
                 </div>
                 <div className="guide-spec-tile">
                   <span className="spec-tile-label">KINETIC CHAIN</span>
-                  <span className="spec-tile-value">{mechanicsLabel}</span>
+                  <span className="spec-tile-value wrap">
+                    {bio ? `${bio.chain} · ${bio.laterality}` : mechanicsLabel}
+                  </span>
                 </div>
                 <div className="guide-spec-tile">
-                  <span className="spec-tile-label">DIFFICULTY TIER</span>
-                  <span className="spec-tile-value">{levelLabel}</span>
+                  <span className="spec-tile-label">RESISTANCE PROFILE</span>
+                  <span className="spec-tile-value wrap">
+                    {bio?.resistanceProfile || levelLabel}
+                  </span>
                 </div>
               </div>
 
@@ -197,17 +233,19 @@ export function ExerciseDetailModal({
               <div className="guide-prescription-box">
                 <div className="prescription-header">
                   <span className="prescription-kicker">TRAINING PRESCRIPTION</span>
-                  <span className="prescription-rpe-tag" title="Target Rate of Perceived Exertion">
-                    <Flame size={12} />
-                    <span>RPE {exercise.rpe || '7-8'}</span>
-                  </span>
+                  {shouldShowExerciseRpe(enrichedExercise) && (
+                    <span className="prescription-rpe-tag" title="Target Rate of Perceived Exertion">
+                      <Flame size={12} />
+                      <span>RPE {enrichedExercise.rpe}</span>
+                    </span>
+                  )}
                 </div>
 
                 <div className="prescription-metrics-row">
                   <div className="prescription-metric-cell">
                     <Repeat size={14} className="cell-icon" />
                     <div className="cell-copy">
-                      <span className="cell-num">{exercise.defaultSets || 3} × {exercise.defaultReps || '8-12'}</span>
+                      <span className="cell-num">{enrichedExercise.defaultSets || 3} × {enrichedExercise.defaultReps || '8-12'}</span>
                       <span className="cell-sub">Working Volume</span>
                     </div>
                   </div>
@@ -221,10 +259,33 @@ export function ExerciseDetailModal({
                   </div>
                 </div>
               </div>
+
+              {/* Scientific Reference Attribution */}
+              <div className="guide-scientific-sources-box">
+                <button
+                  type="button"
+                  className="sources-toggle-btn"
+                  onClick={() => setShowSourcesInfo((prev) => !prev)}
+                  aria-expanded={showSourcesInfo}
+                >
+                  <GraduationCap size={13} />
+                  <span>Standards: NSCA (4th Ed.) · ExRx · Terminologia Anatomica</span>
+                  <span className="sources-toggle-caret">{showSourcesInfo ? 'Hide' : 'Sources'}</span>
+                </button>
+                {showSourcesInfo && (
+                  <ul className="sources-detail-list">
+                    {SCIENTIFIC_SOURCES.map((src) => (
+                      <li key={src.id}>
+                        <strong>{src.citation}:</strong> {src.scope}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
           </aside>
 
-          {/* Right Stage: Cues & Anatomy */}
+          {/* Right Stage: Cues, Variations & Anatomy */}
           <div className="db-guide-right-pane">
             <div className="db-guide-tabs-bar" role="tablist">
               <button
@@ -235,7 +296,7 @@ export function ExerciseDetailModal({
                 onClick={() => setActiveTab('form')}
               >
                 <BookOpen size={14} />
-                <span>Form & Execution</span>
+                <span>Form &amp; Execution</span>
               </button>
               <button
                 type="button"
@@ -245,13 +306,54 @@ export function ExerciseDetailModal({
                 onClick={() => setActiveTab('anatomy')}
               >
                 <Activity size={14} />
-                <span>Muscles & Anatomy</span>
+                <span>Muscles &amp; Anatomy</span>
               </button>
             </div>
 
             <div className="db-guide-right-scroll" ref={scrollRef}>
               {activeTab === 'form' && (
                 <div className="guide-panel animate-fade">
+                  {/* Movement Family & Sibling Variations */}
+                  {enrichedExercise.familyName && siblingVariations.length > 0 && (
+                    <div className="editorial-cues-card variations-card">
+                      <div className="cues-card-header variations-header">
+                        <GitBranch size={15} color="var(--teal)" />
+                        <div>
+                          <h4>Movement Family: {enrichedExercise.familyName}</h4>
+                          <p className="variations-subtitle">
+                            Current: <b>{enrichedExercise.variationLabel}</b> · {siblingVariations.length} related variation{siblingVariations.length === 1 ? '' : 's'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="variations-pills-grid">
+                        {siblingVariations.map((variant) => {
+                          const canSelect = typeof onSelectExercise === 'function';
+                          const PillTag = canSelect ? 'button' : 'div';
+                          return (
+                            <PillTag
+                              key={variant.id}
+                              {...(canSelect ? {
+                                type: 'button',
+                                onClick: () => onSelectExercise(variant),
+                                title: `Switch to ${variant.name}`
+                              } : {})}
+                              className={`variation-sibling-pill ${canSelect ? 'is-clickable' : ''}`}
+                            >
+                              <span className="variation-pill-top">
+                                <span className="variation-type-tag">{variant.variationType || 'Variant'}</span>
+                                <span className="variation-equip-tag">{variant.equipment || 'Bodyweight'}</span>
+                              </span>
+                              <span className="variation-pill-name">{variant.name}</span>
+                              {variant.variationLabel && (
+                                <span className="variation-pill-desc">{variant.variationLabel}</span>
+                              )}
+                            </PillTag>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {executionSteps.length > 0 ? (
                     <div className="execution-steps-track">
                       {executionSteps.map((s) => (
@@ -273,15 +375,15 @@ export function ExerciseDetailModal({
                   )}
 
                   {/* Common Mistakes */}
-                  {Array.isArray(exercise.execution?.commonMistakes) &&
-                    exercise.execution.commonMistakes.length > 0 && (
+                  {Array.isArray(enrichedExercise.execution?.commonMistakes) &&
+                    enrichedExercise.execution.commonMistakes.length > 0 && (
                       <div className="editorial-cues-card mistakes-card">
                         <div className="cues-card-header">
                           <AlertTriangle size={15} color="var(--danger)" />
                           <h4>Common Technical Faults</h4>
                         </div>
                         <ul className="cues-bullet-list">
-                          {exercise.execution.commonMistakes.map((m, i) => (
+                          {enrichedExercise.execution.commonMistakes.map((m, i) => (
                             <li key={i}>{m}</li>
                           ))}
                         </ul>
@@ -289,13 +391,13 @@ export function ExerciseDetailModal({
                     )}
 
                   {/* Pro Tip */}
-                  {exercise.execution?.proTip && (
+                  {enrichedExercise.execution?.proTip && (
                     <div className="editorial-cues-card protip-card">
                       <div className="cues-card-header">
                         <Lightbulb size={15} color="var(--clay)" />
                         <h4>Biomechanist Cues</h4>
                       </div>
-                      <p className="protip-text">{exercise.execution.proTip}</p>
+                      <p className="protip-text">{enrichedExercise.execution.proTip}</p>
                     </div>
                   )}
                 </div>
@@ -306,8 +408,8 @@ export function ExerciseDetailModal({
                   <div className="anatomy-spotlight-card">
                     <div className="anatomy-bodymap-box">
                       <MiniBodyMap
-                        primaryKeys={exercise.muscleKey ? [exercise.muscleKey] : []}
-                        secondaryKeys={exercise.secondaryKeys || []}
+                        primaryKeys={enrichedExercise.muscleKey ? [enrichedExercise.muscleKey] : []}
+                        secondaryKeys={enrichedExercise.secondaryKeys || []}
                         className="detail-mini-body"
                       />
                     </div>
@@ -315,9 +417,9 @@ export function ExerciseDetailModal({
                     <div className="anatomy-lists-box">
                       {/* Primary */}
                       <div className="anatomy-group-block">
-                        <span className="anatomy-label primary">Primary Agonist</span>
+                        <span className="anatomy-label primary">Primary Agonist (Terminologia Anatomica)</span>
                         <div className="muscle-tags-wrap">
-                          {exercise.targetMuscles?.primary?.map((m) => (
+                          {enrichedExercise.targetMuscles?.primary?.map((m) => (
                             <span key={m} className="muscle-tag primary">
                               {m}
                             </span>
@@ -326,12 +428,12 @@ export function ExerciseDetailModal({
                       </div>
 
                       {/* Secondary */}
-                      {exercise.targetMuscles?.secondary &&
-                        exercise.targetMuscles.secondary.length > 0 && (
+                      {enrichedExercise.targetMuscles?.secondary &&
+                        enrichedExercise.targetMuscles.secondary.length > 0 && (
                           <div className="anatomy-group-block">
                             <span className="anatomy-label secondary">Synergists / Secondary</span>
                             <div className="muscle-tags-wrap">
-                              {exercise.targetMuscles.secondary.map((m) => (
+                              {enrichedExercise.targetMuscles.secondary.map((m) => (
                                 <span key={m} className="muscle-tag secondary">
                                   {m}
                                 </span>
@@ -341,12 +443,12 @@ export function ExerciseDetailModal({
                         )}
 
                       {/* Stabilizers */}
-                      {exercise.targetMuscles?.stabilizers &&
-                        exercise.targetMuscles.stabilizers.length > 0 && (
+                      {enrichedExercise.targetMuscles?.stabilizers &&
+                        enrichedExercise.targetMuscles.stabilizers.length > 0 && (
                           <div className="anatomy-group-block">
                             <span className="anatomy-label stabilizers">Stabilizers</span>
                             <div className="muscle-tags-wrap">
-                              {exercise.targetMuscles.stabilizers.map((m) => (
+                              {enrichedExercise.targetMuscles.stabilizers.map((m) => (
                                 <span key={m} className="muscle-tag stabilizer">
                                   {m}
                                 </span>

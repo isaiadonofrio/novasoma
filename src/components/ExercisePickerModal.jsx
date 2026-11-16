@@ -93,8 +93,11 @@ export function ExercisePickerModal({
           <div className="db-search-input-wrap picker-search-wrap">
             <Search size={16} className="db-search-icon" />
             <input
+              id="picker-search-input"
+              name="picker-search"
               type="text"
               placeholder="Search your library (name, muscle, equipment)..."
+              aria-label="Search exercise library"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="db-search-input"
@@ -117,6 +120,7 @@ export function ExercisePickerModal({
               <label htmlFor="picker-muscle-select">Muscle:</label>
               <select
                 id="picker-muscle-select"
+                name="picker-muscle"
                 value={selectedMuscle}
                 onChange={(e) => setSelectedMuscle(e.target.value)}
               >

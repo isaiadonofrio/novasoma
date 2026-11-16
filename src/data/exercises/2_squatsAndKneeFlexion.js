@@ -239,7 +239,7 @@ export const SQUATSANDKNEEFLEXION_EXERCISES = [
       defaultSets: 3,
       defaultReps: '45-60s',
       defaultRestSeconds: 60,
-      rpe: '8 - 9',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -333,6 +333,150 @@ export const SQUATSANDKNEEFLEXION_EXERCISES = [
           'Dropping too deep beyond active quad control'
         ],
         proTip: 'Start with partial lean angles (20–30°) and add depth gradually over weeks—loaded long-length stretching makes Reverse Nordics unmatched for rectus femoris hypertrophy.'
+      }
+    },
+
+  {
+      id: 'ex-barbell-box-squat',
+      name: 'Barbell Box Squat',
+      scientificName: 'Bilateral Closed-Chain Box-Delimited Barbell Squat — Pause-Initiated Hip Extension',
+      subtitle: 'Concentric rate-of-force pause squat with vertical shin posterior bias',
+      pattern: MOVEMENT_PATTERNS.SQUAT,
+      equipment: 'Barbell + Flat Bench',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 4,
+      defaultReps: '6-8',
+      defaultRestSeconds: 120,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps (Vastus Lateralis, Vastus Medialis, Rectus Femoris)', 'Gluteus Maximus'],
+        secondary: ['Adductor Magnus', 'Biceps Femoris & Semitendinosus'],
+        stabilizers: ['Erector Spinae', 'Transverse Abdominis', 'Obliques']
+      },
+      execution: {
+        setup: 'Set the barbell across the upper-to-mid trapezius shelf and position a sturdy box or flat bench behind you at parallel hip crease height. Adopt a slightly wider stance than your free squat with toes turned 15–20° out.',
+        eccentric: 'Initiate by pushing the hips backward rather than knees forward, keeping shins near-vertical. Control the final 5 cm gently onto the box—never plop onto your sacrum.',
+        concentric: 'Pause smoothly for 1 full second while keeping spinal brace, quads, and hip abductors tight (hip flexor loaded), then explode upward driving elbows under the bar.',
+        breathing: 'Take a deep 360° diaphragmatic brace at the top before descending; hold tightness through the pause and exhale near lockout.',
+        commonMistakes: [
+          'Collapsing lumbar tension and rocking backward as soon as glutes touch the bench',
+          'Bouncing off the box instead of resetting static concentric drive',
+          'Setting a bench far too low and rounding the lumbar spine into butt wink'
+        ],
+        proTip: 'Think of touching down lightly onto a sheet of glass—keep hamstring and spinal tension live during the pause so the hips fire cleanly off the box.'
+      }
+    },
+
+  {
+      id: 'ex-barbell-zercher-squat',
+      name: 'Barbell Zercher Squat',
+      scientificName: 'Bilateral Closed-Chain Antecubital-Rack Barbell Squat — Anterior Core & Upper-Back Torque',
+      subtitle: 'Elbow-crook anterior-loaded squat for quads, thoracic erectors & core',
+      pattern: MOVEMENT_PATTERNS.SQUAT,
+      equipment: 'Barbell',
+      mechanics: 'Compound',
+      level: 'Advanced',
+      muscleKey: 'quads',
+      defaultSets: 4,
+      defaultReps: '6-8',
+      defaultRestSeconds: 120,
+      rpe: '8 - 9',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps (Vastus Lateralis, Vastus Medialis Obliquus, Rectus Femoris)', 'Gluteus Maximus'],
+        secondary: ['Thoracic Erector Spinae', 'Biceps Brachii (Isometric)'],
+        stabilizers: ['Rectus Abdominis', 'Rhomboids', 'Middle Trapezius']
+      },
+      execution: {
+        setup: 'Cradle the barbell securely in the crooks of both flexed elbows (antecubital fossae) tucked close against the lower ribs, locking forearms vertically with fists pulled toward the shoulders.',
+        eccentric: 'Descend between the hips over 2–3 seconds while driving elbows upward to keep the torso stacked upright above the midfoot.',
+        concentric: 'Drive vertically through full foot tripod pressure while fighting thoracic rounding until hips and knees reach full lockout.',
+        breathing: 'Take a firm abdominal breath into the belt line between reps; maintain strong upper-back protraction/brace against the bar.',
+        commonMistakes: [
+          'Allowing elbows to drop downward so the upper torso folds forward',
+          'Interlocking fingers loosely and losing radial wrist/elbow stabilization',
+          'Rising onto toes to clear the bar past the thighs'
+        ],
+        proTip: 'Positioning the load directly in front of the center of mass permits deeper upright knee flexion than a back squat while forging fierce thoracic extension strength.'
+      }
+    },
+
+  {
+      id: 'ex-dumbbell-cyclist-squat',
+      name: 'Dumbbell Cyclist Squat (Heels Elevated)',
+      scientificName: 'Bilateral Closed-Chain Heels-Elevated Narrow-Stance Squat — Maximal Anterior Knee Moment',
+      subtitle: 'Heels-elevated narrow knee-dominant squat maximizing VMO and quad lengthening',
+      pattern: MOVEMENT_PATTERNS.SQUAT,
+      equipment: 'Dumbbells + Heel Wedge',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 3,
+      defaultReps: '10-12',
+      defaultRestSeconds: 90,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Vastus Medialis Obliquus (VMO)', 'Vastus Lateralis', 'Rectus Femoris'],
+        secondary: ['Gluteus Maximus (Deep Stance Assist)'],
+        stabilizers: ['Spinal Erectors', 'Soleus (Isometric)']
+      },
+      execution: {
+        setup: 'Elevate both heels 4–6 cm onto a slant wedge or weight plates with feet narrow (hip-width or closer) and toes nearly parallel. Hold dumbbells comfortably at your sides.',
+        eccentric: 'Initiate immediately by bending the knees forward over the toes while keeping the spine completely vertical and sliding the torso straight down over 3 seconds.',
+        concentric: 'Drive forcefully through the midfoot and heel wedge to extend the knees to near-lockout without turning the movement into a hip hinge.',
+        breathing: 'Inhale deeply into the brace before descent; exhale through the upper sticking point.',
+        commonMistakes: [
+          'Pushing hips backward like a traditional back squat and stealing tension from the quads',
+          'Shifting bodyweight onto the extreme toes with heels lifting off the wedge',
+          'Bouncing uncontrollably at extreme knee flexion'
+        ],
+        proTip: 'Slanting the heels removes ankle dorsiflexion restrictions and amplifies knee-to-bar moment arm distance, concentrating overload straight onto the quadriceps.'
+      }
+    },
+
+  {
+      id: 'ex-kettlebell-rack-split-squat',
+      name: 'Kettlebell Front-Rack Split Squat',
+      scientificName: 'Unilateral Contralateral Front-Rack Split Squat — Vertical Torso & Anti-Lateral Spine Brace',
+      subtitle: 'Single-kettlebell front-rack split squat integrating quad strength & core anti-tilt',
+      pattern: MOVEMENT_PATTERNS.LUNGE,
+      equipment: 'Kettlebell',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 3,
+      defaultReps: '8-10/leg',
+      defaultRestSeconds: 90,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps (Lead Limb)', 'Gluteus Maximus'],
+        secondary: ['Gluteus Medius (Frontal Pelvic Control)', 'Obliques (Contralateral Anti-Lateral Flexion)'],
+        stabilizers: ['Anterior Deltoid', 'Serratus Anterior', 'Erector Spinae']
+      },
+      execution: {
+        setup: 'Clean one kettlebell into the front-rack pocket resting securely between forearm and biceps with wrist neutral and elbow tucked forward of ribs. Step into a stable hip-width split stance.',
+        eccentric: 'Lower vertically over 2–3 seconds until the rear knee hovers ~2 cm off the floor while keeping the front-racked elbow elevated and pelvis perfectly square.',
+        concentric: 'Drive firmly through the full front foot to rise straight up without side-bending toward or away from the kettlebell.',
+        breathing: 'Inhale into a braced ribcage while descending; exhale forcibly as you press back to split stance.',
+        commonMistakes: [
+          'Leaning laterally away from the kettlebell when unilateral leg fatigue sets in',
+          'Letting the wrist bend backward or resting the bell heavily out onto the shoulder joint',
+          'Walking on a narrow tightrope stance rather than train-track hip width'
+        ],
+        proTip: 'Loading the kettlebell on the arm opposite your lead leg demands extra oblique and glute medius stability to prevent hip shift.'
       }
     }
 ];

@@ -78,24 +78,24 @@
 }
 
 /* ==========================================================================
-   Archive Telemetry Bento (Spacious 2-Card Layout Matching Homepage)
+   Archive Telemetry Bento (Architectural 2-Card Interactive Matrix)
    ========================================================================== */
 .db-telemetry-bento {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
   align-items: stretch;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
 
 .db-telemetry-card {
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 22px 24px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
   box-sizing: border-box;
@@ -109,10 +109,6 @@
   box-shadow: 0 4px 18px rgba(26, 23, 19, 0.03);
 }
 
-.db-telemetry-card:hover {
-  border-color: rgba(194, 142, 82, 0.35);
-}
-
 .telemetry-card-header {
   display: flex;
   align-items: center;
@@ -123,22 +119,38 @@
 .telemetry-card-title {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.73rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--clay);
+  color: var(--text);
 }
 
-.telemetry-title-icon {
+.telemetry-step-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: var(--clay-soft);
   color: var(--clay);
+  border: 1px solid color-mix(in srgb, var(--clay) 28%, transparent);
+}
+
+.telemetry-step-index.is-teal {
+  background: rgba(33, 155, 157, 0.12);
+  color: var(--teal);
+  border-color: rgba(33, 155, 157, 0.28);
 }
 
 .telemetry-badge-count {
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--dim);
   padding: 3px 9px;
@@ -147,28 +159,56 @@
   border-radius: var(--radius-full);
 }
 
+[data-theme="light"] .telemetry-badge-count {
+  background: #FAF9F6;
+}
+
 /* ==========================================================================
    Card 1: Equipment KPI & Detailed Gear Inventory
    ========================================================================== */
 .telemetry-kpi-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .telemetry-kpi-card {
   background: var(--raised2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
+  border-radius: 14px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
 }
 
 [data-theme="light"] .telemetry-kpi-card {
   background: #FAF9F6;
   border-color: var(--border-hi);
+}
+
+.telemetry-kpi-card:hover {
+  border-color: var(--clay);
+  transform: translateY(-1px);
+}
+
+.telemetry-kpi-card.bodyweight:hover {
+  border-color: var(--teal);
+}
+
+.telemetry-kpi-card.gear.is-active {
+  background: color-mix(in srgb, var(--clay) 10%, var(--raised2));
+  border-color: var(--clay);
+  box-shadow: 0 0 0 1px var(--clay);
+}
+
+.telemetry-kpi-card.bodyweight.is-active {
+  background: color-mix(in srgb, var(--teal) 10%, var(--raised2));
+  border-color: var(--teal);
+  box-shadow: 0 0 0 1px var(--teal);
 }
 
 .kpi-card-top {
@@ -180,19 +220,16 @@
 
 .kpi-big-num {
   font-family: var(--mono);
-  font-size: 1.85rem;
+  font-size: 1.65rem;
   font-weight: 900;
   line-height: 1;
   color: var(--text);
-}
-
-.kpi-big-num.teal {
-  color: var(--teal);
+  font-variant-numeric: tabular-nums;
 }
 
 .kpi-tag {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   padding: 2px 7px;
   border-radius: var(--radius-full);
@@ -201,47 +238,51 @@
 .kpi-tag.gear {
   background: var(--clay-soft);
   color: var(--clay);
-  border: 1px solid color-mix(in srgb, var(--clay) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--clay) 28%, transparent);
 }
 
 .kpi-tag.bodyweight {
-  background: rgba(42, 107, 109, 0.12);
+  background: rgba(33, 155, 157, 0.12);
   color: var(--teal);
-  border: 1px solid rgba(42, 107, 109, 0.25);
+  border: 1px solid rgba(33, 155, 157, 0.25);
 }
 
 .kpi-label {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: var(--text);
+  margin-top: 2px;
 }
 
 .kpi-desc {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--dim);
   font-weight: 500;
-  line-height: 1.3;
+  line-height: 1.25;
 }
 
 /* Dual Segmented Split Bar */
 .telemetry-segmented-bar {
   width: 100%;
-  height: 9px;
+  height: 6px;
   background: var(--raised2);
   border-radius: var(--radius-full);
   overflow: hidden;
   display: flex;
+  gap: 2px;
 }
 
 .segment-fill.gear {
   background: var(--clay);
   height: 100%;
+  border-radius: var(--radius-full);
   transition: width 0.3s ease;
 }
 
 .segment-fill.bodyweight {
   background: var(--teal);
   height: 100%;
+  border-radius: var(--radius-full);
   transition: width 0.3s ease;
 }
 
@@ -249,7 +290,7 @@
 .telemetry-section-divider {
   height: 1px;
   background: var(--border);
-  margin: 2px 0;
+  margin: 1px 0;
 }
 
 .telemetry-sub-header-row {
@@ -261,11 +302,11 @@
 
 .telemetry-sub-kicker {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--clay);
+  color: var(--dim);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -273,26 +314,29 @@
 
 .telemetry-sub-meta {
   font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--dim);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--faint);
 }
 
-/* Gear Stat Tiles Grid (Card 1 - Static Pure Telemetry, 2 Columns x 3 Rows) */
+/* Gear Stat Tiles Grid (Calm Dual-Tone, Interactive Filter Buttons) */
 .telemetry-gear-stat-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .gear-stat-tile {
   background: var(--raised2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 12px;
+  border-radius: 10px;
+  padding: 9px 11px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
 }
 
 [data-theme="light"] .gear-stat-tile {
@@ -300,22 +344,36 @@
   border-color: var(--border-hi);
 }
 
+.gear-stat-tile:hover {
+  border-color: var(--clay);
+  transform: translateY(-1px);
+}
+
+.gear-stat-tile.is-bodyweight:hover {
+  border-color: var(--teal);
+}
+
+.gear-stat-tile.is-active {
+  background: color-mix(in srgb, var(--clay) 10%, var(--raised2));
+  border-color: var(--clay);
+  box-shadow: 0 0 0 1px var(--clay);
+}
+
+.gear-stat-tile.is-bodyweight.is-active {
+  background: color-mix(in srgb, var(--teal) 10%, var(--raised2));
+  border-color: var(--teal);
+  box-shadow: 0 0 0 1px var(--teal);
+}
+
 .gear-stat-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-}
-
-.gear-stat-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
+  gap: 6px;
 }
 
 .gear-stat-name {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
@@ -323,37 +381,19 @@
   text-overflow: ellipsis;
 }
 
-.gear-stat-right {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
 .gear-stat-count {
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   font-weight: 800;
   color: var(--text);
-  padding: 1px 6px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-}
-
-.gear-stat-pct {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--dim);
-  min-width: 26px;
-  text-align: right;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
 .gear-stat-track {
   width: 100%;
-  height: 4px;
-  background: var(--surface);
+  height: 3px;
+  background: var(--border);
   border-radius: var(--radius-full);
   overflow: hidden;
 }
@@ -361,49 +401,34 @@
 .gear-stat-fill {
   height: 100%;
   border-radius: var(--radius-full);
+  background: var(--clay);
+  opacity: 0.85;
 }
 
-.gear-stat-fill.tone-0 {
-  background: #C28E52;
-}
-
-.gear-stat-fill.tone-1 {
-  background: #2A6B6D;
-}
-
-.gear-stat-fill.tone-2 {
-  background: #E5674C;
-}
-
-.gear-stat-fill.tone-3 {
-  background: #E5A93C;
-}
-
-.gear-stat-fill.tone-4 {
-  background: #6E5643;
-}
-
-.gear-stat-fill.tone-5 {
-  background: #8C827A;
+.gear-stat-fill.is-bodyweight {
+  background: var(--teal);
 }
 
 /* ==========================================================================
-   Card 2: Biomechanics, Regional Coverage & Target Muscles (Static Pure Telemetry)
+   Mechanics Strip & Experience Tier (Card 1 Bottom)
    ========================================================================== */
 .telemetry-mech-stat-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 }
 
 .mech-stat-tile {
   background: var(--raised2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: 10px;
   padding: 9px 10px;
   display: flex;
   flex-direction: column;
   gap: 3px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
 }
 
 [data-theme="light"] .mech-stat-tile {
@@ -411,85 +436,121 @@
   border-color: var(--border-hi);
 }
 
+.mech-stat-tile:hover {
+  border-color: var(--clay);
+  transform: translateY(-1px);
+}
+
+.mech-stat-tile.is-active {
+  background: color-mix(in srgb, var(--clay) 10%, var(--raised2));
+  border-color: var(--clay);
+  box-shadow: 0 0 0 1px var(--clay);
+}
+
 .mech-stat-name {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  color: var(--dim);
+}
+
+.mech-stat-tile.is-active .mech-stat-name {
   color: var(--clay);
 }
 
 .mech-stat-val-row {
   display: flex;
   align-items: baseline;
-  gap: 5px;
+  justify-content: space-between;
+  gap: 4px;
 }
 
 .mech-stat-num {
   font-family: var(--mono);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 900;
   color: var(--text);
-  line-height: 1;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
 }
 
 .mech-stat-pct {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 700;
-  color: var(--dim);
+  color: var(--faint);
 }
 
 .mech-stat-desc {
-  font-size: 0.67rem;
-  color: var(--faint);
+  font-size: 0.66rem;
+  color: var(--dim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Experience Level Row */
+/* Footer Pill Bar (Experience Tier & Kinetic Profile) */
 .telemetry-level-bar-wrap {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-  padding: 2px 0;
+  padding-top: 4px;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
 }
 
 .level-bar-label {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--faint);
 }
 
 .level-stat-tags {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .level-stat-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.72rem;
+  gap: 5px;
+  font-size: 0.7rem;
   color: var(--dim);
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 3px 9px;
   background: var(--raised2);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.14s var(--ease);
+}
+
+.level-stat-tag.is-static {
+  cursor: default;
 }
 
 [data-theme="light"] .level-stat-tag {
   background: #FAF9F6;
   border-color: var(--border-hi);
+}
+
+.level-stat-tag:not(.is-static):hover {
+  border-color: var(--clay);
+  color: var(--text);
+}
+
+.level-stat-tag.is-active {
+  background: var(--clay-soft);
+  border-color: var(--clay);
+  color: var(--text);
 }
 
 .level-stat-tag b {
@@ -499,9 +560,10 @@
 }
 
 .level-pip {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
+  background: var(--dim);
 }
 
 .level-pip.beginner {
@@ -513,14 +575,21 @@
 }
 
 .level-pip.advanced {
-  background: var(--ember);
+  background: var(--text);
 }
 
-/* Regional Macro Distribution KPI Cards (Card 2) */
+.level-pip.neutral {
+  background: var(--teal);
+  opacity: 0.65;
+}
+
+/* ==========================================================================
+   Card 2: Regional KPI Cards & 3-Column Aligned Muscle Matrix
+   ========================================================================== */
 .telemetry-region-kpi-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -528,19 +597,54 @@
 .telemetry-region-kpi-card {
   background: var(--raised2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 10px 11px;
+  border-radius: 14px;
+  padding: 12px 13px;
   display: flex;
   flex-direction: column;
   gap: 3px;
   min-width: 0;
   box-sizing: border-box;
-  overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
 }
 
 [data-theme="light"] .telemetry-region-kpi-card {
   background: #FAF9F6;
   border-color: var(--border-hi);
+}
+
+.telemetry-region-kpi-card.lower:hover {
+  border-color: var(--clay);
+  transform: translateY(-1px);
+}
+
+.telemetry-region-kpi-card.upper:hover {
+  border-color: var(--teal);
+  transform: translateY(-1px);
+}
+
+.telemetry-region-kpi-card.core:hover {
+  border-color: var(--slate);
+  transform: translateY(-1px);
+}
+
+.telemetry-region-kpi-card.lower.is-active {
+  background: color-mix(in srgb, var(--clay) 10%, var(--raised2));
+  border-color: var(--clay);
+  box-shadow: 0 0 0 1px var(--clay);
+}
+
+.telemetry-region-kpi-card.upper.is-active {
+  background: color-mix(in srgb, var(--teal) 10%, var(--raised2));
+  border-color: var(--teal);
+  box-shadow: 0 0 0 1px var(--teal);
+}
+
+.telemetry-region-kpi-card.core.is-active {
+  background: var(--slate-soft);
+  border-color: var(--slate);
+  box-shadow: 0 0 0 1px var(--slate);
 }
 
 .region-kpi-top {
@@ -553,23 +657,16 @@
 
 .region-kpi-num {
   font-family: var(--mono);
-  font-size: 1.55rem;
+  font-size: 1.65rem;
   font-weight: 900;
   line-height: 1;
-  color: var(--clay);
-}
-
-.region-kpi-num.teal {
-  color: var(--teal);
-}
-
-.region-kpi-num.amber {
-  color: #D9822B;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 
 .region-kpi-pct {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 800;
   padding: 2px 6px;
   border-radius: var(--radius-full);
@@ -578,25 +675,26 @@
 .region-kpi-pct.lower {
   background: var(--clay-soft);
   color: var(--clay);
-  border: 1px solid color-mix(in srgb, var(--clay) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--clay) 28%, transparent);
 }
 
 .region-kpi-pct.upper {
-  background: rgba(42, 107, 109, 0.12);
+  background: var(--sage-soft);
   color: var(--teal);
-  border: 1px solid rgba(42, 107, 109, 0.25);
+  border: 1px solid color-mix(in srgb, var(--teal) 28%, transparent);
 }
 
 .region-kpi-pct.core {
-  background: rgba(217, 130, 43, 0.12);
-  color: #D9822B;
-  border: 1px solid rgba(217, 130, 43, 0.25);
+  background: var(--slate-soft);
+  color: var(--slate);
+  border: 1px solid var(--slate-border);
 }
 
 .region-kpi-title {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: var(--text);
+  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -614,131 +712,135 @@
 /* Regional Proportion Bar */
 .telemetry-region-bar {
   width: 100%;
-  height: 8px;
+  height: 6px;
   background: var(--raised2);
   border-radius: var(--radius-full);
   overflow: hidden;
   display: flex;
+  gap: 2px;
+}
+
+.region-bar-seg {
+  height: 100%;
+  border-radius: var(--radius-full);
 }
 
 .region-bar-seg.seg-lower {
-  background: #C28E52;
+  background: var(--region-lower);
 }
 
 .region-bar-seg.seg-upper {
-  background: #2A6B6D;
+  background: var(--region-upper);
 }
 
 .region-bar-seg.seg-core {
-  background: #E5A93C;
+  background: var(--region-core);
 }
 
-.telemetry-region-legend {
+/* 2-Column × 6-Row Regional Muscle Matrix (Left: 4 Lower + 2 Core, Right: 6 Upper) */
+.telemetry-regional-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  flex: 1;
+}
+
+.regional-muscle-col {
+  display: grid;
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.muscle-region-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: var(--raised2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+  transition: all 0.14s var(--ease);
+}
+
+[data-theme="light"] .muscle-region-row {
+  background: #FAF9F6;
+  border-color: var(--border-hi);
+}
+
+.muscle-region-row.is-lower:hover {
+  border-color: var(--region-lower);
+  transform: translateY(-1px);
+}
+
+.muscle-region-row.is-upper:hover {
+  border-color: var(--region-upper);
+  transform: translateY(-1px);
+}
+
+.muscle-region-row.is-core:hover {
+  border-color: var(--region-core);
+  transform: translateY(-1px);
+}
+
+.muscle-region-row.is-lower.is-active {
+  background: color-mix(in srgb, var(--region-lower) 10%, var(--raised2));
+  border-color: var(--region-lower);
+  box-shadow: 0 0 0 1px var(--region-lower);
+}
+
+.muscle-region-row.is-upper.is-active {
+  background: color-mix(in srgb, var(--region-upper) 10%, var(--raised2));
+  border-color: var(--region-upper);
+  box-shadow: 0 0 0 1px var(--region-upper);
+}
+
+.muscle-region-row.is-core.is-active {
+  background: var(--slate-soft);
+  border-color: var(--region-core);
+  box-shadow: 0 0 0 1px var(--region-core);
+}
+
+.muscle-row-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
 }
 
-.region-leg-item {
+.muscle-stat-name-wrap {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.72rem;
-  color: var(--dim);
-  font-weight: 600;
+  min-width: 0;
 }
 
-.region-leg-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.region-leg-dot.seg-lower {
-  background: #C28E52;
-}
-
-.region-leg-dot.seg-upper {
-  background: #2A6B6D;
-}
-
-.region-leg-dot.seg-core {
-  background: #E5A93C;
-}
-
-.region-leg-item b {
-  font-family: var(--mono);
-  font-weight: 800;
-  color: var(--text);
-}
-
-/* Color Dots */
-.chip-color-dot {
+.muscle-region-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.chip-color-dot.tone-0 {
-  background: #C28E52;
+.muscle-region-dot.is-lower {
+  background: var(--region-lower);
 }
 
-.chip-color-dot.tone-1 {
-  background: #2A6B6D;
+.muscle-region-dot.is-upper {
+  background: var(--region-upper);
 }
 
-.chip-color-dot.tone-2 {
-  background: #E5674C;
-}
-
-.chip-color-dot.tone-3 {
-  background: #E5A93C;
-}
-
-.chip-color-dot.tone-4 {
-  background: #6E5643;
-}
-
-.chip-color-dot.tone-5 {
-  background: #8C827A;
-}
-
-/* Target Muscle Stat Tiles (Card 2 - Static Pure Telemetry) */
-.telemetry-muscle-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px 10px;
-}
-
-.muscle-stat-tile {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 12px;
-  background: var(--raised2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-}
-
-[data-theme="light"] .muscle-stat-tile {
-  background: #FAF9F6;
-  border-color: var(--border-hi);
-}
-
-.muscle-stat-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
+.muscle-region-dot.is-core {
+  background: var(--region-core);
 }
 
 .muscle-stat-name {
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
@@ -746,63 +848,55 @@
   text-overflow: ellipsis;
 }
 
-.muscle-stat-right {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.muscle-stat-metrics {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
   flex-shrink: 0;
 }
 
 .muscle-stat-count {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 800;
   color: var(--text);
-  padding: 1px 6px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
+  font-variant-numeric: tabular-nums;
 }
 
 .muscle-stat-pct {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
   color: var(--faint);
-  min-width: 26px;
+  font-variant-numeric: tabular-nums;
+  min-width: 24px;
   text-align: right;
 }
 
-.telemetry-bodymap-launch {
-  padding-top: 8px;
-  border-top: 1px dashed var(--border);
-}
-
-.btn-bodymap-drawer-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+.muscle-row-bar-track {
+  width: 100%;
+  height: 3px;
+  background: var(--border);
   border-radius: var(--radius-full);
-  background: var(--raised2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.14s var(--ease);
+  overflow: hidden;
 }
 
-.btn-bodymap-drawer-toggle:hover {
-  background: var(--raised3);
-  border-color: var(--clay);
-  color: var(--clay);
+.muscle-row-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  opacity: 0.85;
 }
 
-.btn-bodymap-drawer-toggle.active {
-  background: var(--clay-soft);
-  border-color: var(--clay);
-  color: var(--clay);
+.muscle-row-bar-fill.is-lower {
+  background: var(--region-lower);
+}
+
+.muscle-row-bar-fill.is-upper {
+  background: var(--region-upper);
+}
+
+.muscle-row-bar-fill.is-core {
+  background: var(--region-core);
 }
 
 /* Fast-Pill exact count badge */
@@ -828,11 +922,11 @@
   }
 
   .telemetry-gear-stat-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .telemetry-mech-stat-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .telemetry-region-kpi-row {
@@ -840,25 +934,49 @@
   }
 }
 
+.db-mobile-insights-toggle {
+  display: none;
+}
+
 @media (max-width: 640px) {
-  .telemetry-kpi-row {
-    grid-template-columns: 1fr;
+  .db-mobile-insights-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    background: var(--raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
   }
 
-  .telemetry-region-kpi-row {
-    grid-template-columns: 1fr;
+  .db-mobile-insights-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
   }
 
+  .db-telemetry-bento:not(.mobile-expanded) {
+    display: none;
+  }
+
+  .telemetry-kpi-row,
+  .telemetry-region-kpi-row,
+  .telemetry-regional-columns,
   .telemetry-gear-stat-grid {
     grid-template-columns: 1fr;
   }
 
   .telemetry-mech-stat-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .telemetry-muscle-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .db-telemetry-card {
@@ -1076,33 +1194,6 @@
   margin-left: 8px;
 }
 
-.db-toggle-bodymap-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 38px;
-  padding: 0 14px;
-  border-radius: var(--radius-full);
-  background: var(--raised2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s var(--ease);
-}
-
-.db-toggle-bodymap-btn:hover {
-  border-color: var(--clay);
-  color: var(--clay);
-}
-
-.db-toggle-bodymap-btn.active {
-  background: var(--clay-soft);
-  border-color: var(--clay);
-  color: var(--clay);
-}
-
 .db-reset-all-pill {
   display: inline-flex;
   align-items: center;
@@ -1128,7 +1219,7 @@
 /* Fast Rails */
 .db-rail-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   min-width: 0;
   width: 100%;
@@ -1140,7 +1231,8 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--dim);
-  min-width: 90px;
+  min-width: 72px;
+  padding-top: 7px;
   flex-shrink: 0;
   text-transform: uppercase;
 }
@@ -1151,9 +1243,8 @@
   gap: 6px;
   min-width: 0;
   flex: 1;
-  overflow-x: auto;
-  overflow-y: hidden;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  overflow: visible;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
   padding: 2px 0;
@@ -1164,12 +1255,15 @@
 }
 
 .db-pill-btn {
-  padding: 5px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
   border-radius: var(--radius-full);
   background: var(--raised2);
   border: 1px solid var(--border);
   color: var(--dim);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
@@ -1177,14 +1271,63 @@
   transition: background-color 0.14s var(--ease), border-color 0.14s var(--ease), color 0.14s var(--ease), transform 0.12s var(--ease);
 }
 
+@media (max-width: 768px) {
+  .db-rail-row {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .db-rail-label {
+    min-width: auto;
+    padding-top: 0;
+  }
+
+  .db-rail-scroll {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+
 [data-theme="light"] .db-pill-btn {
   background: #FFFFFF;
+}
+
+.pill-region-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pill-region-dot.is-lower {
+  background: var(--region-lower);
+}
+
+.pill-region-dot.is-upper {
+  background: var(--region-upper);
+}
+
+.pill-region-dot.is-core {
+  background: var(--region-core);
 }
 
 .db-pill-btn:hover {
   color: var(--text);
   border-color: var(--border-hi);
   transform: translateY(-1px);
+}
+
+.db-pill-btn.region-lower:hover {
+  border-color: var(--region-lower);
+}
+
+.db-pill-btn.region-upper:hover {
+  border-color: var(--region-upper);
+}
+
+.db-pill-btn.region-core:hover {
+  border-color: var(--region-core);
 }
 
 .db-pill-btn.active {
@@ -1194,10 +1337,25 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-.db-bodymap-drawer {
-  margin-top: 8px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
+.db-pill-btn.region-lower.active {
+  background: var(--clay-soft);
+  color: var(--clay);
+  border-color: var(--clay);
+  box-shadow: none;
+}
+
+.db-pill-btn.region-upper.active {
+  background: var(--sage-soft);
+  color: var(--teal);
+  border-color: var(--teal);
+  box-shadow: none;
+}
+
+.db-pill-btn.region-core.active {
+  background: var(--slate-soft);
+  color: var(--slate);
+  border-color: var(--slate);
+  box-shadow: none;
 }
 
 .db-view-main {
@@ -1391,6 +1549,25 @@
   border-radius: var(--radius-full);
   background: var(--clay-soft);
   color: var(--clay);
+  border: 1px solid color-mix(in srgb, var(--clay) 24%, transparent);
+}
+
+.db-muscle-badge.region-lower {
+  background: var(--clay-soft);
+  color: var(--region-lower);
+  border-color: color-mix(in srgb, var(--region-lower) 26%, transparent);
+}
+
+.db-muscle-badge.region-upper {
+  background: var(--sage-soft);
+  color: var(--region-upper);
+  border-color: color-mix(in srgb, var(--region-upper) 26%, transparent);
+}
+
+.db-muscle-badge.region-core {
+  background: var(--slate-soft);
+  color: var(--region-core);
+  border-color: var(--slate-border);
 }
 
 .db-equip-status-pill {

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { 
   ArrowLeft, 
   Play, 
@@ -26,10 +26,12 @@ import {
 } from 'lucide-react';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
 import {
+  dropExerciseInRoutine,
   getSupersetInfoMap,
   isRestTimerEnabledForExercise,
   insertExerciseByPhase,
   normalizeSupersetGroups,
+  reorderExerciseInRoutine,
   toggleSupersetLinkWithNext,
   unlinkExerciseFromSuperset,
   unlinkSupersetGroup
@@ -39,6 +41,7 @@ import { ExerciseDetailModal } from './ExerciseDetailModal';
 import { ExercisePickerModal } from './ExercisePickerModal';
 import { WorkoutEditorModal } from './WorkoutEditorModal';
 import { ConfirmModal } from './ConfirmModal';
+import { SAVE_NOTICE_TIMEOUT_MS } from '../utils/constants';
 
 const REP_PRESETS = ['6-8', '8-10', '10-12', '12-15', '15-20', '30s', '45s', '60s'];
 
@@ -53,6 +56,7 @@ export function WorkoutOverviewView({
   const [isEditMode, setIsEditMode] = useState(false);
   const [draftWorkout, setDraftWorkout] = useState(workout);
   const [saveNotice, setSaveNotice] = useState(false);
+  const saveNoticeTimerRef = useRef(null);
   const [viewingExerciseGuide, setViewingExerciseGuide] = useState(null);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isEditingWorkoutMeta, setIsEditingWorkoutMeta] = useState(false);
@@ -61,6 +65,25 @@ export function WorkoutOverviewView({
   const [draggedIdx, setDraggedIdx] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
 
+  const triggerSaveNotice = () => {
+    setSaveNotice(true);
+    if (saveNoticeTimerRef.current) {
+      clearTimeout(saveNoticeTimerRef.current);
+    }
+    saveNoticeTimerRef.current = setTimeout(() => {
+      setSaveNotice(false);
+      saveNoticeTimerRef.current = null;
+    }, SAVE_NOTICE_TIMEOUT_MS);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (saveNoticeTimerRef.current) {
+        clearTimeout(saveNoticeTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleEnterEditMode = () => {
     setDraftWorkout(workout);
     setIsEditMode(true);
@@ -68,8 +91,9 @@ export function WorkoutOverviewView({
 
   // Check if draft has unsaved changes compared to committed workout
   const hasUnsavedChanges = useMemo(() => {
+    if (!isEditMode) return false;
     return JSON.stringify(draftWorkout) !== JSON.stringify(workout);
-  }, [draftWorkout, workout]);
+  }, [isEditMode, draftWorkout, workout]);
 
   const activeWorkout = isEditMode ? draftWorkout : workout;
   const supersetMap = getSupersetInfoMap(activeWorkout.exercises || []);
@@ -96,6 +120,7 @@ export function WorkoutOverviewView({
           type: 'superset',
           groupId,
           letter: ssInfo.letter,
+          rangeLabel: ssInfo.rangeLabel,
           label: ssInfo.label,
           isWarmup: Boolean(ex.isWarmup),
           members
@@ -140,8 +165,7 @@ export function WorkoutOverviewView({
   const handleSaveChanges = () => {
     onUpdateWorkout(draftWorkout);
     setIsEditMode(false);
-    setSaveNotice(true);
-    setTimeout(() => setSaveNotice(false), 3200);
+    triggerSaveNotice();
   };
 
   // Discard draft edits and return to saved workout
@@ -180,25 +204,17 @@ export function WorkoutOverviewView({
   };
 
   const moveExercise = (index, delta) => {
-    const newIdx = index + delta;
-    if (newIdx < 0 || newIdx >= draftWorkout.exercises.length) return;
-    const newExs = [...draftWorkout.exercises];
-    const [moved] = newExs.splice(index, 1);
-    newExs.splice(newIdx, 0, moved);
     setDraftWorkout(prev => ({
       ...prev,
-      exercises: normalizeSupersetGroups(newExs)
+      exercises: reorderExerciseInRoutine(prev.exercises, index, delta)
     }));
   };
 
   const handleDropExercise = (sourceIdx, targetIdx) => {
     if (sourceIdx === null || targetIdx === null || sourceIdx === targetIdx) return;
-    const newExs = [...draftWorkout.exercises];
-    const [moved] = newExs.splice(sourceIdx, 1);
-    newExs.splice(targetIdx, 0, moved);
     setDraftWorkout(prev => ({
       ...prev,
-      exercises: normalizeSupersetGroups(newExs)
+      exercises: dropExerciseInRoutine(prev.exercises, sourceIdx, targetIdx)
     }));
   };
 
@@ -415,12 +431,13 @@ export function WorkoutOverviewView({
         ...updatedMeta
       }));
     } else {
-      onUpdateWorkout({
+      const nextWorkout = {
         ...workout,
         ...updatedMeta
-      });
-      setSaveNotice(true);
-      setTimeout(() => setSaveNotice(false), 3000);
+      };
+      onUpdateWorkout(nextWorkout);
+      setDraftWorkout(nextWorkout);
+      triggerSaveNotice();
     }
     setIsEditingWorkoutMeta(false);
   };
@@ -753,7 +770,7 @@ export function WorkoutOverviewView({
                       <span className="preview-spec-tag">
                         <b>{exercise.defaultSets || 3} Sets</b> planned · <b>{formatRepsSummary(exercise.defaultReps, exercise.customRepsPerSet)}</b>
                         {ssInfo && !ssInfo.isLast ? (
-                          <span className="preview-rest-tag"> · <b>0s Transition</b> to #{ssInfo.letter}2</span>
+                          <span className="preview-rest-tag"> · <b>0s Transition</b> to #{ssInfo.exerciseNumber + 1}</span>
                         ) : (
                           <span className="preview-rest-tag"> · <b>{timerOn ? `${exercise.defaultRestSeconds || 60}s Rest` : 'Untimed'}</b></span>
                         )}
@@ -838,12 +855,15 @@ export function WorkoutOverviewView({
                             {isEditMode ? (
                               <div className="table-reps-editor-box">
                                 <input
+                                  id={`overview-reps-${exerciseKey}-${sIdx}`}
+                                  name={`reps-${exerciseKey}-${sIdx}`}
                                   type="text"
                                   list={`reps-presets-${exerciseKey}`}
                                   className="table-reps-input"
                                   value={rowReps}
                                   onChange={(e) => handleSetRowReps(idx, sIdx, e.target.value)}
                                   placeholder="e.g. 10-12"
+                                  aria-label={`${exercise.name} set ${sIdx + 1} target`}
                                   title="Target reps or duration (select from dropdown or type)"
                                 />
                                 <datalist id={`reps-presets-${exerciseKey}`}>
@@ -864,7 +884,7 @@ export function WorkoutOverviewView({
                               ssInfo && !ssInfo.isLast ? (
                                 <div className="table-rest-cell superset-transition">
                                   <ArrowDownUp size={11} />
-                                  <b>0s (Transition to #{ssInfo.letter}2)</b>
+                                  <b>0s (Transition to #{ssInfo.exerciseNumber + 1})</b>
                                 </div>
                               ) : (
                                 <div className="table-rest-stepper-cell">
@@ -904,7 +924,7 @@ export function WorkoutOverviewView({
                               ssInfo && !ssInfo.isLast ? (
                                 <span className="table-rest-cell superset-transition">
                                   <ArrowDownUp size={11} />
-                                  <b>0s (Transition to #{ssInfo.letter}2)</b>
+                                  <b>0s (Transition to #{ssInfo.exerciseNumber + 1})</b>
                                 </span>
                               ) : ssInfo && ssInfo.isLast ? (
                                 <span className="table-rest-cell superset-round-rest">
@@ -923,11 +943,14 @@ export function WorkoutOverviewView({
                             {isEditMode ? (
                               <div className="table-intent-editor-box">
                                 <input
+                                  id={`overview-intent-${exerciseKey}-${sIdx}`}
+                                  name={`intent-${exerciseKey}-${sIdx}`}
                                   type="text"
                                   className="table-intent-input"
                                   value={rowIntent}
                                   onChange={(e) => handleSetRowIntent(idx, sIdx, e.target.value)}
                                   placeholder="e.g. RPE 8 · Controlled tempo"
+                                  aria-label={`${exercise.name} set ${sIdx + 1} cue`}
                                   title="Edit load intent or RPE cue"
                                 />
                               </div>
@@ -1070,16 +1093,6 @@ export function WorkoutOverviewView({
                   <span>Workout saved successfully</span>
                 </span>
               )}
-
-              <button
-                type="button"
-                className="btn-enter-edit-mode"
-                onClick={handleEnterEditMode}
-                title="Reorder exercises, pair supersets, and manage routine"
-              >
-                <SlidersHorizontal size={14} />
-                <span>Reorder &amp; Manage</span>
-              </button>
             </div>
           </div>
         ) : (
@@ -1285,29 +1298,19 @@ export function WorkoutOverviewView({
           <div className="empty-overview-exercises">
             <Dumbbell size={36} color="var(--faint)" />
             <p>
-              {isEditMode 
-                ? 'This workout has no exercises yet. Add one from your library to start building your workout!'
-                : 'This workout has no exercises yet. Click "Edit Workout" to add exercises from your library.'}
+              This workout has no exercises yet. Add movements from your library to build this routine.
             </p>
-            {isEditMode ? (
-              <button 
-                type="button" 
-                className="btn-gymmane-primary"
-                onClick={() => setIsPickerOpen(true)}
-              >
-                <Plus size={16} />
-                <span>Add First Exercise</span>
-              </button>
-            ) : (
-              <button 
-                type="button" 
-                className="btn-enter-edit-mode"
-                onClick={handleEnterEditMode}
-              >
-                <Edit3 size={15} />
-                <span>Edit Workout</span>
-              </button>
-            )}
+            <button 
+              type="button" 
+              className="btn-gymmane-primary"
+              onClick={() => {
+                if (!isEditMode) handleEnterEditMode();
+                setIsPickerOpen(true);
+              }}
+            >
+              <Plus size={16} />
+              <span>Add First Exercise</span>
+            </button>
           </div>
         ) : (
           <div className="overview-exercises-timeline">
@@ -1356,12 +1359,12 @@ export function WorkoutOverviewView({
                       <div className="capsule-header-left">
                         <div className="capsule-badge-pill">
                           <Link2 size={13} className="capsule-link-icon" />
-                          <span className="capsule-badge-text">SUPERSET CIRCUIT {group.letter}</span>
+                          <span className="capsule-badge-text">SUPERSET {group.rangeLabel || group.letter}</span>
                         </div>
                         <div className="capsule-sub-info">
                           <span className="capsule-count-tag">{group.members.length} Movements · Alternate Rounds</span>
                           <span className="capsule-hint-text">
-                            Perform #{group.letter}1 then #{group.letter}2 back-to-back with 0s rest
+                            Perform {group.members.map((m) => `#${m.ssInfo?.code || m.index + 1}`).join(' then ')} back-to-back with 0s rest
                           </span>
                         </div>
                       </div>
@@ -1430,6 +1433,8 @@ export function WorkoutOverviewView({
       {viewingExerciseGuide && (
         <ExerciseDetailModal
           exercise={viewingExerciseGuide}
+          allExercises={exerciseDatabase}
+          onSelectExercise={setViewingExerciseGuide}
           onClose={() => setViewingExerciseGuide(null)}
         />
       )}

@@ -22,7 +22,7 @@ export const WARMUPANDMOBILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '60-90s',
       defaultRestSeconds: 45,
-      rpe: '6 - 7',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -58,7 +58,7 @@ export const WARMUPANDMOBILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '12-15/side',
       defaultRestSeconds: 45,
-      rpe: '6 - 7',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -95,7 +95,7 @@ export const WARMUPANDMOBILITY_EXERCISES = [
       defaultSets: 2,
       defaultReps: '8-10/side',
       defaultRestSeconds: 30,
-      rpe: '5',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -131,7 +131,7 @@ export const WARMUPANDMOBILITY_EXERCISES = [
       defaultSets: 2,
       defaultReps: '6-8 flows',
       defaultRestSeconds: 45,
-      rpe: '5 - 6',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -167,7 +167,7 @@ export const WARMUPANDMOBILITY_EXERCISES = [
       defaultSets: 2,
       defaultReps: '5/side',
       defaultRestSeconds: 45,
-      rpe: '5 - 6',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -203,7 +203,7 @@ export const WARMUPANDMOBILITY_EXERCISES = [
       defaultSets: 2,
       defaultReps: '6-8 circles/dir',
       defaultRestSeconds: 45,
-      rpe: '5 - 6',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -223,6 +223,80 @@ export const WARMUPANDMOBILITY_EXERCISES = [
           'Using excessive weight that strains elbows'
         ],
         proTip: 'Keep your chin neutral and move the bell around your head—never move your head around the bell.'
+      }
+    },
+
+  {
+      id: 'wu-banded-lateral-walk',
+      name: 'Banded Lateral Monster Walk',
+      scientificName: 'Bilateral Semi-Squat Closed-Chain Lateral Gait — Frontal Elastic Hip Abduction',
+      subtitle: 'Dynamic glute medius and external rotator activation walk',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Loop Resistance Band',
+      isWarmup: true,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 2,
+      defaultReps: '12-15 steps/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Medius (Posterior & Middle Fibers)', 'Gluteus Minimus'],
+        secondary: ['Gluteus Maximus (Upper Fibers)', 'Tensor Fasciae Latae'],
+        stabilizers: ['Vastus Lateralis & Medialis', 'Lumbo-Pelvic Core']
+      },
+      execution: {
+        setup: 'Place a mini loop resistance band symmetrically just above the knees or ankles. Descend into an athletic quarter-squat with shins vertical, toes pointed straight ahead, and ribcage stacked over pelvis.',
+        eccentric: 'Control the trailing leg inward only half-width after each step so constant elastic band tension never drops to slack.',
+        concentric: 'Drive sideways out through the lead heel and lateral hip without swinging the shoulders or hiking the pelvis vertically.',
+        breathing: 'Maintain continuous relaxed nasal or rhythmic breathing while holding subtle abdominal brace.',
+        commonMistakes: [
+          'Turning toes outward into external rotation and letting the quads and TFL dominate',
+          'Bringing the feet too close together between steps so the band goes loose',
+          'Tilting the upper torso sideways to manufacture wider steps'
+        ],
+        proTip: 'Keep your belt buckle level like a spirit level and push the floor sideways rather than lifting your foot through the air.'
+      }
+    },
+
+  {
+      id: 'wu-passive-dead-hang',
+      name: 'Overhead Bar Dead Hang',
+      scientificName: 'Suspended Overhead Glenohumeral Flexion & Axial Lumbar Intervertebral Traction',
+      subtitle: 'Passive overhead shoulder decompression and axial spinal unloading',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Pull-Up Bar',
+      isWarmup: true,
+      mechanics: 'Isometric',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 2,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Latissimus Dorsi (Passive Stretch)', 'Flexor Digitorum Profundus & Superficialis'],
+        secondary: ['Teres Major', 'Pectoralis Minor (Overhead Elevation Stretch)'],
+        stabilizers: ['Lower Trapezius', 'Thoracolumbar Fascia']
+      },
+      execution: {
+        setup: 'Grasp an overhead pull-up bar slightly wider than shoulder width with a full pronated thumb-wrapped grip. Step cleanly off the support platform until feet hang free.',
+        eccentric: 'Allow the ribcage, pelvis, and femurs to gently lengthen downward under gravity while breathing smoothly into the lower lateral ribs.',
+        concentric: 'Maintain active finger flexion around the bar without shrugging anteriorly; step gently onto the platform when completing the timed hang.',
+        breathing: 'Slow 4-second nasal inhales followed by long 6-second exhales to encourage pelvic drop and thoracic decompression.',
+        commonMistakes: [
+          'Hyperextending the lumbar spine by kicking the legs backward instead of keeping a softly hollow rib position',
+          'Dropping suddenly off a high bar instead of stepping down with control',
+          'Holding breath rigidly and fighting scapular upward rotation'
+        ],
+        proTip: 'Long exhalations relax high-tone paraspinal muscles and allow gentle gravitational traction across lumbar discs and the subacromial space.'
       }
     }
 ];

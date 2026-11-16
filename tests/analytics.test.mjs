@@ -9,6 +9,7 @@ import {
   calculateOverviewDashboardStats,
   calculateMonthGroupedHeatmap,
   calculateWeeklyMuscleFrequency,
+  formatHoursMinutes,
 } from '../src/utils/analytics.js';
 
 test('toLocalDateKey formats local calendar YYYY-MM-DD and rejects invalid input', () => {
@@ -158,6 +159,14 @@ test('calculateWeeklyMuscleFrequency accurately tallies muscle hits for current 
   assert.equal(result.frequencyMap.quads, 1);
   assert.equal(result.frequencyMap.glutes, 1);
   assert.equal(result.trainedMusclesCount, 2);
+});
+
+test('formatHoursMinutes rounds seconds cleanly to match session minute chips', () => {
+  assert.equal(formatHoursMinutes(0), '0 min');
+  assert.equal(formatHoursMinutes(45), '1 min');
+  assert.equal(formatHoursMinutes(2920), '49 min');
+  assert.equal(formatHoursMinutes(3580), '1h 0m');
+  assert.equal(formatHoursMinutes(15900), '4h 25m');
 });
 
 

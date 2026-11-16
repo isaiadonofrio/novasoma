@@ -3,6 +3,8 @@
  * Calculates volume tonnage, consistency streaks, weekly distribution, and historical progress.
  */
 import { isBodyweightEquipment } from './exerciseImport.js';
+import { getRoundedDurationMinutes, getSessionDurationSeconds } from './formatting.js';
+import { MS_PER_DAY, DEFAULT_SETS } from './constants.js';
 
 /**
  * Converts a Date or date string to local YYYY-MM-DD (preventing UTC midnight drift).
@@ -56,16 +58,18 @@ export function calculateTotalVolumeKg(history) {
  */
 export function calculateTotalTrainingTimeSeconds(history) {
   if (!Array.isArray(history) || history.length === 0) return 0;
-  return history.reduce((acc, session) => acc + (session.durationSeconds || 0), 0);
+  return history.reduce((acc, session) => acc + getSessionDurationSeconds(session), 0);
 }
 
 /**
  * Formats duration seconds into readable hours and minutes (e.g. "4h 25m" or "45 min").
  */
 export function formatHoursMinutes(totalSeconds) {
-  if (!totalSeconds || totalSeconds <= 0) return '0 min';
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = Math.max(0, Number(totalSeconds) || 0);
+  if (secs <= 0) return '0 min';
+  const totalMinutes = getRoundedDurationMinutes(secs);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
   if (hours > 0) {
     return `${hours}h ${minutes}m`;
   }
@@ -173,7 +177,7 @@ export function calculateBestStreak(history = []) {
   for (let i = 1; i < uniqueKeys.length; i++) {
     const prev = new Date(`${uniqueKeys[i - 1]}T12:00:00`);
     const next = new Date(`${uniqueKeys[i]}T12:00:00`);
-    const diffDays = Math.round((next - prev) / 86400000);
+    const diffDays = Math.round((next - prev) / MS_PER_DAY);
     if (diffDays === 1) {
       current += 1;
       if (current > best) best = current;
@@ -206,7 +210,7 @@ export function calculateOverviewDashboardStats(routines = [], exerciseLibrary =
     (routine.exercises || []).forEach((item) => {
       totalPlannedExercises += 1;
       const parsedSets = parseInt(item.sets ?? item.defaultSets, 10);
-      totalPlannedSets += Number.isFinite(parsedSets) && parsedSets > 0 ? parsedSets : 3;
+      totalPlannedSets += Number.isFinite(parsedSets) && parsedSets > 0 ? parsedSets : DEFAULT_SETS;
 
       const matched =
         (item.id && libById.get(item.id)) ||
@@ -251,8 +255,7 @@ export function calculateOverviewDashboardStats(routines = [], exerciseLibrary =
   let totalVolumeKg = 0;
 
   safeHistory.forEach((session) => {
-    const dur = Number(session.durationSeconds);
-    if (Number.isFinite(dur) && dur > 0) totalDurationSeconds += dur;
+    totalDurationSeconds += getSessionDurationSeconds(session);
 
     const vol = Number(session.volumeKg);
     totalVolumeKg += Number.isFinite(vol) ? vol : calculateSessionVolumeKg(session.loggedSets);
@@ -281,11 +284,11 @@ export function calculateOverviewDashboardStats(routines = [], exerciseLibrary =
     if (latestKey === todayKey) {
       whenLabel = 'Today';
     } else if (latestKey) {
-      const diffDays = Math.round((new Date(`${todayKey}T12:00:00`) - new Date(`${latestKey}T12:00:00`)) / 86400000);
+      const diffDays = Math.round((new Date(`${todayKey}T12:00:00`) - new Date(`${latestKey}T12:00:00`)) / MS_PER_DAY);
       if (diffDays === 1) whenLabel = 'Yesterday';
       else if (diffDays > 1 && diffDays < 30) whenLabel = `${diffDays}d ago`;
     }
-    const mins = Math.max(1, Math.round((Number(latest.durationSeconds) || 0) / 60));
+    const mins = getRoundedDurationMinutes(getSessionDurationSeconds(latest));
     lastSessionSummary = {
       title: latest.routineTitle || 'Workout Session',
       whenLabel,
@@ -333,9 +336,9 @@ export function calculateMonthGroupedHeatmap(history = []) {
       titles: [],
     };
     const vol = Number(session.volumeKg);
-    const dur = Number(session.durationSeconds);
+    const dur = getSessionDurationSeconds(session);
     prev.count += 1;
-    prev.durationSeconds += Number.isFinite(dur) ? dur : 0;
+    prev.durationSeconds += dur;
     prev.volumeKg += Number.isFinite(vol) ? vol : calculateSessionVolumeKg(session.loggedSets);
     if (session.routineTitle && !prev.titles.includes(session.routineTitle)) {
       prev.titles.push(session.routineTitle);

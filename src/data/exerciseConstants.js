@@ -8,6 +8,7 @@ export const MOVEMENT_PATTERNS = {
   LUNGE: 'Unilateral Lunge / Step',
   KNEE_FLEXION: 'Knee Flexion',
   CALF_ISOLATION: 'Ankle Plantarflexion',
+  ANKLE_DORSIFLEXION: 'Ankle Dorsiflexion',
   ELBOW_FLEXION: 'Elbow Flexion',
   ELBOW_EXTENSION: 'Elbow Extension',
   CORE_ANTI_LATERAL: 'Core Anti-Lateral Flexion',

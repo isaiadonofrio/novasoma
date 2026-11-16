@@ -9,13 +9,11 @@ import {
   Edit3,
   Trash2,
   Copy,
-  Activity,
   ChevronRight
 } from 'lucide-react';
-import { BodyMap } from './BodyMap';
 import { MiniBodyMap } from './MiniBodyMap';
 import { ConfirmModal } from './ConfirmModal';
-import { MUSCLE_LABELS } from '../data/muscleLabels';
+import { MUSCLE_LABELS, getMuscleRegionTone } from '../data/muscleLabels';
 
 function getRoutineMuscleKeys(routine) {
   const primarySet = new Set();
@@ -92,15 +90,7 @@ export function RoutinesSection({
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedMuscles, setSelectedMuscles] = useState([]);
-  const [showBodyMap, setShowBodyMap] = useState(false);
   const [pendingDeleteRoutine, setPendingDeleteRoutine] = useState(null);
-
-  const handleToggleMuscle = (muscleKey) => {
-    setSelectedMuscles((prev) =>
-      prev.includes(muscleKey) ? prev.filter((m) => m !== muscleKey) : [...prev, muscleKey]
-    );
-  };
 
   const filteredRoutines = useMemo(() => {
     return routines.filter((r) => {
@@ -115,17 +105,9 @@ export function RoutinesSection({
         selectedCategory === 'All' ||
         (r.category || '').toLowerCase().includes(selectedCategory.toLowerCase());
 
-      const matchesMuscles =
-        selectedMuscles.length === 0 ||
-        (r.exercises || []).some(
-          (ex) =>
-            selectedMuscles.includes(ex.muscleKey) ||
-            (ex.secondaryKeys && ex.secondaryKeys.some((k) => selectedMuscles.includes(k)))
-        );
-
-      return matchesSearch && matchesCategory && matchesMuscles;
+      return matchesSearch && matchesCategory;
     });
-  }, [routines, searchQuery, selectedCategory, selectedMuscles]);
+  }, [routines, searchQuery, selectedCategory]);
 
   const handleDeleteClick = (e, routine) => {
     e.stopPropagation();
@@ -168,6 +150,8 @@ export function RoutinesSection({
             <div className="search-box-home">
               <Search size={16} className="search-icon-muted" />
               <input
+                id="routines-search-input"
+                name="routines-search"
                 type="text"
                 placeholder="Search workouts or exercises..."
                 aria-label="Search workouts or exercises"
@@ -190,27 +174,7 @@ export function RoutinesSection({
                 </button>
               ))}
             </div>
-
-            <button
-              type="button"
-              className={`toggle-bodymap-btn ${showBodyMap || selectedMuscles.length > 0 ? 'active' : ''}`}
-              onClick={() => setShowBodyMap((prev) => !prev)}
-              title="Filter by tapping muscles on the figure"
-            >
-              <Activity size={15} />
-              <span>Muscles {selectedMuscles.length > 0 ? `(${selectedMuscles.length})` : ''}</span>
-            </button>
           </div>
-
-          {showBodyMap && (
-            <div className="home-bodymap-drawer">
-              <BodyMap
-                selectedMuscles={selectedMuscles}
-                onToggleMuscle={handleToggleMuscle}
-                onClearMuscles={() => setSelectedMuscles([])}
-              />
-            </div>
-          )}
         </div>
 
         {routines.length === 0 ? (
@@ -238,7 +202,6 @@ export function RoutinesSection({
               onClick={() => {
                 setSelectedCategory('All');
                 setSearchQuery('');
-                setSelectedMuscles([]);
               }}
             >
               Reset filters
@@ -344,7 +307,10 @@ export function RoutinesSection({
                         {visibleMuscles.length > 0 && (
                           <div className="routine-muscle-tags">
                             {visibleMuscles.map((key) => (
-                              <span key={key} className="routine-muscle-tag">
+                              <span
+                                key={key}
+                                className={`routine-muscle-tag region-${getMuscleRegionTone(key)}`}
+                              >
                                 {MUSCLE_LABELS[key] || key}
                               </span>
                             ))}

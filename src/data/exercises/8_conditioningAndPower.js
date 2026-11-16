@@ -91,7 +91,7 @@ export const CONDITIONINGANDPOWER_EXERCISES = [
       defaultSets: 1,
       defaultReps: '15-20 min',
       defaultRestSeconds: 0,
-      rpe: '4 - 5',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -111,6 +111,116 @@ export const CONDITIONINGANDPOWER_EXERCISES = [
           'Overstriding with heavy heel impact'
         ],
         proTip: 'Walking is the ultimate biological reset: it flushes metabolites, restores reciprocal arm-leg coordination, and decompresses intervertebral discs.'
+      }
+    },
+
+  {
+      id: 'ex-vertical-jump',
+      name: 'Countermovement Vertical Jump',
+      scientificName: 'Bilateral Countermovement Triple-Extension Plyometric Jump — Stretch-Shortening Rate of Force Development',
+      subtitle: 'Explosive triple-extension jump developing lower-body power and elastic landing control',
+      pattern: MOVEMENT_PATTERNS.CARDIO_PLYO,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      mechanics: 'Plyometric',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 4,
+      defaultReps: '5-6',
+      defaultRestSeconds: 90,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps', 'Gluteus Maximus', 'Gastrocnemius & Soleus'],
+        secondary: ['Hamstrings', 'Anterior Deltoid & Lats (Arm Swing Impulse)'],
+        stabilizers: ['Achilles & Patellar Tendon Complex', 'Core Bracing Muscles']
+      },
+      execution: {
+        setup: 'Stand balanced hip-width apart with arms slightly raised overhead and knees unlocked in an athletic ready stance.',
+        eccentric: 'Execute a rapid sharp countermovement arm-swing and quarter-to-half squat drop, then cushion every landing softly through forefoot-to-heel athletic quarter-squat absorption.',
+        concentric: 'Reverse immediately out of the countermovement dipping elastic recoil, exploding vertically via coordinated triple extension of ankles, knees, and hips while swinging arms overhead.',
+        breathing: 'Quick sharp inhale during countermovement dip; explosive exhale at vertical takeoff.',
+        commonMistakes: [
+          'Landing stiff-legged with loud pounding heel impact and valgus knee cave',
+          'Turning explosive low-rep power jumps into exhausting slow high-rep cardio fatigue',
+          'Squatting way too deep before takeoff and losing elastic stretch-shortening timing'
+        ],
+        proTip: 'Treat Plyometrics purely as maximum-velocity power quality (5–6 crisp reps with 90s+ full recovery) and judge success by silent feather-soft landings.'
+      }
+    },
+
+  {
+      id: 'ex-box-jump',
+      name: 'Plyometric Box Jump',
+      scientificName: 'Bilateral Explosive Triple-Extension Elevated-Landing Jump — Reduced Eccentric Landing Impact',
+      subtitle: 'Explosive lower-body power takeoff onto an elevated box sparing eccentric impact trauma',
+      pattern: MOVEMENT_PATTERNS.CARDIO_PLYO,
+      equipment: 'Plyo Box / Step Box',
+      mechanics: 'Plyometric',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 4,
+      defaultReps: '5-6',
+      defaultRestSeconds: 90,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps', 'Gluteus Maximus', 'Gastrocnemius'],
+        secondary: ['Hamstrings', 'Hip Flexors (Peak Knee Tuck)'],
+        stabilizers: ['Core Cylinder', 'Tibialis Anterior & Peroneals']
+      },
+      execution: {
+        setup: 'Stand ~30–40 cm squarely in front of a stable plyo box at manageable takeoff height with feet hip-width apart.',
+        eccentric: 'Drop briskly into an athletic countermovement arm-swing; absorb landing softly atop the box in the exact same quarter-squat posture you started from, then ALWAYS step cleanly down one foot at a time.',
+        concentric: 'Explode upward cleanly through triple extension onto the center of the box, landing with quiet soft feet and symmetrical flat soles.',
+        breathing: 'Quick nasal prep before takeoff; crisp explosive exhale during flight.',
+        commonMistakes: [
+          'Chasing absurdly tall boxes by snapping knees tight to chest into a deep unsafe crunched landing',
+          'Rebounding backward jumping off high boxes (high Achilles injury load)',
+          'Landing with knees collapsing inward'
+        ],
+        proTip: 'Pick a box height where you land comfortably upright in your athletic quarter-squat—true power is measured by center-of-mass elevation, not extreme hip-tucking gymnastics.'
+      }
+    },
+
+  {
+      id: 'ex-plank-jack',
+      name: 'High-Plank Jack',
+      scientificName: 'Prone High-Plank Dynamic Frontal-Plane Foot Hop — Lateral Hip Abduction/Adduction Conditioning',
+      subtitle: 'Frontal-plane high-plank plyometric conditioning with anti-extension trunk bracing',
+      pattern: MOVEMENT_PATTERNS.CARDIO_PLYO,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      mechanics: 'Plyometric',
+      level: 'Beginner',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis & Transverse Abdominis', 'Gluteus Medius'],
+        secondary: ['Adductor Magnus & Longus', 'Serratus Anterior & Deltoids'],
+        stabilizers: ['Gastrocnemius & Soleus (Elastic Rebound)', 'Spinal Erectors']
+      },
+      execution: {
+        setup: 'Hold a strict straight-arm high plank with wrists stacked cleanly under shoulders, serratus engaged gently pushing the floor away, glutes contracted, and ankles together.',
+        eccentric: 'Absorb wide outward and narrow inward ball-of-foot hops smoothly while refusing to let the hips bounce up and down.',
+        concentric: 'Hop both feet symmetrically outward past shoulder width and cleanly back together along the balls of the feet while preserving an unwavering horizontal torso height.',
+        breathing: 'Steady controlled rhythmic breathing synchronized over an active braced abdominal wall.',
+        commonMistakes: [
+          'Piking hips sharply toward ceiling or letting lower back whip up and down on every foot hop',
+          'Drifting shoulders backward behind wrists',
+          'Landing heavily on flat soles instead of light toes'
+        ],
+        proTip: 'Imagine balancing a flat wooden plank across your lower sacrum—only your legs glide laterally like scissors while the entire spine stays rock steady.'
       }
     }
 ];

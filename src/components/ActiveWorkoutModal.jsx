@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Fragment, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   X,
   Play,
@@ -13,8 +13,6 @@ import {
   AlertTriangle,
   ArrowRight,
   ArrowLeft,
-  Sun,
-  Moon,
   BookOpen,
   Lightbulb,
   Activity,
@@ -26,22 +24,30 @@ import {
   Timer,
   TimerOff,
   Dumbbell,
-  Sparkles,
   Plus,
   Minus,
   SkipForward
 } from 'lucide-react';
 import { sounds } from '../utils/audio';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
-import { isAnimatedGifUrl, isBodyweightEquipment } from '../utils/exerciseImport';
+import { EXERCISE_DATABASE } from '../data/exerciseDatabase';
+import { enrichExerciseWithTaxonomy, getExerciseVariations } from '../data/exerciseTaxonomy';
+import { isAnimatedGifUrl, getRequiresEquipment } from '../utils/exerciseImport';
 import { calculateSessionVolumeKg } from '../utils/analytics';
 import { STORAGE_KEYS, safeReadJson, safeWriteJson } from '../utils/storage';
+import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 import {
   buildInitialExerciseSets,
+  doesExerciseUseExternalWeight,
+  formatLoggedSetSummary,
+  formatTargetPrescription,
   getEffectiveRestSeconds,
+  getExercisePhaseInfo,
+  getExerciseSetLoggingProfile,
+  getExerciseTimerConfig,
   getSupersetInfoMap,
   isRestTimerEnabledForExercise,
-  parseExerciseTargetSeconds
+  shouldShowExerciseRpe
 } from '../utils/workoutSets';
 import { MediaViewer } from './MediaViewer';
 import { MiniBodyMap } from './MiniBodyMap';
@@ -68,14 +74,8 @@ function getLatestExerciseHistorySets(workoutHistory, exercise) {
   return null;
 }
 
-function formatPrevSetSummary(prevSet) {
-  if (!prevSet) return '-';
-  const weight = String(prevSet.weight ?? '').trim();
-  const reps = String(prevSet.reps ?? '').trim();
-  if (weight && reps) return `${weight}kg × ${reps}`;
-  if (weight) return `${weight}kg`;
-  if (reps) return `${reps} reps`;
-  return '-';
+function formatPrevSetSummary(prevSet, exercise = null) {
+  return formatLoggedSetSummary(prevSet, exercise);
 }
 
 function parsePrevString(prevStr = '') {
@@ -89,19 +89,35 @@ function parsePrevString(prevStr = '') {
   if (kgOnlyMatch) {
     return { weight: kgOnlyMatch[1], reps: '' };
   }
-  const repsOnlyMatch = s.match(/^([\d.,]+)\s*reps?$/i);
-  if (repsOnlyMatch) {
-    return { weight: '', reps: repsOnlyMatch[1] };
+  const statOnlyMatch = s.match(/^([\d.,]+)\s*(?:reps?|s|sec|min|flows?|steps?|\/side|\/leg)?$/i);
+  if (statOnlyMatch) {
+    return { weight: '', reps: statOnlyMatch[1] };
   }
   return { weight: '', reps: '' };
+}
+
+function resolveCuedTimerState(exercise, sets = []) {
+  if (!exercise) return { mode: 'rest', seconds: 60 };
+  const nextIdx = sets.findIndex((s) => !s.completed);
+  const activeSet = nextIdx >= 0 ? sets[nextIdx] : sets[sets.length - 1];
+  const cfg = getExerciseTimerConfig(exercise, activeSet);
+  if (cfg.hasWorkTimer && nextIdx >= 0) {
+    return { mode: 'work', seconds: cfg.workSeconds };
+  }
+  return { mode: 'rest', seconds: cfg.restSeconds };
+}
+
+function formatTimerPresetChip(secs) {
+  if (secs >= 120 && secs % 60 === 0) {
+    return `${secs / 60}m`;
+  }
+  return `${secs}s`;
 }
 
 export function ActiveWorkoutModal({
   routine,
   initialIndex = 0,
   workoutHistory = [],
-  theme = 'dark',
-  onToggleTheme,
   onUpdateRoutine,
   onClose,
   onCompleteWorkout
@@ -109,10 +125,19 @@ export function ActiveWorkoutModal({
   const [localExercises, setLocalExercises] = useState(() => routine?.exercises || EMPTY_EXERCISES);
   const exercises = onUpdateRoutine ? (routine?.exercises || EMPTY_EXERCISES) : localExercises;
 
-  const savedDraft = (() => {
+  const [savedDraft] = useState(() => {
     const draft = safeReadJson(STORAGE_KEYS.ACTIVE_DRAFT, null);
-    return draft && draft.routineId === routine?.id ? draft : null;
-  })();
+    if (!draft || draft.routineId !== routine?.id) return null;
+    // Expire drafts older than 24 hours
+    if (draft.updatedAt) {
+      const ageMs = Date.now() - new Date(draft.updatedAt).getTime();
+      if (ageMs > 24 * 60 * 60 * 1000 || isNaN(ageMs)) {
+        safeWriteJson(STORAGE_KEYS.ACTIVE_DRAFT, null);
+        return null;
+      }
+    }
+    return draft;
+  });
 
   const safeInitialIndex = Math.min(
     Math.max(0, initialIndex > 0 ? initialIndex : (savedDraft?.currentIndex ?? initialIndex)),
@@ -120,7 +145,16 @@ export function ActiveWorkoutModal({
   );
 
   const [currentIndex, setCurrentIndex] = useState(safeInitialIndex);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = safeReadJson(STORAGE_KEYS.SOUND_ENABLED, true);
+    return saved !== false;
+  });
+  const soundEnabledRef = useRef(soundEnabled);
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+    safeWriteJson(STORAGE_KEYS.SOUND_ENABLED, soundEnabled);
+  }, [soundEnabled]);
+
   const initialElapsed = Number.isFinite(savedDraft?.workoutElapsedSeconds)
     ? savedDraft.workoutElapsedSeconds
     : 0;
@@ -129,27 +163,17 @@ export function ActiveWorkoutModal({
   const startedAtRef = useRef(sessionStartTime);
   const elapsedSecondsRef = useRef(initialElapsed);
   const [workoutElapsedSeconds, setWorkoutElapsedSeconds] = useState(initialElapsed);
+  const [confirmFinishOpen, setConfirmFinishOpen] = useState(false);
 
   // Outline starts collapsed so the live stage remains a calm, spacious 2-column studio view
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const [isMobileDemoExpanded, setIsMobileDemoExpanded] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [guideExerciseIdx, setGuideExerciseIdx] = useState(null);
   const [guideTab, setGuideTab] = useState('cues');
   const [flowNotice, setFlowNotice] = useState(null);
-
-  const currentExercise = exercises[currentIndex] || null;
-  const isTimerEnabled = isRestTimerEnabledForExercise(currentExercise);
-  const defaultRest = getEffectiveRestSeconds(currentExercise);
-  const targetHoldSeconds = parseExerciseTargetSeconds(currentExercise?.defaultReps);
-
-  const [timerMode, setTimerMode] = useState('rest'); // 'rest' | 'work'
-  const [restSecondsLeft, setRestSecondsLeft] = useState(defaultRest);
-  const [restInitialSeconds, setRestInitialSeconds] = useState(defaultRest);
-  const [isResting, setIsResting] = useState(false);
-  const restTargetTimestampRef = useRef(null);
-
-  const supersetMap = useMemo(() => getSupersetInfoMap(exercises), [exercises]);
-  const currentSuperset = supersetMap.get(currentIndex) || null;
+  const [weightColumnOverrides, setWeightColumnOverrides] = useState({});
+  const activeRibbonRef = useRef(null);
 
   const [loggedSets, setLoggedSets] = useState(() => {
     const initial = {};
@@ -164,11 +188,82 @@ export function ActiveWorkoutModal({
         historySets,
         fallbackPrev,
         parsePrevFn: parsePrevString,
-        formatPrevFn: formatPrevSetSummary
+        formatPrevFn: (prevSet) => formatPrevSetSummary(prevSet, ex)
       });
     });
     return initial;
   });
+  const loggedSetsRef = useRef(loggedSets);
+  useEffect(() => {
+    loggedSetsRef.current = loggedSets;
+  }, [loggedSets]);
+
+  const currentExercise = exercises[currentIndex] || null;
+  const currentExerciseSets = currentExercise ? (loggedSets[currentExercise.id] || EMPTY_EXERCISES) : EMPTY_EXERCISES;
+  const nextIncompleteSetIdx = currentExerciseSets.findIndex((s) => !s.completed);
+  const activeWorkSet = nextIncompleteSetIdx >= 0
+    ? currentExerciseSets[nextIncompleteSetIdx]
+    : currentExerciseSets[currentExerciseSets.length - 1];
+  const timerConfig = getExerciseTimerConfig(currentExercise, activeWorkSet);
+  const isTimerEnabled = timerConfig.restEnabled;
+  const defaultRest = timerConfig.restSeconds;
+
+  const [timerMode, setTimerMode] = useState(() => {
+    const ex = exercises[safeInitialIndex];
+    return resolveCuedTimerState(ex, loggedSets[ex?.id] || []).mode;
+  }); // 'rest' | 'work'
+  const [restSecondsLeft, setRestSecondsLeft] = useState(() => {
+    const ex = exercises[safeInitialIndex];
+    return resolveCuedTimerState(ex, loggedSets[ex?.id] || []).seconds;
+  });
+  const restSecondsLeftRef = useRef(restSecondsLeft);
+  useEffect(() => {
+    restSecondsLeftRef.current = restSecondsLeft;
+  }, [restSecondsLeft]);
+  const [restInitialSeconds, setRestInitialSeconds] = useState(() => {
+    const ex = exercises[safeInitialIndex];
+    return resolveCuedTimerState(ex, loggedSets[ex?.id] || []).seconds;
+  });
+  const [isResting, setIsResting] = useState(false);
+  const restTargetTimestampRef = useRef(null);
+  const onTimerZeroRef = useRef(null);
+
+  const supersetMap = useMemo(() => getSupersetInfoMap(exercises), [exercises]);
+  const currentSuperset = supersetMap.get(currentIndex) || null;
+
+  useEffect(() => {
+    if (activeRibbonRef.current && typeof activeRibbonRef.current.scrollIntoView === 'function') {
+      activeRibbonRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  }, [currentIndex]);
+
+  const isWeightShownForExercise = useCallback((targetEx) => {
+    if (!targetEx) return false;
+    if (typeof weightColumnOverrides[targetEx.id] === 'boolean') {
+      return weightColumnOverrides[targetEx.id];
+    }
+    const exSets = loggedSets[targetEx.id] || [];
+    if (exSets.some((s) => {
+      const w = parseFloat(String(s.weight ?? '').replace(',', '.'));
+      return Number.isFinite(w) && w > 0;
+    })) {
+      return true;
+    }
+    return doesExerciseUseExternalWeight(targetEx);
+  }, [weightColumnOverrides, loggedSets]);
+
+  const toggleWeightColumnForExercise = useCallback((targetEx) => {
+    if (!targetEx) return;
+    const currentlyShown = isWeightShownForExercise(targetEx);
+    setWeightColumnOverrides((prev) => ({
+      ...prev,
+      [targetEx.id]: !currentlyShown
+    }));
+  }, [isWeightShownForExercise]);
 
   // Persist draft immediately when exercise index or logged sets change
   useEffect(() => {
@@ -207,37 +302,68 @@ export function ActiveWorkoutModal({
     }
   }, [onUpdateRoutine, routine]);
 
+  const cueTimerForExercise = useCallback((targetIndex, setsMap = loggedSetsRef.current) => {
+    const targetEx = exercises[targetIndex];
+    if (!targetEx) return;
+    const cued = resolveCuedTimerState(targetEx, setsMap[targetEx.id] || []);
+    setTimerMode(cued.mode);
+    setRestInitialSeconds(cued.seconds);
+    setRestSecondsLeft(cued.seconds);
+    restTargetTimestampRef.current = null;
+    setIsResting(false);
+  }, [exercises]);
+
+  const focusSupersetPartner = useCallback((partnerIdx) => {
+    if (partnerIdx < 0 || partnerIdx >= exercises.length) return;
+    setCurrentIndex(partnerIdx);
+    cueTimerForExercise(partnerIdx);
+    setFlowNotice(null);
+  }, [exercises.length, cueTimerForExercise]);
+
   const goToExercise = useCallback((nextIndex) => {
     if (nextIndex < 0 || nextIndex >= exercises.length) return;
-    const nextEx = exercises[nextIndex];
-    const nextRest = getEffectiveRestSeconds(nextEx);
     setCurrentIndex(nextIndex);
-    setTimerMode('rest');
-    setRestInitialSeconds(nextRest);
-    setRestSecondsLeft(nextRest);
-    setIsResting(false);
+    cueTimerForExercise(nextIndex);
     setFlowNotice(null);
     setIsGuideOpen(false);
+    setGuideExerciseIdx(null);
     setIsMobileDemoExpanded(false);
     setIsQueueOpen(false);
-  }, [exercises, setCurrentIndex]);
+  }, [exercises.length, cueTimerForExercise]);
 
-  const goToNext = useCallback(() => {
-    if (currentIndex < exercises.length - 1) {
-      goToExercise(currentIndex + 1);
-    }
-  }, [currentIndex, exercises.length, goToExercise]);
+  const prevNavRawIndex = currentSuperset ? currentSuperset.memberIndices[0] - 1 : currentIndex - 1;
+  const nextNavRawIndex = currentSuperset
+    ? currentSuperset.memberIndices[currentSuperset.memberIndices.length - 1] + 1
+    : currentIndex + 1;
+  const prevNavIndex = prevNavRawIndex >= 0
+    ? (supersetMap.get(prevNavRawIndex)?.memberIndices[0] ?? prevNavRawIndex)
+    : -1;
+  const nextNavIndex = nextNavRawIndex < exercises.length
+    ? (supersetMap.get(nextNavRawIndex)?.memberIndices[0] ?? nextNavRawIndex)
+    : -1;
+  const prevBlockExercise = prevNavIndex >= 0 ? exercises[prevNavIndex] : null;
+  const nextBlockExercise = nextNavIndex >= 0 ? exercises[nextNavIndex] : null;
 
-  const goToPrev = useCallback(() => {
-    if (currentIndex > 0) {
-      goToExercise(currentIndex - 1);
+  const goToNextBlock = useCallback(() => {
+    if (nextNavIndex >= 0) {
+      goToExercise(nextNavIndex);
     }
-  }, [currentIndex, goToExercise]);
+  }, [nextNavIndex, goToExercise]);
+
+  const goToPrevBlock = useCallback(() => {
+    if (prevNavIndex >= 0) {
+      goToExercise(prevNavIndex);
+    }
+  }, [prevNavIndex, goToExercise]);
 
   const toggleRestTimer = useCallback(() => {
     if (restSecondsLeft === 0) {
-      setRestSecondsLeft(restInitialSeconds);
-      restTargetTimestampRef.current = Date.now() + restInitialSeconds * 1000;
+      const restartSecs = restInitialSeconds > 0
+        ? restInitialSeconds
+        : (timerMode === 'work' ? timerConfig.workSeconds : defaultRest);
+      setRestInitialSeconds(restartSecs);
+      setRestSecondsLeft(restartSecs);
+      restTargetTimestampRef.current = Date.now() + restartSecs * 1000;
       setIsResting(true);
     } else {
       setIsResting((prev) => {
@@ -249,15 +375,9 @@ export function ActiveWorkoutModal({
         return !prev;
       });
     }
-  }, [restSecondsLeft, restInitialSeconds]);
+  }, [restSecondsLeft, restInitialSeconds, timerMode, timerConfig.workSeconds, defaultRest]);
 
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
+  useBodyScrollLock(true);
 
   const updateElapsed = useCallback(() => {
     const elapsed = initialElapsedRef.current + Math.floor((Date.now() - startedAtRef.current) / 1000);
@@ -286,19 +406,22 @@ export function ActiveWorkoutModal({
     }
 
     if (!restTargetTimestampRef.current) {
-      restTargetTimestampRef.current = Date.now() + restSecondsLeft * 1000;
+      restTargetTimestampRef.current = Date.now() + restSecondsLeftRef.current * 1000;
     }
 
-    let lastTickSecond = restSecondsLeft;
+    let lastTickSecond = -1;
     const checkRest = () => {
       if (!restTargetTimestampRef.current) return;
       const left = Math.max(0, Math.ceil((restTargetTimestampRef.current - Date.now()) / 1000));
       setRestSecondsLeft(left);
       if (left === 0) {
+        lastTickSecond = -1;
         setIsResting(false);
         restTargetTimestampRef.current = null;
-        if (soundEnabled) sounds.playTimerComplete();
-      } else if (left <= 3 && left !== lastTickSecond && soundEnabled) {
+        if (typeof onTimerZeroRef.current === 'function') {
+          onTimerZeroRef.current();
+        }
+      } else if (left <= 3 && left !== lastTickSecond && soundEnabledRef.current) {
         lastTickSecond = left;
         sounds.playTick();
       }
@@ -316,41 +439,84 @@ export function ActiveWorkoutModal({
       clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, [isResting, soundEnabled, restSecondsLeft]);
+  }, [isResting]);
+
+  const handleClose = useCallback(() => {
+    if (routine?.id) {
+      safeWriteJson(STORAGE_KEYS.ACTIVE_DRAFT, {
+        routineId: routine.id,
+        currentIndex,
+        workoutElapsedSeconds: elapsedSecondsRef.current,
+        loggedSets,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    onClose();
+  }, [routine, currentIndex, loggedSets, onClose]);
+
+  const openGuideDrawer = useCallback((targetIdx = null) => {
+    setIsQueueOpen(false);
+    setGuideExerciseIdx(targetIdx);
+    setIsGuideOpen(true);
+  }, []);
+
+  const closeGuideDrawer = useCallback(() => {
+    setIsGuideOpen(false);
+    setGuideExerciseIdx(null);
+  }, []);
+
+  const toggleGuideDrawer = useCallback(() => {
+    setIsQueueOpen(false);
+    setGuideExerciseIdx(null);
+    setIsGuideOpen((prev) => !prev);
+  }, []);
+
+  const toggleQueueDrawer = useCallback(() => {
+    setIsGuideOpen(false);
+    setGuideExerciseIdx(null);
+    setIsQueueOpen((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
       if (e.key === 'Escape') {
-        if (isGuideOpen) {
-          setIsGuideOpen(false);
+        e.preventDefault();
+        e.stopPropagation();
+        if (confirmFinishOpen) {
+          setConfirmFinishOpen(false);
+        } else if (isGuideOpen) {
+          closeGuideDrawer();
         } else if (isQueueOpen) {
           setIsQueueOpen(false);
+        } else if (isMobileDemoExpanded) {
+          setIsMobileDemoExpanded(false);
         } else {
-          onClose();
+          handleClose();
         }
-      } else if (!isInput && e.key === 'ArrowRight') {
-        goToNext();
+        return;
+      }
+
+      if (confirmFinishOpen) return;
+
+      if (!isInput && e.key === 'ArrowRight') {
+        goToNextBlock();
       } else if (!isInput && e.key === 'ArrowLeft') {
-        goToPrev();
-      } else if (!isInput && e.code === 'Space' && (isTimerEnabled || targetHoldSeconds)) {
+        goToPrevBlock();
+      } else if (!isInput && e.code === 'Space' && (isTimerEnabled || timerConfig.hasWorkTimer || isResting)) {
         e.preventDefault();
         toggleRestTimer();
       } else if (!isInput && (e.key === 'g' || e.key === 'G')) {
         e.preventDefault();
-        setIsGuideOpen((prev) => !prev);
+        toggleGuideDrawer();
       } else if (!isInput && (e.key === 'q' || e.key === 'Q')) {
         e.preventDefault();
-        setIsQueueOpen((prev) => !prev);
+        toggleQueueDrawer();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isGuideOpen, isQueueOpen, isTimerEnabled, targetHoldSeconds, onClose, goToNext, goToPrev, toggleRestTimer]);
-
-  if (!currentExercise) {
-    return null;
-  }
+  }, [confirmFinishOpen, isGuideOpen, isQueueOpen, isMobileDemoExpanded, isTimerEnabled, timerConfig.hasWorkTimer, isResting, closeGuideDrawer, toggleGuideDrawer, toggleQueueDrawer, handleClose, goToNextBlock, goToPrevBlock, toggleRestTimer]);
 
   const resetTimer = (secs = defaultRest, mode = 'rest', autoStart = false) => {
     setTimerMode(mode);
@@ -379,6 +545,7 @@ export function ActiveWorkoutModal({
   };
 
   const toggleExerciseTimerPreference = () => {
+    if (!currentExercise) return;
     const nextEnabled = !isTimerEnabled;
     const nextExercises = exercises.map((ex, idx) => {
       if (idx !== currentIndex) return ex;
@@ -395,14 +562,17 @@ export function ActiveWorkoutModal({
 
     if (nextEnabled) {
       const secs = Number(currentExercise.defaultRestSeconds) > 0 ? Number(currentExercise.defaultRestSeconds) : 60;
-      resetTimer(secs, 'rest', false);
-    } else {
+      if (timerMode === 'rest') {
+        resetTimer(secs, 'rest', false);
+      }
+    } else if (timerMode === 'rest') {
       setIsResting(false);
     }
   };
 
-  const toggleSetComplete = (setIndex) => {
-    const exId = currentExercise.id;
+  const toggleSetComplete = (setIndex, targetExercise = currentExercise, { fromWorkTimer = false } = {}) => {
+    if (!targetExercise) return;
+    const exId = targetExercise.id;
     const currentSets = [...(loggedSets[exId] || [])];
     if (!currentSets[setIndex]) return;
 
@@ -425,13 +595,20 @@ export function ActiveWorkoutModal({
       }
     }
 
-    setLoggedSets((prev) => ({
-      ...prev,
+    const nextLoggedSets = {
+      ...loggedSets,
       [exId]: currentSets
-    }));
+    };
+    setLoggedSets(nextLoggedSets);
 
     if (targetSet.completed) {
-      if (soundEnabled) sounds.playSetComplete();
+      if (soundEnabled) {
+        if (fromWorkTimer) {
+          sounds.playTimerComplete();
+        } else {
+          sounds.playSetComplete();
+        }
+      }
 
       const nextSetInExercise = currentSets[setIndex + 1];
       if (nextSetInExercise?.isDropset) {
@@ -443,33 +620,103 @@ export function ActiveWorkoutModal({
         return;
       }
 
-      if (currentSuperset && !currentSuperset.isLast) {
-        const nextPartnerPos = (currentSuperset.position + 1) % currentSuperset.size;
-        const nextPartnerIdx = currentSuperset.memberIndices[nextPartnerPos];
-        const nextPartnerEx = exercises[nextPartnerIdx];
-        if (nextPartnerEx) {
-          setIsResting(false);
-          setFlowNotice({
-            type: 'superset',
-            targetIndex: nextPartnerIdx,
-            code: `${currentSuperset.letter}${nextPartnerPos + 1}`,
-            text: `Superset ${currentSuperset.letter} — continue to ${currentSuperset.letter}${nextPartnerPos + 1} (${nextPartnerEx.name})`
-          });
+      const targetIdx = exercises.findIndex((ex) => ex.id === exId);
+      const targetSuperset = targetIdx >= 0 ? (supersetMap.get(targetIdx) || null) : null;
+      if (targetSuperset) {
+        let pendingPartnerIdx = null;
+        for (let offset = 1; offset < targetSuperset.size; offset += 1) {
+          const pPos = (targetSuperset.position + offset) % targetSuperset.size;
+          const pIdx = targetSuperset.memberIndices[pPos];
+          const pEx = exercises[pIdx];
+          const pSets = pEx ? (nextLoggedSets[pEx.id] || []) : [];
+          if (pSets[setIndex] && !pSets[setIndex].completed) {
+            pendingPartnerIdx = pIdx;
+            break;
+          }
+        }
+
+        if (pendingPartnerIdx !== null) {
+          const nextPartnerEx = exercises[pendingPartnerIdx];
+          const nextPartnerInfo = supersetMap.get(pendingPartnerIdx);
+          setCurrentIndex(pendingPartnerIdx);
+          cueTimerForExercise(pendingPartnerIdx, nextLoggedSets);
+          setFlowNotice(
+            nextPartnerEx
+              ? {
+                type: 'superset',
+                text: `${fromWorkTimer ? 'Set logged! ' : ''}Up next in Superset ${targetSuperset.rangeLabel}: ${nextPartnerInfo?.code ? `#${nextPartnerInfo.code} ` : ''}${nextPartnerEx.name}`
+              }
+              : null
+          );
           return;
         }
+
+        const roundFirstIdx = targetSuperset.memberIndices[0];
+        const roundFirstEx = exercises[roundFirstIdx];
+        if (roundFirstEx) {
+          setCurrentIndex(roundFirstIdx);
+        }
+        setFlowNotice(null);
+        const timerOwner = isRestTimerEnabledForExercise(targetExercise)
+          ? targetExercise
+          : roundFirstEx;
+        if (isRestTimerEnabledForExercise(timerOwner)) {
+          resetTimer(getEffectiveRestSeconds(timerOwner), 'rest', true);
+        } else if (roundFirstEx) {
+          cueTimerForExercise(roundFirstIdx, nextLoggedSets);
+        }
+        return;
       }
 
-      setFlowNotice(null);
-      if (isTimerEnabled) {
-        resetTimer(defaultRest, 'rest', true);
+      if (isRestTimerEnabledForExercise(targetExercise)) {
+        setFlowNotice(
+          fromWorkTimer
+            ? { type: 'superset', text: 'Set logged — recovery rest started.' }
+            : null
+        );
+        resetTimer(getEffectiveRestSeconds(targetExercise), 'rest', true);
+      } else {
+        setFlowNotice(null);
+        if (targetIdx >= 0) {
+          cueTimerForExercise(targetIdx, nextLoggedSets);
+        }
       }
     } else {
       setFlowNotice(null);
+      if (!isResting && targetExercise.id === currentExercise?.id) {
+        cueTimerForExercise(currentIndex, nextLoggedSets);
+      }
     }
   };
 
-  const updateSetInput = (setIndex, field, value) => {
-    const exId = currentExercise.id;
+  useEffect(() => {
+    onTimerZeroRef.current = () => {
+      if (timerMode === 'work') {
+        if (!timerConfig.isRepHoldDuration && nextIncompleteSetIdx >= 0 && currentExercise) {
+          toggleSetComplete(nextIncompleteSetIdx, currentExercise, { fromWorkTimer: true });
+        } else {
+          if (soundEnabled) sounds.playTimerComplete();
+          if (timerConfig.isRepHoldDuration) {
+            resetTimer(timerConfig.workSeconds, 'work', false);
+          }
+        }
+        return;
+      }
+
+      if (soundEnabled) sounds.playTimerComplete();
+      if (timerConfig.hasWorkTimer && nextIncompleteSetIdx >= 0) {
+        resetTimer(timerConfig.workSeconds, 'work', false);
+      }
+    };
+  });
+
+  if (!currentExercise) {
+    return null;
+  }
+
+  const updateSetInput = (setIndex, field, value, targetExercise = currentExercise) => {
+    if (!targetExercise) return;
+    const exId = targetExercise.id;
     const currentSets = [...(loggedSets[exId] || [])];
     if (!currentSets[setIndex]) return;
 
@@ -477,32 +724,53 @@ export function ActiveWorkoutModal({
       ...currentSets[setIndex],
       [field]: value
     };
-    setLoggedSets((prev) => ({
-      ...prev,
+    const nextLogged = {
+      ...loggedSets,
       [exId]: currentSets
-    }));
+    };
+    setLoggedSets(nextLogged);
+
+    if (
+      targetExercise.id === currentExercise.id &&
+      field === 'reps' &&
+      timerMode === 'work' &&
+      !isResting &&
+      setIndex === nextIncompleteSetIdx
+    ) {
+      const updatedCfg = getExerciseTimerConfig(targetExercise, currentSets[setIndex]);
+      if (updatedCfg.hasWorkTimer) {
+        setRestInitialSeconds(updatedCfg.workSeconds);
+        setRestSecondsLeft(updatedCfg.workSeconds);
+      }
+    }
   };
 
-  const adjustSetReps = (setIndex, delta) => {
-    const exId = currentExercise.id;
+  const adjustSetReps = (setIndex, delta, targetExercise = currentExercise) => {
+    if (!targetExercise) return;
+    const exId = targetExercise.id;
     const currentSets = [...(loggedSets[exId] || [])];
     if (!currentSets[setIndex]) return;
+    const profile = getExerciseSetLoggingProfile(targetExercise);
+    const stepDelta = Math.abs(delta) === 1 ? delta * profile.repStep : delta;
+    const minVal = profile.isSeconds ? 5 : 1;
     const currentReps = parseInt(currentSets[setIndex].reps, 10) || 0;
-    const nextReps = Math.max(1, currentReps + delta);
-    updateSetInput(setIndex, 'reps', String(nextReps));
+    const nextReps = Math.max(minVal, currentReps + stepDelta);
+    updateSetInput(setIndex, 'reps', String(nextReps), targetExercise);
   };
 
-  const adjustSetWeight = (setIndex, delta) => {
-    const exId = currentExercise.id;
+  const adjustSetWeight = (setIndex, delta, targetExercise = currentExercise) => {
+    if (!targetExercise) return;
+    const exId = targetExercise.id;
     const currentSets = [...(loggedSets[exId] || [])];
     if (!currentSets[setIndex]) return;
     const currentWeight = parseFloat(String(currentSets[setIndex].weight).replace(',', '.')) || 0;
     const nextWeight = Math.max(0, Math.round((currentWeight + delta) * 10) / 10);
-    updateSetInput(setIndex, 'weight', nextWeight > 0 ? String(nextWeight) : '');
+    updateSetInput(setIndex, 'weight', nextWeight > 0 ? String(nextWeight) : '', targetExercise);
   };
 
-  const applyPrevToSet = (setIndex) => {
-    const exId = currentExercise.id;
+  const applyPrevToSet = (setIndex, targetExercise = currentExercise) => {
+    if (!targetExercise) return;
+    const exId = targetExercise.id;
     const currentSets = [...(loggedSets[exId] || [])];
     const target = currentSets[setIndex];
     if (!target) return;
@@ -522,18 +790,19 @@ export function ActiveWorkoutModal({
     }));
   };
 
-  const addSetToExercise = (asDropset = false) => {
-    const exId = currentExercise.id;
+  const addSetToExercise = (asDropset = false, targetExercise = currentExercise) => {
+    if (!targetExercise) return;
+    const exId = targetExercise.id;
     const currentSets = [...(loggedSets[exId] || [])];
     const lastSet = currentSets[currentSets.length - 1];
     const nextNum = currentSets.length + 1;
-    const defaultRepTarget = String(currentExercise.defaultReps ?? '10').split('-')[0]?.trim() || '10';
+    const defaultRepTarget = String(targetExercise.defaultReps ?? '10').split('-')[0]?.trim() || '10';
     const suggestedWeight = lastSet?.weight ?? '';
 
     currentSets.push({
       setNum: nextNum,
-      exerciseName: currentExercise.name,
-      sourceId: currentExercise.sourceId || currentExercise.id,
+      exerciseName: targetExercise.name,
+      sourceId: targetExercise.sourceId || targetExercise.id,
       completed: false,
       isDropset: asDropset,
       reps: lastSet?.reps ?? defaultRepTarget,
@@ -542,20 +811,31 @@ export function ActiveWorkoutModal({
       prevWeight: asDropset ? '' : (lastSet?.prevWeight ?? ''),
       prevReps: asDropset ? '' : (lastSet?.prevReps ?? ''),
     });
-    setLoggedSets((prev) => ({
-      ...prev,
+    const nextLogged = {
+      ...loggedSets,
       [exId]: currentSets
-    }));
+    };
+    setLoggedSets(nextLogged);
+
+    if (targetExercise.id === currentExercise.id && !isResting && nextIncompleteSetIdx === -1) {
+      cueTimerForExercise(currentIndex, nextLogged);
+    }
   };
 
-  const removeLastSetFromExercise = () => {
-    const exId = currentExercise.id;
+  const removeLastSetFromExercise = (targetExercise = currentExercise) => {
+    if (!targetExercise) return;
+    const exId = targetExercise.id;
     const currentSets = loggedSets[exId] || [];
     if (currentSets.length <= 1) return;
-    setLoggedSets((prev) => ({
-      ...prev,
+    const nextLogged = {
+      ...loggedSets,
       [exId]: currentSets.slice(0, -1)
-    }));
+    };
+    setLoggedSets(nextLogged);
+
+    if (targetExercise.id === currentExercise.id && !isResting) {
+      cueTimerForExercise(currentIndex, nextLogged);
+    }
   };
 
   const formatTime = (secs) => {
@@ -571,30 +851,122 @@ export function ActiveWorkoutModal({
   const completedSetsCount = Object.values(loggedSets).flat().filter((s) => s.completed).length;
   const sessionVolumeKg = Math.round(calculateSessionVolumeKg(loggedSets));
 
-  const currentExerciseSets = loggedSets[currentExercise.id] || [];
+  const completedExercisesCount = exercises.filter((ex) => {
+    const sets = loggedSets[ex.id] || [];
+    return sets.length > 0 && sets.every((s) => s.completed);
+  }).length;
+
   const currentCompletedCount = currentExerciseSets.filter((s) => s.completed).length;
-  const nextIncompleteSetIndex = currentExerciseSets.findIndex((s) => !s.completed);
   const allCurrentSetsDone = currentExerciseSets.length > 0 && currentCompletedCount === currentExerciseSets.length;
 
-  const isTimedReps = /(?:\d\s*s\b|sec|secondi|\bmin\b)/i.test(String(currentExercise.defaultReps || ''));
+  const currentPhase = getExercisePhaseInfo(currentExercise);
   const primaryMuscleName = MUSCLE_LABELS[currentExercise.muscleKey] || currentExercise.muscleKey;
-  const execution = currentExercise.execution || {};
-  const commonMistakes = Array.isArray(execution.commonMistakes) ? execution.commonMistakes : [];
   const hasAnyImages = Boolean(currentExercise.illustration || currentExercise.illustrationEnd);
   const hasTwoImages = Boolean(currentExercise.illustration && currentExercise.illustrationEnd);
   const hasMedia = hasAnyImages || Boolean(currentExercise.customVideoUrl);
-  const prevExercise = currentIndex > 0 ? exercises[currentIndex - 1] : null;
-  const nextExercise = currentIndex < exercises.length - 1 ? exercises[currentIndex + 1] : null;
 
-  const isBodyweightEx =
-    currentExercise.requiresEquipment === false ||
-    currentExercise.usesEquipment === false ||
-    isBodyweightEquipment(currentExercise.equipment || '');
+  // Interactive Workout Ribbon Nodes (grouping supersets together numerically with phase metadata)
+  const ribbonNodes = [];
+  exercises.forEach((ex, idx) => {
+    const ss = supersetMap.get(idx);
+    const phaseInfo = getExercisePhaseInfo(ex);
+    if (ss && !ss.isFirst) return;
+    if (ss && ss.isFirst) {
+      const members = ss.memberIndices.map((mIdx) => exercises[mIdx]).filter(Boolean);
+      const totalSets = members.reduce((sum, mEx) => sum + (loggedSets[mEx.id]?.length || 0), 0);
+      const doneSets = members.reduce(
+        (sum, mEx) => sum + (loggedSets[mEx.id]?.filter((s) => s.completed).length || 0),
+        0
+      );
+      ribbonNodes.push({
+        type: 'superset',
+        key: ss.groupId,
+        ss,
+        startIdx: idx,
+        members,
+        doneSets,
+        totalSets,
+        isCurrent: ss.memberIndices.includes(currentIndex),
+        isDone: totalSets > 0 && doneSets === totalSets,
+        isWarmup: phaseInfo.key === 'warmup',
+        phaseInfo
+      });
+    } else {
+      const exSets = loggedSets[ex.id] || [];
+      const doneSets = exSets.filter((s) => s.completed).length;
+      const totalSets = exSets.length;
+      ribbonNodes.push({
+        type: 'single',
+        key: ex.id || idx,
+        idx,
+        ex,
+        doneSets,
+        totalSets,
+        isCurrent: idx === currentIndex,
+        isDone: totalSets > 0 && doneSets === totalSets,
+        isWarmup: phaseInfo.key === 'warmup',
+        phaseInfo
+      });
+    }
+  });
+
+  // Dedicated Superset Studio State (members & round-by-round next up)
+  const supersetMembers = currentSuperset
+    ? currentSuperset.memberIndices
+      .map((mIdx, pos) => {
+        const ex = exercises[mIdx];
+        if (!ex) return null;
+        return {
+          mIdx,
+          pos,
+          code: `${mIdx + 1}`,
+          ex,
+          sets: loggedSets[ex.id] || []
+        };
+      })
+      .filter(Boolean)
+    : [];
+  const supersetMaxRounds = supersetMembers.length > 0
+    ? Math.max(1, ...supersetMembers.map((m) => m.sets.length))
+    : 0;
+  let supersetNextUp = null;
+  if (supersetMembers.length > 0) {
+    for (let r = 0; r < supersetMaxRounds; r += 1) {
+      const pendingMember = supersetMembers.find((m) => m.sets[r] && !m.sets[r].completed);
+      if (pendingMember) {
+        supersetNextUp = {
+          mIdx: pendingMember.mIdx,
+          setIndex: r,
+          roundNumber: r + 1,
+          code: pendingMember.code
+        };
+        break;
+      }
+    }
+  }
+  const supersetTotalSets = supersetMembers.reduce((sum, m) => sum + m.sets.length, 0);
+  const supersetDoneSets = supersetMembers.reduce(
+    (sum, m) => sum + m.sets.filter((s) => s.completed).length,
+    0
+  );
+  const allSupersetSetsDone = supersetTotalSets > 0 && supersetDoneSets === supersetTotalSets;
+  const supersetHasAnyVisuals = supersetMembers.some((m) => Boolean(m.ex.illustration));
+  const otherSupersetPartners = currentSuperset
+    ? supersetMembers.filter((m) => m.mIdx !== currentIndex)
+    : [];
+  const activeNavSetsDone = currentSuperset ? allSupersetSetsDone : allCurrentSetsDone;
 
   const timerRatio = restInitialSeconds > 0
     ? Math.min(1, Math.max(0, restSecondsLeft / restInitialSeconds))
     : 0;
-  const restPresets = Array.from(new Set([defaultRest, 60, 90, 120])).sort((a, b) => a - b).slice(0, 3);
+  const restPresets = [30, 45, 60, 90];
+  const workPresets = timerConfig.isMinutes
+    ? [600, 900, 1200]
+    : [15, 30, 60];
+  const isWorkMode = timerMode === 'work';
+  const showActiveTimerFace = isWorkMode || isTimerEnabled || isResting;
+  const workBumpDelta = timerConfig.isMinutes ? 60 : 15;
+  const stickyTimerStep = isWorkMode ? workBumpDelta : 15;
 
   const finishPayload = {
     durationSeconds: workoutElapsedSeconds,
@@ -603,12 +975,53 @@ export function ActiveWorkoutModal({
     loggedSets
   };
 
+  const handleRequestFinish = () => {
+    if (completedSetsCount < totalSetsAcrossWorkout || completedSetsCount === 0) {
+      setConfirmFinishOpen(true);
+    } else {
+      onCompleteWorkout(finishPayload);
+    }
+  };
+
+  const handleDiscardWorkout = () => {
+    safeWriteJson(STORAGE_KEYS.ACTIVE_DRAFT, null);
+    setConfirmFinishOpen(false);
+    onClose();
+  };
+
+  const handleConfirmFinish = () => {
+    setConfirmFinishOpen(false);
+    onCompleteWorkout(finishPayload);
+  };
+
+  const resolvedGuideIdx = (
+    guideExerciseIdx !== null &&
+    currentSuperset?.memberIndices.includes(guideExerciseIdx)
+  )
+    ? guideExerciseIdx
+    : currentIndex;
+  const rawGuideExercise = exercises[resolvedGuideIdx] || currentExercise;
+  const guideExercise = isGuideOpen && rawGuideExercise
+    ? (rawGuideExercise.biomechanics ? rawGuideExercise : enrichExerciseWithTaxonomy(rawGuideExercise))
+    : rawGuideExercise;
+  const guideVariations = isGuideOpen && guideExercise
+    ? getExerciseVariations(guideExercise, EXERCISE_DATABASE)
+    : [];
+  const guidePhaseInfo = getExercisePhaseInfo(guideExercise);
+  const guidePrimaryMuscleName = MUSCLE_LABELS[guideExercise.muscleKey] || guideExercise.muscleKey;
+  const guideExecution = guideExercise.execution || {};
+  const guideCommonMistakes = Array.isArray(guideExecution.commonMistakes) ? guideExecution.commonMistakes : [];
+
   const warmupQueueItems = [];
   const mainQueueItems = [];
+  const decompressionQueueItems = [];
   exercises.forEach((ex, idx) => {
     const entry = { ex, idx, ssInfo: supersetMap.get(idx) || null };
-    if (ex.phase === 'warmup' || ex.isWarmup) {
+    const phaseKey = getExercisePhaseInfo(ex).key;
+    if (phaseKey === 'warmup') {
       warmupQueueItems.push(entry);
+    } else if (phaseKey === 'decompression') {
+      decompressionQueueItems.push(entry);
     } else {
       mainQueueItems.push(entry);
     }
@@ -622,6 +1035,7 @@ export function ActiveWorkoutModal({
     const mLabel = MUSCLE_LABELS[ex.muscleKey] || ex.muscleKey || '';
     const exDrops = exSets.filter((s) => s.isDropset).length;
     const exUntimed = !isRestTimerEnabledForExercise(ex);
+    const pct = exSets.length > 0 ? Math.round((doneSets / exSets.length) * 100) : 0;
 
     return (
       <button
@@ -630,32 +1044,454 @@ export function ActiveWorkoutModal({
         className={`player-queue-item ${isCurrent ? 'active' : ''} ${isComplete ? 'done' : ''} ${ssInfo ? 'in-superset' : ''}`}
         onClick={() => goToExercise(idx)}
       >
+        <span className="queue-item-idx-badge">
+          {ssInfo ? `#${ssInfo.code}` : idx + 1}
+        </span>
         <div className="queue-item-thumb">
           {ex.illustration ? (
             <img src={ex.illustration} alt="" loading="lazy" />
           ) : (
-            <span>{ssInfo ? ssInfo.code : idx + 1}</span>
+            <Dumbbell size={16} color="var(--faint)" />
           )}
         </div>
         <div className="queue-item-copy">
-          <strong>
-            {ssInfo && <span className="queue-ss-tag">{ssInfo.code}</span>}
-            {ex.name}
-          </strong>
+          <strong>{ex.name}</strong>
           <span>
-            {mLabel ? `${mLabel} · ` : ''}{exSets.length} × {ex.defaultReps || '10'}
+            {mLabel ? `${mLabel} · ` : ''}
+            {ex.equipment || 'Bodyweight'} · {exSets.length} × {ex.defaultReps || '10'}
             {exDrops > 0 ? ' · Drop' : ''}
             {exUntimed ? ' · Untimed' : ''}
           </span>
+          {doneSets > 0 && !isComplete && (
+            <div className="queue-item-mini-bar" aria-hidden="true">
+              <span style={{ width: `${pct}%` }} />
+            </div>
+          )}
         </div>
-        <span className={`queue-item-status ${isComplete ? 'complete' : ''}`}>
-          {isComplete ? <Check size={12} strokeWidth={3} /> : `${doneSets}/${exSets.length}`}
+        <span className={`queue-item-status ${isComplete ? 'complete' : isCurrent ? 'active-now' : ''}`}>
+          {isComplete ? <Check size={12} strokeWidth={3} /> : isCurrent ? `NOW · ${doneSets}/${exSets.length}` : `${doneSets}/${exSets.length}`}
         </span>
       </button>
     );
   };
 
-  const showStickyTimerRow = isTimerEnabled || isResting;
+  const renderPhaseQueueEntries = (entries) => {
+    const rendered = [];
+    let i = 0;
+    while (i < entries.length) {
+      const entry = entries[i];
+      if (entry.ssInfo?.isFirst) {
+        const groupId = entry.ssInfo.groupId;
+        const ssEntries = [];
+        while (i < entries.length && entries[i].ssInfo?.groupId === groupId) {
+          ssEntries.push(entries[i]);
+          i += 1;
+        }
+        rendered.push(
+          <div key={`ss-card-${groupId}`} className="queue-superset-card">
+            <div className="queue-superset-header">
+              <Link2 size={11} />
+              <span>SUPERSET {entry.ssInfo.rangeLabel || entry.ssInfo.letter} · PAIRED ROUNDS</span>
+            </div>
+            <div className="queue-superset-members">
+              {ssEntries.map(renderQueueButton)}
+            </div>
+          </div>
+        );
+      } else {
+        rendered.push(renderQueueButton(entry));
+        i += 1;
+      }
+    }
+    return rendered;
+  };
+
+  const renderExerciseSetTable = (targetEx) => {
+    const targetSets = loggedSets[targetEx.id] || [];
+    const profile = getExerciseSetLoggingProfile(targetEx);
+    const showWeightCol = isWeightShownForExercise(targetEx);
+    const targetBodyweight = !getRequiresEquipment(targetEx);
+    const targetNextIdx = targetSets.findIndex((s) => !s.completed);
+    const colModeClass = showWeightCol ? 'has-weight-col' : 'no-weight-col';
+
+    return (
+      <>
+        <div className={`player-sets-col-heads ${colModeClass}`} aria-hidden="true">
+          <span>SET</span>
+          <span>PREVIOUS</span>
+          <span>{profile.statHeader}</span>
+          {showWeightCol && <span>{targetBodyweight ? '+KG (OPT)' : 'WEIGHT (KG)'}</span>}
+          <span>DONE</span>
+        </div>
+
+        <div className="player-sets-list">
+          {targetSets.map((set, sIdx) => {
+            const hasPrevData = set.prev && set.prev !== '-';
+            const isNextUp = sIdx === targetNextIdx;
+            const isUpcoming = !set.completed && targetNextIdx !== -1 && sIdx > targetNextIdx;
+
+            return (
+              <div
+                key={set.setNum}
+                className={`player-set-row ${colModeClass} ${set.completed ? 'completed' : ''} ${set.isDropset ? 'is-dropset' : ''} ${isNextUp ? 'next-up' : ''} ${isUpcoming ? 'is-upcoming' : ''}`}
+              >
+                <div className="set-num-cell-wrap">
+                  <span
+                    className={`set-num-tag ${set.isDropset ? 'drop' : ''} ${isNextUp ? 'active-num' : ''}`}
+                    title={set.isDropset ? 'Planned Drop Set' : `Set #${set.setNum}`}
+                  >
+                    {set.isDropset ? 'DROP' : `${set.setNum}`}
+                  </span>
+                  {isNextUp && <span className="set-next-indicator">NEXT</span>}
+                </div>
+
+                {hasPrevData ? (
+                  <button
+                    type="button"
+                    className="set-prev-copy-btn"
+                    onClick={() => applyPrevToSet(sIdx, targetEx)}
+                    title={`Copy previous (${set.prev})`}
+                  >
+                    <span className="set-prev-val">{set.prev}</span>
+                  </button>
+                ) : (
+                  <span className="set-prev-empty" title={targetEx.defaultReps ? `Target: ${targetEx.defaultReps}` : 'First set'}>
+                    —
+                  </span>
+                )}
+
+                <div className="set-stepper-field reps-field">
+                  <button
+                    type="button"
+                    className="set-stepper-btn minus"
+                    onClick={() => adjustSetReps(sIdx, -1, targetEx)}
+                    aria-label={`Decrease ${profile.statHeader.toLowerCase()} for set ${set.setNum}`}
+                  >
+                    <Minus size={15} strokeWidth={2.5} />
+                  </button>
+                  <label className="set-stepper-input-wrap" htmlFor={`player-reps-${targetEx.id}-${set.setNum}`}>
+                    <input
+                      id={`player-reps-${targetEx.id}-${set.setNum}`}
+                      name={`reps-${targetEx.id}-${set.setNum}`}
+                      type="text"
+                      inputMode="decimal"
+                      className="player-set-input"
+                      value={set.reps}
+                      onChange={(e) => updateSetInput(sIdx, 'reps', e.target.value, targetEx)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          toggleSetComplete(sIdx, targetEx);
+                        }
+                      }}
+                      aria-label={`${targetEx.name} Set ${set.setNum} ${profile.unitSuffix}`}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    className="set-stepper-btn plus"
+                    onClick={() => adjustSetReps(sIdx, 1, targetEx)}
+                    aria-label={`Increase ${profile.statHeader.toLowerCase()} for set ${set.setNum}`}
+                  >
+                    <Plus size={15} strokeWidth={2.5} />
+                  </button>
+                </div>
+
+                {showWeightCol && (
+                  <div className={`set-stepper-field weight-field ${targetBodyweight ? 'optional-weight' : ''}`}>
+                    <button
+                      type="button"
+                      className="set-stepper-btn minus"
+                      onClick={() => adjustSetWeight(sIdx, -2.5, targetEx)}
+                      aria-label={`Decrease weight for set ${set.setNum}`}
+                    >
+                      <Minus size={15} strokeWidth={2.5} />
+                    </button>
+                    <label className="set-stepper-input-wrap" htmlFor={`player-weight-${targetEx.id}-${set.setNum}`}>
+                      <input
+                        id={`player-weight-${targetEx.id}-${set.setNum}`}
+                        name={`weight-${targetEx.id}-${set.setNum}`}
+                        type="text"
+                        inputMode="decimal"
+                        className="player-set-input"
+                        placeholder={set.prevWeight || (targetBodyweight ? 'BW' : '0')}
+                        value={set.weight}
+                        onChange={(e) => updateSetInput(sIdx, 'weight', e.target.value, targetEx)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            toggleSetComplete(sIdx, targetEx);
+                          }
+                        }}
+                        aria-label={`${targetEx.name} Set ${set.setNum} weight in kg`}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className="set-stepper-btn plus"
+                      onClick={() => adjustSetWeight(sIdx, 2.5, targetEx)}
+                      aria-label={`Increase weight for set ${set.setNum}`}
+                    >
+                      <Plus size={15} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className={`player-set-check ${set.completed ? 'checked' : ''} ${isNextUp ? 'next-up-check' : ''}`}
+                  onClick={() => toggleSetComplete(sIdx, targetEx)}
+                  aria-label={`Complete ${targetEx.name} set ${set.setNum}`}
+                >
+                  <Check size={16} strokeWidth={set.completed ? 3 : 2.5} />
+                  <span>{set.completed ? 'Done' : (isNextUp ? 'Complete' : 'Log')}</span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </>
+    );
+  };
+
+  const renderConsoleExerciseCard = (targetEx, memberMeta = null) => {
+    const targetIdx = memberMeta ? memberMeta.mIdx : currentIndex;
+    const isActiveCard = !memberMeta || memberMeta.mIdx === currentIndex;
+    const targetSets = loggedSets[targetEx.id] || [];
+    const targetDoneCount = targetSets.filter((s) => s.completed).length;
+    const targetAllSetsDone = targetSets.length > 0 && targetDoneCount === targetSets.length;
+    const targetMuscleName = MUSCLE_LABELS[targetEx.muscleKey] || targetEx.muscleKey;
+    const targetHasImages = Boolean(targetEx.illustration || targetEx.illustrationEnd);
+    const targetHasMedia = targetHasImages || Boolean(targetEx.customVideoUrl);
+    const targetNextSet = targetSets.find((s) => !s.completed) || null;
+    const targetTimerCfg = getExerciseTimerConfig(targetEx, targetNextSet);
+    const targetTimerOn = isRestTimerEnabledForExercise(targetEx);
+    const targetDefaultRest = getEffectiveRestSeconds(targetEx);
+
+    return (
+      <div
+        key={targetEx.id || targetIdx}
+        className={`studio-console-card ${memberMeta ? 'is-superset-member-card' : ''} ${memberMeta && isActiveCard ? 'is-active-superset-card' : ''}`}
+      >
+        <div
+          className="studio-console-header"
+          onClick={memberMeta && !isActiveCard ? () => focusSupersetPartner(targetIdx) : undefined}
+        >
+          <div className="studio-hero-info">
+            {targetHasImages && targetEx.illustration && (
+              <button
+                type="button"
+                className="player-mobile-thumb-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (memberMeta && !isActiveCard) {
+                    focusSupersetPartner(targetIdx);
+                    setIsMobileDemoExpanded(true);
+                  } else {
+                    setIsMobileDemoExpanded((prev) => !prev);
+                  }
+                }}
+                title={isMobileDemoExpanded && isActiveCard ? 'Hide demo' : 'Show demo'}
+                aria-label="Toggle demonstration image"
+              >
+                <img src={targetEx.illustration} alt={targetEx.name} />
+                <span className="mobile-thumb-zoom">
+                  {isMobileDemoExpanded && isActiveCard ? <Minimize2 size={11} /> : <Maximize2 size={11} />}
+                </span>
+              </button>
+            )}
+
+            <div className="studio-header-top-row">
+              <h1 className="studio-exercise-title">{targetEx.name}</h1>
+
+              <div className="studio-header-actions">
+                <button
+                  type="button"
+                  className="studio-header-guide-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openGuideDrawer(memberMeta ? targetIdx : null);
+                  }}
+                  title={`Open Form Guide for ${targetEx.name} (G)`}
+                >
+                  <BookOpen size={14} />
+                  <span>Form Guide</span>
+                  {isActiveCard && <kbd className="guide-key-hint">G</kbd>}
+                </button>
+              </div>
+            </div>
+
+            <div className="studio-header-title-row">
+              <div className="studio-prescription-row">
+                <span className="prescription-pill">
+                  <span className="prescription-type">Muscle</span>
+                  <strong className="prescription-val">{targetMuscleName}</strong>
+                </span>
+                <span className="prescription-dot">·</span>
+                <span className="prescription-pill">
+                  <span className="prescription-type">Equipment</span>
+                  <strong className="prescription-val">{targetEx.equipment || 'Bodyweight'}</strong>
+                </span>
+              </div>
+            </div>
+
+            <div className="player-mobile-quick-actions">
+              <div className="mobile-compact-targets">
+                {targetTimerCfg.hasWorkTimer ? (
+                  <span>
+                    {targetTimerCfg.workShortLabel} <b>{formatTimerPresetChip(targetTimerCfg.workSeconds)}</b>
+                    {targetTimerOn && <> · Rest <b>{targetDefaultRest}s</b></>}
+                  </span>
+                ) : (
+                  <span>{targetTimerOn ? <>Rest <b>{targetDefaultRest}s</b></> : 'No rest timer'}</span>
+                )}
+              </div>
+              <div className="mobile-quick-btns">
+                {(targetHasMedia || supersetHasAnyVisuals) && (
+                  <button
+                    type="button"
+                    className={`player-mini-action-btn ${isMobileDemoExpanded && isActiveCard ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (memberMeta && !isActiveCard) {
+                        focusSupersetPartner(targetIdx);
+                        setIsMobileDemoExpanded(true);
+                      } else {
+                        setIsMobileDemoExpanded((prev) => !prev);
+                      }
+                    }}
+                  >
+                    {isMobileDemoExpanded && isActiveCard ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
+                    <span>{isMobileDemoExpanded && isActiveCard ? 'Hide' : 'Demo'}</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="player-mini-action-btn guide"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openGuideDrawer(memberMeta ? targetIdx : null);
+                  }}
+                >
+                  <BookOpen size={12} />
+                  <span>Form</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="player-logger-card studio-logger-card">
+          <div className="player-logger-header">
+            <div className="logger-title-group">
+              <span className="prescription-pill">
+                <span className="prescription-type">{memberMeta ? `#${memberMeta.code} Sets` : 'Sets'}</span>
+                <strong className={`prescription-val ${targetAllSetsDone ? 'is-complete' : ''}`}>
+                  {targetDoneCount}/{targetSets.length}
+                </strong>
+              </span>
+              <span className="prescription-dot">·</span>
+              <span className="prescription-pill">
+                <span className="prescription-type">Target</span>
+                <strong className="prescription-val">{formatTargetPrescription(targetEx)}</strong>
+              </span>
+              {shouldShowExerciseRpe(targetEx) && (
+                <>
+                  <span className="prescription-dot">·</span>
+                  <span className="prescription-pill">
+                    <span className="prescription-type">RPE</span>
+                    <strong className="prescription-val">{targetEx.rpe}</strong>
+                  </span>
+                </>
+              )}
+              {targetEx.tempo && (
+                <>
+                  <span className="prescription-dot">·</span>
+                  <span className="prescription-pill">
+                    <span className="prescription-type">Tempo</span>
+                    <strong className="prescription-val">{targetEx.tempo}</strong>
+                  </span>
+                </>
+              )}
+              {targetEx.lastRecord && (
+                <>
+                  <span className="prescription-dot">·</span>
+                  <span className="prescription-pill">
+                    <span className="prescription-type">Last</span>
+                    <strong className="prescription-val">{targetEx.lastRecord}</strong>
+                  </span>
+                </>
+              )}
+            </div>
+
+            <div className="studio-logger-tools">
+              {(!doesExerciseUseExternalWeight(targetEx) || weightColumnOverrides[targetEx.id] !== undefined) && (
+                <button
+                  type="button"
+                  className={`player-set-adj-btn is-subtle ${isWeightShownForExercise(targetEx) ? 'active' : ''}`}
+                  onClick={() => toggleWeightColumnForExercise(targetEx)}
+                  title={isWeightShownForExercise(targetEx) ? 'Hide weight column' : 'Log added weight'}
+                >
+                  {isWeightShownForExercise(targetEx) ? 'Hide Kg' : '+ Kg'}
+                </button>
+              )}
+              <button
+                type="button"
+                className="player-set-adj-btn"
+                onClick={() => addSetToExercise(false, targetEx)}
+              >
+                + Set
+              </button>
+              {targetSets.length > 1 && (
+                <button
+                  type="button"
+                  className="player-set-adj-btn is-subtle"
+                  onClick={() => removeLastSetFromExercise(targetEx)}
+                  title="Remove last set"
+                >
+                  −
+                </button>
+              )}
+            </div>
+          </div>
+
+          {isActiveCard && flowNotice && (
+            <div className={`player-flow-notice ${flowNotice.type}`}>
+              <span className="flow-notice-text">{flowNotice.text}</span>
+            </div>
+          )}
+
+          {renderExerciseSetTable(targetEx)}
+        </div>
+      </div>
+    );
+  };
+
+  const previewPartner = otherSupersetPartners.length > 0
+    ? (otherSupersetPartners.find((p) => p.mIdx === supersetNextUp?.mIdx) || otherSupersetPartners[0])
+    : null;
+
+  const supersetPipDock = previewPartner ? (
+    <div className="superset-pip-dock" aria-label="Superset partner preview">
+      <button
+        type="button"
+        className={`superset-pip-card ${supersetNextUp?.mIdx === previewPartner.mIdx ? 'is-next-turn' : ''}`}
+        onClick={() => focusSupersetPartner(previewPartner.mIdx)}
+        title={`Switch preview to #${previewPartner.code}: ${previewPartner.ex.name}`}
+        aria-label={`Switch preview to #${previewPartner.code} ${previewPartner.ex.name}`}
+      >
+        <div className="superset-pip-thumb">
+          {previewPartner.ex.illustration ? (
+            <img src={previewPartner.ex.illustration} alt={previewPartner.ex.name} loading="eager" />
+          ) : (
+            <Dumbbell size={20} color="var(--faint)" />
+          )}
+        </div>
+      </button>
+    </div>
+  ) : null;
+
+  const showStickyTimerRow = isTimerEnabled || timerConfig.hasWorkTimer || isResting;
 
   return (
     <div className="workout-player-overlay">
@@ -666,33 +1502,20 @@ export function ActiveWorkoutModal({
             <button
               type="button"
               className="player-icon-btn"
-              onClick={onClose}
+              onClick={handleClose}
               title="Close session (Esc)"
               aria-label="Close session"
             >
               <X size={18} />
             </button>
-
-            <button
-              type="button"
-              className={`player-queue-toggle-btn ${isQueueOpen ? 'open' : ''}`}
-              onClick={() => setIsQueueOpen((prev) => !prev)}
-              aria-expanded={isQueueOpen}
-              title="Workout outline (Q)"
-              aria-label="Toggle workout outline"
-            >
-              <ListChecks size={15} />
-              <span className="queue-toggle-label">Outline</span>
-              <span className="queue-toggle-count">{currentIndex + 1}/{exercises.length}</span>
-            </button>
-          </div>
-
-          <div className="player-session-meta">
-            <span className="player-routine-name">{routine.shortTitle || routine.title}</span>
             <span className="player-elapsed-clock">
               <Clock size={12} />
               {formatTime(workoutElapsedSeconds)}
             </span>
+          </div>
+
+          <div className="player-session-meta">
+            <span className="player-routine-name">{routine.title}</span>
           </div>
 
           <div className="player-header-right">
@@ -700,17 +1523,6 @@ export function ActiveWorkoutModal({
               <span className="player-volume-chip" title="Session tonnage lifted">
                 {sessionVolumeKg.toLocaleString()} kg
               </span>
-            )}
-            {onToggleTheme && (
-              <button
-                type="button"
-                className="player-icon-btn"
-                onClick={onToggleTheme}
-                title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
-                aria-label="Toggle theme"
-              >
-                {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-              </button>
             )}
             <button
               type="button"
@@ -724,7 +1536,7 @@ export function ActiveWorkoutModal({
             <button
               type="button"
               className="player-finish-btn"
-              onClick={() => onCompleteWorkout(finishPayload)}
+              onClick={handleRequestFinish}
             >
               <Trophy size={15} />
               <span>Finish</span>
@@ -733,74 +1545,132 @@ export function ActiveWorkoutModal({
         </div>
       </header>
 
-      {/* Hairline Segmented Progress Bar */}
-      <div className="player-segmented-track" role="navigation" aria-label="Exercise progress">
-        {exercises.map((ex, idx) => {
-          const exSets = loggedSets[ex.id] || [];
-          const isDone = exSets.length > 0 && exSets.every((s) => s.completed);
-          const isCurrent = idx === currentIndex;
-          const ss = supersetMap.get(idx);
-          return (
-            <button
-              key={ex.id || idx}
-              type="button"
-              className={`player-segment-pill ${isCurrent ? 'current' : ''} ${isDone ? 'done' : ''} ${ss ? 'superset-seg' : ''}`}
-              onClick={() => goToExercise(idx)}
-              title={`${ss ? `[${ss.code}] ` : `${idx + 1}. `}${ex.name}`}
-              aria-label={`Jump to ${ex.name}`}
-            />
-          );
-        })}
-      </div>
+      {/* Unified Exercise Progress Ribbon (Outline Trigger + Full-Width Progress Track + Prev/Next Cluster) */}
+      <nav className="player-workout-ribbon" aria-label="Workout timeline and navigation">
+        <button
+          type="button"
+          className={`ribbon-outline-trigger ${isQueueOpen ? 'open' : ''}`}
+          onClick={toggleQueueDrawer}
+          aria-expanded={isQueueOpen}
+          title="Open detailed Workout Outline (Q)"
+          aria-label="Toggle workout outline"
+        >
+          <ListChecks size={15} />
+          <span className="ribbon-outline-label">Outline</span>
+          <span className="ribbon-outline-count">{completedSetsCount}/{totalSetsAcrossWorkout}</span>
+        </button>
+
+        <button
+          type="button"
+          className="ribbon-step-arrow prev"
+          onClick={goToPrevBlock}
+          disabled={!prevBlockExercise}
+          title={prevBlockExercise ? `Previous: ${prevBlockExercise.name} (Left Arrow)` : 'First block in workout'}
+          aria-label={prevBlockExercise ? `Previous: ${prevBlockExercise.name}` : 'First block'}
+        >
+          <ArrowLeft size={15} />
+        </button>
+
+        <div className="ribbon-segments-track" role="list" aria-label="Exercise progress track">
+          {ribbonNodes.map((node, nodeIdx) => {
+            const pct = node.totalSets > 0 ? Math.round((node.doneSets / node.totalSets) * 100) : 0;
+            const showPhaseTag =
+              nodeIdx === 0 || ribbonNodes[nodeIdx - 1].phaseInfo.key !== node.phaseInfo.key;
+
+            return (
+              <Fragment key={node.key}>
+                {showPhaseTag && (
+                  <span className={`ribbon-phase-tag is-${node.phaseInfo.key}`}>
+                    {node.phaseInfo.shortLabel}
+                  </span>
+                )}
+                {node.type === 'superset' ? (
+                  <button
+                    ref={node.isCurrent ? activeRibbonRef : null}
+                    type="button"
+                    role="listitem"
+                    className={`ribbon-node-pill is-superset ${node.isCurrent ? 'is-current' : ''} ${node.isDone ? 'is-done' : ''} ${node.isWarmup ? 'is-warmup' : ''}`}
+                    onClick={() => goToExercise(node.startIdx)}
+                    title={`Superset ${node.ss.rangeLabel || node.ss.letter}: ${node.members.map((m, pos) => `#${node.ss.memberIndices[pos] + 1} ${m.name}`).join(' + ')} (${node.doneSets}/${node.totalSets} sets)`}
+                    aria-label={`Superset ${node.ss.rangeLabel || node.ss.letter}, ${node.doneSets} of ${node.totalSets} sets`}
+                  >
+                    {!node.isCurrent && pct > 0 && (
+                      <span className="ribbon-node-fill" style={{ width: `${pct}%` }} aria-hidden="true" />
+                    )}
+                    <span className="ribbon-node-content">
+                      <span className="ribbon-ss-tag">
+                        <Link2 size={10} />
+                        <span>{node.ss.rangeLabel || node.ss.letter}</span>
+                      </span>
+                      <span className="ribbon-node-prog">
+                        {node.isDone ? <Check size={11} strokeWidth={3} /> : `${node.doneSets}/${node.totalSets}`}
+                      </span>
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    ref={node.isCurrent ? activeRibbonRef : null}
+                    type="button"
+                    role="listitem"
+                    className={`ribbon-node-pill ${node.isCurrent ? 'is-current' : ''} ${node.isDone ? 'is-done' : ''} ${node.isWarmup ? 'is-warmup' : ''}`}
+                    onClick={() => goToExercise(node.idx)}
+                    title={`${node.idx + 1}. ${node.ex.name} (${node.doneSets}/${node.totalSets} sets)`}
+                    aria-label={`Exercise ${node.idx + 1}: ${node.ex.name}, ${node.doneSets} of ${node.totalSets} sets`}
+                  >
+                    {!node.isCurrent && pct > 0 && (
+                      <span className="ribbon-node-fill" style={{ width: `${pct}%` }} aria-hidden="true" />
+                    )}
+                    <span className="ribbon-node-content">
+                      <span className="ribbon-num-tag">
+                        {node.isDone ? <Check size={10} strokeWidth={3} /> : node.idx + 1}
+                      </span>
+                      <span className="ribbon-node-prog">
+                        {node.doneSets}/{node.totalSets}
+                      </span>
+                    </span>
+                  </button>
+                )}
+              </Fragment>
+            );
+          })}
+        </div>
+
+        {nextBlockExercise ? (
+          <button
+            type="button"
+            className={`ribbon-step-arrow next ${activeNavSetsDone ? 'ready-advance' : ''}`}
+            onClick={goToNextBlock}
+            title={`Next: ${nextBlockExercise.name} (Right Arrow)`}
+            aria-label={`Next: ${nextBlockExercise.name}`}
+          >
+            <ArrowRight size={15} />
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="ribbon-step-arrow next finish-mode ready-advance"
+            onClick={handleRequestFinish}
+            title="Finish & Save Workout"
+            aria-label="Finish and save workout"
+          >
+            <Trophy size={14} />
+          </button>
+        )}
+      </nav>
 
       {/* Main Focused Studio Stage */}
       <main className="player-main-stage">
         <div className="studio-container">
-          {/* Active Superset Switcher (rendered cleanly only when planned) */}
-          {currentSuperset && (
-            <div className="player-superset-banner">
-              <div className="superset-banner-head">
-                <div className="superset-banner-title">
-                  <Link2 size={14} />
-                  <span>{currentSuperset.label.toUpperCase()}</span>
-                  <span className="superset-banner-sub">Alternate before resting</span>
-                </div>
-              </div>
-              <div className="superset-partners-strip">
-                {currentSuperset.memberIndices.map((mIdx, pos) => {
-                  const member = exercises[mIdx];
-                  if (!member) return null;
-                  const mSets = loggedSets[member.id] || [];
-                  const mDone = mSets.filter((s) => s.completed).length;
-                  const isMe = mIdx === currentIndex;
-                  return (
-                    <button
-                      key={member.id || mIdx}
-                      type="button"
-                      className={`superset-partner-pill ${isMe ? 'active' : ''}`}
-                      onClick={() => goToExercise(mIdx)}
-                    >
-                      <span className="partner-code">{currentSuperset.letter}{pos + 1}</span>
-                      <span className="partner-name">{member.name}</span>
-                      <span className="partner-prog">{mDone}/{mSets.length}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          <div className="studio-grid">
-            {/* LEFT COLUMN: Movement Visual + Circular Ring Timer directly underneath */}
+          <div className={`studio-grid ${currentSuperset && supersetMembers.length > 1 ? 'is-superset-grid' : ''}`}>
+            {/* LEFT COLUMN: Hero Movement Stage (~65%) + Chronograph HUD Dock (~35%) */}
             <section className={`studio-visual-col studio-visual-card ${isMobileDemoExpanded ? 'mobile-demo-open' : ''}`}>
               {hasMedia ? (
-                <div className="studio-media-frame">
+                <div className={`studio-media-frame ${currentSuperset ? 'is-superset-media' : ''}`}>
+                  <span className={`studio-phase-overlay-pill is-${currentPhase.key}`}>{currentPhase.label}</span>
                   {hasAnyImages && (
                     <div className={`studio-pose-grid ${hasTwoImages ? 'dual' : 'single'}`}>
                       {currentExercise.illustration && (
                         <div className="studio-pose-box">
-                          <span className="studio-muscle-overlay-pill">{primaryMuscleName}</span>
-                          {currentExercise.isWarmup && <span className="studio-phase-overlay-pill">Warm-Up</span>}
                           {(hasTwoImages || isAnimatedGifUrl(currentExercise.illustration)) && (
                             <span className="studio-pose-tag">
                               {hasTwoImages ? 'Start' : 'GIF'}
@@ -838,630 +1708,417 @@ export function ActiveWorkoutModal({
                       />
                     </div>
                   )}
+
+                  {supersetPipDock}
                 </div>
               ) : (
-                <div className="studio-media-placeholder">
+                <div className={`studio-media-placeholder ${currentSuperset ? 'is-superset-media' : ''}`}>
+                  <span className={`studio-phase-overlay-pill is-${currentPhase.key}`}>{currentPhase.label}</span>
                   <Dumbbell size={36} color="var(--faint)" />
                   <span>{primaryMuscleName}</span>
+                  {supersetPipDock}
                 </div>
               )}
 
-              {/* Circular Ouroboros Ring Timer (Directly docked under movement demo) */}
-              <div className={`studio-ring-timer-box ${isResting ? 'is-resting' : ''} ${!isTimerEnabled ? 'is-disabled' : ''}`}>
-                <div className="ring-timer-svg-wrap">
-                  <svg className="ring-timer-svg" viewBox="0 0 220 220" width="220" height="220" aria-hidden="true">
+              {/* Precision Chronograph HUD Dock (Dial + Digital Readout & Dual Work/Rest Controls) */}
+              <div className={`studio-ring-timer-box chrono-hud-dock ${isResting ? 'is-resting' : ''} ${isWorkMode ? 'is-work-mode' : 'is-rest-mode'} ${!showActiveTimerFace ? 'is-disabled' : ''}`}>
+                <div className="chrono-dial-wrap">
+                  <svg className="chrono-dial-svg" viewBox="0 0 100 100" aria-hidden="true">
                     <defs>
-                      <linearGradient id="novaSomaTimerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <linearGradient id="novaSomaChronoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stopColor="#176A63" />
-                        <stop offset="70%" stopColor="#24948A" />
+                        <stop offset="65%" stopColor="#24948A" />
                         <stop offset="100%" stopColor="#8C673A" />
                       </linearGradient>
+                      <linearGradient id="novaSomaWorkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#8C673A" />
+                        <stop offset="65%" stopColor="#B8864D" />
+                        <stop offset="100%" stopColor="#D6A96E" />
+                      </linearGradient>
                     </defs>
-                    {/* Background track circle with vertebrae / spine dashed accent */}
+                    {/* Fine Outer Watch Tick Marks */}
                     <circle
-                      cx="110"
-                      cy="110"
-                      r="92"
+                      cx="50"
+                      cy="50"
+                      r="46"
                       fill="none"
-                      stroke="rgba(140, 103, 58, 0.16)"
-                      strokeWidth="8"
-                      strokeDasharray="4 6"
+                      stroke="var(--border-hi)"
+                      strokeWidth="2"
+                      strokeDasharray="1.2 4.82"
+                      opacity="0.55"
                     />
+                    {/* Track Ring */}
                     <circle
-                      cx="110"
-                      cy="110"
-                      r="92"
+                      cx="50"
+                      cy="50"
+                      r="39"
                       fill="none"
-                      stroke="rgba(140, 103, 58, 0.22)"
-                      strokeWidth="8"
+                      stroke="rgba(140, 103, 58, 0.2)"
+                      strokeWidth="4.5"
                     />
-                    {/* Active depleting arc */}
-                    {(isTimerEnabled || isResting) && (
+                    {/* Active Progress Arc */}
+                    {showActiveTimerFace && (
                       <circle
-                        cx="110"
-                        cy="110"
-                        r="92"
+                        cx="50"
+                        cy="50"
+                        r="39"
                         fill="none"
-                        stroke="url(#novaSomaTimerGrad)"
-                        strokeWidth="10"
+                        stroke={isWorkMode ? 'url(#novaSomaWorkGrad)' : 'url(#novaSomaChronoGrad)'}
+                        strokeWidth="5"
                         strokeLinecap="round"
-                        strokeDasharray="578.05"
-                        strokeDashoffset={578.05 * (1 - Math.max(0, Math.min(1, timerRatio)))}
-                        className="ring-timer-progress-arc"
-                        style={{ transformOrigin: '110px 110px' }}
+                        strokeDasharray="245.04"
+                        strokeDashoffset={245.04 * (1 - Math.max(0, Math.min(1, timerRatio)))}
+                        className="chrono-progress-arc"
                       />
                     )}
                   </svg>
 
-                  <div className="ring-timer-center-content">
-                    {isTimerEnabled || isResting ? (
-                      <>
-                        <span className="ring-timer-kicker">
-                          {isResting
-                            ? (timerMode === 'work' ? 'WORK HOLD' : 'RESTING')
-                            : (timerMode === 'work' ? 'HOLD TIMER' : 'REST TIMER')}
-                        </span>
-                        <strong className="ring-timer-clock">{formatTime(restSecondsLeft)}</strong>
-                        <button
-                          type="button"
-                          className={`ring-timer-play-btn ${isResting ? 'active' : ''}`}
-                          onClick={toggleRestTimer}
-                          title={isResting ? 'Pause rest timer (Space)' : 'Start rest timer (Space)'}
-                          aria-label={isResting ? 'Pause rest timer' : 'Start rest timer'}
-                        >
-                          {isResting ? <Pause size={20} /> : <Play size={20} fill="currentColor" />}
-                        </button>
-                      </>
-                    ) : (
-                      <div className="ring-timer-off-content">
-                        <TimerOff size={24} className="ring-timer-off-icon" />
-                        <span className="ring-timer-off-txt">Timer Off</span>
-                        <button
-                          type="button"
-                          className="ring-timer-enable-btn"
-                          onClick={toggleExerciseTimerPreference}
-                        >
-                          Enable Timer
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                  {showActiveTimerFace ? (
+                    <button
+                      type="button"
+                      className={`chrono-play-btn ${isWorkMode ? 'is-work' : ''} ${isResting ? 'active' : ''}`}
+                      onClick={toggleRestTimer}
+                      title={
+                        isWorkMode
+                          ? (isResting ? `Pause ${timerConfig.workShortLabel.toLowerCase()} timer (Space)` : `Start ${timerConfig.workShortLabel.toLowerCase()} timer (Space)`)
+                          : (isResting ? 'Pause rest timer (Space)' : 'Start rest timer (Space)')
+                      }
+                      aria-label={
+                        isWorkMode
+                          ? (isResting ? `Pause ${timerConfig.workShortLabel.toLowerCase()} timer` : `Start ${timerConfig.workShortLabel.toLowerCase()} timer`)
+                          : (isResting ? 'Pause rest timer' : 'Start rest timer')
+                      }
+                    >
+                      {isResting ? <Pause size={18} /> : <Play size={18} fill="currentColor" />}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="chrono-play-btn is-off"
+                      onClick={toggleExerciseTimerPreference}
+                      title="Enable auto-rest timer for this exercise"
+                      aria-label="Enable auto-rest timer"
+                    >
+                      <TimerOff size={17} />
+                    </button>
+                  )}
                 </div>
 
-                {/* Quick select presets and controls tray */}
-                <div className="ring-timer-controls-tray">
-                  <button
-                    type="button"
-                    className="ring-timer-icon-btn"
-                    onClick={() => resetTimer(timerMode === 'work' && targetHoldSeconds ? targetHoldSeconds : defaultRest, timerMode, false)}
-                    title="Reset timer"
-                    aria-label="Reset timer"
-                  >
-                    <RotateCcw size={14} />
-                  </button>
-
-                  {(isTimerEnabled || isResting) && (
-                    <div className="ring-timer-pills">
-                      {isResting ? (
-                        <>
-                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(-15)}>
-                            -15s
-                          </button>
-                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(15)}>
-                            +15s
-                          </button>
-                          <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(30)}>
-                            +30s
-                          </button>
-                          <button
-                            type="button"
-                            className="ring-timer-chip skip"
-                            onClick={() => {
-                              setIsResting(false);
-                              setRestSecondsLeft(0);
-                            }}
-                            title="Skip rest"
-                          >
-                            <SkipForward size={12} />
-                            <span>Skip</span>
-                          </button>
-                        </>
+                <div className="chrono-readout-col">
+                  <div className="chrono-top-bar">
+                    <span
+                      className="chrono-kicker"
+                      title={isWorkMode && nextIncompleteSetIdx >= 0 ? `Set ${nextIncompleteSetIdx + 1}` : undefined}
+                    >
+                      {isWorkMode ? (
+                        isResting ? timerConfig.workActiveLabel : timerConfig.workLabel
+                      ) : !isTimerEnabled && !isResting ? (
+                        'REST TIMER OFF'
+                      ) : isResting ? (
+                        currentSuperset ? 'ROUND RESTING' : 'RESTING NOW'
+                      ) : currentSuperset ? (
+                        'ROUND REST'
                       ) : (
-                        <>
-                          {restPresets.map((s) => (
-                            <button
-                              key={s}
-                              type="button"
-                              className={`ring-timer-chip ${timerMode === 'rest' && restInitialSeconds === s ? 'active' : ''}`}
-                              onClick={() => resetTimer(s, 'rest', false)}
-                            >
-                              {s}s
-                            </button>
-                          ))}
-                          <button type="button" className="ring-timer-chip bump" onClick={() => adjustRestTime(15)}>
-                            +15s
-                          </button>
-                        </>
+                        'REST TIMER'
                       )}
-                    </div>
-                  )}
-
-                  <button
-                    type="button"
-                    className={`ring-timer-icon-btn ${!isTimerEnabled ? 'off' : ''}`}
-                    onClick={toggleExerciseTimerPreference}
-                    title={isTimerEnabled ? 'Turn off timer' : 'Turn on timer'}
-                    aria-label="Toggle timer preference"
-                  >
-                    <TimerOff size={14} />
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            {/* RIGHT COLUMN: Unified Studio Console Card */}
-            <section className="studio-console-col studio-console-card">
-              {/* Header: Exercise Breadcrumb, Title & Targets */}
-              <div className="studio-console-header">
-                <div className="studio-hero-info">
-                  {hasAnyImages && currentExercise.illustration && (
-                    <button
-                      type="button"
-                      className="player-mobile-thumb-btn"
-                      onClick={() => setIsMobileDemoExpanded((prev) => !prev)}
-                      title={isMobileDemoExpanded ? 'Hide demo' : 'Show demo'}
-                      aria-label="Toggle demonstration image"
-                    >
-                      <img src={currentExercise.illustration} alt={currentExercise.name} />
-                      <span className="mobile-thumb-zoom">
-                        {isMobileDemoExpanded ? <Minimize2 size={11} /> : <Maximize2 size={11} />}
-                      </span>
-                    </button>
-                  )}
-
-                  <div className="studio-eyebrow">
-                    {currentSuperset && (
-                      <span className="studio-eyebrow-ss">{currentSuperset.code}</span>
-                    )}
-                    <span>{primaryMuscleName}</span>
-                    <span>·</span>
-                    <span>{currentExercise.equipment || 'Bodyweight'}</span>
-                    {currentExercise.rpe && (
-                      <>
-                        <span>·</span>
-                        <span>RPE {currentExercise.rpe}</span>
-                      </>
-                    )}
-                  </div>
-
-                  <h1 className="studio-exercise-title">{currentExercise.name}</h1>
-
-                  <div className="studio-prescription-row">
-                    <span className="prescription-pill">
-                      <b>{currentExerciseSets.length}</b> sets
                     </span>
-                    <span className="prescription-dot">·</span>
-                    <span className="prescription-pill">
-                      Target <b>{currentExercise.defaultReps || '8-12'}</b>
-                    </span>
-                    {currentExercise.lastRecord && (
-                      <>
-                        <span className="prescription-dot">·</span>
-                        <span className="prescription-ref">Ref: {currentExercise.lastRecord}</span>
-                      </>
-                    )}
-                  </div>
 
-                  {/* Mobile quick actions (hidden on desktop) */}
-                  <div className="player-mobile-quick-actions">
-                    <div className="mobile-compact-targets">
-                      <span>{isTimerEnabled ? <>Rest <b>{defaultRest}s</b></> : 'No timer'}</span>
-                    </div>
-                    <div className="mobile-quick-btns">
-                      {hasMedia && (
-                        <button
-                          type="button"
-                          className={`player-mini-action-btn ${isMobileDemoExpanded ? 'active' : ''}`}
-                          onClick={() => setIsMobileDemoExpanded((prev) => !prev)}
-                        >
-                          {isMobileDemoExpanded ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-                          <span>{isMobileDemoExpanded ? 'Hide' : 'Demo'}</span>
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        className="player-mini-action-btn guide"
-                        onClick={() => setIsGuideOpen(true)}
-                      >
-                        <BookOpen size={12} />
-                        <span>Form</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Streamlined Somatic Coaching & Biomechanical Guidance Strip */}
-              <div className="studio-info-strip">
-                <div className="info-strip-main">
-                  <Sparkles size={13} className="info-cue-sparkle" />
-                  <span className="info-cue-text">
-                    {execution.proTip || execution.setup || 'Maintain tension through full range of motion. Control the eccentric phase.'}
-                  </span>
-                </div>
-                <div className="info-strip-meta">
-                  {execution.breathing && (
-                    <span className="info-breathing-pill">
-                      <Wind size={12} className="info-wind-icon" />
-                      <span><b>Breathe:</b> {execution.breathing}</span>
-                    </span>
-                  )}
-                  {currentExercise.tempo && (
-                    <span className="somatic-tempo-badge">Tempo: {currentExercise.tempo}</span>
-                  )}
-                  <button
-                    type="button"
-                    className="info-strip-guide-btn"
-                    onClick={() => setIsGuideOpen(true)}
-                    title="Open Form, Muscles & Biomechanics Guide (G)"
-                  >
-                    <BookOpen size={12} />
-                    <span>Form Guide (G)</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Focused Set Logger Card */}
-              <div className="player-logger-card studio-logger-card">
-                <div className="player-logger-header">
-                  <div className="logger-title-group">
-                    <h3>Sets</h3>
-                    <span className={`player-sets-progress ${allCurrentSetsDone ? 'complete' : ''}`}>
-                      {currentCompletedCount} / {currentExerciseSets.length} done
-                    </span>
-                  </div>
-
-                  <div className="studio-logger-tools">
-                    <button
-                      type="button"
-                      className="player-set-adj-btn"
-                      onClick={() => addSetToExercise(false)}
-                    >
-                      + Set
-                    </button>
-                    {currentExerciseSets.length > 1 && (
-                      <button
-                        type="button"
-                        className="player-set-adj-btn is-subtle"
-                        onClick={removeLastSetFromExercise}
-                        title="Remove last set"
-                      >
-                        −
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {flowNotice && (
-                  <div className={`player-flow-notice ${flowNotice.type}`}>
-                    <span className="flow-notice-text">{flowNotice.text}</span>
-                    {flowNotice.type === 'superset' && Number.isInteger(flowNotice.targetIndex) && (
-                      <button
-                        type="button"
-                        className="flow-notice-cta"
-                        onClick={() => goToExercise(flowNotice.targetIndex)}
-                      >
-                        <span>Go to {flowNotice.code}</span>
-                        <ArrowRight size={13} />
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                <div className="player-sets-col-heads" aria-hidden="true">
-                  <span>SET</span>
-                  <span>PREVIOUS</span>
-                  <span>{isTimedReps ? 'HOLD (S)' : 'REPS'}</span>
-                  <span>{isBodyweightEx ? '+KG' : 'WEIGHT (KG)'}</span>
-                  <span>DONE</span>
-                </div>
-
-                <div className="player-sets-list">
-                  {currentExerciseSets.map((set, sIdx) => {
-                    const hasPrevData = set.prev && set.prev !== '-';
-                    const isNextUp = sIdx === nextIncompleteSetIndex;
-                    const isUpcoming = !set.completed && sIdx > nextIncompleteSetIndex;
-                    return (
-                      <div
-                        key={set.setNum}
-                        className={`player-set-row ${set.completed ? 'completed' : ''} ${set.isDropset ? 'is-dropset' : ''} ${isNextUp ? 'next-up' : ''} ${isUpcoming ? 'is-upcoming' : ''}`}
-                      >
-                        <div className="set-num-cell-wrap">
-                          <span
-                            className={`set-num-tag ${set.isDropset ? 'drop' : ''} ${isNextUp ? 'active-num' : ''}`}
-                            title={set.isDropset ? 'Planned Drop Set' : `Set #${set.setNum}`}
-                          >
-                            {set.isDropset ? 'DROP' : `${set.setNum}`}
-                          </span>
-                          {isNextUp && <span className="set-next-indicator">NEXT</span>}
-                        </div>
-
-                        {hasPrevData ? (
+                    <div className="chrono-top-actions">
+                      {timerConfig.hasWorkTimer && (
+                        <div className="chrono-mode-switcher" role="group" aria-label="Timer purpose">
                           <button
                             type="button"
-                            className="set-prev-copy-btn"
-                            onClick={() => applyPrevToSet(sIdx)}
-                            title={`Copy previous (${set.prev})`}
+                            className={`chrono-mode-pill is-work ${isWorkMode ? 'active' : ''}`}
+                            onClick={() => resetTimer(timerConfig.workSeconds, 'work', false)}
+                            title={`Time the ${timerConfig.workShortLabel.toLowerCase()} (${formatTimerPresetChip(timerConfig.workSeconds)})`}
                           >
-                            <span className="set-prev-val">{set.prev}</span>
+                            {timerConfig.workShortLabel}
                           </button>
-                        ) : (
-                          <span className="set-prev-empty" title={currentExercise.defaultReps ? `Target: ${currentExercise.defaultReps}` : 'First set'}>
-                            —
-                          </span>
+                          <button
+                            type="button"
+                            className={`chrono-mode-pill is-rest ${!isWorkMode ? 'active' : ''}`}
+                            onClick={() => resetTimer(defaultRest, 'rest', false)}
+                            title={`Time recovery rest (${defaultRest}s)`}
+                          >
+                            Rest
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="chrono-utility-btns">
+                        {showActiveTimerFace && (
+                          <button
+                            type="button"
+                            className="ring-timer-icon-btn"
+                            onClick={() => resetTimer(isWorkMode ? timerConfig.workSeconds : defaultRest, timerMode, false)}
+                            title={isWorkMode ? `Reset ${timerConfig.workShortLabel.toLowerCase()} timer` : 'Reset rest timer'}
+                            aria-label="Reset timer"
+                          >
+                            <RotateCcw size={13} />
+                          </button>
                         )}
-
-                        <div className="set-stepper-field reps-field">
-                          <button
-                            type="button"
-                            className="set-stepper-btn minus"
-                            onClick={() => adjustSetReps(sIdx, -1)}
-                            aria-label={`Decrease reps for set ${set.setNum}`}
-                          >
-                            <Minus size={15} strokeWidth={2.5} />
-                          </button>
-                          <label className="set-stepper-input-wrap">
-                            <input
-                              type="text"
-                              inputMode="decimal"
-                              className="player-set-input"
-                              value={set.reps}
-                              onChange={(e) => updateSetInput(sIdx, 'reps', e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  toggleSetComplete(sIdx);
-                                }
-                              }}
-                              aria-label={`Set ${set.setNum} ${isTimedReps ? 'seconds' : 'reps'}`}
-                            />
-                            <span className="set-field-unit">{isTimedReps ? 's' : 'r'}</span>
-                          </label>
-                          <button
-                            type="button"
-                            className="set-stepper-btn plus"
-                            onClick={() => adjustSetReps(sIdx, 1)}
-                            aria-label={`Increase reps for set ${set.setNum}`}
-                          >
-                            <Plus size={15} strokeWidth={2.5} />
-                          </button>
-                        </div>
-
-                        <div className={`set-stepper-field weight-field ${isBodyweightEx ? 'optional-weight' : ''}`}>
-                          <button
-                            type="button"
-                            className="set-stepper-btn minus"
-                            onClick={() => adjustSetWeight(sIdx, -2.5)}
-                            aria-label={`Decrease weight for set ${set.setNum}`}
-                          >
-                            <Minus size={15} strokeWidth={2.5} />
-                          </button>
-                          <label className="set-stepper-input-wrap">
-                            <input
-                              type="text"
-                              inputMode="decimal"
-                              className="player-set-input"
-                              placeholder={set.prevWeight || (isBodyweightEx ? 'BW' : '')}
-                              value={set.weight}
-                              onChange={(e) => updateSetInput(sIdx, 'weight', e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  toggleSetComplete(sIdx);
-                                }
-                              }}
-                              aria-label={`Set ${set.setNum} weight in kg`}
-                            />
-                            <span className="set-field-unit">kg</span>
-                          </label>
-                          <button
-                            type="button"
-                            className="set-stepper-btn plus"
-                            onClick={() => adjustSetWeight(sIdx, 2.5)}
-                            aria-label={`Increase weight for set ${set.setNum}`}
-                          >
-                            <Plus size={15} strokeWidth={2.5} />
-                          </button>
-                        </div>
-
                         <button
                           type="button"
-                          className={`player-set-check ${set.completed ? 'checked' : ''} ${isNextUp ? 'next-up-check' : ''}`}
-                          onClick={() => toggleSetComplete(sIdx)}
-                          aria-label={`Complete set ${set.setNum}`}
+                          className={`ring-timer-icon-btn ${!isTimerEnabled ? 'off' : ''}`}
+                          onClick={toggleExerciseTimerPreference}
+                          title={isTimerEnabled ? 'Disable auto-rest timer after sets' : 'Enable auto-rest timer after sets'}
+                          aria-label={isTimerEnabled ? 'Disable auto-rest timer' : 'Enable auto-rest timer'}
                         >
-                          <Check size={20} strokeWidth={set.completed ? 3 : 2.5} />
+                          {isTimerEnabled ? <TimerOff size={13} /> : <Timer size={13} />}
                         </button>
                       </div>
-                    );
-                  })}
+                    </div>
+                  </div>
+
+                  <div className="chrono-clock-row">
+                    <strong className="chrono-digital-clock">
+                      {showActiveTimerFace ? formatTime(restSecondsLeft) : 'OFF'}
+                    </strong>
+                  </div>
+
+                  <div className="chrono-presets-strip">
+                    {showActiveTimerFace ? (
+                      <div className="ring-timer-pills">
+                        {isResting ? (
+                          isWorkMode ? (
+                            <>
+                              <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(-workBumpDelta)}>
+                                {timerConfig.isMinutes ? '-1m' : '-15s'}
+                              </button>
+                              <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(workBumpDelta)}>
+                                {timerConfig.isMinutes ? '+1m' : '+15s'}
+                              </button>
+                              <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(workBumpDelta * 2)}>
+                                {timerConfig.isMinutes ? '+2m' : '+30s'}
+                              </button>
+                              {nextIncompleteSetIdx >= 0 && (
+                                <button
+                                  type="button"
+                                  className="ring-timer-chip skip is-log-set"
+                                  onClick={() => {
+                                    setIsResting(false);
+                                    restTargetTimestampRef.current = null;
+                                    toggleSetComplete(nextIncompleteSetIdx, currentExercise, { fromWorkTimer: true });
+                                  }}
+                                  title={`Mark Set ${nextIncompleteSetIdx + 1} complete`}
+                                >
+                                  <Check size={12} strokeWidth={2.75} />
+                                  <span>Log Set</span>
+                                </button>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(-15)}>
+                                -15s
+                              </button>
+                              <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(15)}>
+                                +15s
+                              </button>
+                              <button type="button" className="ring-timer-chip" onClick={() => adjustRestTime(30)}>
+                                +30s
+                              </button>
+                              <button
+                                type="button"
+                                className="ring-timer-chip skip"
+                                onClick={() => {
+                                  setIsResting(false);
+                                  restTargetTimestampRef.current = null;
+                                  if (timerConfig.hasWorkTimer && nextIncompleteSetIdx >= 0) {
+                                    resetTimer(timerConfig.workSeconds, 'work', false);
+                                  } else {
+                                    setRestSecondsLeft(0);
+                                  }
+                                }}
+                                title="Skip remaining rest"
+                              >
+                                <SkipForward size={12} />
+                                <span>Skip</span>
+                              </button>
+                            </>
+                          )
+                        ) : isWorkMode ? (
+                          <>
+                            {workPresets.map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                className={`ring-timer-chip ${restInitialSeconds === s ? 'active' : ''}`}
+                                onClick={() => resetTimer(s, 'work', false)}
+                              >
+                                {formatTimerPresetChip(s)}
+                              </button>
+                            ))}
+                            <button type="button" className="ring-timer-chip bump" onClick={() => adjustRestTime(workBumpDelta)}>
+                              {timerConfig.isMinutes ? '+1m' : '+15s'}
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            {restPresets.map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                className={`ring-timer-chip ${restInitialSeconds === s ? 'active' : ''}`}
+                                onClick={() => resetTimer(s, 'rest', false)}
+                              >
+                                {s}s
+                              </button>
+                            ))}
+                            <button type="button" className="ring-timer-chip bump" onClick={() => adjustRestTime(15)}>
+                              +15s
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="ring-timer-enable-btn"
+                        onClick={toggleExerciseTimerPreference}
+                      >
+                        Enable Rest Timer
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </section>
-          </div>
 
-          {/* Desktop & Tablet Inline Navigation Docked Below Grid */}
-          <div className="studio-inline-nav">
-            <button
-              type="button"
-              className="player-nav-prev studio-nav-prev"
-              onClick={goToPrev}
-              disabled={currentIndex === 0}
-              title={currentIndex === 0 ? 'First exercise in workout' : `Previous: ${prevExercise?.name}`}
-              aria-label={currentIndex === 0 ? 'First exercise in workout' : `Previous exercise: ${prevExercise?.name}`}
-            >
-              <span className="nav-prev-icon-wrap" aria-hidden="true">
-                <ArrowLeft size={16} />
-              </span>
-              <span className="nav-btn-copy">
-                <small className="nav-btn-kicker">
-                  {currentIndex === 0 ? 'START' : 'PREVIOUS'}
-                </small>
-                <strong className="nav-btn-name">
-                  {currentIndex === 0 ? 'First Exercise' : (prevExercise ? prevExercise.name : 'Start')}
-                </strong>
-              </span>
-            </button>
-
-            {nextExercise ? (
-              <button
-                type="button"
-                className={`player-nav-next studio-nav-next ${allCurrentSetsDone ? 'ready-advance' : ''}`}
-                onClick={goToNext}
-                aria-label={`Next exercise: ${nextExercise.name}`}
-              >
-                <span className="nav-btn-copy">
-                  <small className="nav-btn-kicker">
-                    {allCurrentSetsDone ? 'ALL SETS DONE · NEXT' : 'NEXT EXERCISE'}
-                  </small>
-                  <strong className="nav-btn-name">{nextExercise.name}</strong>
-                </span>
-                <span className="nav-next-arrow-badge" aria-hidden="true">
-                  <ArrowRight size={17} />
-                </span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="player-nav-next finish-mode ready-advance studio-nav-next"
-                onClick={() => onCompleteWorkout(finishPayload)}
-                aria-label="Finish and save workout"
-              >
-                <span className="nav-btn-copy">
-                  <small className="nav-btn-kicker">FINAL EXERCISE</small>
-                  <strong className="nav-btn-name">Finish &amp; Save Workout</strong>
-                </span>
-                <span className="nav-next-arrow-badge" aria-hidden="true">
-                  <Trophy size={17} />
-                </span>
-              </button>
-            )}
+            {/* RIGHT COLUMN: Unified Studio Console Card (or Stacked Superset Cards) */}
+            <section className={`studio-console-col ${currentSuperset && supersetMembers.length > 1 ? 'is-superset-stack' : 'is-single-card'}`}>
+              {currentSuperset && supersetMembers.length > 1
+                ? supersetMembers.map((member) => renderConsoleExerciseCard(member.ex, member))
+                : renderConsoleExerciseCard(currentExercise, null)}
+            </section>
           </div>
         </div>
       </main>
 
       {/* Mobile & Tablet Portrait Sticky Bottom HUD (<= 960px only) */}
-      <div className={`player-sticky-dock ${isResting ? 'is-resting' : ''} ${!showStickyTimerRow ? 'no-timer-bar' : ''}`}>
-          {showStickyTimerRow && (
-            <div className="sticky-dock-timer-row">
-              <div className="sticky-dock-timer-left">
-                <span className="sticky-timer-badge">
-                  {timerMode === 'work' ? 'WORK' : (isResting ? 'REST' : 'TIMER')}
-                </span>
-                <strong className="sticky-timer-clock">{formatTime(restSecondsLeft)}</strong>
-              </div>
-              <div className="sticky-dock-timer-bar" aria-hidden="true">
-                <span style={{ width: `${Math.round(timerRatio * 100)}%` }} />
-              </div>
-              <div className="sticky-dock-timer-btns">
-                <button type="button" className="dock-mini-btn" onClick={() => adjustRestTime(-15)}>
-                  -15s
-                </button>
-                <button
-                  type="button"
-                  className={`dock-play-btn ${isResting ? 'active' : ''}`}
-                  onClick={toggleRestTimer}
-                  aria-label={isResting ? 'Pause timer' : 'Start timer'}
-                >
-                  {isResting ? <Pause size={13} /> : <Play size={13} fill="currentColor" />}
-                </button>
-                <button type="button" className="dock-mini-btn" onClick={() => adjustRestTime(15)}>
-                  +15s
-                </button>
-                <button
-                  type="button"
-                  className="dock-mini-btn off"
-                  onClick={toggleExerciseTimerPreference}
-                  title="Turn off timer for this exercise"
-                  aria-label="Turn off timer"
-                >
-                  <TimerOff size={12} />
-                </button>
-              </div>
+      <div className={`player-sticky-dock ${isResting ? 'is-resting' : ''} ${isWorkMode ? 'is-work-mode' : 'is-rest-mode'} ${!showStickyTimerRow ? 'no-timer-bar' : ''}`}>
+        {showStickyTimerRow && (
+          <div className="sticky-dock-timer-row">
+            <div className="sticky-dock-timer-left">
+              <span className="sticky-timer-badge">
+                {isWorkMode
+                  ? (timerConfig.isHold ? 'HOLD' : 'EXERCISE')
+                  : (currentSuperset ? 'ROUND REST' : 'REST')}
+              </span>
+              <strong className="sticky-timer-clock">{formatTime(restSecondsLeft)}</strong>
             </div>
-          )}
+            <div className="sticky-dock-timer-bar" aria-hidden="true">
+              <span style={{ width: `${Math.round(timerRatio * 100)}%` }} />
+            </div>
+            <div className="sticky-dock-timer-btns">
+              {timerConfig.hasWorkTimer && !isResting && (
+                <button
+                  type="button"
+                  className={`dock-mini-btn mode-toggle ${isWorkMode ? 'is-work' : ''}`}
+                  onClick={() => resetTimer(isWorkMode ? defaultRest : timerConfig.workSeconds, isWorkMode ? 'rest' : 'work', false)}
+                  title={isWorkMode ? 'Switch to Rest timer' : `Switch to ${timerConfig.workShortLabel} timer`}
+                >
+                  {isWorkMode ? 'Rest' : timerConfig.workShortLabel}
+                </button>
+              )}
+              <button type="button" className="dock-mini-btn" onClick={() => adjustRestTime(-stickyTimerStep)}>
+                -{formatTimerPresetChip(stickyTimerStep)}
+              </button>
+              <button
+                type="button"
+                className={`dock-play-btn ${isResting ? 'active' : ''}`}
+                onClick={toggleRestTimer}
+                aria-label={isResting ? 'Pause timer' : 'Start timer'}
+              >
+                {isResting ? <Pause size={13} /> : <Play size={13} fill="currentColor" />}
+              </button>
+              <button type="button" className="dock-mini-btn" onClick={() => adjustRestTime(stickyTimerStep)}>
+                +{formatTimerPresetChip(stickyTimerStep)}
+              </button>
+              <button
+                type="button"
+                className="dock-mini-btn off"
+                onClick={toggleExerciseTimerPreference}
+                title={isTimerEnabled ? 'Disable auto-rest timer' : 'Enable auto-rest timer'}
+                aria-label="Toggle auto-rest timer"
+              >
+                {isTimerEnabled ? <TimerOff size={12} /> : <Timer size={12} />}
+              </button>
+            </div>
+          </div>
+        )}
 
-          <div className="sticky-dock-nav-row">
+        <div className="sticky-dock-nav-row">
+          <button
+            type="button"
+            className="player-nav-prev dock-nav-prev"
+            onClick={goToPrevBlock}
+            disabled={!prevBlockExercise}
+            title={!prevBlockExercise ? 'First block in workout' : `Previous: ${prevBlockExercise.name}`}
+            aria-label={!prevBlockExercise ? 'First block in workout' : `Previous exercise: ${prevBlockExercise.name}`}
+          >
+            <span className="nav-prev-icon-wrap" aria-hidden="true">
+              <ArrowLeft size={16} />
+            </span>
+            <span className="nav-btn-copy">
+              <small className="nav-btn-kicker">
+                {!prevBlockExercise ? 'START' : 'PREVIOUS'}
+              </small>
+              <strong className="nav-btn-name">
+                {!prevBlockExercise ? 'First Exercise' : prevBlockExercise.name}
+              </strong>
+            </span>
+          </button>
+
+          {!showStickyTimerRow && (
             <button
               type="button"
-              className="player-nav-prev dock-nav-prev"
-              onClick={goToPrev}
-              disabled={currentIndex === 0}
-              title={currentIndex === 0 ? 'First exercise in workout' : `Previous: ${prevExercise?.name}`}
-              aria-label={currentIndex === 0 ? 'First exercise in workout' : `Previous exercise: ${prevExercise?.name}`}
+              className="dock-enable-timer-pill"
+              onClick={toggleExerciseTimerPreference}
+              title="Enable timer for this exercise"
+              aria-label="Enable rest timer"
             >
-              <span className="nav-prev-icon-wrap" aria-hidden="true">
-                <ArrowLeft size={16} />
-              </span>
+              <Timer size={14} />
+            </button>
+          )}
+
+          {nextBlockExercise ? (
+            <button
+              type="button"
+              className={`player-nav-next dock-nav-next ${activeNavSetsDone ? 'ready-advance' : ''}`}
+              onClick={goToNextBlock}
+              aria-label={`Next: ${nextBlockExercise.name}`}
+            >
               <span className="nav-btn-copy">
                 <small className="nav-btn-kicker">
-                  {currentIndex === 0 ? 'START' : 'PREVIOUS'}
+                  {activeNavSetsDone ? 'DONE · NEXT' : 'NEXT'}
                 </small>
-                <strong className="nav-btn-name">
-                  {currentIndex === 0 ? 'First Exercise' : (prevExercise ? prevExercise.name : 'Start')}
-                </strong>
+                <strong className="nav-btn-name">{nextBlockExercise.name}</strong>
+              </span>
+              <span className="nav-next-arrow-badge" aria-hidden="true">
+                <ArrowRight size={17} />
               </span>
             </button>
-
-            {!showStickyTimerRow && (
-              <button
-                type="button"
-                className="dock-enable-timer-pill"
-                onClick={toggleExerciseTimerPreference}
-                title="Enable timer for this exercise"
-                aria-label="Enable rest timer"
-              >
-                <Timer size={14} />
-              </button>
-            )}
-
-            {nextExercise ? (
-              <button
-                type="button"
-                className={`player-nav-next dock-nav-next ${allCurrentSetsDone ? 'ready-advance' : ''}`}
-                onClick={goToNext}
-                aria-label={`Next exercise: ${nextExercise.name}`}
-              >
-                <span className="nav-btn-copy">
-                  <small className="nav-btn-kicker">
-                    {allCurrentSetsDone ? 'ALL SETS DONE · NEXT' : 'NEXT EXERCISE'}
-                  </small>
-                  <strong className="nav-btn-name">{nextExercise.name}</strong>
-                </span>
-                <span className="nav-next-arrow-badge" aria-hidden="true">
-                  <ArrowRight size={17} />
-                </span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="player-nav-next finish-mode ready-advance dock-nav-next"
-                onClick={() => onCompleteWorkout(finishPayload)}
-                aria-label="Finish and save workout"
-              >
-                <span className="nav-btn-copy">
-                  <small className="nav-btn-kicker">FINAL EXERCISE</small>
-                  <strong className="nav-btn-name">Finish &amp; Save Workout</strong>
-                </span>
-                <span className="nav-next-arrow-badge" aria-hidden="true">
-                  <Trophy size={17} />
-                </span>
-              </button>
-            )}
-          </div>
+          ) : (
+            <button
+              type="button"
+              className="player-nav-next finish-mode ready-advance dock-nav-next"
+              onClick={handleRequestFinish}
+              aria-label="Finish and save workout"
+            >
+              <span className="nav-btn-copy">
+                <small className="nav-btn-kicker">FINAL BLOCK</small>
+                <strong className="nav-btn-name">Finish &amp; Save Workout</strong>
+              </span>
+              <span className="nav-next-arrow-badge" aria-hidden="true">
+                <Trophy size={17} />
+              </span>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Slide-Over Workout Outline Drawer (opens via Outline button or 'Q') */}
+      {/* Slide-Over Workout Outline Drawer (opens via Ribbon Outline trigger or 'Q') */}
       {isQueueOpen && (
         <div
           className="guide-drawer-backdrop queue-overlay-left"
@@ -1470,48 +2127,95 @@ export function ActiveWorkoutModal({
         >
           <aside
             className="player-queue-rail overlay-drawer"
+            role="dialog"
+            aria-modal="true"
             onClick={(e) => e.stopPropagation()}
             aria-label="Workout exercise outline"
           >
             <div className="player-queue-head">
-              <div className="player-queue-head-title">
-                <ListChecks size={15} color="var(--clay)" />
-                <span>WORKOUT OUTLINE</span>
-              </div>
-              <div className="player-queue-head-meta">
-                <span>{completedSetsCount}/{totalSetsAcrossWorkout} sets</span>
+              <div className="queue-head-top-row">
+                <div className="queue-head-title-stack">
+                  <div className="queue-kicker-row">
+                    <div className="player-queue-head-title">
+                      <ListChecks size={15} />
+                      <span>WORKOUT OUTLINE</span>
+                    </div>
+                    <span className={`player-phase-tag is-${currentPhase.key}`}>{currentPhase.label}</span>
+                  </div>
+                  <h2 className="queue-routine-title">{routine.title}</h2>
+                </div>
                 <button
                   type="button"
                   className="player-queue-close-btn"
                   onClick={() => setIsQueueOpen(false)}
                   aria-label="Close outline"
                 >
-                  <X size={15} />
+                  <X size={16} />
                 </button>
+              </div>
+
+              <div className="queue-stats-strip">
+                <div className="queue-stat-box">
+                  <span className="queue-stat-label">SETS</span>
+                  <strong className="queue-stat-value">{completedSetsCount}/{totalSetsAcrossWorkout}</strong>
+                </div>
+                <div className="queue-stat-box">
+                  <span className="queue-stat-label">EXERCISES</span>
+                  <strong className="queue-stat-value">{completedExercisesCount}/{exercises.length}</strong>
+                </div>
+                <div className="queue-stat-box">
+                  <span className="queue-stat-label">ELAPSED</span>
+                  <strong className="queue-stat-value">{formatTime(workoutElapsedSeconds)}</strong>
+                </div>
+              </div>
+
+              <div className="queue-overall-progress">
+                <div className="queue-overall-meta">
+                  <span>Session Completion</span>
+                  <strong>{totalSetsAcrossWorkout > 0 ? Math.round((completedSetsCount / totalSetsAcrossWorkout) * 100) : 0}%</strong>
+                </div>
+                <div className="queue-overall-bar" aria-hidden="true">
+                  <span style={{ width: `${totalSetsAcrossWorkout > 0 ? Math.round((completedSetsCount / totalSetsAcrossWorkout) * 100) : 0}%` }} />
+                </div>
               </div>
             </div>
 
             <div className="player-queue-scroll">
               {warmupQueueItems.length > 0 && (
                 <div className="player-queue-group">
-                  <div className="player-queue-group-label">
-                    <Flame size={12} color="var(--clay)" />
-                    <span>WARM-UP &amp; MOBILITY ({warmupQueueItems.length})</span>
+                  <div className="player-queue-group-label is-warmup">
+                    <Flame size={13} />
+                    <span>WARM-UP &amp; MOBILITY</span>
+                    <small>{warmupQueueItems.length}</small>
                   </div>
                   <div className="player-queue-items">
-                    {warmupQueueItems.map(renderQueueButton)}
+                    {renderPhaseQueueEntries(warmupQueueItems)}
                   </div>
                 </div>
               )}
 
               {mainQueueItems.length > 0 && (
                 <div className="player-queue-group">
-                  <div className="player-queue-group-label">
-                    <Dumbbell size={12} color="var(--sage)" />
-                    <span>MAIN WORKOUT ({mainQueueItems.length})</span>
+                  <div className="player-queue-group-label is-main">
+                    <Dumbbell size={13} />
+                    <span>MAIN WORKOUT</span>
+                    <small>{mainQueueItems.length}</small>
                   </div>
                   <div className="player-queue-items">
-                    {mainQueueItems.map(renderQueueButton)}
+                    {renderPhaseQueueEntries(mainQueueItems)}
+                  </div>
+                </div>
+              )}
+
+              {decompressionQueueItems.length > 0 && (
+                <div className="player-queue-group">
+                  <div className="player-queue-group-label is-decompression">
+                    <Wind size={13} />
+                    <span>DECOMPRESSION</span>
+                    <small>{decompressionQueueItems.length}</small>
+                  </div>
+                  <div className="player-queue-items">
+                    {renderPhaseQueueEntries(decompressionQueueItems)}
                   </div>
                 </div>
               )}
@@ -1524,126 +2228,234 @@ export function ActiveWorkoutModal({
       {isGuideOpen && (
         <div
           className="guide-drawer-backdrop"
-          onClick={() => setIsGuideOpen(false)}
+          onClick={closeGuideDrawer}
           role="presentation"
         >
           <aside
             className="guide-pullout-drawer"
+            role="dialog"
+            aria-modal="true"
             onClick={(e) => e.stopPropagation()}
             aria-label="Exercise Technique & Anatomy Guide"
           >
             <div className="drawer-sheet-handle" aria-hidden="true" />
             <div className="guide-drawer-header">
-              <div>
-                <span className="guide-drawer-kicker">
-                  {currentExercise.pattern || primaryMuscleName}
-                </span>
-                <h2>{currentExercise.name}</h2>
-                {currentExercise.scientificName && (
-                  <p className="guide-drawer-sci">{currentExercise.scientificName}</p>
+              <div className="guide-header-copy">
+                <div className="guide-kicker-row">
+                  <span className={`guide-phase-pill is-${guidePhaseInfo.key}`}>{guidePhaseInfo.label}</span>
+                  <span className="guide-drawer-kicker">
+                    {guideExercise.pattern || guidePrimaryMuscleName}
+                  </span>
+                </div>
+                <h2>{guideExercise.name}</h2>
+                {guideExercise.scientificName && (
+                  <p className="guide-drawer-sci">{guideExercise.scientificName}</p>
+                )}
+
+                <div className="guide-meta-pills">
+                  <span className="guide-meta-pill">{guideExercise.equipment || 'Bodyweight'}</span>
+                  {guideExercise.mechanics && <span className="guide-meta-pill">{guideExercise.mechanics}</span>}
+                  {guideExercise.level && <span className="guide-meta-pill">{guideExercise.level}</span>}
+                  <span className="guide-meta-pill">Target {formatTargetPrescription(guideExercise)}</span>
+                  {shouldShowExerciseRpe(guideExercise) && (
+                    <span className="guide-meta-pill is-accent">RPE {guideExercise.rpe}</span>
+                  )}
+                </div>
+
+                {guideExercise.biomechanics && (
+                  <div className="guide-biomech-strip">
+                    <div className="guide-biomech-cell">
+                      <span className="guide-biomech-label">Joint Action</span>
+                      <span className="guide-biomech-val">{guideExercise.biomechanics.jointActions}</span>
+                    </div>
+                    <div className="guide-biomech-cell">
+                      <span className="guide-biomech-label">Plane &amp; Vector</span>
+                      <span className="guide-biomech-val">
+                        {guideExercise.biomechanics.plane} · {guideExercise.biomechanics.loadVector}
+                      </span>
+                    </div>
+                    <div className="guide-biomech-cell">
+                      <span className="guide-biomech-label">Resistance Profile</span>
+                      <span className="guide-biomech-val">{guideExercise.biomechanics.resistanceProfile}</span>
+                    </div>
+                  </div>
+                )}
+
+                {guideVariations.length > 0 && (
+                  <div className="guide-family-strip">
+                    <span className="guide-family-label">
+                      Movement Family: {guideExercise.familyName}
+                    </span>
+                    <div className="guide-family-chips">
+                      {guideVariations.slice(0, 4).map((v) => (
+                        <span key={v.id} className="guide-family-chip">
+                          <b>{v.variationType}</b> {v.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {currentSuperset && supersetMembers.length > 1 && (
+                  <div className="guide-partner-switcher" role="group" aria-label={`Inspect Superset ${currentSuperset.rangeLabel || currentSuperset.letter} form guide`}>
+                    {supersetMembers.map((m) => (
+                      <button
+                        key={m.ex.id || m.mIdx}
+                        type="button"
+                        className={`guide-partner-pill ${resolvedGuideIdx === m.mIdx ? 'active' : ''}`}
+                        onClick={() => setGuideExerciseIdx(m.mIdx)}
+                      >
+                        <span className="guide-partner-num">#{m.code}</span>
+                        <span>{m.ex.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
               <button
                 type="button"
-                className="player-icon-btn"
-                onClick={() => setIsGuideOpen(false)}
+                className="player-icon-btn guide-close-btn"
+                onClick={closeGuideDrawer}
                 aria-label="Close guide"
               >
                 <X size={18} />
               </button>
             </div>
 
-            {(currentExercise.muscleKey || currentExercise.targetMuscles) && (
-              <div className="guide-muscles-block guide-anatomy-flex">
-                {currentExercise.muscleKey && (
-                  <div className="guide-anatomy-bodymap">
-                    <MiniBodyMap
-                      primaryKeys={[currentExercise.muscleKey]}
-                      secondaryKeys={currentExercise.secondaryKeys || []}
-                      className="guide-mini-body"
-                    />
-                  </div>
-                )}
-                {currentExercise.targetMuscles && (
+            {(guideExercise.illustration || guideExercise.muscleKey || guideExercise.targetMuscles) && (
+              <div className="guide-muscles-block guide-anatomy-showcase">
+                <div className="guide-visual-pair">
+                  {guideExercise.illustration && (
+                    <div className="guide-visual-thumb">
+                      <img src={guideExercise.illustration} alt={guideExercise.name} loading="eager" />
+                    </div>
+                  )}
+                  {guideExercise.muscleKey && (
+                    <div className="guide-anatomy-bodymap">
+                      <MiniBodyMap
+                        primaryKeys={[guideExercise.muscleKey]}
+                        secondaryKeys={guideExercise.secondaryKeys || []}
+                        className="guide-mini-body"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {guideExercise.targetMuscles && (
                   <div className="guide-anatomy-tags">
                     <div className="guide-muscles-title">
                       <Activity size={13} />
                       <span>TARGET MUSCLES</span>
                     </div>
-                    <div className="guide-muscle-chips">
-                      {(currentExercise.targetMuscles.primary || []).map((m, i) => (
-                        <span key={`p-${i}`} className="guide-chip primary">{m}</span>
-                      ))}
-                      {(currentExercise.targetMuscles.secondary || []).map((m, i) => (
-                        <span key={`s-${i}`} className="guide-chip secondary">{m}</span>
-                      ))}
-                      {(currentExercise.targetMuscles.stabilizers || []).map((m, i) => (
-                        <span key={`st-${i}`} className="guide-chip">{m}</span>
-                      ))}
-                    </div>
+                    {(guideExercise.targetMuscles.primary || []).length > 0 && (
+                      <div className="guide-muscle-group">
+                        <span className="guide-muscle-group-label">Primary</span>
+                        <div className="guide-muscle-chips">
+                          {guideExercise.targetMuscles.primary.map((m, i) => (
+                            <span key={`p-${i}`} className="guide-chip primary">{m}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {(guideExercise.targetMuscles.secondary || []).length > 0 && (
+                      <div className="guide-muscle-group">
+                        <span className="guide-muscle-group-label">Secondary</span>
+                        <div className="guide-muscle-chips">
+                          {guideExercise.targetMuscles.secondary.map((m, i) => (
+                            <span key={`s-${i}`} className="guide-chip secondary">{m}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {(guideExercise.targetMuscles.stabilizers || []).length > 0 && (
+                      <div className="guide-muscle-group">
+                        <span className="guide-muscle-group-label">Stabilizers</span>
+                        <div className="guide-muscle-chips">
+                          {guideExercise.targetMuscles.stabilizers.map((m, i) => (
+                            <span key={`st-${i}`} className="guide-chip">{m}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             )}
 
-            <div className="guide-tabs-bar">
-              <button
-                type="button"
-                className={`guide-tab-btn ${guideTab === 'cues' ? 'active' : ''}`}
-                onClick={() => setGuideTab('cues')}
-              >
-                Execution &amp; Phases
-              </button>
-              <button
-                type="button"
-                className={`guide-tab-btn ${guideTab === 'mistakes' ? 'active' : ''}`}
-                onClick={() => setGuideTab('mistakes')}
-              >
-                Mistakes &amp; Pro Tip
-              </button>
+            <div className="guide-tabs-bar-wrap">
+              <div className="guide-tabs-bar" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={guideTab === 'cues'}
+                  className={`guide-tab-btn ${guideTab === 'cues' ? 'active' : ''}`}
+                  onClick={() => setGuideTab('cues')}
+                >
+                  Execution &amp; Phases
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={guideTab === 'mistakes'}
+                  className={`guide-tab-btn ${guideTab === 'mistakes' ? 'active' : ''}`}
+                  onClick={() => setGuideTab('mistakes')}
+                >
+                  Mistakes &amp; Coach Cue
+                </button>
+              </div>
             </div>
 
             <div className="guide-drawer-scroll">
               {guideTab === 'cues' ? (
                 <div className="cues-list">
-                  {execution.setup && (
+                  {guideExecution.setup && (
                     <div className="cue-row">
                       <span className="cue-num">1</span>
                       <div>
                         <strong>Setup &amp; Alignment</strong>
-                        <p>{execution.setup}</p>
+                        <p>{guideExecution.setup}</p>
                       </div>
                     </div>
                   )}
 
-                  {execution.eccentric && (
+                  {guideExecution.eccentric && (
                     <div className="cue-row">
                       <span className="cue-num">2</span>
                       <div>
                         <strong>Lowering Phase (Eccentric)</strong>
-                        <p>{execution.eccentric}</p>
+                        <p>{guideExecution.eccentric}</p>
                       </div>
                     </div>
                   )}
 
-                  {execution.concentric && (
+                  {guideExecution.concentric && (
                     <div className="cue-row">
                       <span className="cue-num">3</span>
                       <div>
                         <strong>Drive Phase (Concentric)</strong>
-                        <p>{execution.concentric}</p>
+                        <p>{guideExecution.concentric}</p>
                       </div>
                     </div>
                   )}
 
-                  {execution.breathing && (
+                  {guideExecution.breathing && (
                     <div className="cues-breathing-pill">
                       <Wind size={15} />
-                      <span><strong>Breathing:</strong> {execution.breathing}</span>
+                      <span><strong>Breathing:</strong> {guideExecution.breathing}</span>
                     </div>
                   )}
 
-                  {!execution.setup && !execution.eccentric && !execution.concentric && !execution.breathing && (
+                  {guideExecution.proTip && (
+                    <div className="pro-tip-footer">
+                      <div className="protip-label-row">
+                        <Lightbulb size={14} />
+                        <strong>COACH CUE</strong>
+                      </div>
+                      <p>{guideExecution.proTip}</p>
+                    </div>
+                  )}
+
+                  {!guideExecution.setup && !guideExecution.eccentric && !guideExecution.concentric && !guideExecution.breathing && !guideExecution.proTip && (
                     <p className="cues-empty-note">No technique notes entered for this exercise.</p>
                   )}
                 </div>
@@ -1653,28 +2465,98 @@ export function ActiveWorkoutModal({
                     <AlertTriangle size={15} color="var(--danger)" />
                     <span>Common Mistakes to Avoid</span>
                   </div>
-                  {commonMistakes.length > 0 ? (
-                    <ul>
-                      {commonMistakes.map((err, i) => (
-                        <li key={i}>{err}</li>
+                  {guideCommonMistakes.length > 0 ? (
+                    <div className="guide-mistakes-cards">
+                      {guideCommonMistakes.map((err, i) => (
+                        <div key={i} className="guide-mistake-card">
+                          <span className="guide-mistake-icon" aria-hidden="true">
+                            <AlertTriangle size={14} />
+                          </span>
+                          <p>{err}</p>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   ) : (
                     <p className="cues-empty-note">No common mistakes recorded.</p>
                   )}
-                  {execution.proTip && (
+                  {guideExecution.proTip && (
                     <div className="pro-tip-footer">
                       <div className="protip-label-row">
                         <Lightbulb size={14} />
                         <strong>COACH CUE</strong>
                       </div>
-                      <p>{execution.proTip}</p>
+                      <p>{guideExecution.proTip}</p>
                     </div>
                   )}
                 </div>
               )}
             </div>
           </aside>
+        </div>
+      )}
+
+      {/* Finish Confirmation Guard Dialog */}
+      {confirmFinishOpen && (
+        <div className="modal-backdrop finish-confirm-backdrop" role="dialog" aria-modal="true" aria-labelledby="finish-dialog-title">
+          <div className="finish-confirm-card">
+            <div className="finish-confirm-header">
+              <div className="finish-confirm-icon-wrap">
+                {completedSetsCount === 0 ? <AlertTriangle size={22} color="var(--warn)" /> : <Trophy size={22} color="var(--bronze)" />}
+              </div>
+              <h3 id="finish-dialog-title" className="finish-confirm-title">
+                {completedSetsCount === 0 ? 'No Sets Completed' : 'Finish Workout Early?'}
+              </h3>
+            </div>
+            <p className="finish-confirm-desc">
+              {completedSetsCount === 0
+                ? 'You have not checked off any completed sets yet. Would you like to discard this workout or save an empty session to history?'
+                : `You have completed ${completedSetsCount} of ${totalSetsAcrossWorkout} planned sets. Would you like to finish and save your progress now?`}
+            </p>
+            <div className="finish-confirm-actions">
+              {completedSetsCount === 0 ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn-gymmane-secondary finish-btn-cancel"
+                    onClick={() => setConfirmFinishOpen(false)}
+                  >
+                    Keep Working
+                  </button>
+                  <button
+                    type="button"
+                    className="finish-btn-discard"
+                    onClick={handleDiscardWorkout}
+                  >
+                    Discard Session
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-gymmane-primary finish-btn-save"
+                    onClick={handleConfirmFinish}
+                  >
+                    Save Anyway
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="btn-gymmane-secondary finish-btn-cancel"
+                    onClick={() => setConfirmFinishOpen(false)}
+                  >
+                    Resume Workout
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-gymmane-primary finish-btn-save"
+                    onClick={handleConfirmFinish}
+                  >
+                    Finish &amp; Save ({completedSetsCount}/{totalSetsAcrossWorkout})
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

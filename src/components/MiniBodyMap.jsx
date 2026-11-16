@@ -22,10 +22,11 @@ export function MiniBodyMap({
 
     const muscleGroups = container.querySelectorAll('.muscle');
 
-    if (frequencyMap && typeof frequencyMap === 'object') {
+    if (freqSig) {
+      const parsedFreq = JSON.parse(freqSig);
       muscleGroups.forEach((group) => {
         const key = group.getAttribute('data-muscle');
-        const count = frequencyMap[key] || 0;
+        const count = parsedFreq[key] || 0;
         group.classList.toggle('hit-1', count === 1);
         group.classList.toggle('hit-2', count === 2);
         group.classList.toggle('hit-3', count >= 3);
@@ -48,7 +49,7 @@ export function MiniBodyMap({
         group.removeAttribute('role');
       });
     }
-  }, [primarySig, secondarySig, freqSig, frequencyMap]);
+  }, [primarySig, secondarySig, freqSig]);
 
   return (
     <div

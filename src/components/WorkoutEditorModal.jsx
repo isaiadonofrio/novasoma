@@ -32,11 +32,12 @@ export function WorkoutEditorModal({ workout, onSave, onClose }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
+    const trimmedTitle = formData.title.trim();
     const finalData = {
       ...formData,
       id: formData.id || `workout-${Date.now()}`,
-      title: formData.title.trim(),
-      shortTitle: formData.shortTitle.trim() || formData.title.trim(),
+      title: trimmedTitle,
+      shortTitle: trimmedTitle,
       description: formData.description.trim()
     };
     onSave(finalData);
@@ -66,8 +67,10 @@ export function WorkoutEditorModal({ workout, onSave, onClose }) {
         <form onSubmit={handleSubmit} className="editor-form-scroll">
           <div className="form-group-grid">
             <div className="form-field full-width">
-              <label>Workout Name *</label>
+              <label htmlFor="editor-workout-title">Workout Name *</label>
               <input 
+                id="editor-workout-title"
+                name="title"
                 type="text"
                 required
                 placeholder="e.g. Legs & Glutes Power"
@@ -77,8 +80,10 @@ export function WorkoutEditorModal({ workout, onSave, onClose }) {
             </div>
 
             <div className="form-field">
-              <label>Category</label>
+              <label htmlFor="editor-workout-category">Category</label>
               <select 
+                id="editor-workout-category"
+                name="category"
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               >
@@ -92,8 +97,10 @@ export function WorkoutEditorModal({ workout, onSave, onClose }) {
             </div>
 
             <div className="form-field">
-              <label>Level / Difficulty</label>
+              <label htmlFor="editor-workout-difficulty">Level / Difficulty</label>
               <select 
+                id="editor-workout-difficulty"
+                name="difficulty"
                 value={formData.difficulty}
                 onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
               >
@@ -105,8 +112,10 @@ export function WorkoutEditorModal({ workout, onSave, onClose }) {
             </div>
 
             <div className="form-field full-width">
-              <label>Estimated Duration (minutes)</label>
+              <label htmlFor="editor-workout-duration">Estimated Duration (minutes)</label>
               <input 
+                id="editor-workout-duration"
+                name="durationMinutes"
                 type="number"
                 min="15"
                 step="5"
@@ -116,8 +125,10 @@ export function WorkoutEditorModal({ workout, onSave, onClose }) {
             </div>
 
             <div className="form-field full-width">
-              <label>Description / Focus</label>
+              <label htmlFor="editor-workout-description">Description / Focus</label>
               <textarea 
+                id="editor-workout-description"
+                name="description"
                 rows="2"
                 placeholder="e.g. Focus on posterior chain strength and hypertrophy..."
                 value={formData.description}

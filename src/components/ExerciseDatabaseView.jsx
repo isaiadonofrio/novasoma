@@ -6,7 +6,6 @@ import {
   X,
   UserCheck,
   Video,
-  Activity,
   RotateCcw,
   ChevronDown,
   Check,
@@ -14,10 +13,9 @@ import {
   Layers,
   SlidersHorizontal
 } from 'lucide-react';
-import { MUSCLE_LABELS } from '../data/muscleLabels.js';
-import { isBodyweightEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
+import { MUSCLE_LABELS, getMuscleRegionTone } from '../data/muscleLabels.js';
+import { getRequiresEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
 import { ExerciseDetailModal } from './ExerciseDetailModal.jsx';
-import { BodyMap } from './BodyMap.jsx';
 
 const EQUIPMENT_FILTERS = [
   { label: 'All Equipment', match: () => true },
@@ -29,6 +27,30 @@ const EQUIPMENT_FILTERS = [
     return eq.includes('barbell') || eq.includes('landmine');
   } },
   { label: 'Kettlebell', match: (ex) => (ex.equipment || '').toLowerCase().includes('kettlebell') },
+  { label: 'Bands / Bar', match: (ex) => {
+    const eq = (ex.equipment || '').toLowerCase();
+    return (
+      eq.includes('band') ||
+      eq.includes('strap') ||
+      eq.includes('cable') ||
+      eq.includes('pull-up bar') ||
+      eq.includes('dip') ||
+      eq.includes('rope')
+    );
+  } },
+  { label: 'Bench / Box / Ball', match: (ex) => {
+    const eq = (ex.equipment || '').toLowerCase();
+    return (
+      eq.includes('bench') ||
+      eq.includes('step') ||
+      eq.includes('box') ||
+      eq.includes('elevation') ||
+      eq.includes('medicine ball') ||
+      eq.includes('med ball') ||
+      eq.includes('slam ball') ||
+      eq.includes('ab wheel')
+    );
+  } },
   { label: 'Medicine Ball', match: (ex) => {
     const eq = (ex.equipment || '').toLowerCase();
     return eq.includes('medicine ball') || eq.includes('med ball') || eq.includes('slam ball');
@@ -51,7 +73,8 @@ const MECHANIC_FILTERS = [
   { label: 'Compound', value: 'Compound' },
   { label: 'Isolation', value: 'Isolation' },
   { label: 'Mobility', value: 'Mobility' },
-  { label: 'Isometric', value: 'Isometric' }
+  { label: 'Isometric', value: 'Isometric' },
+  { label: 'Plyometric', value: 'Plyometric' }
 ];
 
 const LEVEL_FILTERS = [
@@ -60,13 +83,6 @@ const LEVEL_FILTERS = [
   { label: 'Intermediate', value: 'Intermediate' },
   { label: 'Advanced', value: 'Advanced' }
 ];
-
-function getRequiresEquipment(ex) {
-  if (typeof ex?.requiresEquipment === 'boolean') {
-    return ex.requiresEquipment;
-  }
-  return !isBodyweightEquipment(ex?.equipment);
-}
 
 const MUSCLE_CATEGORIES = [
   { key: 'All', label: 'All Muscles' },
@@ -97,7 +113,7 @@ export function ExerciseDatabaseView({
   const [isEquipMenuOpen, setIsEquipMenuOpen] = useState(false);
   const [isMechMenuOpen, setIsMechMenuOpen] = useState(false);
   const [isLevelMenuOpen, setIsLevelMenuOpen] = useState(false);
-  const [showBodyMap, setShowBodyMap] = useState(false);
+  const [showMobileInsights, setShowMobileInsights] = useState(false);
   const [activeExerciseDetail, setActiveExerciseDetail] = useState(null);
 
   const [now, setNow] = useState(() => new Date());
@@ -154,6 +170,7 @@ export function ExerciseDatabaseView({
     const total = exercisesList.length;
     let gearCount = 0;
     let bwCount = 0;
+    const familySet = new Set();
 
     const gearBreakdown = {
       dumbbells: 0,
@@ -167,8 +184,9 @@ export function ExerciseDatabaseView({
     const mechanics = {
       Compound: 0,
       Isolation: 0,
-      Mobility: 0,
       Isometric: 0,
+      Mobility: 0,
+      Plyometric: 0,
     };
 
     const levels = {
@@ -176,6 +194,10 @@ export function ExerciseDatabaseView({
       Intermediate: 0,
       Advanced: 0,
     };
+
+    let bilateralCount = 0;
+    let unilateralCount = 0;
+    let closedChainCount = 0;
 
     const muscleCounts = {};
     const lowerBodySet = new Set(['quads', 'hamstrings', 'glutes', 'calves']);
@@ -187,21 +209,33 @@ export function ExerciseDatabaseView({
     let coreCount = 0;
 
     exercisesList.forEach((ex) => {
+      if (ex.familyId) familySet.add(ex.familyId);
+
       const usesGear = getRequiresEquipment(ex);
       if (usesGear) {
         gearCount++;
         const eq = (ex.equipment || '').toLowerCase();
         if (eq.includes('dumbbell')) gearBreakdown.dumbbells++;
-        else if (eq.includes('barbell') || eq.includes('landmine')) gearBreakdown.barbell++;
         else if (eq.includes('kettlebell')) gearBreakdown.kettlebell++;
-        else if (eq.includes('band') || eq.includes('strap') || eq.includes('rope')) gearBreakdown.bands++;
-        else if (eq.includes('bench') || eq.includes('step') || eq.includes('box')) gearBreakdown.bench++;
+        else if (eq.includes('barbell') || eq.includes('landmine')) gearBreakdown.barbell++;
+        else if (
+          eq.includes('band') ||
+          eq.includes('strap') ||
+          eq.includes('cable') ||
+          eq.includes('pull-up bar') ||
+          eq.includes('dip') ||
+          eq.includes('rope')
+        ) {
+          gearBreakdown.bands++;
+        } else {
+          gearBreakdown.bench++;
+        }
       } else {
         bwCount++;
         gearBreakdown.bodyweight++;
       }
 
-      const mech = ex.isWarmup ? 'Mobility' : (ex.mechanics || 'Compound');
+      const mech = ex.mechanics || (ex.isWarmup ? 'Mobility' : 'Compound');
       if (mechanics[mech] !== undefined) {
         mechanics[mech]++;
       } else {
@@ -213,6 +247,18 @@ export function ExerciseDatabaseView({
         levels[lvl]++;
       } else {
         levels.Intermediate++;
+      }
+
+      const lat = (ex.biomechanics?.laterality || '').toLowerCase();
+      if (lat.includes('unilateral') || lat.includes('asymmetric') || lat.includes('alternating')) {
+        unilateralCount++;
+      } else {
+        bilateralCount++;
+      }
+
+      const chain = (ex.biomechanics?.chain || '').toLowerCase();
+      if (chain.includes('closed')) {
+        closedChainCount++;
       }
 
       if (ex.muscleKey) {
@@ -232,26 +278,94 @@ export function ExerciseDatabaseView({
     const corePercent = total > 0 ? Math.max(0, 100 - lowerPercent - upperPercent) : 0;
 
     const gearList = [
-      { key: 'bodyweight', label: 'Bodyweight / Mat', count: gearBreakdown.bodyweight, percent: total > 0 ? Math.round((gearBreakdown.bodyweight / total) * 100) : 0 },
-      { key: 'dumbbells', label: 'Dumbbells', count: gearBreakdown.dumbbells, percent: total > 0 ? Math.round((gearBreakdown.dumbbells / total) * 100) : 0 },
-      { key: 'barbell', label: 'Barbell & Landmine', count: gearBreakdown.barbell, percent: total > 0 ? Math.round((gearBreakdown.barbell / total) * 100) : 0 },
-      { key: 'kettlebell', label: 'Kettlebell', count: gearBreakdown.kettlebell, percent: total > 0 ? Math.round((gearBreakdown.kettlebell / total) * 100) : 0 },
-      { key: 'bench', label: 'Bench & Platform', count: gearBreakdown.bench, percent: total > 0 ? Math.round((gearBreakdown.bench / total) * 100) : 0 },
-      { key: 'bands', label: 'Bands & Straps', count: gearBreakdown.bands, percent: total > 0 ? Math.round((gearBreakdown.bands / total) * 100) : 0 },
+      {
+        key: 'bodyweight',
+        label: 'Bodyweight & Mat',
+        filterLabel: 'Bodyweight Only',
+        tone: 'bodyweight',
+        count: gearBreakdown.bodyweight,
+        percent: total > 0 ? Math.round((gearBreakdown.bodyweight / total) * 100) : 0
+      },
+      {
+        key: 'dumbbells',
+        label: 'Dumbbells',
+        filterLabel: 'Dumbbells',
+        tone: 'gear',
+        count: gearBreakdown.dumbbells,
+        percent: total > 0 ? Math.round((gearBreakdown.dumbbells / total) * 100) : 0
+      },
+      {
+        key: 'kettlebell',
+        label: 'Kettlebells',
+        filterLabel: 'Kettlebell',
+        tone: 'gear',
+        count: gearBreakdown.kettlebell,
+        percent: total > 0 ? Math.round((gearBreakdown.kettlebell / total) * 100) : 0
+      },
+      {
+        key: 'barbell',
+        label: 'Barbell & Landmine',
+        filterLabel: 'Barbell',
+        tone: 'gear',
+        count: gearBreakdown.barbell,
+        percent: total > 0 ? Math.round((gearBreakdown.barbell / total) * 100) : 0
+      },
+      {
+        key: 'bands',
+        label: 'Bands, Bar & Rope',
+        filterLabel: 'Bands / Bar',
+        tone: 'gear',
+        count: gearBreakdown.bands,
+        percent: total > 0 ? Math.round((gearBreakdown.bands / total) * 100) : 0
+      },
+      {
+        key: 'bench',
+        label: 'Bench, Box & Ball',
+        filterLabel: 'Bench / Box / Ball',
+        tone: 'gear',
+        count: gearBreakdown.bench,
+        percent: total > 0 ? Math.round((gearBreakdown.bench / total) * 100) : 0
+      },
     ];
 
-    // Top muscles sorted by frequency for proportional bar and stats list
-    const sortedMuscles = Object.entries(muscleCounts)
-      .sort((a, b) => b[1] - a[1])
-      .map(([key, count]) => ({
-        key,
-        label: MUSCLE_LABELS[key] || key,
-        count,
-        percent: total > 0 ? Math.round((count / total) * 100) : 0,
-      }));
+    const lowerMuscles = [
+      { key: 'quads', label: 'Quads', region: 'lower', count: muscleCounts.quads || 0 },
+      { key: 'glutes', label: 'Glutes', region: 'lower', count: muscleCounts.glutes || 0 },
+      { key: 'hamstrings', label: 'Hamstrings', region: 'lower', count: muscleCounts.hamstrings || 0 },
+      { key: 'calves', label: 'Calves', region: 'lower', count: muscleCounts.calves || 0 },
+    ].map((m) => ({
+      ...m,
+      percent: total > 0 ? Math.round((m.count / total) * 100) : 0
+    }));
+
+    const coreMuscles = [
+      { key: 'abdomen', label: 'Abs & Core', region: 'core', count: muscleCounts.abdomen || 0 },
+      { key: 'obliques', label: 'Obliques', region: 'core', count: muscleCounts.obliques || 0 },
+    ].map((m) => ({
+      ...m,
+      percent: total > 0 ? Math.round((m.count / total) * 100) : 0
+    }));
+
+    const upperMuscles = [
+      {
+        key: 'back+trapezius',
+        label: 'Back & Traps',
+        region: 'upper',
+        count: (muscleCounts.back || 0) + (muscleCounts.trapezius || 0)
+      },
+      { key: 'chest', label: 'Chest', region: 'upper', count: muscleCounts.chest || 0 },
+      { key: 'shoulders', label: 'Shoulders', region: 'upper', count: muscleCounts.shoulders || 0 },
+      { key: 'biceps', label: 'Biceps', region: 'upper', count: muscleCounts.biceps || 0 },
+      { key: 'triceps', label: 'Triceps', region: 'upper', count: muscleCounts.triceps || 0 },
+      { key: 'forearm', label: 'Forearms', region: 'upper', count: muscleCounts.forearm || 0 },
+    ].map((m) => ({
+      ...m,
+      percent: total > 0 ? Math.round((m.count / total) * 100) : 0
+    }));
 
     return {
       total,
+      familyCount: familySet.size || 41,
       gearCount,
       bwCount,
       gearPercent,
@@ -260,45 +374,98 @@ export function ExerciseDatabaseView({
       gearList,
       mechanics,
       levels,
+      bilateralCount,
+      unilateralCount,
+      closedChainCount,
       muscleCounts,
-      sortedMuscles,
+      lowerMuscles,
+      upperMuscles,
+      coreMuscles,
       distinctMusclesCount: Object.keys(muscleCounts).length,
+      regionalGroupsCount: lowerMuscles.length + upperMuscles.length + coreMuscles.length,
       regions: {
-        lower: { count: lowerBodyCount, percent: lowerPercent },
-        upper: { count: upperBodyCount, percent: upperPercent },
-        core: { count: coreCount, percent: corePercent },
+        lower: { key: 'region:lower', count: lowerBodyCount, percent: lowerPercent },
+        upper: { key: 'region:upper', count: upperBodyCount, percent: upperPercent },
+        core: { key: 'region:core', count: coreCount, percent: corePercent },
       }
     };
   }, [exercisesList]);
 
   const activeEquipFilter = EQUIPMENT_FILTERS.find(f => f.label === selectedEquipment) || EQUIPMENT_FILTERS[0];
 
-  const filteredExercises = exercisesList.filter(ex => {
-    if (selectedMuscle !== 'All' && ex.muscleKey !== selectedMuscle) return false;
-    if (!activeEquipFilter.match(ex)) return false;
+  const toggleEquipFilter = (label) => {
+    setSelectedEquipment((prev) => (prev === label ? 'All Equipment' : label));
+  };
 
-    if (selectedMechanic !== 'All') {
-      const mech = ex.isWarmup ? 'Mobility' : (ex.mechanics || 'Compound');
-      if (mech.toLowerCase() !== selectedMechanic.toLowerCase()) return false;
-    }
+  const toggleMechanicFilter = (val) => {
+    setSelectedMechanic((prev) => (prev === val ? 'All' : val));
+  };
 
-    if (selectedLevel !== 'All') {
-      const lvl = ex.level || 'Intermediate';
-      if (lvl.toLowerCase() !== selectedLevel.toLowerCase()) return false;
-    }
+  const toggleLevelFilter = (val) => {
+    setSelectedLevel((prev) => (prev === val ? 'All' : val));
+  };
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchName = ex.name?.toLowerCase().includes(q);
-      const matchSci = ex.scientificName?.toLowerCase().includes(q);
-      const matchEquip = ex.equipment?.toLowerCase().includes(q);
-      const matchPattern = ex.pattern?.toLowerCase().includes(q);
-      const matchMuscle = MUSCLE_LABELS[ex.muscleKey]?.toLowerCase().includes(q);
-      if (!matchName && !matchSci && !matchEquip && !matchPattern && !matchMuscle) return false;
-    }
+  const toggleMuscleFilter = (key) => {
+    setSelectedMuscle((prev) => (prev === key ? 'All' : key));
+  };
 
-    return true;
-  });
+  const filteredExercises = useMemo(() => {
+    return exercisesList.filter(ex => {
+      if (selectedMuscle !== 'All') {
+        const k = (ex.muscleKey || '').toLowerCase();
+        if (selectedMuscle === 'region:lower') {
+          if (!['quads', 'hamstrings', 'glutes', 'calves'].includes(k)) return false;
+        } else if (selectedMuscle === 'region:upper') {
+          if (!['chest', 'back', 'shoulders', 'biceps', 'triceps', 'trapezius', 'forearm'].includes(k)) return false;
+        } else if (selectedMuscle === 'region:core') {
+          if (!['abdomen', 'obliques'].includes(k)) return false;
+        } else if (selectedMuscle === 'back+trapezius') {
+          if (k !== 'back' && k !== 'trapezius') return false;
+        } else if (selectedMuscle === 'arms') {
+          if (k !== 'biceps' && k !== 'triceps' && k !== 'forearm') return false;
+        } else if (ex.muscleKey !== selectedMuscle) {
+          return false;
+        }
+      }
+      if (!activeEquipFilter.match(ex)) return false;
+
+      if (selectedMechanic !== 'All') {
+        const mech = ex.mechanics || (ex.isWarmup ? 'Mobility' : 'Compound');
+        if (mech.toLowerCase() !== selectedMechanic.toLowerCase()) return false;
+      }
+
+      if (selectedLevel !== 'All') {
+        const lvl = ex.level || 'Intermediate';
+        if (lvl.toLowerCase() !== selectedLevel.toLowerCase()) return false;
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchName = ex.name?.toLowerCase().includes(q);
+        const matchSci = ex.scientificName?.toLowerCase().includes(q);
+        const matchEquip = ex.equipment?.toLowerCase().includes(q);
+        const matchPattern = ex.pattern?.toLowerCase().includes(q);
+        const matchFamily = ex.familyName?.toLowerCase().includes(q);
+        const matchVariation = ex.variationLabel?.toLowerCase().includes(q);
+        const matchJoint = ex.biomechanics?.jointActions?.toLowerCase().includes(q);
+        const matchPrimary = (ex.targetMuscles?.primary || []).join(' ').toLowerCase().includes(q);
+        const matchMuscle = MUSCLE_LABELS[ex.muscleKey]?.toLowerCase().includes(q);
+        if (
+          !matchName &&
+          !matchSci &&
+          !matchEquip &&
+          !matchPattern &&
+          !matchFamily &&
+          !matchVariation &&
+          !matchJoint &&
+          !matchPrimary &&
+          !matchMuscle
+        ) return false;
+      }
+
+      return true;
+    });
+  }, [exercisesList, selectedMuscle, activeEquipFilter, selectedMechanic, selectedLevel, searchQuery]);
 
   const isFilterActive =
     selectedMuscle !== 'All' ||
@@ -317,7 +484,7 @@ export function ExerciseDatabaseView({
 
   return (
     <div className="gymmane-db-view">
-      {/* Top Header Row (Identical to Main Homepage: Keep Date, Delete Title & Back Button) */}
+      {/* Top Header Row */}
       <section className="db-view-header">
         <div className="gymmane-wrap">
           <div className="hero-clean-header-row db-top-nav-row">
@@ -330,247 +497,335 @@ export function ExerciseDatabaseView({
 
             <div className="db-header-stats-badge">
               <Dumbbell size={14} />
-              <span><b>{exercisesList.length}</b> movements indexed</span>
+              <span><b>{exercisesList.length}</b> movements · <b>{telemetry.familyCount}</b> movement families</span>
             </div>
           </div>
 
-          {/* Archive Telemetry Bento (Spacious 2-Card Balanced Layout, Zero White Space, Pure Static Telemetry) */}
-          <div className="db-telemetry-bento">
-            {/* Card 1: Equipment & Movement Mechanics (Training Setup & Lift Kinematics) */}
+          {/* Mobile Insights Collapse Toggle (< 640px) */}
+          <button
+            type="button"
+            className="db-mobile-insights-toggle"
+            aria-expanded={showMobileInsights}
+            onClick={() => setShowMobileInsights((prev) => !prev)}
+          >
+            <span className="db-mobile-insights-copy">
+              <span className="telemetry-step-index">01–02</span>
+              <span>
+                Library Insights · {telemetry.total} Movements · {telemetry.distinctMusclesCount} Muscles
+              </span>
+            </span>
+            <ChevronDown
+              size={15}
+              className={`db-dropdown-chevron ${showMobileInsights ? 'rotated' : ''}`}
+            />
+          </button>
+
+          {/* Redesigned Architectural Library Overview (Low-Noise, Cohesive Dual-Tone, Interactive Filter Matrix) */}
+          <div className={`db-telemetry-bento ${showMobileInsights ? 'mobile-expanded' : ''}`}>
+            {/* Card 1: Equipment & Movement Kinematics */}
             <div className="db-telemetry-card equip-card">
               <div className="telemetry-card-header">
                 <span className="telemetry-card-title">
-                  <Dumbbell size={15} className="telemetry-title-icon" />
-                  EQUIPMENT & MOVEMENT SPECTRUM
+                  <span className="telemetry-step-index">01</span>
+                  <span>EQUIPMENT &amp; KINEMATICS</span>
                 </span>
-                <span className="telemetry-badge-count">{telemetry.total} Movements</span>
+                <span className="telemetry-badge-count">{telemetry.familyCount} Movement Families</span>
               </div>
 
-              {/* High-Level KPI Comparison Cards */}
+              {/* Interactive Modality Split Cards (Bronze = Equipment, Teal = Bodyweight) */}
               <div className="telemetry-kpi-row">
-                <div className="telemetry-kpi-card gear">
+                <button
+                  type="button"
+                  className={`telemetry-kpi-card gear ${selectedEquipment === 'Equipment Needed' ? 'is-active' : ''}`}
+                  onClick={() => toggleEquipFilter('Equipment Needed')}
+                  title="Filter by movements requiring equipment"
+                >
                   <div className="kpi-card-top">
                     <span className="kpi-big-num">{telemetry.gearCount}</span>
                     <span className="kpi-tag gear">{telemetry.gearPercent}%</span>
                   </div>
-                  <span className="kpi-label">Equipment Required</span>
-                  <span className="kpi-desc">Dumbbells, Barbells, Bands & Benches</span>
-                </div>
+                  <span className="kpi-label">Equipment Loaded</span>
+                  <span className="kpi-desc">Free weights, bars, bands &amp; benches</span>
+                </button>
 
-                <div className="telemetry-kpi-card bodyweight">
+                <button
+                  type="button"
+                  className={`telemetry-kpi-card bodyweight ${selectedEquipment === 'Bodyweight Only' ? 'is-active' : ''}`}
+                  onClick={() => toggleEquipFilter('Bodyweight Only')}
+                  title="Filter by zero-gear bodyweight movements"
+                >
                   <div className="kpi-card-top">
-                    <span className="kpi-big-num teal">{telemetry.bwCount}</span>
+                    <span className="kpi-big-num">{telemetry.bwCount}</span>
                     <span className="kpi-tag bodyweight">{telemetry.bwPercent}%</span>
                   </div>
                   <span className="kpi-label">Bodyweight Only</span>
-                  <span className="kpi-desc">Zero gear needed · Calisthenics & Mat</span>
-                </div>
+                  <span className="kpi-desc">Zero gear · Calisthenics &amp; floor</span>
+                </button>
               </div>
 
-              {/* Segmented Proportion Bar */}
+              {/* Clean Dual-Tone Proportion Bar */}
               <div className="telemetry-segmented-bar" aria-hidden="true">
                 <div
                   className="segment-fill gear"
                   style={{ width: `${telemetry.gearPercent}%` }}
-                  title={`Equipment Required: ${telemetry.gearCount} exercises (${telemetry.gearPercent}%)`}
                 />
                 <div
                   className="segment-fill bodyweight"
                   style={{ width: `${telemetry.bwPercent}%` }}
-                  title={`Bodyweight Only: ${telemetry.bwCount} exercises (${telemetry.bwPercent}%)`}
                 />
               </div>
 
-              {/* Detailed Gear Distribution (3 Columns x 2 Rows, Static Informational Tiles) */}
+              {/* Equipment Breakdown (Consistent Single-Tone Bars, Clickable Filter Tiles) */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
-                  <SlidersHorizontal size={13} />
-                  DETAILED GEAR INVENTORY
+                  EQUIPMENT BREAKDOWN
                 </span>
-                <span className="telemetry-sub-meta">6 Categories</span>
+                <span className="telemetry-sub-meta">Select to filter</span>
               </div>
 
               <div className="telemetry-gear-stat-grid">
-                {telemetry.gearList.map((item, idx) => (
-                  <div key={item.key} className="gear-stat-tile">
-                    <div className="gear-stat-top">
-                      <div className="gear-stat-left">
-                        <span className={`chip-color-dot tone-${idx % 6}`} />
+                {telemetry.gearList.map((item) => {
+                  const isActive = selectedEquipment === item.filterLabel;
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      className={`gear-stat-tile is-${item.tone} ${isActive ? 'is-active' : ''}`}
+                      onClick={() => toggleEquipFilter(item.filterLabel)}
+                      title={`Filter by ${item.label} (${item.count} movements)`}
+                    >
+                      <div className="gear-stat-top">
                         <span className="gear-stat-name">{item.label}</span>
-                      </div>
-                      <div className="gear-stat-right">
                         <span className="gear-stat-count">{item.count}</span>
-                        <span className="gear-stat-pct">{item.percent}%</span>
                       </div>
-                    </div>
-                    <div className="gear-stat-track" aria-hidden="true">
-                      <div
-                        className={`gear-stat-fill tone-${idx % 6}`}
-                        style={{ width: `${Math.min(100, Math.max(8, item.percent * 2.2))}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                      <div className="gear-stat-track" aria-hidden="true">
+                        <div
+                          className={`gear-stat-fill is-${item.tone}`}
+                          style={{ width: `${Math.min(100, Math.max(10, item.percent * 2.8))}%` }}
+                        />
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="telemetry-section-divider" />
 
-              {/* Movement Mechanics & Difficulty Spectrum */}
+              {/* Movement Mechanics (Clean 5-Column Strip, Zero Truncation) */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
-                  <Activity size={13} />
-                  MOVEMENT MECHANICS & LEVEL
+                  BIOMECHANICAL CLASSIFICATION
                 </span>
-                <span className="telemetry-sub-meta">Lift Classification</span>
+                <span className="telemetry-sub-meta">5 Lift Profiles</span>
               </div>
 
-              {/* 4-Item Mechanics Stat Tiles */}
               <div className="telemetry-mech-stat-grid">
-                <div className="mech-stat-tile">
-                  <span className="mech-stat-name">Compound</span>
-                  <div className="mech-stat-val-row">
-                    <span className="mech-stat-num">{telemetry.mechanics.Compound || 0}</span>
-                    <span className="mech-stat-pct">
-                      {telemetry.total > 0 ? Math.round(((telemetry.mechanics.Compound || 0) / telemetry.total) * 100) : 0}%
-                    </span>
-                  </div>
-                  <span className="mech-stat-desc">Multi-joint lifts</span>
-                </div>
-
-                <div className="mech-stat-tile">
-                  <span className="mech-stat-name">Isolation</span>
-                  <div className="mech-stat-val-row">
-                    <span className="mech-stat-num">{telemetry.mechanics.Isolation || 0}</span>
-                    <span className="mech-stat-pct">
-                      {telemetry.total > 0 ? Math.round(((telemetry.mechanics.Isolation || 0) / telemetry.total) * 100) : 0}%
-                    </span>
-                  </div>
-                  <span className="mech-stat-desc">Single-joint focus</span>
-                </div>
-
-                <div className="mech-stat-tile">
-                  <span className="mech-stat-name">Mobility</span>
-                  <div className="mech-stat-val-row">
-                    <span className="mech-stat-num">{telemetry.mechanics.Mobility || 0}</span>
-                    <span className="mech-stat-pct">
-                      {telemetry.total > 0 ? Math.round(((telemetry.mechanics.Mobility || 0) / telemetry.total) * 100) : 0}%
-                    </span>
-                  </div>
-                  <span className="mech-stat-desc">Joint priming & range</span>
-                </div>
-
-                <div className="mech-stat-tile">
-                  <span className="mech-stat-name">Isometric</span>
-                  <div className="mech-stat-val-row">
-                    <span className="mech-stat-num">{telemetry.mechanics.Isometric || 0}</span>
-                    <span className="mech-stat-pct">
-                      {telemetry.total > 0 ? Math.round(((telemetry.mechanics.Isometric || 0) / telemetry.total) * 100) : 0}%
-                    </span>
-                  </div>
-                  <span className="mech-stat-desc">Static tension holds</span>
-                </div>
+                {[
+                  { key: 'Compound', desc: 'Multi-joint' },
+                  { key: 'Isolation', desc: 'Single-joint' },
+                  { key: 'Isometric', desc: 'Static hold' },
+                  { key: 'Mobility', desc: 'Joint range' },
+                  { key: 'Plyometric', desc: 'Explosive' },
+                ].map((m) => {
+                  const count = telemetry.mechanics[m.key] || 0;
+                  const pct = telemetry.total > 0 ? Math.round((count / telemetry.total) * 100) : 0;
+                  const isActive = selectedMechanic === m.key;
+                  return (
+                    <button
+                      key={m.key}
+                      type="button"
+                      className={`mech-stat-tile ${isActive ? 'is-active' : ''}`}
+                      onClick={() => toggleMechanicFilter(m.key)}
+                      title={`Filter by ${m.key} movements (${count})`}
+                    >
+                      <span className="mech-stat-name">{m.key}</span>
+                      <div className="mech-stat-val-row">
+                        <span className="mech-stat-num">{count}</span>
+                        <span className="mech-stat-pct">{pct}%</span>
+                      </div>
+                      <span className="mech-stat-desc">{m.desc}</span>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Experience Level Row */}
+              {/* Experience Level Footer Row */}
               <div className="telemetry-level-bar-wrap">
-                <span className="level-bar-label">EXPERIENCE LEVEL:</span>
+                <span className="level-bar-label">EXPERIENCE TIER</span>
                 <div className="level-stat-tags">
-                  <span className="level-stat-tag">
-                    <span className="level-pip beginner" /> Beginner <b>{telemetry.levels.Beginner}</b>
-                  </span>
-                  <span className="level-stat-tag">
-                    <span className="level-pip intermediate" /> Intermediate <b>{telemetry.levels.Intermediate}</b>
-                  </span>
-                  <span className="level-stat-tag">
-                    <span className="level-pip advanced" /> Advanced <b>{telemetry.levels.Advanced}</b>
-                  </span>
+                  {['Beginner', 'Intermediate', 'Advanced'].map((lvl) => (
+                    <button
+                      key={lvl}
+                      type="button"
+                      className={`level-stat-tag ${selectedLevel === lvl ? 'is-active' : ''}`}
+                      onClick={() => toggleLevelFilter(lvl)}
+                    >
+                      <span className={`level-pip ${lvl.toLowerCase()}`} />
+                      <span>{lvl}</span>
+                      <b>{telemetry.levels[lvl]}</b>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Card 2: Anatomical Coverage & Muscle Vault (Macro Regions + Detailed Muscle Groups) */}
+            {/* Card 2: Anatomical Architecture (3 Coherent Regional Columns: Lower, Upper, Core) */}
             <div className="db-telemetry-card anatomy-card">
               <div className="telemetry-card-header">
                 <span className="telemetry-card-title">
-                  <Layers size={15} className="telemetry-title-icon" />
-                  ANATOMICAL COVERAGE & MUSCLE VAULT
+                  <span className="telemetry-step-index is-teal">02</span>
+                  <span>ANATOMICAL ARCHITECTURE</span>
                 </span>
-                <span className="telemetry-badge-count">{telemetry.distinctMusclesCount} Muscle Groups</span>
+                <span className="telemetry-badge-count">{telemetry.distinctMusclesCount} Target Muscles</span>
               </div>
 
-              {/* Macro Regional Distribution KPIs (3-Card Row) */}
+              {/* 3 Macro Regional KPI Cards (Directly Aligned Above Their Muscle Columns) */}
               <div className="telemetry-region-kpi-row">
-                <div className="telemetry-region-kpi-card lower">
+                <button
+                  type="button"
+                  className={`telemetry-region-kpi-card lower ${selectedMuscle === 'region:lower' ? 'is-active' : ''}`}
+                  onClick={() => toggleMuscleFilter('region:lower')}
+                  title="Filter all Lower Body movements"
+                >
                   <div className="region-kpi-top">
                     <span className="region-kpi-num">{telemetry.regions.lower.count}</span>
                     <span className="region-kpi-pct lower">{telemetry.regions.lower.percent}%</span>
                   </div>
                   <span className="region-kpi-title">Lower Body</span>
-                  <span className="region-kpi-sub">Quads, Glutes & Legs</span>
-                </div>
+                  <span className="region-kpi-sub">Posterior &amp; Anterior Chain</span>
+                </button>
 
-                <div className="telemetry-region-kpi-card upper">
+                <button
+                  type="button"
+                  className={`telemetry-region-kpi-card upper ${selectedMuscle === 'region:upper' ? 'is-active' : ''}`}
+                  onClick={() => toggleMuscleFilter('region:upper')}
+                  title="Filter all Upper Body movements"
+                >
                   <div className="region-kpi-top">
-                    <span className="region-kpi-num teal">{telemetry.regions.upper.count}</span>
+                    <span className="region-kpi-num">{telemetry.regions.upper.count}</span>
                     <span className="region-kpi-pct upper">{telemetry.regions.upper.percent}%</span>
                   </div>
                   <span className="region-kpi-title">Upper Body</span>
-                  <span className="region-kpi-sub">Chest, Back & Arms</span>
-                </div>
+                  <span className="region-kpi-sub">Torso Push, Pull &amp; Arms</span>
+                </button>
 
-                <div className="telemetry-region-kpi-card core">
+                <button
+                  type="button"
+                  className={`telemetry-region-kpi-card core ${selectedMuscle === 'region:core' ? 'is-active' : ''}`}
+                  onClick={() => toggleMuscleFilter('region:core')}
+                  title="Filter all Core & Spine movements"
+                >
                   <div className="region-kpi-top">
-                    <span className="region-kpi-num amber">{telemetry.regions.core.count}</span>
+                    <span className="region-kpi-num">{telemetry.regions.core.count}</span>
                     <span className="region-kpi-pct core">{telemetry.regions.core.percent}%</span>
                   </div>
-                  <span className="region-kpi-title">Core & Trunk</span>
-                  <span className="region-kpi-sub">Abs, Obliques & Trunk</span>
-                </div>
+                  <span className="region-kpi-title">Core &amp; Spine</span>
+                  <span className="region-kpi-sub">Anti-Rotation &amp; Trunk</span>
+                </button>
               </div>
 
-              {/* 3-Part Regional Proportion Bar */}
+              {/* 3-Segment Regional Proportion Bar */}
               <div className="telemetry-region-bar" aria-hidden="true">
                 <div
                   className="region-bar-seg seg-lower"
                   style={{ width: `${telemetry.regions.lower.percent}%` }}
-                  title={`Lower Body: ${telemetry.regions.lower.count} (${telemetry.regions.lower.percent}%)`}
                 />
                 <div
                   className="region-bar-seg seg-upper"
                   style={{ width: `${telemetry.regions.upper.percent}%` }}
-                  title={`Upper Body: ${telemetry.regions.upper.count} (${telemetry.regions.upper.percent}%)`}
                 />
                 <div
                   className="region-bar-seg seg-core"
                   style={{ width: `${telemetry.regions.core.percent}%` }}
-                  title={`Core & Posture: ${telemetry.regions.core.count} (${telemetry.regions.core.percent}%)`}
                 />
               </div>
 
-              <div className="telemetry-section-divider" />
-
-              {/* Detailed Target Muscle Groups (All 12 Groups, 2 Columns x 6 Rows) */}
+              {/* Regional Muscle Breakdown (Balanced 2-Column × 6-Row Matrix Grouped by Semantic Region) */}
               <div className="telemetry-sub-header-row">
                 <span className="telemetry-sub-kicker">
-                  <Layers size={13} />
-                  PRIMARY TARGET MUSCLE DISTRIBUTION
+                  PRIMARY TARGET MUSCLES BY REGION
                 </span>
-                <span className="telemetry-sub-meta">All 12 Groups Indexed (70 Movements)</span>
+                <span className="telemetry-sub-meta">{telemetry.regionalGroupsCount} Regional Groups · {telemetry.total} Movements</span>
               </div>
 
-              <div className="telemetry-muscle-grid">
-                {telemetry.sortedMuscles.slice(0, 12).map((item, idx) => (
-                  <div key={item.key} className="muscle-stat-tile">
-                    <div className="muscle-stat-left">
-                      <span className={`chip-color-dot tone-${idx % 6}`} />
-                      <span className="muscle-stat-name">{item.label}</span>
-                    </div>
-                    <div className="muscle-stat-right">
-                      <span className="muscle-stat-count">{item.count}</span>
-                      <span className="muscle-stat-pct">{item.percent}%</span>
-                    </div>
-                  </div>
-                ))}
+              <div className="telemetry-regional-columns">
+                {/* Column 1 (6 Rows): Lower Body (4 Bronze) + Core & Spine (2 Slate) */}
+                <div className="regional-muscle-col">
+                  {[...telemetry.lowerMuscles, ...telemetry.coreMuscles].map((m) => {
+                    const isActive = selectedMuscle === m.key;
+                    const fillPct = Math.min(100, Math.round((m.count / 24) * 100));
+                    return (
+                      <button
+                        key={m.key}
+                        type="button"
+                        className={`muscle-region-row is-${m.region} ${isActive ? 'is-active' : ''}`}
+                        onClick={() => toggleMuscleFilter(m.key)}
+                        title={`Filter by ${m.label} (${m.count} movements · ${m.percent}%)`}
+                      >
+                        <div className="muscle-row-main">
+                          <span className="muscle-stat-name-wrap">
+                            <span className={`muscle-region-dot is-${m.region}`} aria-hidden="true" />
+                            <span className="muscle-stat-name">{m.label}</span>
+                          </span>
+                          <span className="muscle-stat-metrics">
+                            <span className="muscle-stat-count">{m.count}</span>
+                            <span className="muscle-stat-pct">{m.percent}%</span>
+                          </span>
+                        </div>
+                        <div className="muscle-row-bar-track" aria-hidden="true">
+                          <div className={`muscle-row-bar-fill is-${m.region}`} style={{ width: `${fillPct}%` }} />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Column 2 (6 Rows): Upper Body (6 Teal) */}
+                <div className="regional-muscle-col">
+                  {telemetry.upperMuscles.map((m) => {
+                    const isActive = selectedMuscle === m.key;
+                    const fillPct = Math.min(100, Math.round((m.count / 24) * 100));
+                    return (
+                      <button
+                        key={m.key}
+                        type="button"
+                        className={`muscle-region-row is-${m.region} ${isActive ? 'is-active' : ''}`}
+                        onClick={() => toggleMuscleFilter(m.key)}
+                        title={`Filter by ${m.label} (${m.count} movements · ${m.percent}%)`}
+                      >
+                        <div className="muscle-row-main">
+                          <span className="muscle-stat-name-wrap">
+                            <span className={`muscle-region-dot is-${m.region}`} aria-hidden="true" />
+                            <span className="muscle-stat-name">{m.label}</span>
+                          </span>
+                          <span className="muscle-stat-metrics">
+                            <span className="muscle-stat-count">{m.count}</span>
+                            <span className="muscle-stat-pct">{m.percent}%</span>
+                          </span>
+                        </div>
+                        <div className="muscle-row-bar-track" aria-hidden="true">
+                          <div className={`muscle-row-bar-fill is-${m.region}`} style={{ width: `${fillPct}%` }} />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Matching Kinetic Profile Footer Row */}
+              <div className="telemetry-level-bar-wrap">
+                <span className="level-bar-label">KINETIC PROFILE</span>
+                <div className="level-stat-tags">
+                  <span className="level-stat-tag is-static">
+                    <span className="level-pip neutral" /> Bilateral <b>{telemetry.bilateralCount}</b>
+                  </span>
+                  <span className="level-stat-tag is-static">
+                    <span className="level-pip neutral" /> Unilateral <b>{telemetry.unilateralCount}</b>
+                  </span>
+                  <span className="level-stat-tag is-static">
+                    <span className="level-pip neutral" /> Closed-Chain <b>{telemetry.closedChainCount}</b>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -581,6 +836,8 @@ export function ExerciseDatabaseView({
               <div className="db-search-input-wrap">
                 <Search size={16} className="db-search-icon" />
                 <input
+                  id="exercise-db-search"
+                  name="exercise-db-search"
                   type="text"
                   placeholder="Search by exercise name, muscle, equipment, or pattern..."
                   value={searchQuery}
@@ -727,17 +984,6 @@ export function ExerciseDatabaseView({
                   )}
                 </div>
 
-                {/* Optional Interactive Drawer Toggle */}
-                <button
-                  type="button"
-                  className={`db-toggle-bodymap-btn ${showBodyMap || selectedMuscle !== 'All' ? 'active' : ''}`}
-                  onClick={() => setShowBodyMap((prev) => !prev)}
-                  title="Filter by tapping muscles on the interactive 3D anatomy drawer"
-                >
-                  <Activity size={14} />
-                  <span>Body Map{selectedMuscle !== 'All' ? ` (${MUSCLE_LABELS[selectedMuscle] || selectedMuscle})` : ''}</span>
-                </button>
-
                 {/* Global Reset Button */}
                 {isFilterActive && (
                   <button
@@ -753,34 +999,28 @@ export function ExerciseDatabaseView({
               </div>
             </div>
 
-            {/* Anatomy Muscle Fast-Pills (Clean Label-Only Bubbles, Non-Redundant) */}
+            {/* Anatomy Muscle Fast-Pills (Semantic Region Color-Coded) */}
             <div className="db-rail-row">
               <span className="db-rail-label">ANATOMY</span>
               <div className="db-rail-scroll">
-                {MUSCLE_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.key}
-                    type="button"
-                    className={`db-pill-btn ${selectedMuscle === cat.key ? 'active' : ''}`}
-                    onClick={() => setSelectedMuscle(cat.key)}
-                  >
-                    <span>{cat.label}</span>
-                  </button>
-                ))}
+                {MUSCLE_CATEGORIES.map((cat) => {
+                  const regionTone = getMuscleRegionTone(cat.key);
+                  return (
+                    <button
+                      key={cat.key}
+                      type="button"
+                      className={`db-pill-btn region-${regionTone} ${selectedMuscle === cat.key ? 'active' : ''}`}
+                      onClick={() => setSelectedMuscle(cat.key)}
+                    >
+                      {regionTone !== 'all' && (
+                        <span className={`pill-region-dot is-${regionTone}`} aria-hidden="true" />
+                      )}
+                      <span>{cat.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-
-            {/* Expandable Interactive Anatomical Body Map Drawer (Only when user explicitly taps Body Map button) */}
-            {showBodyMap && (
-              <div className="db-bodymap-drawer animate-fade">
-                <BodyMap
-                  selectedMuscles={selectedMuscle !== 'All' ? [selectedMuscle] : []}
-                  onToggleMuscle={(key) => setSelectedMuscle((prev) => (prev === key ? 'All' : key))}
-                  onClearMuscles={() => setSelectedMuscle('All')}
-                  hidePills={true}
-                />
-              </div>
-            )}
           </div>
         </div>
       </section>
@@ -880,7 +1120,7 @@ export function ExerciseDatabaseView({
 
                     <div className="db-card-body">
                       <div className="db-card-header-tags">
-                        <span className="db-muscle-badge">
+                        <span className={`db-muscle-badge region-${getMuscleRegionTone(ex.muscleKey)}`}>
                           {MUSCLE_LABELS[ex.muscleKey] || ex.muscleKey}
                         </span>
                         <span
@@ -893,14 +1133,14 @@ export function ExerciseDatabaseView({
                       </div>
 
                       {ex.pattern && (
-                        <div className="db-pattern-kicker" title={ex.pattern}>
-                          {ex.pattern}
+                        <div className="db-pattern-kicker" title={ex.familyName ? `${ex.pattern} · ${ex.familyName}` : ex.pattern}>
+                          {ex.pattern}{ex.variationType && ex.variationType !== 'Base' ? ` · ${ex.variationType}` : ''}
                         </div>
                       )}
 
                       <h3 className="db-exercise-title" title={ex.name}>{ex.name}</h3>
-                      <p className="db-exercise-subtitle" title={ex.subtitle || ex.scientificName}>
-                        {ex.subtitle || ex.scientificName || 'Movement profile'}
+                      <p className="db-exercise-subtitle" title={ex.variationLabel || ex.subtitle || ex.scientificName}>
+                        {ex.variationLabel || ex.subtitle || ex.scientificName || 'Movement profile'}
                       </p>
 
                       <div className="db-card-meta-strip">
@@ -944,6 +1184,8 @@ export function ExerciseDatabaseView({
       {activeExerciseDetail && (
         <ExerciseDetailModal
           exercise={activeExerciseDetail}
+          allExercises={exercisesList}
+          onSelectExercise={setActiveExerciseDetail}
           onClose={() => setActiveExerciseDetail(null)}
         />
       )}

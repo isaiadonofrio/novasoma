@@ -1,4 +1,6 @@
 import { MOVEMENT_PATTERNS } from '../data/exerciseConstants.js';
+import { DEFAULT_SETS, DEFAULT_SUPERSET_REST_SECONDS, DEFAULT_RPE } from './constants.js';
+import { sanitizeMediaUrl } from './storage.js';
 
 export function isAnimatedGifUrl(src = '') {
   if (!src) return false;
@@ -75,6 +77,12 @@ export function isBodyweightEquipment(equipmentText = '') {
   );
 }
 
+export function getRequiresEquipment(ex) {
+  if (typeof ex?.requiresEquipment === 'boolean') return ex.requiresEquipment;
+  if (typeof ex?.usesEquipment === 'boolean') return ex.usesEquipment;
+  return !isBodyweightEquipment(ex?.equipment);
+}
+
 /**
  * Normalizes a single exercise JSON object (CORPO or free-exercise-db schema)
  * into the schema used by ExerciseEditorModal and the local exercise database.
@@ -149,13 +157,13 @@ export function parseSingleExerciseJson(rawText) {
     mechanics: String(parsed.mechanics || parsed.force || 'Compound'),
     level: String(parsed.level || 'Intermediate'),
     muscleKey,
-    defaultSets: Number(parsed.defaultSets) || 3,
+    defaultSets: Number(parsed.defaultSets) || DEFAULT_SETS,
     defaultReps: String(parsed.defaultReps || '8-12'),
-    defaultRestSeconds: Number(parsed.defaultRestSeconds) || 90,
-    rpe: String(parsed.rpe || '8'),
+    defaultRestSeconds: Number(parsed.defaultRestSeconds) || DEFAULT_SUPERSET_REST_SECONDS,
+    rpe: String(parsed.rpe || DEFAULT_RPE),
     lastRecord: String(parsed.lastRecord || ''),
-    illustration: String(rawIllustration),
-    customVideoUrl: String(parsed.customVideoUrl || parsed.videoUrl || ''),
+    illustration: sanitizeMediaUrl(String(rawIllustration)),
+    customVideoUrl: sanitizeMediaUrl(String(parsed.customVideoUrl || parsed.videoUrl || '')),
     isWarmup: Boolean(parsed.isWarmup),
     targetMuscles: {
       primary: primaryList.map(String),

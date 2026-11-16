@@ -102,7 +102,7 @@ const MCGILL_MAIN = [
   { ...getEx('ex-mcgill-curl-up', false), defaultSets: 3, defaultReps: '6 holds (8s)' },
   { ...getEx('ex-side-plank', false), defaultSets: 3, defaultReps: '20s/side' },
   { ...getEx('ex-bird-dog', false), defaultSets: 3, defaultReps: '8/side' },
-  { ...getEx('ex-decompression-brisk-walk', false), defaultSets: 1, defaultReps: '15-20 min' }
+  { ...getEx('ex-decompression-brisk-walk', false), phase: 'decompression', isDecompression: true, defaultSets: 1, defaultReps: '15-20 min' }
 ];
 
 export const INITIAL_ROUTINES = [

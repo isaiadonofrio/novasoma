@@ -119,6 +119,15 @@
   background: color-mix(in srgb, #2A6B6D 4%, var(--surface));
 }
 
+.today-focus-banner.draft-resume {
+  border-color: color-mix(in srgb, #A6753B 45%, var(--border));
+  background: color-mix(in srgb, #A6753B 6%, var(--surface));
+}
+
+.today-focus-banner.draft-resume .today-focus-kicker {
+  color: #8A5B22;
+}
+
 .today-focus-header {
   display: flex;
   align-items: center;
@@ -219,9 +228,9 @@
   height: 36px;
   padding: 0 12px;
   border-radius: var(--radius-sm);
-  background: var(--raised2);
+  background: var(--surface);
   border: 1px solid var(--border);
-  color: var(--dim);
+  color: var(--text);
   font-family: var(--mono);
   font-size: 0.74rem;
   font-weight: 700;
@@ -229,10 +238,39 @@
   transition: all 0.12s var(--ease);
 }
 
-.btn-focus-view:hover {
+[data-theme="light"] .btn-focus-view {
+  background: #FFFFFF;
+  border-color: var(--border);
   color: var(--text);
-  border-color: var(--border-hi);
-  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.btn-focus-view:hover {
+  color: var(--clay);
+  border-color: var(--clay);
+  background: var(--raised2);
+}
+
+.btn-focus-discard {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border));
+  color: var(--danger);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.12s var(--ease);
+}
+
+.btn-focus-discard:hover {
+  background: color-mix(in srgb, var(--danger) 8%, #FFFFFF);
+  border-color: var(--danger);
 }
 
 /* Bottom Split: Weekly Hit Map + Recent Sessions & Basic Stats */
@@ -319,9 +357,9 @@
   flex-shrink: 0;
 }
 
-.hit-legend-dot.hit-1 { background: #E5A93C; }
-.hit-legend-dot.hit-2 { background: #C28E52; }
-.hit-legend-dot.hit-3 { background: #E5674C; }
+.hit-legend-dot.hit-1 { background: var(--hit-1); }
+.hit-legend-dot.hit-2 { background: var(--hit-2); }
+.hit-legend-dot.hit-3 { background: var(--hit-3); }
 
 /* Column 2: Recent Workouts & Basic Stats */
 .weekly-recent-box {
@@ -379,6 +417,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
   min-width: 0;
 }
 
@@ -395,6 +434,9 @@
   font-family: var(--mono);
   font-size: 0.68rem;
   color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .session-card-meta {
@@ -404,6 +446,7 @@
   color: var(--clay);
   white-space: nowrap;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .recent-empty-prompt {
@@ -441,6 +484,7 @@
   font-weight: 800;
   color: var(--text);
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .summary-panel-top {
@@ -492,9 +536,9 @@
   width: 30px;
   height: 30px;
   border-radius: var(--radius-sm);
-  background: var(--raised2);
+  background: var(--surface);
   border: 1px solid var(--border);
-  color: var(--dim);
+  color: var(--text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -504,8 +548,14 @@
   flex-shrink: 0;
 }
 
+[data-theme="light"] .btn-history-dashboard-icon {
+  background: #FFFFFF;
+  color: var(--text);
+  border-color: var(--border);
+}
+
 .btn-history-dashboard-icon:hover {
-  background: var(--surface);
+  background: var(--raised2);
   border-color: var(--clay);
   color: var(--clay);
   transform: translateY(-1px);
@@ -626,22 +676,22 @@
 
 .focus-dist-seg.tone-0,
 .focus-legend-dot.tone-0 {
-  background: var(--clay);
+  background: var(--region-lower);
 }
 
 .focus-dist-seg.tone-1,
 .focus-legend-dot.tone-1 {
-  background: var(--sage);
+  background: var(--region-upper);
 }
 
 .focus-dist-seg.tone-2,
 .focus-legend-dot.tone-2 {
-  background: var(--info);
+  background: var(--region-core);
 }
 
 .focus-dist-seg.tone-3,
 .focus-legend-dot.tone-3 {
-  background: #8B7D72;
+  background: var(--hit-1);
 }
 
 .focus-dist-seg.tone-4,
@@ -863,12 +913,22 @@
   gap: 5px;
   padding: 10px 4px 8px;
   border-radius: var(--radius-sm);
-  background: var(--raised2);
+  background: var(--surface);
   border: 1.5px solid var(--border);
   cursor: pointer;
   transition: all 0.14s var(--ease);
   position: relative;
   min-height: 58px;
+}
+
+[data-theme="light"] .week-day-pill {
+  background: #FFFFFF;
+  border-color: var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .week-day-pill {
+  background: var(--raised);
 }
 
 .week-day-pill.clickable:hover {

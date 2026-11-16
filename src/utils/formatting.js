@@ -37,3 +37,46 @@ export function formatClock(totalSeconds) {
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 }
 
+/**
+ * Extracts exact duration in seconds from a session record (`durationSeconds` or `durationMinutes`).
+ */
+export function getSessionDurationSeconds(session) {
+  if (!session || typeof session !== 'object') return 0;
+  const rawSecs = Number(session.durationSeconds);
+  if (Number.isFinite(rawSecs) && rawSecs >= 0) return rawSecs;
+  const rawMins = Number(session.durationMinutes);
+  if (Number.isFinite(rawMins) && rawMins > 0) return Math.round(rawMins * 60);
+  return 0;
+}
+
+/**
+ * Rounds duration seconds into a consistent whole-minute count across summary views.
+ * Any non-zero duration rounds to at least 1 minute.
+ */
+export function getRoundedDurationMinutes(totalSeconds) {
+  const secs = Math.max(0, Number(totalSeconds) || 0);
+  if (secs === 0) return 0;
+  return Math.max(1, Math.round(secs / 60));
+}
+
+/**
+ * Resolves a session's display category from its stored field or matching routine,
+ * falling back to `'Training'`.
+ */
+export function resolveSessionCategory(session, routines = []) {
+  if (session?.category && String(session.category).trim()) {
+    return String(session.category).trim();
+  }
+  if (Array.isArray(routines) && routines.length > 0 && session) {
+    const matched = routines.find(
+      (r) =>
+        (session.routineId && r?.id === session.routineId) ||
+        (session.routineTitle && r?.title === session.routineTitle)
+    );
+    if (matched?.category && String(matched.category).trim()) {
+      return String(matched.category).trim();
+    }
+  }
+  return 'Training';
+}
+

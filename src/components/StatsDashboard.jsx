@@ -6,6 +6,7 @@ import {
   toLocalDateKey,
   formatHoursMinutes
 } from '../utils/analytics';
+import { getSessionDurationSeconds } from '../utils/formatting';
 
 const WEEKDAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const WEEKDAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -43,7 +44,7 @@ export function StatsDashboard({
       const k = toLocalDateKey(item.date || item.completedAt);
       if (k && k >= mondayKey) {
         weekSessions += 1;
-        weekSeconds += Number(item.durationSeconds) || 0;
+        weekSeconds += getSessionDurationSeconds(item);
       }
     });
 

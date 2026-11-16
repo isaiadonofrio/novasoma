@@ -1,7 +1,11 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Calendar, Clock, Dumbbell, CheckCircle, Trash2, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { Calendar, Clock, Dumbbell, CheckCircle, Trash2, ChevronDown, ChevronUp, X, Activity, Flame } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
-import { formatSessionDuration } from '../utils/formatting';
+import {
+  formatSessionDuration,
+  getSessionDurationSeconds,
+  resolveSessionCategory
+} from '../utils/formatting';
 import { useBodyScrollLock } from '../utils/useBodyScrollLock';
 import { useFocusTrap } from '../utils/useFocusTrap';
 
@@ -19,6 +23,7 @@ function formatSessionDate(iso) {
 
 export function WorkoutHistoryModal({
   workoutHistory = [],
+  routines = [],
   exerciseDatabase = [],
   onDeleteSession,
   onClose,
@@ -83,18 +88,26 @@ export function WorkoutHistoryModal({
             </div>
           ) : (
             <div className="history-sessions-list">
-              {workoutHistory.map((session) => {
-                const isExpanded = expandedId === session.id;
+              {workoutHistory.map((session, idx) => {
+                const sessionKey = session.id || session.date || session.completedAt || `session-${idx}`;
+                const isExpanded = expandedId === sessionKey;
+                const sessionDurationSeconds = getSessionDurationSeconds(session);
+                const sessionCategory = resolveSessionCategory(session, routines);
+                const isManualLog = Boolean(session.isManual) && !(session.totalSets > 0);
+                const manualRpe = session.rpe ?? session.intensity;
                 const loggedEntries = session.loggedSets && typeof session.loggedSets === 'object'
                   ? Object.entries(session.loggedSets).filter(([, sets]) => Array.isArray(sets) && sets.some((s) => s.completed))
                   : [];
 
                 return (
-                  <article key={session.id} className="history-session-card">
+                  <article key={sessionKey} className="history-session-card">
                     <div className="history-session-top">
                       <div className="history-session-meta">
                         <span className="history-session-date">
-                          {formatSessionDate(session.date || session.completedAt)}
+                          {formatSessionDate(session.date || session.completedAt)} · {sessionCategory}
+                          {session.isManual && (
+                            <span className="history-manual-badge">Manual Log</span>
+                          )}
                         </span>
                         <h4 className="history-session-title">
                           {session.routineTitle || 'Workout Session'}
@@ -102,12 +115,27 @@ export function WorkoutHistoryModal({
                         <div className="history-session-chips">
                           <span>
                             <Clock size={12} />
-                            {formatSessionDuration(session.durationSeconds)}
+                            {formatSessionDuration(sessionDurationSeconds)}
                           </span>
-                          <span>
-                            <CheckCircle size={12} />
-                            {session.completedSets || 0}/{session.totalSets || 0} sets
-                          </span>
+                          {isManualLog ? (
+                            <>
+                              <span>
+                                <Activity size={12} />
+                                {sessionCategory} activity
+                              </span>
+                              {manualRpe != null && (
+                                <span>
+                                  <Flame size={12} />
+                                  {Number.isFinite(Number(manualRpe)) ? `RPE ${manualRpe}/10` : `${manualRpe} effort`}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span>
+                              <CheckCircle size={12} />
+                              {session.completedSets || 0}/{session.totalSets || 0} sets
+                            </span>
+                          )}
                           {session.volumeKg > 0 && (
                             <span>
                               <Dumbbell size={12} />
@@ -115,6 +143,9 @@ export function WorkoutHistoryModal({
                             </span>
                           )}
                         </div>
+                        {session.notes && (
+                          <p className="history-session-notes">{session.notes}</p>
+                        )}
                       </div>
 
                       <div className="history-session-actions">
@@ -122,7 +153,7 @@ export function WorkoutHistoryModal({
                           <button
                             type="button"
                             className="history-toggle-btn"
-                            onClick={() => setExpandedId(isExpanded ? null : session.id)}
+                            onClick={() => setExpandedId(isExpanded ? null : sessionKey)}
                           >
                             <span>{isExpanded ? 'Hide Sets' : 'View Sets'}</span>
                             {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -182,7 +213,7 @@ export function WorkoutHistoryModal({
           message={`Remove "${pendingDeleteSession.routineTitle || 'Workout Session'}" from ${formatSessionDate(pendingDeleteSession.date || pendingDeleteSession.completedAt)}? This updates your streak and heatmap immediately.`}
           confirmLabel="Delete Session"
           onConfirm={() => {
-            onDeleteSession(pendingDeleteSession.id);
+            onDeleteSession(pendingDeleteSession.id || pendingDeleteSession.date || pendingDeleteSession.completedAt);
             setPendingDeleteSession(null);
           }}
           onCancel={() => setPendingDeleteSession(null)}

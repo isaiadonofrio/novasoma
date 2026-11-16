@@ -1,79 +1,10 @@
 /* GymMane Essential Design System (Teal + Bronze Dual Signature) */
-:root {
-  /* Obsidian Warm Matte Dark Palette */
-  --page: #0A0908;
-  --bg: #0A0A0A;
-  --raised: #1C1C1C;
-  --raised2: #2B2B2B;
-  --raised3: #343434;
-
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hi: rgba(255, 255, 255, 0.16);
-  --border-active: #C28E52;
-
-  --text: #FFFFFF;
-  --dim: #9A9A9A;
-  --faint: #666666;
-  --dot-grid: rgba(255, 255, 255, 0.045);
-
-  /* Ember: Primary CTA */
-  --ember: #FFFFFF;
-  --ember-hover: #E6E6E6;
-  --on-ember: #0A0A0A;
-
-  /* Compatibility aliases */
-  --accent: var(--ember);
-  --accent-hover: var(--ember-hover);
-  --accent-fg: var(--on-ember);
-  --accent-soft: rgba(255, 255, 255, 0.10);
-  --accent-glow: rgba(255, 255, 255, 0.18);
-
-  /* Bronze: Brand Identity, Vertebrae Core & Primary Agonist Highlights */
-  --bronze: #C28E52;
-  --clay: #C28E52;
-  --clay-hover: #D4A064;
-  --clay-soft: rgba(194, 142, 82, 0.16);
-  --clay-glow: rgba(194, 142, 82, 0.28);
-  --on-clay: #141210;
-  --brass: #A8763E;
-
-  /* Teal: Brand Ouroboros, Synergist Muscles & Training Circuits */
-  --teal: #219B9D;
-  --teal-deep: #135355;
-  --sage: #219B9D;
-  --sage-soft: rgba(33, 155, 157, 0.18);
-  --sage-glow: rgba(33, 155, 157, 0.30);
-  --signal: #219B9D;
-
-  /* Semantic Status */
-  --info: #219B9D;
-  --warn: #C28E52;
-  --danger: #E5674C;
-
-  /* Folder-Stack Pastel Routine Tabs */
-  --tab-1: #C8DDE8;
-  --tab-2: #D8D2EC;
-  --tab-3: #E6D2C5;
-  --tab-4: #CEE0D0;
-  --tab-5: #EAE0C8;
-  --tab-6: #E7CED4;
-
-  --display: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --body: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-
-  --maxw: 1400px;
-  --ease: cubic-bezier(.22, .61, .36, 1);
-  --radius-sm: 12px;
-  --radius-md: 18px;
-  --radius-lg: 24px;
-  --radius-full: 999px;
-}
-
-/* Warm Linen Light Palette */
+:root,
 [data-theme="light"] {
+  /* Warm Linen Light Palette */
   --page: #F7F5F0;
   --bg: #FFFEFD;
+  --surface: #FFFFFF;
   --raised: #FFFFFF;
   --raised2: #ECE8E3;
   --raised3: #E0DBD5;
@@ -83,21 +14,25 @@
   --border-active: #9B6C34;
 
   --text: #171E1E;
+  --text-bright: #0A0A0A;
   --dim: #546060;
   --faint: #818D8D;
   --dot-grid: rgba(22, 107, 109, 0.05);
 
+  /* Ember: Primary CTA */
   --ember: #135355;
   --ember-hover: #0E3E40;
+  --ember-soft: rgba(19, 83, 85, 0.08);
   --on-ember: #FFFFFF;
 
+  /* Compatibility aliases */
   --accent: var(--ember);
   --accent-hover: var(--ember-hover);
   --accent-fg: var(--on-ember);
   --accent-soft: rgba(19, 83, 85, 0.08);
   --accent-glow: rgba(19, 83, 85, 0.16);
 
-  /* Bronze */
+  /* Bronze: Brand Identity, Vertebrae Core & Primary Agonist Highlights */
   --bronze: #9B6C34;
   --clay: #9B6C34;
   --clay-hover: #835B29;
@@ -106,7 +41,7 @@
   --on-clay: #FFFFFF;
   --brass: #825A27;
 
-  /* Teal */
+  /* Teal: Brand Ouroboros, Synergist Muscles & Training Circuits */
   --teal: #166B6D;
   --teal-deep: #0E4244;
   --sage: #166B6D;
@@ -114,16 +49,47 @@
   --sage-glow: rgba(22, 107, 109, 0.24);
   --signal: #166B6D;
 
+  /* Cool Architectural Slate: Core & Spine, Full-Body, Decompression & Stabilizers */
+  --slate: #4A636E;
+  --slate-deep: #354952;
+  --slate-soft: rgba(74, 99, 110, 0.12);
+  --slate-border: rgba(74, 99, 110, 0.28);
+
+  /* Unified Semantic Anatomical Region Palette */
+  --region-lower: var(--clay);
+  --region-upper: var(--teal);
+  --region-core: var(--slate);
+
+  /* Graduated Weekly Muscle Hit Frequency Scale (Sand -> Bronze -> Teal) */
+  --hit-1: #C89B5E;
+  --hit-2: #9B6C34;
+  --hit-3: #166B6D;
+
+  /* Semantic Status */
   --info: #166B6D;
   --warn: #9B6C34;
   --danger: #C0392B;
 
+  /* Folder-Stack Pastel Routine Tabs */
   --tab-1: #C2D8E6;
   --tab-2: #D4CDE9;
   --tab-3: #E7CFC1;
   --tab-4: #C7DEC9;
   --tab-5: #EAE0C4;
   --tab-6: #E7CBD1;
+
+  --display: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --body: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --maxw: 1400px;
+  --player-maxw: 1240px;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --transition-fast: 0.15s cubic-bezier(.22, .61, .36, 1);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-full: 999px;
 }
 
 *, *::before, *::after {

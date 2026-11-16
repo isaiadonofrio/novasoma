@@ -4,7 +4,9 @@ import {
   Sparkles,
   Calendar,
   Play,
-  Check
+  Plus,
+  Check,
+  Trash2
 } from 'lucide-react';
 import { MiniBodyMap } from './MiniBodyMap';
 import { StatsDashboard } from './StatsDashboard';
@@ -16,13 +18,21 @@ import {
   calculateWeeklyMuscleFrequency,
   toLocalDateKey
 } from '../utils/analytics';
-import { formatVolumeCompact } from '../utils/formatting';
+import {
+  formatVolumeCompact,
+  getRoundedDurationMinutes,
+  getSessionDurationSeconds,
+  resolveSessionCategory
+} from '../utils/formatting';
+import { countDraftCompletedSets } from '../utils/storage';
 import { MS_PER_DAY } from '../utils/constants';
 
 export function HomeView({
   routines = [],
   workoutHistory = [],
   weeklyGoal = 4,
+  activeDraft = null,
+  onDiscardDraft,
   onChangeWeeklyGoal,
   onOpenHistory,
   onSelectRoutineToView,
@@ -62,17 +72,18 @@ export function HomeView({
   );
 
   const todayWorkouts = useMemo(() => {
-    return (workoutHistory || []).filter(
-      (s) => toLocalDateKey(s.date || s.completedAt) === todayKey
-    );
+    return (workoutHistory || [])
+      .filter((s) => toLocalDateKey(s.date || s.completedAt) === todayKey)
+      .sort((a, b) => new Date(b.completedAt || b.date || 0) - new Date(a.completedAt || a.date || 0));
   }, [workoutHistory, todayKey]);
 
   const isTrainedToday = todayWorkouts.length > 0;
 
   const recommendedRoutine = useMemo(() => {
     if (!routines || routines.length === 0) return null;
-    return routines[0];
+    return routines.find((r) => (r.exercises?.length || 0) > 0) || routines[0];
   }, [routines]);
+  const recommendedHasExercises = (recommendedRoutine?.exercises?.length || 0) > 0;
 
   const recentSessions = useMemo(() => {
     return [...(workoutHistory || [])]
@@ -103,6 +114,11 @@ export function HomeView({
     };
   }, [workoutHistory, now]);
 
+  const draftRoutine = activeDraft?.routineId
+    ? routines.find((r) => r.id === activeDraft.routineId) || null
+    : null;
+  const completedDraftSets = countDraftCompletedSets(activeDraft);
+
   return (
     <div className="gymmane-home">
       <section className="home-clean-hero">
@@ -119,6 +135,55 @@ export function HomeView({
           <div className="home-hero-bento">
             {/* Left: Today Focus, Weekly Muscle Hit Map & Recent Sessions */}
             <section className="home-summary-panel" aria-label="Today focus and weekly muscle stimulus">
+              {activeDraft?.routineId && (
+                <div className="today-focus-banner draft-resume animate-fade" role="status">
+                  <div className="today-focus-header">
+                    <span className="today-focus-kicker">
+                      <Play size={12} fill="currentColor" /> UNFINISHED SESSION DRAFT
+                    </span>
+                    <span className="today-focus-meta-pill">
+                      {getRoundedDurationMinutes(activeDraft.workoutElapsedSeconds || 0)}m · {completedDraftSets} {completedDraftSets === 1 ? 'set' : 'sets'} logged
+                    </span>
+                  </div>
+                  <div className="today-focus-body">
+                    <div className="today-focus-info">
+                      <h3 className="today-focus-title">
+                        {draftRoutine?.title || 'Saved Workout Session'}
+                      </h3>
+                      <span className="today-focus-sub">
+                        {draftRoutine
+                          ? `Paused at exercise #${(activeDraft.currentIndex || 0) + 1} · Resume or clear draft.`
+                          : 'Saved draft for a removed routine · Discard to clear.'}
+                      </span>
+                    </div>
+                    <div className="today-focus-actions">
+                      {draftRoutine && onStartRoutineLive && (
+                        <button
+                          type="button"
+                          className="btn-focus-start"
+                          onClick={() => onStartRoutineLive(draftRoutine.id)}
+                          title="Resume saved workout draft"
+                        >
+                          <Play size={13} fill="currentColor" />
+                          <span>Resume</span>
+                        </button>
+                      )}
+                      {onDiscardDraft && (
+                        <button
+                          type="button"
+                          className="btn-focus-discard"
+                          onClick={onDiscardDraft}
+                          title="Discard saved unfinished workout draft"
+                        >
+                          <Trash2 size={13} />
+                          <span>Discard Draft</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Top Banner: Today's Focus & Launch Action */}
               {isTrainedToday ? (
                 <div className="today-focus-banner completed animate-fade">
@@ -127,7 +192,7 @@ export function HomeView({
                       <Check size={13} strokeWidth={3} /> COMPLETED TODAY
                     </span>
                     <span className="today-focus-meta-pill">
-                      {todayWorkouts[0].durationMinutes || 60}m logged
+                      {getRoundedDurationMinutes(getSessionDurationSeconds(todayWorkouts[0]))}m logged
                     </span>
                   </div>
                   <div className="today-focus-body">
@@ -136,7 +201,7 @@ export function HomeView({
                         {todayWorkouts[0].routineTitle || 'Workout Session'}
                       </h3>
                       <span className="today-focus-sub">
-                        {todayWorkouts[0].category || 'Training'} session · Great job keeping up your rhythm!
+                        {resolveSessionCategory(todayWorkouts[0], routines)} session · Great job keeping up your rhythm!
                       </span>
                     </div>
                     <div className="today-focus-actions">
@@ -157,37 +222,55 @@ export function HomeView({
                       <Sparkles size={13} /> TODAY'S SCHEDULED WORKOUT
                     </span>
                     <span className="today-focus-meta-pill">
-                      ~{recommendedRoutine.estimatedMinutes || 60}m planned
+                      ~{recommendedRoutine.durationMinutes || recommendedRoutine.estimatedMinutes || 60}m planned
                     </span>
                   </div>
                   <div className="today-focus-body">
                     <div className="today-focus-info">
                       <h3 className="today-focus-title">{recommendedRoutine.title}</h3>
                       <span className="today-focus-sub">
-                        {recommendedRoutine.exercises?.length || 0} movements · {recommendedRoutine.category || 'Target Session'}
+                        {recommendedHasExercises
+                          ? `${recommendedRoutine.exercises.length} ${recommendedRoutine.exercises.length === 1 ? 'movement' : 'movements'} · ${recommendedRoutine.category || 'Target Session'}`
+                          : `No movements yet · ${recommendedRoutine.category || 'Target Session'}`}
                       </span>
                     </div>
                     <div className="today-focus-actions">
-                      {onStartRoutineLive && (
-                        <button
-                          type="button"
-                          className="btn-focus-start"
-                          onClick={() => onStartRoutineLive(recommendedRoutine)}
-                          title="Start live workout session"
-                        >
-                          <Play size={13} fill="currentColor" />
-                          <span>Start Workout</span>
-                        </button>
-                      )}
-                      {onSelectRoutineToView && (
-                        <button
-                          type="button"
-                          className="btn-focus-view"
-                          onClick={() => onSelectRoutineToView(recommendedRoutine)}
-                          title="View routine details"
-                        >
-                          View Routine
-                        </button>
+                      {recommendedHasExercises ? (
+                        <>
+                          {onStartRoutineLive && (
+                            <button
+                              type="button"
+                              className="btn-focus-start"
+                              onClick={() => onStartRoutineLive(recommendedRoutine.id)}
+                              title="Start live workout session"
+                            >
+                              <Play size={13} fill="currentColor" />
+                              <span>Start Workout</span>
+                            </button>
+                          )}
+                          {onSelectRoutineToView && (
+                            <button
+                              type="button"
+                              className="btn-focus-view"
+                              onClick={() => onSelectRoutineToView(recommendedRoutine.id)}
+                              title="View routine details"
+                            >
+                              View Routine
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        onSelectRoutineToView && (
+                          <button
+                            type="button"
+                            className="btn-focus-start"
+                            onClick={() => onSelectRoutineToView(recommendedRoutine.id)}
+                            title="Add exercises to this workout"
+                          >
+                            <Plus size={14} strokeWidth={2.5} />
+                            <span>Add Exercises</span>
+                          </button>
+                        )
                       )}
                     </div>
                   </div>
@@ -279,11 +362,10 @@ export function HomeView({
                             dateLabel = new Date(`${sKey}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short' });
                           }
                         }
-                        const mins = Math.max(
-                          1,
-                          Math.round((Number(session.durationSeconds) || (Number(session.durationMinutes) * 60) || 0) / 60)
-                        );
+                        const mins = getRoundedDurationMinutes(getSessionDurationSeconds(session));
+                        const categoryLabel = resolveSessionCategory(session, routines);
                         const vol = Number(session.volumeKg) || 0;
+                        const manualRpe = session.rpe ?? session.intensity;
 
                         return (
                           <div
@@ -303,10 +385,15 @@ export function HomeView({
                           >
                             <div className="session-card-left">
                               <span className="session-card-title">{session.routineTitle || 'Workout'}</span>
-                              <span className="session-card-date">{dateLabel} · {session.category || 'General'}</span>
+                              <span className="session-card-date">{dateLabel} · {categoryLabel}</span>
                             </div>
                             <span className="session-card-meta">
-                              {mins}m{vol > 0 ? ` · ${formatVolumeCompact(vol)}` : ''}
+                              {mins}m
+                              {vol > 0
+                                ? ` · ${formatVolumeCompact(vol)}`
+                                : session.isManual && manualRpe != null
+                                  ? ` · ${Number.isFinite(Number(manualRpe)) ? `RPE ${manualRpe}/10` : `${manualRpe} effort`}`
+                                  : ''}
                             </span>
                           </div>
                         );

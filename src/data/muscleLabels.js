@@ -13,3 +13,17 @@ export const MUSCLE_LABELS = {
   glutes: 'Glutes',
   calves: 'Calves'
 };
+
+export function getMuscleRegionTone(muscleKey = '') {
+  const k = String(muscleKey || '').toLowerCase();
+  if (['quads', 'hamstrings', 'glutes', 'calves', 'region:lower'].includes(k)) {
+    return 'lower';
+  }
+  if (['abdomen', 'obliques', 'region:core'].includes(k)) {
+    return 'core';
+  }
+  if (k === 'all') {
+    return 'all';
+  }
+  return 'upper';
+}

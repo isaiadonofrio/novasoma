@@ -1,136 +1,74 @@
 /* ==========================================================================
-   CORPO — GymMane Essential Design System (Obsidian Dark + Warm Linen Light)
-   Canonical Unified Stylesheet
+   CORPO — Nova Soma Design Tokens (Teal + Bronze Dual Signature)
+   Canonical Design Token Definitions
    ========================================================================== */
 
-/* 1. App Shell & Shared Layout */
-.gymmane-app {
-  width: 100%;
-  max-width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow-x: clip;
-}
+:root,
+[data-theme="light"] {
+  /* Warm Linen Light Theme */
+  --page: #F7F5F0;
+  --bg: #FFFEFD;
+  --surface: #FFFFFF;
+  --raised: #FFFFFF;
+  --raised2: #ECE8E3;
+  --raised3: #E0DBD5;
 
-.gymmane-wrap {
-  width: 100%;
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0 clamp(16px, 3vw, 36px);
-}
+  --border: #E0DBD5;
+  --border-hi: #CFC8BF;
+  --border-active: #9B6C34;
 
-.app-main-content {
-  flex: 1;
-  padding-bottom: clamp(40px, 6vw, 72px);
-}
+  --text: #171E1E;
+  --text-bright: #0A0A0A;
+  --dim: #546060;
+  --faint: #818D8D;
+  --dot-grid: rgba(22, 107, 109, 0.05);
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+  --ember: #135355;
+  --ember-hover: #0E3E40;
+  --ember-soft: rgba(19, 83, 85, 0.08);
+  --on-ember: #FFFFFF;
 
-@keyframes scaleUp {
-  from {
-    opacity: 0;
-    transform: scale(0.96) translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
+  --bronze: #9B6C34;
+  --clay: #9B6C34;
+  --clay-hover: #835B29;
+  --clay-soft: rgba(155, 108, 52, 0.13);
+  --clay-glow: rgba(155, 108, 52, 0.22);
+  --on-clay: #FFFFFF;
+  --brass: #825A27;
 
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
+  --teal: #166B6D;
+  --teal-deep: #0E4244;
+  --sage: #166B6D;
+  --sage-soft: rgba(22, 107, 109, 0.14);
+  --sage-glow: rgba(22, 107, 109, 0.24);
+  --signal: #166B6D;
 
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
+  /* Cool Architectural Slate: Core & Spine, Full-Body, Decompression & Stabilizers */
+  --slate: #4A636E;
+  --slate-deep: #354952;
+  --slate-soft: rgba(74, 99, 110, 0.12);
+  --slate-border: rgba(74, 99, 110, 0.28);
 
-@keyframes slideInBottom {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
+  /* Unified Semantic Anatomical Region Palette */
+  --region-lower: var(--clay);
+  --region-upper: var(--teal);
+  --region-core: var(--slate);
 
-.animate-fade {
-  animation: fadeIn 0.18s var(--ease) both;
-}
+  /* Graduated Weekly Muscle Hit Frequency Scale (Sand -> Bronze -> Teal) */
+  --hit-1: #C89B5E;
+  --hit-2: #9B6C34;
+  --hit-3: #166B6D;
 
-/* Shared Primary & Secondary Action Pills */
-.btn-gymmane-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: var(--radius-full);
-  background: var(--ember);
-  color: var(--on-ember);
-  font-family: var(--display);
-  font-size: 0.86rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  border: 1px solid var(--ember);
-  white-space: nowrap;
-  cursor: pointer;
-}
+  --info: #166B6D;
+  --warn: #9B6C34;
+  --danger: #C0392B;
 
-.btn-gymmane-primary:hover:not(:disabled) {
-  background: var(--ember-hover);
-  border-color: var(--ember-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  --maxw: 1400px;
+  --player-maxw: 1240px;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --transition-fast: 0.15s cubic-bezier(.22, .61, .36, 1);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-full: 999px;
 }
-
-.btn-gymmane-primary:disabled {
-  opacity: 0.42;
-  cursor: not-allowed;
-}
-
-.btn-gymmane-primary.big-cta {
-  padding: 12px 24px;
-  font-size: 0.92rem;
-}
-
-.btn-gymmane-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: var(--radius-full);
-  background: var(--raised);
-  color: var(--text);
-  border: 1px solid var(--border-hi);
-  font-family: var(--display);
-  font-size: 0.86rem;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.btn-gymmane-secondary:hover:not(:disabled) {
-  background: var(--raised2);
-  border-color: var(--clay);
-}
-

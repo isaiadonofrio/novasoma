@@ -3,6 +3,8 @@ import { HardDrive, AlertTriangle, X } from 'lucide-react';
 import { INITIAL_ROUTINES } from './data/workouts';
 import { EXERCISE_DATABASE } from './data/exerciseDatabase';
 import { calculateSessionVolumeKg } from './utils/analytics';
+import { formatLoggedSetSummary } from './utils/workoutSets';
+import { getRoundedDurationMinutes, getSessionDurationSeconds } from './utils/formatting';
 import {
   STORAGE_KEYS,
   STORAGE_ERROR_EVENT,
@@ -11,6 +13,8 @@ import {
   safeWriteJson,
   safeWriteString,
   safeRemoveItem,
+  readActiveWorkoutDraft,
+  clearActiveWorkoutDraft,
 } from './utils/storage';
 import { Navbar } from './components/Navbar';
 import { HomeView } from './components/HomeView';
@@ -50,28 +54,41 @@ const EXERCISES_STORAGE_KEY = STORAGE_KEYS.EXERCISES;
 const HISTORY_STORAGE_KEY = STORAGE_KEYS.HISTORY;
 const SEEDED_CANONICAL_KEY = STORAGE_KEYS.SEEDED_CANONICAL;
 const EN_LOCALIZATION_KEY = STORAGE_KEYS.EN_LOCALIZATION;
+const CANONICAL_EXERCISE_IDS = new Set(EXERCISE_DATABASE.map((ex) => ex.id));
 
-function deriveLastRecordFromSets(sets) {
+function deriveLastRecordFromSets(sets, exercise = null) {
   if (!Array.isArray(sets)) return null;
   const completed = sets.filter((s) => s.completed);
   if (completed.length === 0) return null;
 
   let best = completed[completed.length - 1];
-  let maxWeight = -1;
-  completed.forEach((s) => {
+  const hasPositiveWeight = completed.some((s) => {
     const w = parseFloat(String(s.weight ?? '').replace(',', '.'));
-    if (Number.isFinite(w) && w >= maxWeight) {
-      maxWeight = w;
-      best = s;
-    }
+    return Number.isFinite(w) && w > 0;
   });
 
-  const weightStr = String(best.weight ?? '').trim();
-  const repsStr = String(best.reps ?? '').trim();
-  if (weightStr && repsStr) return `${weightStr}kg × ${repsStr}`;
-  if (weightStr) return `${weightStr}kg`;
-  if (repsStr) return `${repsStr} reps`;
-  return null;
+  if (hasPositiveWeight) {
+    let maxWeight = -1;
+    completed.forEach((s) => {
+      const w = parseFloat(String(s.weight ?? '').replace(',', '.'));
+      if (Number.isFinite(w) && w >= maxWeight) {
+        maxWeight = w;
+        best = s;
+      }
+    });
+  } else {
+    let maxReps = -1;
+    completed.forEach((s) => {
+      const r = parseFloat(String(s.reps ?? '').replace(',', '.'));
+      if (Number.isFinite(r) && r >= maxReps) {
+        maxReps = r;
+        best = s;
+      }
+    });
+  }
+
+  const formatted = formatLoggedSetSummary(best, exercise);
+  return formatted && formatted !== '-' ? formatted : null;
 }
 
 const LEGACY_ROUTINE_TITLES = {
@@ -138,9 +155,16 @@ function mergeMissingCanonical(ex) {
     requiresEquipment: typeof canonical.requiresEquipment === 'boolean' ? canonical.requiresEquipment : (typeof ex.requiresEquipment === 'boolean' ? ex.requiresEquipment : true),
     mechanics: canonical.mechanics,
     level: canonical.level,
+    muscleKey: canonical.muscleKey,
     targetMuscles: canonical.targetMuscles,
     execution: canonical.execution,
     illustration: canonical.illustration,
+    rpe: canonical.rpe,
+    familyId: canonical.familyId,
+    familyName: canonical.familyName,
+    variationType: canonical.variationType,
+    variationLabel: canonical.variationLabel,
+    biomechanics: canonical.biomechanics,
     customVideoUrl: canonical.customVideoUrl || ex.customVideoUrl,
     // Workout composition fields preserved from user planning:
     id: ex.id || canonical.id,
@@ -189,8 +213,25 @@ export function App() {
     }
   }, []);
 
-  // Canonical exercise database (always sourced from modular code)
+  // Canonical exercise database, hydrated with user updates / custom exercises from storage
   const [exerciseDatabase, setExerciseDatabase] = useState(() => {
+    const saved = safeReadJson(EXERCISES_STORAGE_KEY, null);
+    if (saved && Array.isArray(saved) && saved.length > 0) {
+      const savedMap = new Map(saved.map(ex => [ex.id, ex]));
+      const mergedCanonical = EXERCISE_DATABASE.map(canEx => {
+        const savedEx = savedMap.get(canEx.id);
+        if (!savedEx) return canEx;
+        savedMap.delete(canEx.id);
+        return {
+          ...savedEx,
+          ...canEx,
+          lastRecord: savedEx.lastRecord || canEx.lastRecord,
+          customVideoUrl: canEx.customVideoUrl || savedEx.customVideoUrl || '',
+        };
+      });
+      const customExercises = Array.from(savedMap.values());
+      return [...mergedCanonical, ...customExercises];
+    }
     return EXERCISE_DATABASE;
   });
 
@@ -203,9 +244,11 @@ export function App() {
         const missingInitial = INITIAL_ROUTINES.filter(initR => !savedIds.has(initR.id));
         const mappedSaved = saved.map(routine => {
           const canonicalRoutine = INITIAL_ROUTINES.find(r => r.id === routine.id);
+          const normalizedTitle = normalizeRoutineTitle(routine.title);
           return {
             ...routine,
-            title: normalizeRoutineTitle(routine.title),
+            title: normalizedTitle,
+            shortTitle: normalizedTitle,
             category: canonicalRoutine ? canonicalRoutine.category : routine.category,
             difficulty: canonicalRoutine ? canonicalRoutine.difficulty : routine.difficulty,
             equipmentTags: canonicalRoutine ? canonicalRoutine.equipmentTags : routine.equipmentTags,
@@ -221,10 +264,6 @@ export function App() {
     return INITIAL_ROUTINES;
   });
 
-  // Theme: 'dark' | 'light'
-  const [theme, setTheme] = useState(() => {
-    return safeReadString(STORAGE_KEYS.THEME, 'dark') || 'dark';
-  });
   const [weeklyGoal, setWeeklyGoal] = useState(() => {
     const savedGoal = Number(safeReadString(STORAGE_KEYS.WEEKLY_GOAL, '4'));
     return Number.isFinite(savedGoal) && savedGoal >= 1 && savedGoal <= 7 ? savedGoal : 4;
@@ -242,17 +281,13 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    safeWriteString(STORAGE_KEYS.THEME, theme);
+    document.documentElement.setAttribute('data-theme', 'light');
+    safeWriteString(STORAGE_KEYS.THEME, 'light');
     const metaTheme = document.getElementById('meta-theme-color');
     if (metaTheme) {
-      metaTheme.setAttribute('content', theme === 'dark' ? '#0A0908' : '#F7F4F0');
+      metaTheme.setAttribute('content', '#F7F4F0');
     }
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
+  }, []);
 
   useEffect(() => {
     safeWriteString(STORAGE_KEYS.WEEKLY_GOAL, String(weeklyGoal));
@@ -286,6 +321,7 @@ export function App() {
   const [isPresentationActive, setIsPresentationActive] = useState(false);
   const [liveRoutine, setLiveRoutine] = useState(null);
   const [startExerciseIndex, setStartExerciseIndex] = useState(0);
+  const [activeDraft, setActiveDraft] = useState(() => readActiveWorkoutDraft());
 
   // Post-workout summary dialog
   const [completedSummary, setCompletedSummary] = useState(null);
@@ -295,8 +331,9 @@ export function App() {
     const saved = safeReadJson(HISTORY_STORAGE_KEY, null);
     if (saved && Array.isArray(saved)) {
       try {
-        return saved.map((entry) => ({
+        return saved.map((entry, idx) => ({
           ...entry,
+          id: entry.id || entry.date || entry.completedAt || `w-legacy-${idx}`,
           routineTitle: normalizeRoutineTitle(entry.routineTitle)
         }));
       } catch {
@@ -307,18 +344,45 @@ export function App() {
   });
 
   useEffect(() => {
-    safeWriteJson(ROUTINES_STORAGE_KEY, routines);
+    // Strip redundant canonical static text from routines before persisting to localStorage
+    const lightweightRoutines = routines.map(routine => ({
+      ...routine,
+      exercises: (routine.exercises || []).map(ex => {
+        const {
+          instructions: _instructions,
+          coachingCue: _coachingCue,
+          biomechanics: _biomechanics,
+          formTips: _formTips,
+          illustrationStart: _illustrationStart,
+          illustrationEnd: _illustrationEnd,
+          ...rest
+        } = ex;
+        return rest;
+      })
+    }));
+    safeWriteJson(ROUTINES_STORAGE_KEY, lightweightRoutines);
   }, [routines]);
 
   useEffect(() => {
-    safeWriteJson(EXERCISES_STORAGE_KEY, exerciseDatabase);
+    const compactExercises = exerciseDatabase.map((ex) => {
+      if (CANONICAL_EXERCISE_IDS.has(ex.id)) {
+        return {
+          id: ex.id,
+          lastRecord: ex.lastRecord || '',
+          customVideoUrl: ex.customVideoUrl || '',
+        };
+      }
+      return ex;
+    });
+    safeWriteJson(EXERCISES_STORAGE_KEY, compactExercises);
   }, [exerciseDatabase]);
 
   useEffect(() => {
     safeWriteJson(HISTORY_STORAGE_KEY, workoutHistory);
   }, [workoutHistory]);
 
-  const currentRoutine = routines.find(r => r.id === activeRoutineId) || routines[0] || null;
+  const matchedRoutine = routines.find(r => r.id === activeRoutineId);
+  const currentRoutine = activeRoutineId ? (matchedRoutine || null) : (routines[0] || null);
   const playableRoutine = (currentView === 'overview' && currentRoutine?.exercises?.length > 0)
     ? currentRoutine
     : routines.find(r => r.exercises?.length > 0) || null;
@@ -344,12 +408,15 @@ export function App() {
     navigateToView('database', null);
   };
 
-  const handleSelectRoutineToView = (id) => {
-    navigateToView('overview', id);
+  const handleSelectRoutineToView = (idOrRoutine) => {
+    const resolvedId = typeof idOrRoutine === 'object' && idOrRoutine !== null ? idOrRoutine.id : idOrRoutine;
+    if (!resolvedId) return;
+    navigateToView('overview', String(resolvedId));
   };
 
-  const handleStartRoutineLive = (id, index = 0) => {
-    const target = routines.find(r => r.id === id) || routines[0];
+  const handleStartRoutineLive = (idOrRoutine, index = 0) => {
+    const resolvedId = typeof idOrRoutine === 'object' && idOrRoutine !== null ? idOrRoutine.id : idOrRoutine;
+    const target = routines.find(r => r.id === resolvedId) || routines[0];
     if (!target) return;
     if (!target.exercises || target.exercises.length === 0) {
       handleSelectRoutineToView(target.id);
@@ -387,8 +454,17 @@ export function App() {
     setRoutines(prev => [copy, ...prev]);
   };
 
+  const handleDiscardDraft = () => {
+    clearActiveWorkoutDraft();
+    setActiveDraft(null);
+  };
+
   const handleDeleteRoutine = (routineId) => {
     setRoutines(prev => prev.filter(r => r.id !== routineId));
+    if (activeDraft?.routineId === routineId) {
+      clearActiveWorkoutDraft();
+      setActiveDraft(null);
+    }
     if (activeRoutineId === routineId) {
       navigateToView('home', null, { scroll: false });
     }
@@ -404,11 +480,15 @@ export function App() {
 
   const handleWorkoutComplete = (summaryData) => {
     const nowIso = new Date().toISOString();
+    const durationSeconds = getSessionDurationSeconds(summaryData);
     const newEntry = {
       ...summaryData,
+      durationSeconds,
+      durationMinutes: getRoundedDurationMinutes(durationSeconds),
       id: `w-${Date.now()}`,
       routineId: liveRoutine?.id || null,
       routineTitle: liveRoutine?.title || 'Workout',
+      category: liveRoutine?.category || 'Training',
       volumeKg: typeof summaryData?.volumeKg === 'number'
         ? summaryData.volumeKg
         : calculateSessionVolumeKg(summaryData?.loggedSets),
@@ -416,21 +496,27 @@ export function App() {
       completedAt: nowIso
     };
 
-    safeRemoveItem(STORAGE_KEYS.ACTIVE_DRAFT);
+    clearActiveWorkoutDraft();
+    setActiveDraft(null);
 
     // Update lastRecord on matching exercises in routines & exercise library
+    const exerciseLookup = new Map();
+    [...(liveRoutine?.exercises || []), ...exerciseDatabase].forEach((ex) => {
+      if (ex?.id && !exerciseLookup.has(ex.id)) exerciseLookup.set(ex.id, ex);
+      if (ex?.sourceId && !exerciseLookup.has(ex.sourceId)) exerciseLookup.set(ex.sourceId, ex);
+    });
+
     const recordsByKey = {};
     if (summaryData?.loggedSets && typeof summaryData.loggedSets === 'object') {
       Object.entries(summaryData.loggedSets).forEach(([exId, sets]) => {
-        const record = deriveLastRecordFromSets(sets);
+        const strippedId = exId.replace(/-\d{10,}$/, '').replace(/^wu-/, 'ex-');
+        const sourceId = Array.isArray(sets) ? sets.find((s) => s?.sourceId)?.sourceId : null;
+        const matchedEx = exerciseLookup.get(exId) || (sourceId ? exerciseLookup.get(sourceId) : null) || exerciseLookup.get(strippedId) || null;
+        const record = deriveLastRecordFromSets(sets, matchedEx);
         if (!record) return;
         recordsByKey[exId] = record;
-        const strippedId = exId.replace(/-\d{10,}$/, '').replace(/^wu-/, 'ex-');
         recordsByKey[strippedId] = record;
-        if (Array.isArray(sets)) {
-          const sourceId = sets.find((s) => s?.sourceId)?.sourceId;
-          if (sourceId) recordsByKey[sourceId] = record;
-        }
+        if (sourceId) recordsByKey[sourceId] = record;
       });
     }
 
@@ -454,12 +540,12 @@ export function App() {
   };
 
   const handleRestoreBackup = (restored) => {
-    safeRemoveItem(STORAGE_KEYS.ACTIVE_DRAFT);
+    clearActiveWorkoutDraft();
+    setActiveDraft(null);
     setStorageWarning(null);
     setRoutines(restored.routines);
     setExerciseDatabase(restored.exerciseDatabase);
     setWorkoutHistory(restored.workoutHistory);
-    setTheme(restored.theme);
     if (Number.isFinite(restored.weeklyGoal)) {
       handleChangeWeeklyGoal(restored.weeklyGoal);
     }
@@ -471,8 +557,6 @@ export function App() {
       {/* Top Navigation */}
       <Navbar 
         currentView={currentView}
-        theme={theme}
-        onToggleTheme={toggleTheme}
         onNavigateHome={handleNavigateHome}
         onNavigateDatabase={handleNavigateToDatabase}
         onStartPresentation={() => {
@@ -521,6 +605,8 @@ export function App() {
             exerciseDatabase={exerciseDatabase}
             workoutHistory={workoutHistory}
             weeklyGoal={weeklyGoal}
+            activeDraft={activeDraft}
+            onDiscardDraft={handleDiscardDraft}
             onChangeWeeklyGoal={handleChangeWeeklyGoal}
             onOpenHistory={() => setIsHistoryOpen(true)}
             onSelectRoutineToView={handleSelectRoutineToView}
@@ -536,6 +622,7 @@ export function App() {
         {currentView === 'overview' && (
           currentRoutine ? (
             <WorkoutOverviewView 
+              key={currentRoutine.id}
               workout={currentRoutine}
               exerciseDatabase={exerciseDatabase}
               onBack={handleNavigateHome}
@@ -544,13 +631,17 @@ export function App() {
               onDeleteWorkout={handleDeleteRoutine}
             />
           ) : (
-            <div className="gymmane-wrap" style={{ padding: '40px 0', textAlign: 'center' }}>
-              <p>No workout selected.</p>
+            <div className="gymmane-wrap animate-fade" style={{ padding: '64px 0', textAlign: 'center' }}>
+              <h2 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '8px', color: 'var(--text)' }}>
+                Workout Not Found
+              </h2>
+              <p style={{ color: 'var(--dim)', maxWidth: '420px', margin: '0 auto 24px', fontSize: '0.95rem' }}>
+                The workout specified in the link does not exist or may have been deleted.
+              </p>
               <button 
                 type="button" 
                 className="btn-gymmane-primary"
                 onClick={handleNavigateHome}
-                style={{ marginTop: '16px' }}
               >
                 Back to Home
               </button>
@@ -572,10 +663,11 @@ export function App() {
           routine={liveRoutine}
           initialIndex={startExerciseIndex}
           workoutHistory={workoutHistory}
-          theme={theme}
-          onToggleTheme={toggleTheme}
           onUpdateRoutine={handleUpdateRoutine}
-          onClose={() => setIsPresentationActive(false)}
+          onClose={() => {
+            setIsPresentationActive(false);
+            setActiveDraft(readActiveWorkoutDraft());
+          }}
           onCompleteWorkout={handleWorkoutComplete}
         />
       )}
@@ -587,7 +679,8 @@ export function App() {
           routine={liveRoutine}
           onClose={() => setCompletedSummary(null)}
           onRestart={() => {
-            safeRemoveItem(STORAGE_KEYS.ACTIVE_DRAFT);
+            clearActiveWorkoutDraft();
+            setActiveDraft(null);
             setCompletedSummary(null);
             handleStartRoutineLive(liveRoutine.id, 0);
           }}
@@ -600,8 +693,10 @@ export function App() {
           routines={routines}
           exerciseDatabase={exerciseDatabase}
           workoutHistory={workoutHistory}
-          theme={theme}
+          theme="light"
           weeklyGoal={weeklyGoal}
+          activeDraft={activeDraft}
+          onDiscardDraft={handleDiscardDraft}
           onRestoreBackup={handleRestoreBackup}
           onClose={() => setIsDataModalOpen(false)}
         />
@@ -611,6 +706,7 @@ export function App() {
       {isHistoryOpen && (
         <WorkoutHistoryModal
           workoutHistory={workoutHistory}
+          routines={routines}
           exerciseDatabase={exerciseDatabase}
           onDeleteSession={handleDeleteWorkoutSession}
           onClose={() => setIsHistoryOpen(false)}

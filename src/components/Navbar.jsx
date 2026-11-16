@@ -1,11 +1,9 @@
 import React from 'react';
-import { Play, Sun, Moon, BookOpen, Home } from 'lucide-react';
+import { Play, BookOpen, Home } from 'lucide-react';
 import logoImg from '../assets/logo nova soma.jpg';
 
 export function Navbar({
   currentView = 'home',
-  theme = 'dark',
-  onToggleTheme,
   onNavigateHome,
   onNavigateDatabase,
   onStartPresentation,
@@ -55,18 +53,6 @@ export function Navbar({
 
         {/* Right Controls */}
         <div className="nav-right-actions">
-          {onToggleTheme && (
-            <button
-              type="button"
-              className="theme-toggle-btn"
-              onClick={onToggleTheme}
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              aria-label="Toggle light/dark theme"
-            >
-              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-            </button>
-          )}
-
           <button
             type="button"
             className="gymmane-cta-btn"

@@ -230,13 +230,13 @@ export const HIPHINGESANDGLUTES_EXERCISES = [
       subtitle: 'Posterior chain drive paired with thoracic opening and rotational stretch',
       pattern: MOVEMENT_PATTERNS.HIP_HINGE,
       equipment: 'Bodyweight (Mat)',
-      mechanics: 'Compound',
+      mechanics: 'Mobility',
       level: 'Beginner',
       muscleKey: 'glutes',
       defaultSets: 3,
       defaultReps: '8-10/side',
       defaultRestSeconds: 45,
-      rpe: '6 - 7',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -328,6 +328,369 @@ export const HIPHINGESANDGLUTES_EXERCISES = [
           'Letting the band whip the legs back straight'
         ],
         proTip: 'Sitting upright with 90° hip flexion stretches the hamstrings across the hip, generating higher hypertrophy stimulus than lying prone curls.'
+      }
+    },
+
+  {
+      id: 'ex-barbell-sumo-deadlift',
+      name: 'Barbell Sumo Deadlift',
+      scientificName: 'Bilateral Closed-Chain Wide-Stance Externally Rotated Barbell Pull — Reduced Lumbar Moment Arm',
+      subtitle: 'Wide-stance sumo floor pull emphasizing hips, adductors & upright torso',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Barbell',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'glutes',
+      defaultSets: 4,
+      defaultReps: '5-8',
+      defaultRestSeconds: 150,
+      rpe: '8 - 9',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Maximus', 'Adductor Magnus'],
+        secondary: ['Quadriceps (Vastus Lateralis & Medialis)', 'Biceps Femoris & Semitendinosus'],
+        stabilizers: ['Erector Spinae', 'Latissimus Dorsi', 'Gluteus Medius']
+      },
+      execution: {
+        setup: 'Take a wide stance with toes angled out 30–45° so shins stay vertical and knees track strictly over toes. Grip the smooth-knurling border vertically inside the thighs, wedge hips close to the bar, and lift the chest tall.',
+        eccentric: 'Push hips back softly while unlocking the knees evenly to guide the bar straight down the vertical shin track back to a quiet floor rest.',
+        concentric: 'Spread the floor laterally with both feet ("open the taint"), pull slack cleanly out of the sleeves, and finish with simultaneous hip and knee lockout.',
+        breathing: 'Set a firm Valsalva abdominal brace before breaking the barbell off the floor; reset breath between floor dead-stop reps.',
+        commonMistakes: [
+          'Hips rising faster than shoulders so the pull collapses into a wide-leg stiff-legged lift',
+          'Knees caving inward away from the second-toe alignment',
+          'Grip hands rubbing directly against rough inner thighs'
+        ],
+        proTip: 'Think of patient leg drive off the floor while pinning your shoulders over the bar—the wider stance reduces torso lean by ~15–20% and slashes lumbar shear force.'
+      }
+    },
+
+  {
+      id: 'ex-barbell-good-morning',
+      name: 'Barbell Good Morning',
+      scientificName: 'Bilateral Closed-Chain High-Bar Long-Lever Hip Hinge — Extended Spinal-Erector & Hamstring Moment',
+      subtitle: 'Long-lever posterior-chain hinge placing heavy isometric & eccentric torque on hamstrings',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Barbell',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'hamstrings',
+      defaultSets: 3,
+      defaultReps: '8-10',
+      defaultRestSeconds: 120,
+      rpe: '7 - 8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Semitendinosus & Semimembranosus', 'Biceps Femoris (Long Head)', 'Gluteus Maximus'],
+        secondary: ['Erector Spinae (Longissimus & Iliocostalis)'],
+        stabilizers: ['Transverse Abdominis', 'Obliques', 'Rhomboids']
+      },
+      execution: {
+        setup: 'Unrack the barbell firmly across the mid-trapezius / rear-deltoid shelf (slightly lower than a high-bar squat) with elbows pulled down tight. Stand with feet hip-width and knees unlocked ~15°.',
+        eccentric: 'Hinge slowly backward through the hips over 3 seconds, keeping the neutral spine flat and bar path anchored directly above midfoot until torso reaches 20–30° above horizontal.',
+        concentric: 'Drive your hips strongly forward and press the upper back up against the barbell to return upright without hyperextending the lower back.',
+        breathing: 'Take a deep abdominal breath into the core at the top, hold intra-abdominal pressure throughout the hinge, and exhale past the sticking point.',
+        commonMistakes: [
+          'Rounding the lumbar spine at the bottom instead of stopping when hamstring end-range is reached',
+          'Squatting the knees deeply forward to chase fake torso depth',
+          'Placing the barbell high across the cervical neck vertebrae'
+        ],
+        proTip: 'Because the load sits near C7–T3, its horizontal moment arm relative to the hip pivot is far longer than a deadlift—use modest weight and prioritize crisp hamstring stretch.'
+      }
+    },
+
+  {
+      id: 'ex-b-stance-rdl',
+      name: 'B-Stance (Kickstand) Romanian Deadlift',
+      scientificName: 'Asymmetric Split-Stance (90/10 Load) Dumbbell Hip Hinge — Unilateral Overload with Stability',
+      subtitle: 'Kickstand hip hinge isolating 90% load on one hamstring without balance bottlenecks',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Dumbbells',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'hamstrings',
+      defaultSets: 3,
+      defaultReps: '10-12/leg',
+      defaultRestSeconds: 90,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Hamstrings (Lead Leg: Biceps Femoris, Semitendinosus)', 'Gluteus Maximus'],
+        secondary: ['Adductor Magnus', 'Gluteus Medius'],
+        stabilizers: ['Erector Spinae', 'Core Anti-Rotation Bracing']
+      },
+      execution: {
+        setup: 'Hold dumbbells along the sides of your thighs. Shift ~85–90% of weight onto your flat working lead foot and place the rear trailing toes ~15–20 cm behind, aligned with your lead heel purely as a light kickstand.',
+        eccentric: 'Push the working-side hip straight backward toward the wall behind you over 3 seconds while maintaining a soft ~15° front knee bend and square pelvis.',
+        concentric: 'Press cleanly through the flat front heel and drive hips smoothly forward to full tall extension without leaning weight back onto the kickstand toes.',
+        breathing: 'Inhale while hinging into the front hamstring stretch; exhale driving back tall.',
+        commonMistakes: [
+          'Stepping the rear leg too far back and turning the movement into an RDL-lunge',
+          'Shifting weight evenly onto both feet instead of bias-loading the lead hip',
+          'Twisting the pelvis open toward the kickstand side'
+        ],
+        proTip: 'Cue yourself to "tuck your lead hip pocket back toward the corner behind you"—that maximizes working hamstring lengthening and cancels pelvic rotation.'
+      }
+    },
+
+  {
+      id: 'ex-single-leg-kettlebell-rdl',
+      name: 'Single-Leg Kettlebell Romanian Deadlift',
+      scientificName: 'Unilateral Single-Leg Contralateral Kettlebell Hip Hinge — Anti-Rotation Hip Control',
+      subtitle: 'Free single-leg hinge building unilateral hamstring strength & glute medius stability',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Kettlebell',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'hamstrings',
+      defaultSets: 3,
+      defaultReps: '8-10/leg',
+      defaultRestSeconds: 90,
+      rpe: '7 - 8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Biceps Femoris & Semimembranosus', 'Gluteus Maximus', 'Gluteus Medius'],
+        secondary: ['Piriformis & Deep Hip External Rotators', 'Adductor Magnus'],
+        stabilizers: ['Intrinsic Foot Muscles', 'Obliques', 'Spinal Erectors']
+      },
+      execution: {
+        setup: 'Stand on your working leg holding a single kettlebell in the opposite (contralateral) hand so the handle hovers vertically beneath your hip crease. Pack both shoulder blades subtly down.',
+        eccentric: 'Hinge cleanly from the stance hip as the free trailing leg sweeps straight back as one rigid plank with your spine over 3 seconds until torso nears parallel.',
+        concentric: 'Drive through the stance tripod foot and snap the hips back upright while pulling the rear hip smoothly into alignment.',
+        breathing: 'Inhale before breaking into the hinge with core lightly braced; exhale on the drive back tall.',
+        commonMistakes: [
+          'Opening the non-stance hip toward the ceiling ("airplane pelvis") instead of keeping shoelaces pointed straight down',
+          'Reaching the kettlebell arm down ahead of the foot with a rounded upper back',
+          'Looking straight forward and cranking cervical spine extension'
+        ],
+        proTip: 'Point the toes of the raised trail leg strictly straight down at the floor—that instantly levels the pelvis and fires the stance glute medius.'
+      }
+    },
+
+  {
+      id: 'ex-b-stance-hip-thrust',
+      name: 'B-Stance Barbell Hip Thrust',
+      scientificName: 'Asymmetric Bench-Supported Barbell Hip Extension — Unilateral Lead-Glute Bias',
+      subtitle: 'Heavy single-leg biased barbell hip thrust using a light trailing kickstand',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Barbell + Flat Bench',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'glutes',
+      defaultSets: 3,
+      defaultReps: '10-12/leg',
+      defaultRestSeconds: 90,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Maximus (Working Lead Hip)', 'Gluteus Medius'],
+        secondary: ['Semitendinosus & Biceps Femoris', 'Adductor Magnus'],
+        stabilizers: ['Rectus Abdominis (Posterior Pelvic Tilt)', 'Quadriceps']
+      },
+      execution: {
+        setup: 'Sit with upper shoulder blades anchored across a flat bench and padded barbell centered across the hip crease. Place the working foot flat so shin is vertical at top lockout; slide the opposite foot forward 15 cm resting lightly on the heel/ball.',
+        eccentric: 'Lower the barbell with control as one rigid rib-to-pelvis torso unit over 2 seconds while maintaining ~85% weight pressure through the working flat foot.',
+        concentric: 'Drive vertically through the working heel, locking hips completely horizontal with a crisp posterior pelvic tilt and holding 1 full second at peak lockout.',
+        breathing: 'Inhale bracing ribs down at the bottom hinge; exhale sharply as you lock out.',
+        commonMistakes: [
+          'Tilting the barbell unevenly down toward the non-working hip',
+          'Pushing mostly with the forward kickstand heel instead of isolating the working leg',
+          'Overarching the lower back to fake extra lockout height'
+        ],
+        proTip: 'Keep your gaze pinned forward at a point on the opposite wall—chasing the ceiling with your eyes guarantees lumbar hyperextension.'
+      }
+    },
+
+  {
+      id: 'ex-glute-bridge-walkout',
+      name: 'Glute Bridge Hamstring Walkout',
+      scientificName: 'Supine Isometrically Bridged Eccentric Heel Walkout — Incremental Knee-Flexor Loading',
+      subtitle: 'Bodyweight bridge-to-extension walkout loading stretched hamstrings under tension',
+      pattern: MOVEMENT_PATTERNS.KNEE_FLEXION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'hamstrings',
+      defaultSets: 3,
+      defaultReps: '8-10',
+      defaultRestSeconds: 75,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Biceps Femoris', 'Semitendinosus', 'Semimembranosus'],
+        secondary: ['Gluteus Maximus (Isometric Bridge Hold)'],
+        stabilizers: ['Core Cylinder', 'Tibialis Anterior']
+      },
+      execution: {
+        setup: 'Lie supine with knees bent at 90°, heels pressed into the mat, and lift into a strong glute bridge with pelvis tucked slightly under.',
+        eccentric: 'Keeping hips lifted off the floor, take 4–6 small alternating steps outward onto your heels until knees are nearly straight (~160°) and hamstrings feel intense tension.',
+        concentric: 'Walk the heels systematically back toward the glutes step-by-step without letting the hips sag toward the mat.',
+        breathing: 'Take steady, controlled breaths throughout each extended step cycle.',
+        commonMistakes: [
+          'Dropping hips right down to hover 1 cm off the floor during outward steps',
+          'Taking huge sloppy jumps outward that snap out of hamstring control',
+          'Overarching the lumbar spine instead of maintaining posterior pelvic tuck'
+        ],
+        proTip: 'Never let your hips dip at the furthest extension point—just 4 deliberate steps out and back creates profound eccentric stimulus with zero equipment.'
+      }
+    },
+
+  {
+      id: 'ex-sliding-hamstring-curl',
+      name: 'Supine Sliding Hamstring Bridge Curl',
+      scientificName: 'Supine Closed-Chain Biarticular Hip-Extension & Slider Knee-Flexion Curl',
+      subtitle: 'High-tension closed-chain slider curl recruiting hamstrings simultaneously at hip & knee',
+      pattern: MOVEMENT_PATTERNS.KNEE_FLEXION,
+      equipment: 'Floor Sliders / Mat',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'hamstrings',
+      defaultSets: 3,
+      defaultReps: '8-12',
+      defaultRestSeconds: 90,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Biceps Femoris', 'Semitendinosus', 'Semimembranosus'],
+        secondary: ['Gluteus Maximus', 'Gastrocnemius'],
+        stabilizers: ['Transverse Abdominis', 'Spinal Erectors']
+      },
+      execution: {
+        setup: 'Lie supine on a mat with heels resting securely on floor sliders (or socks on hardwood) with knees bent ~90°. Press palms into the floor beside hips and bridge up.',
+        eccentric: 'Slowly glide both heels straight out over 3–4 seconds while driving hips higher relative to knee angle until legs reach near-straight.',
+        concentric: 'Pull the heels aggressively back underneath your glutes while elevating the pelvis simultaneously into a peak bridge.',
+        breathing: 'Inhale slowly as legs extend outward; exhale powerfully while sliding heels back underneath.',
+        commonMistakes: [
+          'Hips sagging straight to the floor during the return pull, bypassing concentric hamstring-hip co-contraction',
+          'Allowing toes to flare outward into external rotation instead of tracking straight',
+          'Rushing through the eccentric glide'
+        ],
+        proTip: 'Think of pushing the heels straight down through the floor while sliding them back—that keeps glutes and hamstrings firing together continuously.'
+      }
+    },
+
+  {
+      id: 'ex-nordic-hamstring-curl',
+      name: 'Nordic Hamstring Curl',
+      scientificName: 'Kneeling Ankle-Anchored Supramaximal Eccentric Knee Extension — Distal Biceps Femoris Adaptation',
+      subtitle: 'Gold-standard eccentric hamstring strength builder and strain-injury shield',
+      pattern: MOVEMENT_PATTERNS.KNEE_FLEXION,
+      equipment: 'Ankle Anchor / Mat',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Advanced',
+      muscleKey: 'hamstrings',
+      defaultSets: 3,
+      defaultReps: '5-6',
+      defaultRestSeconds: 120,
+      rpe: '9',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Biceps Femoris (Long & Short Heads)', 'Semitendinosus', 'Semimembranosus'],
+        secondary: ['Gastrocnemius', 'Gluteus Maximus (Isometric Hip Lock)'],
+        stabilizers: ['Rectus Abdominis', 'Erector Spinae']
+      },
+      execution: {
+        setup: 'Kneel upright on a thick pad with ankles locked immobile under a padded anchor or partner grip. Squeeze glutes and brace core tightly so knees, hips, and shoulders form one stiff straight line.',
+        eccentric: 'Lower the entire straight body forward strictly by opening the knee joint as slowly as possible (3–5 seconds), resisting gravity all the way until hands catch softly at the floor.',
+        concentric: 'Give a light push-up off the floor only as needed to re-engage the hamstrings, then pull cleanly back up to kneeling without hinging at the waist.',
+        breathing: 'Inhale and lock intra-abdominal pressure at the top; hold brace through the deepest eccentric phase and exhale on recovery.',
+        commonMistakes: [
+          'Breaking/folding forward at the hip joint ("pike") to shorten the torso lever arm',
+          'Free-falling the final 30° straight onto the chest without tension',
+          'Allowing ankles to lift off the anchor pad'
+        ],
+        proTip: 'Peer-reviewed sports medicine trials show consistent Nordic eccentric work increases biceps femoris fascicle length and reduces acute hamstring strain risk by over 50%.'
+      }
+    },
+
+  {
+      id: 'ex-prone-banded-leg-curl',
+      name: 'Prone Banded Hamstring Curl',
+      scientificName: 'Prone Extended-Hip Open-Chain Knee Flexion — Short-Head Biceps Femoris & Gastroc Synergy',
+      subtitle: 'Lying knee flexion curl isolating distal hamstrings with minimal lumbar tension',
+      pattern: MOVEMENT_PATTERNS.KNEE_FLEXION,
+      equipment: 'Resistance Band + Mat',
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'hamstrings',
+      defaultSets: 3,
+      defaultReps: '12-15',
+      defaultRestSeconds: 60,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Biceps Femoris (Long & Short Heads)', 'Semitendinosus'],
+        secondary: ['Semimembranosus', 'Gastrocnemius'],
+        stabilizers: ['Pelvic Core Floor Brace']
+      },
+      execution: {
+        setup: 'Anchor a resistance band low behind a mat, lie completely prone with pelvis pressed firmly into the floor (slight glute squeeze), and hook the band around both ankles.',
+        eccentric: 'Lower both heels smoothly over 2–3 seconds back toward extended knees without letting the elastic band snap shut.',
+        concentric: 'Flex both knees forcefully to draw heels toward glutes while keeping hips pinned flat onto the mat throughout the full arc.',
+        breathing: 'Exhale while curling heels toward glutes; inhale smoothly on the eccentric descent.',
+        commonMistakes: [
+          'Lifting the hips off the floor and arching the lower back at peak flexion',
+          'Allowing ankles to swing asymmetrically outward',
+          'Cutting the final inches of knee extension short'
+        ],
+        proTip: 'Drive your pubic bone lightly into the floor before starting each rep—that blocks lumbar hyperextension and channels 100% torque into knee flexion.'
+      }
+    },
+
+  {
+      id: 'ex-quadruped-banded-glute-kickback',
+      name: 'Quadruped Banded Glute Kickback',
+      scientificName: 'Quadruped Open-Chain Hip Extension Against Elastic Vector — Shortened Gluteus Maximus Peak',
+      subtitle: 'All-fours banded hip extension targeting peak gluteus maximus contraction',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Resistance Band + Mat',
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 3,
+      defaultReps: '12-15/leg',
+      defaultRestSeconds: 60,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Maximus'],
+        secondary: ['Biceps Femoris & Semitendinosus'],
+        stabilizers: ['Transverse Abdominis', 'Contralateral Gluteus Medius', 'Serratus Anterior']
+      },
+      execution: {
+        setup: 'Set up on hands and knees with a resistance band looped around the working heel/midfoot and anchored under the stance hand or knee. Lock ribs softly down to keep a flat neutral lower back.',
+        eccentric: 'Return the working knee cleanly under the hip over 2 seconds without twisting the pelvis or losing band tension.',
+        concentric: 'Drive the heel straight back and slightly upward toward the ceiling by squeezing the working glute until thigh aligns horizontally with the spine.',
+        breathing: 'Exhale gently while extending the leg; inhale on return.',
+        commonMistakes: [
+          'Kicking high past horizontal by overarching the lower lumbar spine',
+          'Rotating hips outward toward the lifted side instead of keeping pelvis level',
+          'Swinging the leg rapidly using momentum'
+        ],
+        proTip: 'Stop hip extension as soon as your femur reaches horizontal inline with your torso—going higher produces lumbar extension, not extra glute recruitment.'
       }
     }
 ];

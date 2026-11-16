@@ -74,36 +74,6 @@
   border-color: var(--ember);
 }
 
-.toggle-bodymap-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 15px;
-  border-radius: var(--radius-full);
-  background: var(--raised);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.82rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.toggle-bodymap-btn:hover {
-  border-color: var(--border-hi);
-}
-
-.toggle-bodymap-btn.active {
-  background: var(--clay-soft);
-  border-color: var(--border-active);
-  color: var(--clay);
-}
-
-.home-bodymap-drawer {
-  width: 100%;
-  margin: 14px 0 0;
-  animation: fadeIn 0.18s var(--ease);
-}
-
 .routines-cards-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -134,11 +104,11 @@
   border-color: var(--border-hi);
 }
 
-.routine-folder-card.category-tone-legs { --card-accent: #C28E52; }
-.routine-folder-card.category-tone-fullbody { --card-accent: #E5A93C; }
-.routine-folder-card.category-tone-core { --card-accent: #E5674C; }
-.routine-folder-card.category-tone-upper { --card-accent: #2A6B6D; }
-.routine-folder-card.category-tone-power { --card-accent: #5B6E8C; }
+.routine-folder-card.category-tone-legs { --card-accent: var(--region-lower); }
+.routine-folder-card.category-tone-upper { --card-accent: var(--region-upper); }
+.routine-folder-card.category-tone-core { --card-accent: var(--region-core); }
+.routine-folder-card.category-tone-fullbody { --card-accent: var(--region-core); }
+.routine-folder-card.category-tone-power { --card-accent: var(--region-core); }
 .routine-folder-card.category-tone-default { --card-accent: var(--clay); }
 
 .routine-folder-top-row {
@@ -155,7 +125,7 @@
   flex-wrap: wrap;
 }
 
-/* Deterministic Category Tag (Ouroboros Spine System) */
+/* Unified 3-Region Semantic Category Tags (Bronze = Lower, Teal = Upper, Slate = Core & Full-Body) */
 .routine-folder-tab {
   display: inline-flex;
   align-items: center;
@@ -168,33 +138,23 @@
 }
 
 .routine-folder-tab.category-tone-legs {
-  background: rgba(194, 142, 82, 0.13);
-  color: #9E6B32;
-  border: 1px solid rgba(194, 142, 82, 0.32);
-}
-
-.routine-folder-tab.category-tone-fullbody {
-  background: rgba(229, 169, 60, 0.14);
-  color: #B57918;
-  border: 1px solid rgba(229, 169, 60, 0.38);
-}
-
-.routine-folder-tab.category-tone-core {
-  background: rgba(229, 103, 76, 0.13);
-  color: #C24528;
-  border: 1px solid rgba(229, 103, 76, 0.32);
+  background: var(--clay-soft);
+  color: var(--region-lower);
+  border: 1px solid color-mix(in srgb, var(--region-lower) 30%, transparent);
 }
 
 .routine-folder-tab.category-tone-upper {
-  background: rgba(42, 107, 109, 0.13);
-  color: #1E5254;
-  border: 1px solid rgba(42, 107, 109, 0.32);
+  background: var(--sage-soft);
+  color: var(--region-upper);
+  border: 1px solid color-mix(in srgb, var(--region-upper) 30%, transparent);
 }
 
+.routine-folder-tab.category-tone-core,
+.routine-folder-tab.category-tone-fullbody,
 .routine-folder-tab.category-tone-power {
-  background: rgba(91, 110, 140, 0.13);
-  color: #40516E;
-  border: 1px solid rgba(91, 110, 140, 0.32);
+  background: var(--slate-soft);
+  color: var(--region-core);
+  border: 1px solid var(--slate-border);
 }
 
 .routine-folder-tab.category-tone-default {
@@ -203,37 +163,7 @@
   border: 1px solid var(--border);
 }
 
-[data-theme="dark"] .routine-folder-tab.category-tone-legs {
-  background: rgba(194, 142, 82, 0.22);
-  color: #E2B27E;
-  border-color: rgba(194, 142, 82, 0.45);
-}
-
-[data-theme="dark"] .routine-folder-tab.category-tone-fullbody {
-  background: rgba(229, 169, 60, 0.22);
-  color: #F0C46A;
-  border-color: rgba(229, 169, 60, 0.45);
-}
-
-[data-theme="dark"] .routine-folder-tab.category-tone-core {
-  background: rgba(229, 103, 76, 0.22);
-  color: #F28C74;
-  border-color: rgba(229, 103, 76, 0.45);
-}
-
-[data-theme="dark"] .routine-folder-tab.category-tone-upper {
-  background: rgba(42, 107, 109, 0.22);
-  color: #55A8AA;
-  border-color: rgba(42, 107, 109, 0.45);
-}
-
-[data-theme="dark"] .routine-folder-tab.category-tone-power {
-  background: rgba(91, 110, 140, 0.22);
-  color: #92A6C4;
-  border-color: rgba(91, 110, 140, 0.45);
-}
-
-/* Difficulty Level Badge with Dedicated Pip */
+/* Difficulty Level Badge with Cohesive Pip Scale (Teal -> Bronze -> Ink/Obsidian) */
 .routine-level-pill {
   display: inline-flex;
   align-items: center;
@@ -255,15 +185,15 @@
 }
 
 .routine-level-pip.tier-beginner {
-  background: #2E7D5B;
+  background: var(--teal);
 }
 
 .routine-level-pip.tier-intermediate {
-  background: #C28E52;
+  background: var(--clay);
 }
 
 .routine-level-pip.tier-advanced {
-  background: #E5674C;
+  background: var(--text);
 }
 
 /* Enclosed Top Actions Pill */
@@ -365,10 +295,28 @@
   font-weight: 700;
 }
 
-.routine-muscle-tag.more {
-  color: var(--clay);
+.routine-muscle-tag.region-lower {
   background: var(--clay-soft);
-  border-color: var(--border-active);
+  color: var(--region-lower);
+  border-color: color-mix(in srgb, var(--region-lower) 26%, transparent);
+}
+
+.routine-muscle-tag.region-upper {
+  background: var(--sage-soft);
+  color: var(--region-upper);
+  border-color: color-mix(in srgb, var(--region-upper) 26%, transparent);
+}
+
+.routine-muscle-tag.region-core {
+  background: var(--slate-soft);
+  color: var(--region-core);
+  border-color: var(--slate-border);
+}
+
+.routine-muscle-tag.more {
+  color: var(--dim);
+  background: var(--raised2);
+  border-color: var(--border-hi);
 }
 
 .routine-folder-sil {
@@ -617,6 +565,9 @@
    7. Workout Overview View (Single Routine Editor & Timeline)
    ========================================================================== */
 .gymmane-overview-view {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 24px 0 64px;
 }
 
@@ -1119,6 +1070,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .workout-phase-divider {
@@ -1167,6 +1121,9 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   background: var(--raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -1478,9 +1435,9 @@
 }
 
 .summary-pill.dropset-pill {
-  background: var(--ember-soft, rgba(229, 103, 76, 0.12));
-  border-color: color-mix(in srgb, var(--ember) 35%, transparent);
-  color: var(--ember);
+  background: var(--slate-soft);
+  border-color: var(--slate-border);
+  color: var(--slate);
   font-weight: 700;
 }
 
@@ -1528,6 +1485,8 @@
 /* In-Depth Panel */
 .row-indepth-panel {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin-top: 14px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
@@ -1538,6 +1497,9 @@
 }
 
 .indepth-sets-section {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -1697,13 +1659,18 @@
 
 /* Sets Architecture Table */
 .indepth-sets-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
 
 .indepth-sets-table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   font-size: 0.8rem;
   text-align: left;
@@ -1745,7 +1712,8 @@
 
 .indepth-sets-table th.col-target,
 .indepth-sets-table td.col-target {
-  width: 130px;
+  min-width: 152px;
+  width: 168px;
 }
 
 .indepth-sets-table th.col-rest,
@@ -1778,9 +1746,9 @@
 }
 
 .set-index-badge.dropset {
-  background: var(--ember-soft, rgba(229, 103, 76, 0.14));
-  border-color: color-mix(in srgb, var(--ember) 35%, transparent);
-  color: var(--ember);
+  background: var(--slate-soft);
+  border-color: var(--slate-border);
+  color: var(--slate);
 }
 
 .set-type-tag {
@@ -1790,12 +1758,12 @@
 }
 
 .set-type-tag.dropset {
-  color: var(--ember);
+  color: var(--slate);
   font-weight: 700;
 }
 
 .dropset-target-text {
-  color: var(--ember);
+  color: var(--slate);
   font-weight: 800;
 }
 
@@ -1810,7 +1778,7 @@
 }
 
 .table-rest-cell.dropset {
-  color: var(--ember);
+  color: var(--slate);
   font-weight: 700;
 }
 
@@ -1820,7 +1788,7 @@
 }
 
 .table-intent-text.dropset {
-  color: var(--ember);
+  color: var(--slate);
 }
 
 /* In-Table Direct Interactive Editor Styles */
@@ -1881,14 +1849,16 @@
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 110px;
+  min-width: 128px;
+  max-width: 164px;
 }
 
 .table-reps-input {
   width: 100%;
-  max-width: 110px;
+  min-width: 128px;
+  max-width: 164px;
   height: 32px;
-  padding: 0 10px;
+  padding: 0 8px;
   font-family: var(--mono);
   font-size: 0.78rem;
   font-weight: 700;
@@ -2144,6 +2114,9 @@
 
 /* Timeline Superset Capsule */
 .timeline-superset-capsule {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   background: var(--surface);
   border: 1.5px solid color-mix(in srgb, var(--clay) 35%, var(--border-hi));
   border-radius: var(--radius-lg);
@@ -2242,6 +2215,9 @@
 
 /* Capsule Body */
 .superset-capsule-body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 10px 12px;
   display: flex;
   flex-direction: column;

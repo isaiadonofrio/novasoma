@@ -1,4 +1,5 @@
 import React from 'react';
+import { STORAGE_KEYS, safeRemoveItem } from '../utils/storage';
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -20,7 +21,8 @@ export class ErrorBoundary extends React.Component {
 
   handleResetState = () => {
     try {
-      localStorage.removeItem('corpo_active_workout_draft_v1');
+      safeRemoveItem(STORAGE_KEYS.ACTIVE_DRAFT);
+      safeRemoveItem('corpo_active_workout_draft_v1');
     } catch (e) {
       console.warn('Could not clear active draft:', e);
     }

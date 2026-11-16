@@ -431,11 +431,11 @@ export function ManualWorkoutLogModal({
           {/* Section 1: In-Theme Date Stepper & Calendar */}
           <div className="pure-field-block">
             <div className="pure-field-header-row">
-              <label className="pure-field-label">Date of Workout</label>
+              <span className="pure-field-label" id="manual-date-label">Date of Workout</span>
               {isToday && <span className="pure-today-pill">Today</span>}
             </div>
 
-            <div className="pure-date-stepper-box">
+            <div className="pure-date-stepper-box" role="group" aria-labelledby="manual-date-label">
               <button
                 type="button"
                 className="pure-date-nav-btn"
@@ -511,12 +511,13 @@ export function ManualWorkoutLogModal({
 
           {/* Section 2: Activity (Classics & Common Only) */}
           <div className="pure-field-block" ref={workoutMenuRef}>
-            <label className="pure-field-label">Activity</label>
+            <span className="pure-field-label" id="manual-activity-label">Activity</span>
 
             <div className="pure-custom-select-wrap">
               <button
                 type="button"
                 className={`pure-workout-display-btn ${showWorkoutMenu ? 'open' : ''}`}
+                aria-labelledby="manual-activity-label"
                 onClick={() => {
                   setShowWorkoutMenu((prev) => !prev);
                   setShowCalendar(false);
@@ -574,11 +575,14 @@ export function ManualWorkoutLogModal({
 
             {selectedWorkoutId === 'custom' && (
               <input
+                id="manual-custom-title"
+                name="customWorkoutTitle"
                 type="text"
                 className="pure-text-input custom-name animate-fade"
                 value={customWorkoutTitle}
                 onChange={(e) => setCustomWorkoutTitle(e.target.value)}
                 placeholder="e.g. Bouldering, Boxing, Calisthenics"
+                aria-label="Custom activity name"
                 autoFocus
                 required
               />
@@ -601,6 +605,7 @@ export function ManualWorkoutLogModal({
             <div className="pure-slider-wrap">
               <input
                 id="pure-duration-slider"
+                name="durationMinutes"
                 type="range"
                 min={DURATION_MIN}
                 max={DURATION_MAX}
@@ -638,9 +643,9 @@ export function ManualWorkoutLogModal({
 
           {/* Section 4: Simplified Intensity (No Reps / No RPE Clutter) */}
           <div className="pure-field-block">
-            <label className="pure-field-label">Intensity</label>
+            <span className="pure-field-label" id="manual-intensity-label">Intensity</span>
 
-            <div className="pure-intensity-grid">
+            <div className="pure-intensity-grid" role="group" aria-labelledby="manual-intensity-label">
               {INTENSITY_CHOICES.map((item) => {
                 const isSelected = intensity === item.id;
                 return (
@@ -660,11 +665,14 @@ export function ManualWorkoutLogModal({
           {/* Section 5: Optional Notes */}
           <div className="pure-field-block">
             <input
+              id="manual-workout-notes"
+              name="workoutNotes"
               type="text"
               className="pure-text-input notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Optional notes"
+              aria-label="Optional session notes"
             />
           </div>
 

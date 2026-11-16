@@ -330,5 +330,186 @@ export const LUNGESANDUNILATERAL_EXERCISES = [
         ],
         proTip: 'Slow down the lowest inch and pause completely dead at bottom—that removes elastic tendon momentum and builds true gastroc density.'
       }
+    },
+
+  {
+      id: 'ex-barbell-reverse-lunge',
+      name: 'Barbell Reverse Lunge',
+      scientificName: 'Dynamic Posterior-Stepping Axial Barbell Lunge — High Bilateral-Style Overload in Unilateral Stance',
+      subtitle: 'Heavy posterior-step axial lunge targeting glutes & quads with low patellar shear',
+      pattern: MOVEMENT_PATTERNS.LUNGE,
+      equipment: 'Barbell',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 3,
+      defaultReps: '8-10/leg',
+      defaultRestSeconds: 90,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps (Lead Limb)', 'Gluteus Maximus'],
+        secondary: ['Gluteus Medius (Frontal Pelvic Lock)', 'Hamstrings', 'Adductor Magnus'],
+        stabilizers: ['Erector Spinae', 'Transverse Abdominis']
+      },
+      execution: {
+        setup: 'Unrack barbell across upper trapezius shelf with elbows tucked underneath and core braced upright. Stand hip-width apart.',
+        eccentric: 'Step cleanly backward onto the ball of the rear foot along train-track hip width (avoid tightrope crossing) and lower hips vertically over 2–3 seconds until back knee lightly skims floor.',
+        concentric: 'Drive sharply upward and slightly forward strictly through the stationary full lead foot back to even hip-width stance.',
+        breathing: 'Inhale stepping back with torso braced; exhale powerfully rising off lead foot.',
+        commonMistakes: [
+          'Bouncing rear knee harshly onto the floor',
+          'Pushing off the trailing rear toes to kick back upright instead of letting lead glute/quad pull forward',
+          'Narrowing stance width so knees wobble medially'
+        ],
+        proTip: 'Stepping backward leaves the front tibia upright and anchors balance over the stationary lead foot, reducing anterior knee joint stress compared with forward lunges.'
+      }
+    },
+
+  {
+      id: 'ex-kettlebell-forward-lunge',
+      name: 'Dual Kettlebell Forward Lunge',
+      scientificName: 'Dynamic Anterior-Stepping Dual Kettlebell Lunge — High Patellofemoral Deceleration Control',
+      subtitle: 'Loaded forward-step lunge developing eccentric quad braking strength & athletic deceleration',
+      pattern: MOVEMENT_PATTERNS.LUNGE,
+      equipment: 'Kettlebells',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 3,
+      defaultReps: '8-10/leg',
+      defaultRestSeconds: 90,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps (Lead Decelerating Limb)', 'Gluteus Maximus'],
+        secondary: ['Adductor Magnus', 'Gluteus Medius'],
+        stabilizers: ['Forearm Flexors (Grip)', 'Core Cylinder', 'Tibialis Anterior']
+      },
+      execution: {
+        setup: 'Stand tall holding two kettlebells cleanly along sides with shoulders depressed and core tightly braced.',
+        eccentric: 'Step deliberately forward at hip width, landing smoothly heel-to-toe and immediately absorbing forward momentum downward into a balanced 90°/90° lunge position.',
+        concentric: 'Decelerate cleanly to a brief controlled hover, then push aggressively backward through the full lead foot in one cohesive drive back to standing.',
+        breathing: 'Inhale stepping forward and braking smoothly; exhale driving strongly back to start.',
+        commonMistakes: [
+          'Over-striding or under-striding so front knee slams abruptly forward or heel peels off',
+          'Stepping on a narrow centerline tightrope and losing lateral balance',
+          'Allowing torso to slump forward over the front knee during braking'
+        ],
+        proTip: 'Forward lunging demands heightened eccentric quadriceps braking impulse to halt horizontal body mass—ideal preparation for court sports and running deceleration.'
+      }
+    },
+
+  {
+      id: 'ex-poliquin-step-down',
+      name: 'Poliquin Heel-Elevated Step-Down',
+      scientificName: 'Unilateral Heels-Elevated Anterior Eccentric Step-Down — VMO & Patellar Tendon Capacity',
+      subtitle: 'Short-range anterior knee-over-toe step-down rebuilding VMO strength & knee tendon tolerance',
+      pattern: MOVEMENT_PATTERNS.LUNGE,
+      equipment: 'Step Box + Heel Wedge',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 3,
+      defaultReps: '12-15/leg',
+      defaultRestSeconds: 60,
+      rpe: '7 - 8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Vastus Medialis Obliquus (VMO)', 'Rectus Femoris & Vastus Lateralis'],
+        secondary: ['Gluteus Medius (Pelvic Leveling)'],
+        stabilizers: ['Soleus (Heel Support)', 'Intrinsic Foot Musculature']
+      },
+      execution: {
+        setup: 'Stand atop a low 10–15 cm step box with working heel elevated on a slant wedge (or small weight plate), toes pointing straight ahead and opposite leg hovering softly off the box side.',
+        eccentric: 'Keep torso upright and hips square; initiate strictly by pushing working knee forward directly over the toes over 3 seconds until the floating heel lightly kisses the floor with zero weight shift.',
+        concentric: 'Do NOT push off the floor heel—immediately contract the working thigh to drive back straight to full controlled knee extension.',
+        breathing: 'Inhale slowly tracking knee forward; exhale pressing straight upward.',
+        commonMistakes: [
+          'Pushing off the floor foot at the bottom to skip lower VMO activation',
+          'Hinging hips backward like a single-leg RDL instead of vertical torso knee travel',
+          'Letting working knee collapse inward into valgus'
+        ],
+        proTip: 'Keep the floating foot dorsiflexed so only the back edge of the heel touches down silently ("step on an eggshell")—progressive knee-over-toe work strengthens patellar tendon collagen architecture.'
+      }
+    },
+
+  {
+      id: 'ex-kettlebell-single-leg-calf-raise',
+      name: 'Kettlebell Single-Leg Calf Raise',
+      scientificName: 'Unilateral Extended-Knee Single-Kettlebell Plantarflexion — Contralateral Hand Free for Balance',
+      subtitle: 'Single-leg step calf raise holding a heavy kettlebell with free hand steadying posture',
+      pattern: MOVEMENT_PATTERNS.CALF_ISOLATION,
+      equipment: 'Kettlebell + Step Box',
+      mechanics: 'Isolation',
+      level: 'Intermediate',
+      muscleKey: 'calves',
+      defaultSets: 3,
+      defaultReps: '12-15/leg',
+      defaultRestSeconds: 60,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gastrocnemius (Medial & Lateral Heads)', 'Soleus'],
+        secondary: ['Peroneus Longus & Brevis', 'Tibialis Posterior'],
+        stabilizers: ['Intrinsic Foot Arch Flexors', 'Core']
+      },
+      execution: {
+        setup: 'Stand on the edge of a step box with the ball of one foot anchored firmly, holding a kettlebell in the ipsilateral (same-side) hand while placing the free hand lightly on a rail/wall strictly for balance.',
+        eccentric: 'Lower heel gently over 3 full seconds all the way down into maximal ankle dorsiflexion stretch and pause dead still for 1–2 seconds.',
+        concentric: 'Drive vertically high across the first and second metatarsal heads into peak shortened plantarflexion, hold 1 second, and repeat.',
+        breathing: 'Inhale slowly during bottom tendon stretch; exhale forcefully driving heel high.',
+        commonMistakes: [
+          'Bouncing continuously out of the stretch using Achilles elastic recoil',
+          'Rolling ankle sideways onto the pinky toe edge at top contraction',
+          'Unlocking knee slightly on ascent'
+        ],
+        proTip: 'Holding the kettlebell in the same hand as the working leg aligns line-of-load cleanly above your midfoot while keeping your opposite hand free to eliminate wobble bottlenecks.'
+      }
+    },
+
+  {
+      id: 'ex-wall-tibialis-raise',
+      name: 'Wall Tibialis Anterior Raise',
+      scientificName: 'Bilateral Closed-Chain Wall-Supported Ankle Dorsiflexion — Anterior Compartment Shin Prehab',
+      subtitle: 'High-rep dorsiflexion prehab building anterior shin strength & deceleration shock absorption',
+      pattern: MOVEMENT_PATTERNS.ANKLE_DORSIFLEXION,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'calves',
+      defaultSets: 3,
+      defaultReps: '15-20',
+      defaultRestSeconds: 45,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Tibialis Anterior'],
+        secondary: ['Extensor Digitorum Longus', 'Extensor Hallucis Longus'],
+        stabilizers: ['Quadriceps (Locked Knee Straightness)', 'Core']
+      },
+      execution: {
+        setup: 'Lean your upper back and glutes flat against a smooth wall with knees locked straight and both heels walked ~30–50 cm forward (further out = harder resistance).',
+        eccentric: 'Lower forefeet smoothly under 2-second control back toward the floor without letting toes slap down prematurely.',
+        concentric: 'Pull both sets of toes vigorously upward toward your shins as high as ankle mobility allows, squeezing peak shin contraction for 1 full second.',
+        breathing: 'Exhale pulling toes strongly upward; inhale slowly lowering feet toward floor.',
+        commonMistakes: [
+          'Unlocking and bending knees instead of pivoting cleanly at the ankle joint',
+          'Hinging hips forward off the wall at top dorsiflexion',
+          'Dropping down lazily instead of controlling final centimeters'
+        ],
+        proTip: 'Tibialis anterior acts as the knee’s primary decelerating brake upon foot strike; building high-rep tib endurance markedly reduces shin splints and anterior knee impact load.'
+      }
     }
 ];

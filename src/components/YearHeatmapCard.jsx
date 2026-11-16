@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Flame, CalendarDays } from 'lucide-react';
 import { calculateMonthGroupedHeatmap } from '../utils/analytics';
-import { formatVolumeCompact } from '../utils/formatting';
+import { formatVolumeCompact, getRoundedDurationMinutes } from '../utils/formatting';
 
 export function YearHeatmapCard({ workoutHistory = [], onSelectDate }) {
   const heatmap = useMemo(
@@ -33,7 +33,7 @@ export function YearHeatmapCard({ workoutHistory = [], onSelectDate }) {
     if (inspectedCell.count === 0) {
       return `${inspectedCell.dateLabel} · No workout logged`;
     }
-    const mins = Math.max(1, Math.round(inspectedCell.durationSeconds / 60));
+    const mins = getRoundedDurationMinutes(inspectedCell.durationSeconds);
     const parts = [
       inspectedCell.dateLabel,
       `${inspectedCell.count} workout${inspectedCell.count > 1 ? 's' : ''}`,
@@ -135,6 +135,7 @@ export function YearHeatmapCard({ workoutHistory = [], onSelectDate }) {
                             key={day.dateKey}
                             type="button"
                             disabled={day.isFuture}
+                            tabIndex={day.isToday ? 0 : -1}
                             className={[
                               'heatmap-day-cell',
                               `lvl-${day.level}`,

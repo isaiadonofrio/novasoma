@@ -20,7 +20,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '30-60s',
       defaultRestSeconds: 45,
-      rpe: '7 - 8',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -57,7 +57,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '40-60s',
       defaultRestSeconds: 45,
-      rpe: '7 - 8',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -94,7 +94,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '30-45s',
       defaultRestSeconds: 45,
-      rpe: '7 - 8',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -131,7 +131,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '30-45s/side',
       defaultRestSeconds: 45,
-      rpe: '7 - 8',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -167,7 +167,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '20-30s/side',
       defaultRestSeconds: 60,
-      rpe: '8',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -204,7 +204,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '8-10/side',
       defaultRestSeconds: 45,
-      rpe: '6 - 7',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -240,7 +240,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '6-8 holds (8s)',
       defaultRestSeconds: 45,
-      rpe: '6 - 7',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -277,7 +277,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '25-40s',
       defaultRestSeconds: 45,
-      rpe: '7 - 8',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -314,7 +314,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '25-40s',
       defaultRestSeconds: 60,
-      rpe: '8 - 9',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -424,7 +424,7 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       defaultSets: 3,
       defaultReps: '30-45s',
       defaultRestSeconds: 45,
-      rpe: '8',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -494,9 +494,9 @@ export const COREANDSPINESTABILITY_EXERCISES = [
       level: 'Beginner',
       muscleKey: 'forearm',
       defaultSets: 3,
-      defaultReps: '30-45 sec',
+      defaultReps: '30-45s',
       defaultRestSeconds: 60,
-      rpe: '7 - 8',
+      rpe: '',
       lastRecord: '',
       illustration: '',
       mediaType: 'image',
@@ -516,6 +516,258 @@ export const COREANDSPINESTABILITY_EXERCISES = [
           'Rushing steps and losing balance'
         ],
         proTip: 'Imagine walking with a glass of water balanced on each shoulder—smooth, stable, unwavering strides.'
+      }
+    },
+
+  {
+      id: 'ex-ab-wheel-rollout',
+      name: 'Kneeling Ab-Wheel Rollout',
+      scientificName: 'Kneeling Dynamic Long-Lever Anti-Extension Rollout — Peak Lengthened Rectus & Lat Integration',
+      subtitle: 'Long-lever dynamic anti-extension challenging anterior core & lats across extended ROM',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Ab Wheel + Mat',
+      mechanics: 'Compound',
+      level: 'Advanced',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '8-12',
+      defaultRestSeconds: 75,
+      rpe: '8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis (Long-Lever Anti-Extension)', 'Transverse Abdominis'],
+        secondary: ['Latissimus Dorsi (Shoulder Extension Return)', 'Internal & External Obliques'],
+        stabilizers: ['Serratus Anterior', 'Triceps Brachii (Long Head)', 'Gluteus Maximus']
+      },
+      execution: {
+        setup: 'Kneel upright on a thick pad holding the ab-wheel handles directly underneath shoulders. Tuck pelvis aggressively posteriorly ("belt buckle up to lower ribs") and squeeze glutes before moving.',
+        eccentric: 'Maintaining a hollow spinal tuck—NOT an arch—let hips and arms hinge together forward smoothly, extending the wheel straight overhead toward end controllable range.',
+        concentric: 'Pull yourself smoothly back upright by tightening abs and depressing lats downward ("pull hands down toward pockets"), never rocking hips backward prematurely.',
+        breathing: 'Inhale into a pressurized abdominal brace before rolling out; exhale sharply past mid-return.',
+        commonMistakes: [
+          'Sitting glutes backward toward heels so only arms roll forward with zero core lever',
+          'Allowing lower back to sag into deep painful lumbar extension as hands go overhead',
+          'Overreaching further than true anterior abdominal brace strength allows'
+        ],
+        proTip: 'Stop each rollout at the exact millimeter where you feel your pelvis want to tip anteriorly—rolling 10 cm shorter with locked core beats deep range with a collapsed spine.'
+      }
+    },
+
+  {
+      id: 'ex-hanging-leg-raise',
+      name: 'Hanging Straight-Leg Raise',
+      scientificName: 'Suspended Extended-Knee Full Hip & Lumbar Flexion — Max Long-Lever Core Torque',
+      subtitle: 'Full extended-leg bar hang lifting pelvis upward for peak lower rectus abdominis torque',
+      pattern: MOVEMENT_PATTERNS.CORE_ROTATION,
+      equipment: 'Pull-Up Bar',
+      mechanics: 'Compound',
+      level: 'Advanced',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '8-12',
+      defaultRestSeconds: 75,
+      rpe: '8 - 9',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis (Lower Fibers)', 'Internal & External Obliques'],
+        secondary: ['Iliopsoas & Rectus Femoris (Hip Flexors)'],
+        stabilizers: ['Latissimus Dorsi (Active Shoulder Brace)', 'Forearm Flexors']
+      },
+      execution: {
+        setup: 'Take a shoulder-width pronated grip on a high pull-up bar, press shoulder blades subtly down into an active dead hang, and brace legs locked straight together.',
+        eccentric: 'Lower straight legs continuously over 3 full seconds all the way down until hanging perfectly still beneath hips without swinging backward.',
+        concentric: 'Lift both straight legs up to 90° and finish every rep by actively curling the tailbone/pelvis upward toward your ribcage (posterior lumbar curl).',
+        breathing: 'Exhale powerfully while curling legs and pelvis upward; inhale under eccentric descent.',
+        commonMistakes: [
+          'Kicking backward and swinging momentum forward into the next rep',
+          'Stopping legs at 90° horizontal where only hip flexors did the work and rectus stayed static',
+          'Shrugging shoulders passively near earlobes'
+        ],
+        proTip: 'Raising straight legs to 90° is mostly iliopsoas; rounding the lower pelvis upward past 90° toward toes-to-bar is what actually shortens and loads the rectus abdominis dynamically.'
+      }
+    },
+
+  {
+      id: 'ex-banded-pallof-press',
+      name: 'Standing Banded Pallof Press',
+      scientificName: 'Standing Lateral-Tension Isometric Press-Out — Progressive Transverse Anti-Rotation Core Brace',
+      subtitle: 'Anti-rotation press levering lateral resistance to build 360° rotational spinal stability',
+      pattern: MOVEMENT_PATTERNS.CORE_ROTATION,
+      equipment: 'Resistance Band',
+      mechanics: 'Isometric',
+      level: 'Beginner',
+      muscleKey: 'obliques',
+      defaultSets: 3,
+      defaultReps: '10-12/side',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Internal & External Obliques', 'Transverse Abdominis'],
+        secondary: ['Rectus Abdominis', 'Multifidus & Quadratus Lumborum'],
+        stabilizers: ['Gluteus Medius (Stance Anti-Shift)', 'Anterior Deltoid', 'Scapular Stabilizers']
+      },
+      execution: {
+        setup: 'Anchor a resistance band at chest height perpendicular to your body. Step sideways until noticeable tension pulls laterally, assume an athletic quarter-squat stance, and clasp both hands holding the band centered against sternum.',
+        eccentric: 'Pull hands steadily straight back along the sternal line over 2 seconds without letting torso rotate or drift sideways.',
+        concentric: 'Press hands symmetrically straight forward away from sternum to full arm extension along the midline, resisting any lateral band twist, and hold rigid for 2 full seconds.',
+        breathing: 'Breathe crisply out over a tight 360° braced abdominal wall at extended hold; inhale on return.',
+        commonMistakes: [
+          'Allowing arms to drift crookedly sideways toward the anchor post',
+          'Turning chest or hips slightly toward the resistance direction',
+          'Shrugging shoulders up around neck during press-out'
+        ],
+        proTip: 'Narrowing your stance from wide athletic to tall hip-width intensifies rotational challenge without adding a thicker resistance band.'
+      }
+    },
+
+  {
+      id: 'ex-kettlebell-windmill',
+      name: 'Overhead Kettlebell Windmill',
+      scientificName: 'Tri-Planar Offset Hip Hinge With Overhead Scapular Stabilization — Frontal & Transverse Integration',
+      subtitle: 'Tri-planar overhead hinge mobilizing posterior hips while hardening shoulder & lateral core stability',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_LATERAL,
+      equipment: 'Kettlebell',
+      mechanics: 'Compound',
+      level: 'Advanced',
+      muscleKey: 'obliques',
+      defaultSets: 3,
+      defaultReps: '6-8/side',
+      defaultRestSeconds: 75,
+      rpe: '7 - 8',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Internal & External Obliques', 'Quadratus Lumborum', 'Gluteus Maximus & Medius'],
+        secondary: ['Hamstrings (Back-Hip Hinge)', 'Rotator Cuff & Serratus Anterior'],
+        stabilizers: ['Spinal Erectors', 'Triceps Brachii (Overhead Lockout)']
+      },
+      execution: {
+        setup: 'Press a single kettlebell overhead with elbow locked completely vertical and palm facing forward. Pivot BOTH feet ~45° away from the overhead bell side, keeping visual eyes locked straight up onto the overhead kettlebell.',
+        eccentric: 'Push hips laterally backward under the loaded side while tracing your bottom free hand cleanly down the inside of your front calf over 3 seconds—keeping the overhead bell arm perpendicular to the floor at all times.',
+        concentric: 'Drive firmly through the hip/glute of the loaded rear leg and reverse the hinge smoothly upright while keeping your overhead shoulder stably packed.',
+        breathing: 'Inhale tightening lateral obliques as you hinge down; exhale smoothly pressing hips back vertical.',
+        commonMistakes: [
+          'Bending sideways purely from the lumbar spine instead of pushing the hip back into a hinge',
+          'Allowing the overhead kettlebell to drift forward away from vertical shoulder-stack alignment',
+          'Dropping gaze down to the floor and losing shoulder awareness'
+        ],
+        proTip: 'Lock your eyes directly onto the overhead kettlebell throughout the entire rep—this automatically aligns cervical/thoracic rotation and holds the arm plumb vertical.'
+      }
+    },
+
+  {
+      id: 'ex-kettlebell-suitcase-carry',
+      name: 'Unilateral Kettlebell Suitcase Carry',
+      scientificName: 'Unilateral Loaded Gait Carry — Contralateral Quadratus Lumborum & Oblique Anti-Lateral Flexion',
+      subtitle: 'Single-arm loaded walk fortifying lateral spinal pillar stability & grip endurance',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_LATERAL,
+      equipment: 'Kettlebell',
+      mechanics: 'Isometric',
+      level: 'Intermediate',
+      muscleKey: 'obliques',
+      defaultSets: 3,
+      defaultReps: '40-60s/side',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadratus Lumborum (Contralateral Side)', 'External & Internal Obliques'],
+        secondary: ['Gluteus Medius (Pelvic Leveling)', 'Forearm Flexors (Grip)'],
+        stabilizers: ['Upper & Middle Trapezius', 'Multifidus', 'Transverse Abdominis']
+      },
+      execution: {
+        setup: 'Deadlift a single kettlebell in one hand at your side while standing completely level—do NOT lean sideways away from or toward the weight. Float the kettlebell 2–3 cm off your outer thigh.',
+        eccentric: 'Control weight descent smoothly onto floor at the end of the timed interval via clean hip hinge.',
+        concentric: 'Walk deliberately heel-to-toe for the target duration, holding shoulders level, hips quiet, and ribcage squared forward with zero sidebending wobble.',
+        breathing: 'Take smooth rhythmic nasal breaths into the lower core brace without breaking trunk stiffness.',
+        commonMistakes: [
+          'Tilting torso sideways like the Leaning Tower of Pisa to counterweight the bell',
+          'Letting the bell bang repeatedly against the lateral thigh',
+          'Speed-walking with sloppy pelvic drop on each swing phase'
+        ],
+        proTip: 'Stuart McGill’s spinal stability research highlights heavy single-arm Suitcase Carries for producing strong quadratus lumborum & oblique stiffness with minimal compressive disc penalty.'
+      }
+    },
+
+  {
+      id: 'ex-kettlebell-front-rack-carry',
+      name: 'Kettlebell Front-Rack Carry',
+      scientificName: 'Anterior Thoracic-Racked Loaded Gait Carry — Thoracic Anti-Flexion & Diaphragmatic Bracing Under Load',
+      subtitle: 'Front-racked kettlebell walk training upright thoracic endurance & pressured breathing',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Kettlebell',
+      mechanics: 'Isometric',
+      level: 'Intermediate',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '45-60s',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis & Transverse Abdominis', 'Thoracic Erector Spinae'],
+        secondary: ['Biceps & Anterior Deltoid (Isometric Rack)', 'Gluteus Medius'],
+        stabilizers: ['Rhomboids', 'Diaphragm (Respiration Under Chest Compression)']
+      },
+      execution: {
+        setup: 'Clean single or dual kettlebells into tight front-rack pockets: wrists completely neutral and straight, fists tucked under chin, elbows pinned slightly forward against upper ribs, and bells nestled comfortably between forearm and biceps.',
+        eccentric: 'Lower bells safely via controlled clean-down hinge at set completion.',
+        concentric: 'Walk smoothly tall for full target duration pushing chest gently forward into bells and preventing elbows from sagging down.',
+        breathing: 'Practice crisp diaphragmatic "sipping" breaths underneath the anterior core brace without losing rib-to-pelvis stacked posture.',
+        commonMistakes: [
+          'Leaning torso backward into lumbar hyperextension to let bells rest lazily on collarbone',
+          'Collapsing forearms inward or bending wrists backward',
+          'Holding breath rigidly for the entire walk'
+        ],
+        proTip: 'Maintaining neutral rib alignment while breathing cleanly against chest-level load directly builds the core pressure tolerance required for heavy Front Squats and Overhead Presses.'
+      }
+    },
+
+  {
+      id: 'ex-kettlebell-bottoms-up-carry',
+      name: 'Kettlebell Bottoms-Up Carry',
+      scientificName: 'Unilateral Inverted-Kettlebell Walk — Maximum Grip Irradiation & Reflexive Rotator Cuff Centration',
+      subtitle: 'Inverted-bell carry triggering high grip irradiation and dynamic rotator cuff shoulder health',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_LATERAL,
+      equipment: 'Kettlebell',
+      mechanics: 'Isometric',
+      level: 'Advanced',
+      muscleKey: 'forearm',
+      defaultSets: 3,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Forearm Flexors & Grip Irradiation', 'Rotator Cuff (Infraspinatus, Supraspinatus, Subscapularis)'],
+        secondary: ['Anterior & Lateral Deltoid', 'Serratus Anterior'],
+        stabilizers: ['Obliques & Core Bracing Muscles', 'Biceps Brachii']
+      },
+      execution: {
+        setup: 'Clean a light-to-moderate kettlebell upside down ("bottoms-up") with elbow bent cleanly at 90° right in front of your shoulder, forearm strictly vertical, wrist straight, and base facing ceiling.',
+        eccentric: 'Control the bell safely back down to your lower rack using your free hand if grip begins wavering.',
+        concentric: 'Crush the handle relentlessly to balance the inverted top-heavy mass straight overhead while walking slowly with calm upright alignment.',
+        breathing: 'Steady rhythmic breaths into core while keeping shoulder packed securely down in its socket.',
+        commonMistakes: [
+          'Using excessive weight so the inverted bell flips uncontrollably sideways',
+          'Shrugging shoulder upward toward earlobe and tucking elbow tightly into belly',
+          'Bending the wrist backward'
+        ],
+        proTip: 'Maximum hand-grip irradiation triggers automatic neurological co-contraction across the rotator cuff stabilizers—forcing flawless humeral centration on every step.'
       }
     }
 ];
