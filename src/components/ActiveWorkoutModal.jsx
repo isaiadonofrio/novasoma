@@ -1520,6 +1520,27 @@ export function ActiveWorkoutModal({
 
   const showStickyTimerRow = isTimerEnabled || timerConfig.hasWorkTimer || isResting;
 
+  const handleResetActiveTimer = () => {
+    resetTimer(isWorkMode ? timerConfig.workSeconds : defaultRest, timerMode, false);
+  };
+
+  const handleSkipRest = () => {
+    setIsResting(false);
+    restTargetTimestampRef.current = null;
+    if (timerConfig.hasWorkTimer && nextIncompleteSetIdx >= 0) {
+      resetTimer(timerConfig.workSeconds, 'work', false);
+    } else {
+      setRestSecondsLeft(0);
+    }
+  };
+
+  const handleCompleteWorkTimerSet = () => {
+    if (nextIncompleteSetIdx < 0) return;
+    setIsResting(false);
+    restTargetTimestampRef.current = null;
+    toggleSetComplete(nextIncompleteSetIdx, currentExercise, { fromWorkTimer: true });
+  };
+
   return (
     <div className="workout-player-overlay">
       <PlayerHeader
@@ -1737,7 +1758,7 @@ export function ActiveWorkoutModal({
                           <button
                             type="button"
                             className="ring-timer-icon-btn"
-                            onClick={() => resetTimer(isWorkMode ? timerConfig.workSeconds : defaultRest, timerMode, false)}
+                            onClick={handleResetActiveTimer}
                             title={isWorkMode ? `Reset ${timerConfig.workShortLabel.toLowerCase()} timer` : 'Reset rest timer'}
                             aria-label="Reset timer"
                           >
@@ -1782,11 +1803,7 @@ export function ActiveWorkoutModal({
                                 <button
                                   type="button"
                                   className="ring-timer-chip skip is-log-set"
-                                  onClick={() => {
-                                    setIsResting(false);
-                                    restTargetTimestampRef.current = null;
-                                    toggleSetComplete(nextIncompleteSetIdx, currentExercise, { fromWorkTimer: true });
-                                  }}
+                                  onClick={handleCompleteWorkTimerSet}
                                   title={`Mark Set ${nextIncompleteSetIdx + 1} complete`}
                                 >
                                   <Check size={12} strokeWidth={2.75} />
@@ -1808,15 +1825,7 @@ export function ActiveWorkoutModal({
                               <button
                                 type="button"
                                 className="ring-timer-chip skip"
-                                onClick={() => {
-                                  setIsResting(false);
-                                  restTargetTimestampRef.current = null;
-                                  if (timerConfig.hasWorkTimer && nextIncompleteSetIdx >= 0) {
-                                    resetTimer(timerConfig.workSeconds, 'work', false);
-                                  } else {
-                                    setRestSecondsLeft(0);
-                                  }
-                                }}
+                                onClick={handleSkipRest}
                                 title="Skip remaining rest"
                               >
                                 <SkipForward size={12} />
@@ -1882,55 +1891,121 @@ export function ActiveWorkoutModal({
         </div>
       </main>
 
-      {/* Mobile & Tablet Portrait Sticky Bottom HUD (<= 960px only) */}
+      {/* Mobile & Tablet Portrait Sticky Bottom HUD (<= 720px only) */}
       <div className={`player-sticky-dock ${isResting ? 'is-resting' : ''} ${isWorkMode ? 'is-work-mode' : 'is-rest-mode'} ${!showStickyTimerRow ? 'no-timer-bar' : ''}`}>
         {showStickyTimerRow && (
-          <div className="sticky-dock-timer-row">
-            <div className="sticky-dock-timer-left">
-              <span className="sticky-timer-badge">
-                {isWorkMode
-                  ? (timerConfig.isHold ? 'HOLD' : 'EXERCISE')
-                  : (currentSuperset ? 'ROUND REST' : 'REST')}
-              </span>
-              <strong className="sticky-timer-clock">{formatTime(restSecondsLeft)}</strong>
-            </div>
-            <div className="sticky-dock-timer-bar" aria-hidden="true">
-              <span style={{ width: `${Math.round(timerRatio * 100)}%` }} />
-            </div>
-            <div className="sticky-dock-timer-btns">
-              {timerConfig.hasWorkTimer && !isResting && (
+          <div className="dock-timer-surface">
+            <div className="dock-timer-meta-row">
+              <div className="dock-meta-left">
+                {timerConfig.hasWorkTimer ? (
+                  <div className="dock-mode-segmented" role="group" aria-label="Timer purpose">
+                    <button
+                      type="button"
+                      className={`dock-mode-seg-btn is-work ${isWorkMode ? 'active' : ''}`}
+                      onClick={() => resetTimer(timerConfig.workSeconds, 'work', false)}
+                    >
+                      {timerConfig.workShortLabel}
+                    </button>
+                    <button
+                      type="button"
+                      className={`dock-mode-seg-btn is-rest ${!isWorkMode ? 'active' : ''}`}
+                      onClick={() => resetTimer(defaultRest, 'rest', false)}
+                    >
+                      Rest
+                    </button>
+                  </div>
+                ) : (
+                  <span className="dock-timer-kicker">
+                    {isResting && <span className="dock-live-dot" aria-hidden="true" />}
+                    {currentSuperset ? 'ROUND REST' : isResting ? 'RESTING NOW' : 'REST TIMER'}
+                  </span>
+                )}
+              </div>
+
+              <div className="dock-meta-actions">
                 <button
                   type="button"
-                  className={`dock-mini-btn mode-toggle ${isWorkMode ? 'is-work' : ''}`}
-                  onClick={() => resetTimer(isWorkMode ? defaultRest : timerConfig.workSeconds, isWorkMode ? 'rest' : 'work', false)}
-                  title={isWorkMode ? 'Switch to Rest timer' : `Switch to ${timerConfig.workShortLabel} timer`}
+                  className="dock-icon-util-btn"
+                  onClick={handleResetActiveTimer}
+                  title={isWorkMode ? `Reset ${timerConfig.workShortLabel.toLowerCase()} timer` : 'Reset rest timer'}
+                  aria-label="Reset timer"
                 >
-                  {isWorkMode ? 'Rest' : timerConfig.workShortLabel}
+                  <RotateCcw size={13} />
                 </button>
-              )}
-              <button type="button" className="dock-mini-btn" onClick={() => adjustRestTime(-stickyTimerStep)}>
-                -{formatTimerPresetChip(stickyTimerStep)}
-              </button>
-              <button
-                type="button"
-                className={`dock-play-btn ${isResting ? 'active' : ''}`}
-                onClick={toggleRestTimer}
-                aria-label={isResting ? 'Pause timer' : 'Start timer'}
-              >
-                {isResting ? <Pause size={13} /> : <Play size={13} fill="currentColor" />}
-              </button>
-              <button type="button" className="dock-mini-btn" onClick={() => adjustRestTime(stickyTimerStep)}>
-                +{formatTimerPresetChip(stickyTimerStep)}
-              </button>
-              <button
-                type="button"
-                className="dock-mini-btn off"
-                onClick={toggleExerciseTimerPreference}
-                title={isTimerEnabled ? 'Disable auto-rest timer' : 'Enable auto-rest timer'}
-                aria-label="Toggle auto-rest timer"
-              >
-                {isTimerEnabled ? <TimerOff size={12} /> : <Timer size={12} />}
-              </button>
+                <button
+                  type="button"
+                  className={`dock-icon-util-btn ${!isTimerEnabled ? 'is-off' : ''}`}
+                  onClick={toggleExerciseTimerPreference}
+                  title={isTimerEnabled ? 'Disable auto-rest timer' : 'Enable auto-rest timer'}
+                  aria-label="Toggle auto-rest timer"
+                >
+                  {isTimerEnabled ? <TimerOff size={13} /> : <Timer size={13} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="dock-progress-rail" aria-hidden="true">
+              <span style={{ width: `${Math.round(timerRatio * 100)}%` }} />
+            </div>
+
+            <div className="dock-timer-main-row">
+                <div className="dock-clock-group">
+                  <strong className="sticky-timer-clock">{formatTime(restSecondsLeft)}</strong>
+                  <span className="dock-clock-sub">
+                    {isResting
+                      ? (isWorkMode ? (timerConfig.isHold ? 'Holding' : 'Working') : 'Recovering')
+                      : `${formatTimerPresetChip(isWorkMode ? timerConfig.workSeconds : defaultRest)} target`}
+                  </span>
+                </div>
+
+                <div className="sticky-dock-timer-btns">
+                  <button
+                    type="button"
+                    className="dock-step-btn"
+                    onClick={() => adjustRestTime(-stickyTimerStep)}
+                    aria-label={`Decrease timer by ${formatTimerPresetChip(stickyTimerStep)}`}
+                  >
+                    −{formatTimerPresetChip(stickyTimerStep)}
+                  </button>
+                  <button
+                    type="button"
+                    className={`dock-play-btn ${isResting ? 'active' : ''}`}
+                    onClick={toggleRestTimer}
+                    aria-label={isResting ? 'Pause timer' : 'Start timer'}
+                  >
+                    {isResting ? <Pause size={17} /> : <Play size={17} fill="currentColor" />}
+                  </button>
+                  <button
+                    type="button"
+                    className="dock-step-btn"
+                    onClick={() => adjustRestTime(stickyTimerStep)}
+                    aria-label={`Increase timer by ${formatTimerPresetChip(stickyTimerStep)}`}
+                  >
+                    +{formatTimerPresetChip(stickyTimerStep)}
+                  </button>
+                  {isResting && isWorkMode && nextIncompleteSetIdx >= 0 && (
+                    <button
+                      type="button"
+                      className="dock-context-pill is-log"
+                      onClick={handleCompleteWorkTimerSet}
+                      title={`Mark Set ${nextIncompleteSetIdx + 1} complete`}
+                    >
+                      <Check size={13} strokeWidth={2.75} />
+                      <span>Log</span>
+                    </button>
+                  )}
+                  {isResting && !isWorkMode && (
+                    <button
+                      type="button"
+                      className="dock-context-pill is-skip"
+                      onClick={handleSkipRest}
+                      title="Skip remaining rest"
+                    >
+                      <SkipForward size={13} />
+                      <span>Skip</span>
+                    </button>
+                  )}
+              </div>
             </div>
           </div>
         )}

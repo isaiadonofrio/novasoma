@@ -48,7 +48,7 @@ Turn **Nova Soma** into a benchmark-grade, local-first athletic and biomechanica
 #### v0.5 — Mobile Gym Readiness, Bespoke Brand & Media Craft *(Current Release)*
 - [x] Integrated bespoke transparent SVG Ouroboros Spine brand emblem (`logo.svg`) + crisp PNG/SVG favicons (`favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png`).
 - [x] Compressed `src/assets/exercises/mcgill-curl-up.jpg` (`1024×1024`, `302.6 kB` -> `800×800`, `22.4 kB`) and added smooth lazy-image decode transitions via shared `<FadeImage />`.
-- [x] Added automatic Screen Wake Lock (`useWakeLock`), safe mobile haptic pulses (`haptics.js`), non-blocking `5s` Undo recovery (`useUndoToast` + `<UndoToast />`), and `390×844` mobile ergonomics + Playwright mobile E2E coverage.
+- [x] Added automatic Screen Wake Lock (`useWakeLock`), safe mobile haptic pulses (`haptics.js`), non-blocking `5s` Undo recovery (`useUndoToast` + `<UndoToast />`), a dedicated two-zone **Mobile Chronograph Sheet Dock** (`<= 720px` bottom dock with full-width progress rail, segmented `Exercise | Rest` tabs, and `44px` tactile play CTA distinct from Desktop's ring HUD), and Playwright mobile E2E coverage.
 - [x] Pruned `530` dead CSS rules (`~74 kB` source / `~59.7 kB` built CSS reduction) via AST-verified PostCSS cleanup across `src/styles/*.css`.
 
 ---

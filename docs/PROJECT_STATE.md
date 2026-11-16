@@ -19,7 +19,7 @@
 | **PWA & Favicon Assets** | `favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png` | [`public/`](../public/) |
 | **Default Seeded Routines** | `2` personal routines (`leg-workout-1`, `leg-workout-2`) | [`src/data/workouts.js`](../src/data/workouts.js) |
 | **Demo Showcase History** | `14` sessions (alternating the 2 routines + 6 manual logs) | [`src/utils/demoData.js`](../src/utils/demoData.js) |
-| **Stylesheets** | `10` pruned CSS modules (`200.21 kB` built / `30.92 kB` gzip) | [`src/styles/`](../src/styles/) |
+| **Stylesheets** | `10` pruned CSS modules (`202.29 kB` built / `31.23 kB` gzip) | [`src/styles/`](../src/styles/) |
 | **Storage Keys** | `10` managed keys (`STORAGE_KEYS`) | [`src/utils/storage.js`](../src/utils/storage.js) |
 | **Unit Tests (`node:test`)** | `44 / 44` passing across `9` test files | [`tests/`](../tests/) |
 | **E2E Tests (Playwright)** | `5 / 5` passing (desktop + `390×844` mobile & undo flows) | [`e2e/app.spec.js`](../e2e/app.spec.js) |
@@ -44,11 +44,12 @@
 2. **v0.5 Mobile Gym Readiness**:
    - Automatic Screen Wake Lock hook ([`src/utils/useWakeLock.js`](../src/utils/useWakeLock.js)) keeping screens awake while `ActiveWorkoutModal` is mounted and visible.
    - Guarded mobile haptic pulses ([`src/utils/haptics.js`](../src/utils/haptics.js)) on set completion, timer zero (even when audio chime is muted), and Undo recovery.
+   - Dedicated **Mobile Chronograph Sheet Dock (`<= 720px`)** inside [`ActiveWorkoutModal.jsx`](../src/components/ActiveWorkoutModal.jsx) & [`active-workout.css`](../src/styles/active-workout.css) (rounded sheet card, segmented `Exercise | Rest` mode pills, full-width progress rail, bold tabular readout, `44×44px` tactile Play/Pause button, contextual `Log`/`Skip` chips) kept intentionally distinct from Desktop's circular ring Chronograph HUD.
    - `390×844` mobile ergonomic polish in [`src/styles/responsive.css`](../src/styles/responsive.css) (safe-area sticky dock padding, expanded tap targets, nowrap home/library badges, zero horizontal scroll).
 3. **v0.5 Undo Recovery & Smooth Image Decode**:
    - Non-blocking `5s` Undo toast system ([`useUndoToast.js`](../src/utils/useUndoToast.js) + [`UndoToast.jsx`](../src/components/UndoToast.jsx)) across draft discard, routine delete, session delete, and player set removal.
    - Re-encoded `mcgill-curl-up.jpg` (`302.6 kB` -> `22.4 kB`) and added shared smooth `<FadeImage />` decode reveal in [`MediaViewer.jsx`](../src/components/MediaViewer.jsx) and [`ExerciseDatabaseView.jsx`](../src/components/ExerciseDatabaseView.jsx).
-4. **v0.5 CSS Bloat Removal**: Pruned `530` dead pre-redesign CSS rules (`321.0 KB` -> `246.5 KB` raw source CSS; built CSS down from `259.91 kB` -> `200.21 kB`) via AST-verified PostCSS audit.
+4. **v0.5 CSS Bloat Removal**: Pruned `530` dead pre-redesign CSS rules (`321.0 KB` -> `246.5 KB` raw before mobile sheet styles; built CSS down from `259.91 kB` -> `202.29 kB`) via AST-verified PostCSS audit.
 5. **v0.4 Baseline (Retained)**: Pruned extra starter routines to `leg-workout-1` & `leg-workout-2`, extracted [`migrations.js`](../src/utils/migrations.js), fixed Web Audio / Confetti RAF / Backup blob leaks, stripped `83` dead dark-mode selectors, and established docs suite.
 
 ---
@@ -68,5 +69,5 @@ Verified locally against final workspace files:
 - `npm run lint`: `Found 0 warnings and 0 errors` (`70` files via `oxlint`)
 - `npm run typecheck`: `0` errors (`tsc --noEmit`)
 - `npm test`: `44` passed, `0` failed (`9` files in `tests/`)
-- `npm run build`: `2139` modules transformed; `PWA v2.0.0` precache `145 entries (3609.79 KiB)`
+- `npm run build`: `2139` modules transformed; `PWA v2.0.0` precache `145 entries (3613.12 KiB)`
 - `npm run test:e2e`: `5` passed (`e2e/app.spec.js`, desktop + mobile `390×844`)

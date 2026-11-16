@@ -80,7 +80,13 @@ test.describe('Nova Soma Critical User Flows', () => {
     await page.goto('/');
     await page.locator('.btn-focus-start').click();
     await expect(page.locator('.player-sticky-dock')).toBeVisible();
+    await expect(page.locator('.dock-progress-rail')).toBeVisible();
     await assertNoOverflow('mobile Player');
+
+    await page.locator('.dock-play-btn').click();
+    await expect(page.locator('.dock-context-pill.is-log')).toBeVisible();
+    await page.locator('.dock-mode-seg-btn.is-rest').click();
+    await expect(page.locator('.dock-mode-seg-btn.is-rest')).toHaveClass(/active/);
 
     await page.getByRole('button', { name: '+ Set' }).first().click();
     await page.getByRole('button', { name: 'Remove last set' }).first().click();

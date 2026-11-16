@@ -899,13 +899,9 @@
   padding: 0 7px;
 }
 
-@media (max-width: 960px) {
-  .player-sticky-dock {
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-  }
-
+@media (max-width: 720px) {
   .player-main-stage {
-    padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 20px;
   }
 }
 
@@ -917,14 +913,5 @@
 
   .player-set-check {
     min-height: 40px;
-  }
-
-  .dock-mini-btn {
-    min-height: 36px;
-  }
-
-  .dock-play-btn {
-    width: 38px;
-    height: 38px;
   }
 }

@@ -759,8 +759,12 @@
   color: var(--text);
 }
 
-@media (max-width: 960px) {
+@media (max-width: 720px) {
   .undo-toast-wrap.in-player {
-    bottom: calc(134px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(184px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .player-sticky-dock.no-timer-bar ~ .undo-toast-wrap.in-player {
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px));
   }
 }
