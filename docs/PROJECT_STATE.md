@@ -19,7 +19,7 @@
 | **PWA & Favicon Assets** | `favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png` | [`public/`](../public/) |
 | **Default Seeded Routines** | `2` personal routines (`leg-workout-1`, `leg-workout-2`, `7` warm-up movements each) | [`src/data/workouts.js`](../src/data/workouts.js) |
 | **Demo Showcase History** | `14` sessions (alternating the 2 routines + 6 manual logs) | [`src/utils/demoData.js`](../src/utils/demoData.js) |
-| **Stylesheets** | `10` pruned CSS modules (`202.43 kB` built / `31.14 kB` gzip) | [`src/styles/`](../src/styles/) |
+| **Stylesheets** | `10` pruned CSS modules (`202.24 kB` built / `31.13 kB` gzip) | [`src/styles/`](../src/styles/) |
 | **Storage Keys** | `11` managed keys (`STORAGE_KEYS`) | [`src/utils/storage.js`](../src/utils/storage.js) |
 | **Unit Tests (`node:test`)** | `45 / 45` passing across `9` test files | [`tests/`](../tests/) |
 | **E2E Tests (Playwright)** | `5 / 5` passing (desktop + `390×844` mobile & undo flows) | [`e2e/app.spec.js`](../e2e/app.spec.js) |
@@ -70,5 +70,5 @@ Verified locally against final workspace files:
 - `npm run lint`: `Found 0 warnings and 0 errors` (`71` files via `oxlint`)
 - `npm run typecheck`: `0` errors (`tsc --noEmit`)
 - `npm test`: `45` passed, `0` failed (`9` files in `tests/`)
-- `npm run build`: `2140` modules transformed; `PWA v2.0.0` precache `145 entries (3630.50 KiB)`
+- `npm run build`: `2140` modules transformed; `PWA v2.0.0` precache `145 entries (3629.67 KiB)`
 - `npm run test:e2e`: `5` passed (`e2e/app.spec.js`, desktop + mobile `390×844`)

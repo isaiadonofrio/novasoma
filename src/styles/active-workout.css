@@ -846,16 +846,6 @@
   opacity: 0.55;
 }
 
-.nav-prev-icon-wrap {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: color-mix(in srgb, currentColor 10%, transparent);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-}
-
 .player-nav-next {
   min-width: 0;
   max-width: 480px;
@@ -887,48 +877,8 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
-.player-nav-next:hover .nav-next-arrow-badge {
-  transform: translateX(2px);
-}
-
 .player-nav-next:active {
   transform: translateY(0);
-}
-
-.nav-btn-copy {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 1px;
-}
-
-.nav-btn-kicker {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  opacity: 0.82;
-  line-height: 1.1;
-}
-
-.nav-btn-name {
-  font-size: 0.88rem;
-  font-weight: 800;
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.nav-next-arrow-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: color-mix(in srgb, currentColor 14%, transparent);
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  transition: transform 0.16s var(--ease);
 }
 
 @keyframes advancePulse {
@@ -1248,9 +1198,9 @@
 }
 
 .dock-enable-timer-pill {
-  width: 44px;
-  height: 46px;
-  border-radius: var(--radius-lg);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: var(--raised2);
   border: 1px solid var(--border-hi);
   color: var(--dim);
@@ -1266,22 +1216,35 @@
 
 .sticky-dock-nav-row {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 8px;
 }
 
+.dock-nav-prev,
+.dock-nav-next {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  min-height: 40px;
+  max-width: none;
+  padding: 0 14px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  text-align: center;
+}
+
 .dock-nav-prev {
-  padding: 0 12px;
-  min-height: 46px;
-  height: 46px;
-  max-width: 39%;
+  box-shadow: none;
 }
 
 .dock-nav-next {
-  padding: 0 14px 0 16px;
-  min-height: 46px;
-  height: 46px;
-  flex: 1;
+  box-shadow: none;
 }
 
 /* Pull-Out Slide-Over Explanation Drawer */
@@ -3747,13 +3710,13 @@
     height: 34px;
     padding: 0 10px;
     border-radius: 10px;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
   }
 
   .ribbon-phase-tag {
     height: 22px;
     padding: 0 7px;
-    font-size: 0.56rem;
+    font-size: 0.625rem;
   }
 
   .player-mobile-thumb-btn {
@@ -3768,6 +3731,22 @@
     height: 32px;
     padding: 0 11px;
     font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .dock-timer-kicker,
+  .dock-clock-sub {
+    font-size: 0.6875rem;
+  }
+
+  .dock-mode-seg-btn,
+  .dock-step-btn,
+  .dock-context-pill {
+    font-size: 0.75rem;
+  }
+
+  .sticky-timer-clock {
+    font-size: 1.625rem;
   }
 
   .guide-btn-label-desktop,
@@ -3866,13 +3845,33 @@
   }
 
   .studio-exercise-title {
-    font-size: 1.32rem;
+    font-size: 1.25rem;
+    font-weight: 800;
     line-height: 1.2;
     margin: 0;
   }
 
-  .studio-prescription-row {
-    font-size: 0.78rem;
+  .studio-header-title-row .studio-prescription-row {
+    gap: 3px 12px;
+  }
+
+  .studio-header-title-row .prescription-dot {
+    display: none;
+  }
+
+  .studio-prescription-row,
+  .logger-title-group {
+    font-size: 0.8125rem;
+  }
+
+  .prescription-type {
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  .prescription-val {
+    font-size: 0.8125rem;
+    font-weight: 700;
   }
 
   .superset-pip-dock {
@@ -3898,7 +3897,7 @@
   }
 
   .studio-console-card.is-superset-member-card .studio-exercise-title {
-    font-size: 1.22rem;
+    font-size: 1.1875rem;
   }
 
   .studio-console-card.is-superset-member-card .studio-logger-card,
@@ -3913,10 +3912,6 @@
     gap: 8px;
   }
 
-  .logger-title-group {
-    font-size: 0.78rem;
-  }
-
   .studio-logger-card .studio-logger-tools {
     flex-wrap: nowrap;
     gap: 5px;
@@ -3926,11 +3921,13 @@
     height: 32px;
     padding: 0 11px;
     font-size: 0.75rem;
+    font-weight: 700;
   }
 
   .studio-logger-card .player-sets-col-heads {
     padding: 0 8px 6px;
-    font-size: 0.64rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
     letter-spacing: 0.06em;
   }
 
@@ -3990,7 +3987,7 @@
   .studio-logger-card .set-num-tag {
     width: 30px;
     height: 30px;
-    font-size: 0.82rem;
+    font-size: 0.8125rem;
     border-radius: 9px;
   }
 
@@ -4014,7 +4011,7 @@
     min-width: 28px;
     max-width: 64px;
     width: 100%;
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 800;
   }
 

@@ -1965,20 +1965,11 @@ export function ActiveWorkoutModal({
             className="player-nav-prev dock-nav-prev"
             onClick={goToPrevBlock}
             disabled={!prevBlockExercise}
-            title={!prevBlockExercise ? 'First block in workout' : `Previous: ${prevBlockExercise.name}`}
-            aria-label={!prevBlockExercise ? 'First block in workout' : `Previous exercise: ${prevBlockExercise.name}`}
+            title={!prevBlockExercise ? 'First exercise' : `Previous: ${prevBlockExercise.name}`}
+            aria-label={!prevBlockExercise ? 'Previous exercise (disabled)' : `Previous exercise: ${prevBlockExercise.name}`}
           >
-            <span className="nav-prev-icon-wrap" aria-hidden="true">
-              <ArrowLeft size={16} />
-            </span>
-            <span className="nav-btn-copy">
-              <small className="nav-btn-kicker">
-                {!prevBlockExercise ? 'START' : 'PREVIOUS'}
-              </small>
-              <strong className="nav-btn-name">
-                {!prevBlockExercise ? 'First Exercise' : prevBlockExercise.name}
-              </strong>
-            </span>
+            <ArrowLeft size={15} aria-hidden="true" />
+            <span>Previous</span>
           </button>
 
           {!showStickyTimerRow && (
@@ -1998,17 +1989,11 @@ export function ActiveWorkoutModal({
               type="button"
               className={`player-nav-next dock-nav-next ${activeNavSetsDone ? 'ready-advance' : ''}`}
               onClick={goToNextBlock}
-              aria-label={`Next: ${nextBlockExercise.name}`}
+              title={`Next: ${nextBlockExercise.name}`}
+              aria-label={`Next exercise: ${nextBlockExercise.name}`}
             >
-              <span className="nav-btn-copy">
-                <small className="nav-btn-kicker">
-                  {activeNavSetsDone ? 'DONE · NEXT' : 'NEXT'}
-                </small>
-                <strong className="nav-btn-name">{nextBlockExercise.name}</strong>
-              </span>
-              <span className="nav-next-arrow-badge" aria-hidden="true">
-                <ArrowRight size={17} />
-              </span>
+              <span>Next</span>
+              <ArrowRight size={15} aria-hidden="true" />
             </button>
           ) : (
             <button
@@ -2017,13 +2002,8 @@ export function ActiveWorkoutModal({
               onClick={handleRequestFinish}
               aria-label="Finish and save workout"
             >
-              <span className="nav-btn-copy">
-                <small className="nav-btn-kicker">FINAL BLOCK</small>
-                <strong className="nav-btn-name">Finish &amp; Save Workout</strong>
-              </span>
-              <span className="nav-next-arrow-badge" aria-hidden="true">
-                <Trophy size={17} />
-              </span>
+              <span>Finish</span>
+              <Trophy size={14} aria-hidden="true" />
             </button>
           )}
         </div>
