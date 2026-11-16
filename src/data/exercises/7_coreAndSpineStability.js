@@ -769,5 +769,78 @@ export const COREANDSPINESTABILITY_EXERCISES = [
         ],
         proTip: 'Maximum hand-grip irradiation triggers automatic neurological co-contraction across the rotator cuff stabilizers—forcing flawless humeral centration on every step.'
       }
+    },
+
+  {
+      id: 'ex-prone-cobra-hold',
+      name: 'Prone Postural Cobra Hold',
+      scientificName: 'Prone Thoracic Extension With Bilateral Humeral External Rotation & Scapular Retraction',
+      subtitle: 'Physiotherapy anti-kyphosis extension hold targeting mid/lower traps & thoracic erectors',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isometric',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 3,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Thoracic Spinal Erectors', 'Middle & Lower Trapezius', 'Rhomboids'],
+        secondary: ['Posterior Deltoids', 'Infraspinatus & Teres Minor'],
+        stabilizers: ['Gluteus Maximus (Pelvic Anchor)', 'Deep Cervical Flexors (Chin Tuck)']
+      },
+      execution: {
+        setup: 'Lie face down on a mat with legs straight, toes resting lightly on the floor, and arms beside your torso with palms facing downward.',
+        eccentric: 'Lower smoothly back down to rest your forehead lightly on the mat once the hold interval completes.',
+        concentric: 'Gently squeeze glutes to stabilize the pelvis, hover your chest only 5–10 cm off the mat (looking straight down with a subtle chin tuck), rotate thumbs outward toward the ceiling, and draw shoulder blades down toward your hips.',
+        breathing: 'Breathe calmly and steadily through the nose while keeping your neck long and lower back relaxed.',
+        commonMistakes: [
+          'Cranking the head backward to look at the wall ahead and straining the cervical spine',
+          'Hyperextending high from the lower back instead of lengthening cleanly through the mid-back',
+          'Shrugging shoulders toward ears instead of depressing scapulae downward'
+        ],
+        proTip: 'Keep your gaze strictly straight down at the floor—lifting just a few centimeters with thumbs turned out gives maximum thoracic posture endurance with zero lumbar jamming.'
+      }
+    },
+
+  {
+      id: 'ex-jefferson-curl',
+      name: 'Light-Loaded Jefferson Curl',
+      scientificName: 'Loaded Segmental Cervical-Thoracic-Lumbar Flexion & Eccentric Posterior-Chain Articulation',
+      subtitle: 'Gymnastics controlled segmental spine flexion & hamstring lengthening under very light load',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Single Dumbbell',
+      mechanics: 'Mobility',
+      level: 'Intermediate',
+      muscleKey: 'back',
+      defaultSets: 2,
+      defaultReps: '5-6',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Segmental Spinal Erectors (Eccentric)', 'Thoracolumbar Fascia', 'Hamstrings'],
+        secondary: ['Gastrocnemius & Soleus', 'Multifidus'],
+        stabilizers: ['Deep Abdominal Bracing Cylinder', 'Forearms & Grip']
+      },
+      execution: {
+        setup: 'Stand tall on a sturdy box or flat floor with feet hip-width and knees locked straight (softly unlocked if calves feel tight). Hold a very light dumbbell or kettlebell (2–8 kg) with relaxed straight arms in front of your thighs.',
+        eccentric: 'Tuck your chin firmly to chest first, then peel down slowly ONE vertebra at a time—neck, upper back, mid-back, lower back, and finally hinging gently into the hips for a 5-second descent.',
+        concentric: 'Pause 2 calm breaths at bottom end range, then reverse smoothly from the bottom up: tuck pelvis under first and restack lumbar, thoracic, and cervical vertebrae one by one.',
+        breathing: 'Slow controlled exhalation as you roll downward; steady calm breaths at the bottom.',
+        commonMistakes: [
+          'Using heavy weight like a deadlift (this is a light mobility & segmental strength drill, never a max load lift)',
+          'Hinging flat-backed at the hips instead of articulating one vertebra at a time',
+          'Rushing the ascent without restacking from pelvis upward'
+        ],
+        proTip: 'Never load this heavy—a light 4–6 kg weight acts simply as gentle traction teaching healthy segmental spine control and hamstring tolerance.'
+      }
     }
 ];

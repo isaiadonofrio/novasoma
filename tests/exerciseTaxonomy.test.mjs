@@ -17,10 +17,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-test('canonical exercise database has 135 unique exercises', () => {
-  assert.equal(ALL_RAW_EXERCISES.length, 135);
+test('canonical exercise database has 140 unique exercises', () => {
+  assert.equal(ALL_RAW_EXERCISES.length, 140);
   const ids = ALL_RAW_EXERCISES.map((ex) => ex.id);
-  assert.equal(new Set(ids).size, 135, 'All canonical exercise IDs must be unique');
+  assert.equal(new Set(ids).size, 140, 'All canonical exercise IDs must be unique');
 });
 
 test('every canonical exercise has complete standardized scientific taxonomy & biomechanics', () => {
@@ -111,7 +111,12 @@ test('all 127 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
     'wu-elevated-ankle-dorsiflexion',
     'wu-dumbbell-ankle-dorsiflexion',
     'wu-kettlebell-ankle-dorsiflexion',
-    'wu-banded-ankle-dorsiflexion'
+    'wu-banded-ankle-dorsiflexion',
+    'wu-thoracic-open-book',
+    'wu-wall-angel-slides',
+    'wu-scapular-pull-up',
+    'ex-prone-cobra-hold',
+    'ex-jefferson-curl'
   ]);
 
   for (const [id, varName] of mappedIds.entries()) {

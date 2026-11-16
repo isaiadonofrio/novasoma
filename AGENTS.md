@@ -22,22 +22,23 @@ This file defines non-negotiable engineering invariants, workspace layout, and v
 ## 2. Structural & Technical Invariants
 
 ### A. Default Routines & Storage Migrations
-- `src/data/workouts.js` seeds **only the user's two personal routines**:
+- `src/data/workouts.js` seeds **only the user's personal routines**:
   1. `leg-workout-1`
   2. `leg-workout-2`
+  3. `posture-spine-foundation`
 - Do **not** re-introduce generic filler sample routines into `INITIAL_ROUTINES`.
 - Existing user `localStorage` pruning and legacy catalog normalization live cleanly in `src/utils/migrations.js` (`hydrateExercisesFromStorage`, `hydrateRoutinesFromStorage`, `registerCurrentCatalogInStorage`). Keep `src/App.jsx` free of multi-version migration logic.
 - All `localStorage` keys must be declared in `STORAGE_KEYS` inside `src/utils/storage.js` and read/written through safe storage helpers (`parseBackupPayload`, `validateActiveWorkoutDraft`, etc.).
 
 ### B. Canonical Exercise Database & Assets Layout
-- `135` canonical exercises (`127` illustrated + `8` text-only warm-up variations pending imagery) are split cleanly by movement family across `src/data/exercises/`:
-  - `1_warmupAndMobility.js` (`16`)
+- `140` canonical exercises (`127` illustrated + `13` text-only warm-up/posture variations pending imagery) are split cleanly by movement family across `src/data/exercises/`:
+  - `1_warmupAndMobility.js` (`19`)
   - `2_squatsAndKneeFlexion.js` (`13`)
   - `3_hipHingesAndGlutes.js` (`19`)
   - `4_pushUpperBody.js` (`23`)
   - `5_pullUpperBody.js` (`23`)
   - `6_lungesAndUnilateral.js` (`14`)
-  - `7_coreAndSpineStability.js` (`21`)
+  - `7_coreAndSpineStability.js` (`23`)
   - `8_conditioningAndPower.js` (`6`)
 - Every canonical movement must retain complete `ExerciseBiomechanics` (`plane`, `chain`, `laterality`, `loadVector`, `resistanceProfile`, `jointActions`) matching `src/data/exerciseTaxonomy.js`.
 - **Media asset separation**:

@@ -397,6 +397,42 @@ export const EXERCISE_TAXONOMY = {
     'Active End-Range Articular Glide',
     'Cervical, Thoracic & Lumbar Flexion/Extension + Hip Flexion'
   ),
+  'wu-thoracic-open-book': entry(
+    'Sidelying Thoracic Axial Rotation With Hip-Locked Lumbar Neutralization',
+    'fam-thoracic-mobility',
+    'Angle / Stance',
+    'Sidelying Hip-Blocked Thoracic Open-Book',
+    'Transverse',
+    'Open / Mixed Kinetic Chain',
+    'Unilateral',
+    'Gravity-Assisted End-Range Ribcage Opening',
+    'Smooth End-Range Rotational Yield',
+    'Thoracic Rotation & Pectoral Horizontal Extension'
+  ),
+  'wu-wall-angel-slides': entry(
+    'Dorsally Braced Closed-Chain Overhead Scapular Upward Rotation & Lower-Trapezius Activation',
+    'fam-thoracic-mobility',
+    'Progression',
+    'Wall-Braced Scapular Upward Rotation Slide',
+    'Frontal / Sagittal',
+    'Closed Kinetic Chain (Dorsal Wall Reference)',
+    'Bilateral',
+    'Wall-Guided Isometric Anti-Extension Alignment',
+    'Peak Demand at Overhead End-Range Flexion',
+    'Scapular Upward Rotation, Posterior Tilt & Shoulder Flexion'
+  ),
+  'wu-scapular-pull-up': entry(
+    'Suspended Closed-Chain Scapular Depression & Upward/Downward Rotation Control',
+    'fam-vertical-pull',
+    'Progression',
+    'Straight-Arm Active Hang Scapular Pull-Up',
+    'Frontal / Vertical',
+    'Closed Kinetic Chain (CKC)',
+    'Bilateral',
+    'Axial Vertical Bodyweight Suspension',
+    'Ascending Squeeze at Peak Scapular Depression',
+    'Scapular Depression & Retraction (Extended Elbows)'
+  ),
   'wu-worlds-greatest-stretch': entry(
     'Split-Stance Hip Extension, Ankle Dorsiflexion & Thoracic Transverse Rotation Flow',
     'fam-hip-mobility',
@@ -1741,6 +1777,18 @@ export const EXERCISE_TAXONOMY = {
     'Constant Posterior Isometric Contraction',
     'Mild Global Thoracic/Lumbar Extension + Hip Extension'
   ),
+  'ex-prone-cobra-hold': entry(
+    'Prone Thoracic Extension With Bilateral Humeral External Rotation & Scapular Retraction',
+    'fam-posterior-spine',
+    'Angle / Stance',
+    'Thoracic Cobra + Humeral External Rotation',
+    'Sagittal / Transverse',
+    'Open Kinetic Chain (OKC)',
+    'Bilateral',
+    'Horizontal Gravity Over Mid-Thoracic Spine & Arms',
+    'Constant Isometric Postural Retraction Torque',
+    'Thoracic Extension, Scapular Retraction/Depression & External Rotation'
+  ),
   'ex-farmers-carry': entry(
     'Bilateral Standing Loaded Gait Carry — Axial Grip, Trap, & Tri-Planar Core Endurance',
     'fam-loaded-carry',
@@ -1874,6 +1922,18 @@ export const EXERCISE_TAXONOMY = {
     'Low-Impact Axial Vertical Compressive Pumping (Disc Hydration)',
     'Aerobic Zone 1–2 Active Recovery & Thoracolumbar Fascia Glide',
     'Reciprocal Contralateral Arm Swing, Pelvic Rotation & Diaphragmatic Breath'
+  ),
+  'ex-jefferson-curl': entry(
+    'Loaded Segmental Cervical-Thoracic-Lumbar Flexion & Eccentric Posterior-Chain Articulation',
+    'fam-spinal-decompression',
+    'Angle / Stance',
+    'Light-Loaded Segmental Jefferson Curl',
+    'Sagittal',
+    'Closed Kinetic Chain (CKC)',
+    'Bilateral',
+    'Anterior Light Axial Distraction Vector',
+    'Progressive Eccentric End-Range Spinal Articulation',
+    'Sequential Vertebral Flexion/Extension & Posterior-Chain Elongation'
   )
 };
 

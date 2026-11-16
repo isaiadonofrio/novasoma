@@ -596,5 +596,118 @@ export const WARMUPANDMOBILITY_EXERCISES = [
         ],
         proTip: 'If you ever feel a sharp "pinch" at the front of the ankle during squats, keeping the band low right over the talus crease instantly restores pain-free forward shin travel.'
       }
+    },
+
+  {
+      id: 'wu-thoracic-open-book',
+      name: 'Sidelying Thoracic Open-Book Rotation',
+      scientificName: 'Sidelying Thoracic Axial Rotation With Hip-Locked Lumbar Neutralization',
+      subtitle: 'Physiotherapy thoracic rotation & anterior chest opening while locking the lower back',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Thoracic Spine Rotators', 'Pectoralis Major & Minor (Stretch)'],
+        secondary: ['Obliques (Thoracic Rotation)', 'Posterior Deltoid & Rhomboids'],
+        stabilizers: ['Lumbar Spine (Hip-Flexed Block)', 'Deep Neck Flexors']
+      },
+      execution: {
+        setup: 'Lie on your side with your bottom leg straight and your top knee bent past 90° resting firmly on a foam roller or yoga block (this locks the lumbar spine so all rotation happens cleanly in the mid-back). Extend both arms straight in front at chest height.',
+        eccentric: 'Sweep your top arm up in a wide arc across to the opposite side, rotating strictly through your sternum and ribcage while keeping your top knee pinned heavily down onto the block.',
+        concentric: 'Pause for 2 calm breaths at your pain-free end range, then glide the arm smoothly back to close the book.',
+        breathing: 'Inhale as you sweep upward; exhale slowly into the open chest rotation to release ribcage stiffness.',
+        commonMistakes: [
+          'Letting the top knee lift off the floor/block so the lower back twists instead of the thoracic spine',
+          'Forcing the back of the hand to the floor by wrenching the shoulder joint',
+          'Rushing repetitions without exhaling at end range'
+        ],
+        proTip: 'Keep your eyes tracking your moving thumb—ocular guidance naturally drives cleaner cervical-thoracic rotation.'
+      }
+    },
+
+  {
+      id: 'wu-wall-angel-slides',
+      name: 'Wall Angel Scapular Slide',
+      scientificName: 'Dorsally Braced Closed-Chain Overhead Scapular Upward Rotation & Lower-Trapezius Activation',
+      subtitle: 'Physiotherapy & gymnastics posture drill restoring overhead shoulder flexion without rib flare',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Wall)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'shoulders',
+      defaultSets: 2,
+      defaultReps: '8-10',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Lower & Middle Trapezius', 'Serratus Anterior'],
+        secondary: ['Rotator Cuff (External Rotators)', 'Thoracic Erectors'],
+        stabilizers: ['Anterior Core (Rib-Down Brace)', 'Deep Cervical Flexors']
+      },
+      execution: {
+        setup: 'Stand with heels 10–15 cm in front of a wall, knees softly bent, and press sacrum, mid-back, and back of head lightly against the wall. Gently tuck ribs down so the low back stays flat (about one finger of space). Raise arms to a 90° goalpost position.',
+        eccentric: 'Slide wrists, forearms, and elbows slowly downward toward your back pockets, squeezing shoulder blades down and slightly together.',
+        concentric: 'Glide arms slowly up overhead along the wall as high as possible while keeping wrists, forearms, and lower ribs in contact.',
+        breathing: 'Exhale gently while pressing ribs flat and sliding arms overhead; inhale on the controlled return.',
+        commonMistakes: [
+          'Arching the lumbar spine aggressively away from the wall to fake overhead arm reach',
+          'Shrugging upper traps toward the ears as arms rise',
+          'Letting wrists peel off the wall while elbows stay pinned'
+        ],
+        proTip: 'If your wrists peel off overhead, stop right before that point—honest range builds genuine lower-trap & serratus upward rotation.'
+      }
+    },
+
+  {
+      id: 'wu-scapular-pull-up',
+      name: 'Scapular Pull-Up (Active Hang)',
+      scientificName: 'Suspended Closed-Chain Scapular Depression & Upward/Downward Rotation Control',
+      subtitle: 'Gymnastics foundational active hang strengthening lower trapezius & shoulder-blade depression',
+      pattern: MOVEMENT_PATTERNS.VERTICAL_PULL,
+      equipment: 'Pull-Up Bar',
+      isWarmup: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 3,
+      defaultReps: '8-10',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Lower Trapezius', 'Latissimus Dorsi (Initial Pull)', 'Serratus Anterior'],
+        secondary: ['Rhomboids', 'Pectoralis Minor (Stabilizing Counter-Control)'],
+        stabilizers: ['Forearm Flexors (Grip)', 'Anterior Core (Hollow Brace)']
+      },
+      execution: {
+        setup: 'Hang from an overhead pull-up bar with straight arms, shoulder-width grip, and a gentle hollow-body rib-down brace (ribs tucked, glutes softly engaged).',
+        eccentric: 'Lower slowly over 2 seconds back into a full relaxed passive shoulder stretch without shrugging violently.',
+        concentric: 'Keeping elbows 100% straight, pull shoulder blades firmly down away from your ears and slightly together until your chest lifts 5–10 cm cleanly; pause 1 second at top.',
+        breathing: 'Exhale crisply while depressing shoulder blades downward; inhale as you lengthen back into passive hang.',
+        commonMistakes: [
+          'Bending the elbows and turning the drill into a partial arm pull-up',
+          'Flaring the ribcage and arching the lumbar spine to pull the chest upward',
+          'Bouncing rapidly without holding the top scapular depression squeeze'
+        ],
+        proTip: 'Every strong pull-up and healthy overhead shoulder starts from this first 5 cm of active scapular depression.'
+      }
     }
 ];

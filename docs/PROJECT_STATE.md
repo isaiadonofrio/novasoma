@@ -12,29 +12,29 @@
 
 | Domain | Verified State | Location |
 | :--- | :--- | :--- |
-| **Canonical Exercises** | `135` unique movements (`127` illustrated, `8` pending images) | [`src/data/exercises/`](../src/data/exercises/index.js) |
-| **Movement Categories** | `8` modular files (`16 + 13 + 19 + 23 + 23 + 14 + 21 + 6`) | `src/data/exercises/1_*.js` – `8_*.js` |
+| **Canonical Exercises** | `140` unique movements (`127` illustrated, `13` pending images) | [`src/data/exercises/`](../src/data/exercises/index.js) |
+| **Movement Categories** | `8` modular files (`19 + 13 + 19 + 23 + 23 + 14 + 23 + 6`) | `src/data/exercises/1_*.js` – `8_*.js` |
 | **Illustrated Media Assets** | `127` local `.jpg` / `.webp` files (`mcgill-curl-up.jpg` `22.4 kB`) | [`src/assets/exercises/`](../src/assets/exercises/) + [`exerciseMedia.js`](../src/data/exerciseMedia.js) |
 | **Brand & Anatomy Assets** | `logo.svg`, `logo.png`, `favicon.png`, `body.svg` | [`src/assets/brand/`](../src/assets/brand/), [`src/assets/anatomy/`](../src/assets/anatomy/) |
 | **PWA & Favicon Assets** | `favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png` | [`public/`](../public/) |
-| **Default Seeded Routines** | `2` personal routines (`leg-workout-1`, `leg-workout-2`, `7` warm-up movements each) | [`src/data/workouts.js`](../src/data/workouts.js) |
+| **Default Seeded Routines** | `3` personal routines (`leg-workout-1`, `leg-workout-2`, `posture-spine-foundation`) | [`src/data/workouts.js`](../src/data/workouts.js) |
 | **Demo Showcase History** | `14` sessions (alternating the 2 routines + 6 manual logs) | [`src/utils/demoData.js`](../src/utils/demoData.js) |
 | **Stylesheets** | `10` pruned CSS modules (`202.24 kB` built / `31.13 kB` gzip) | [`src/styles/`](../src/styles/) |
 | **Storage Keys** | `11` managed keys (`STORAGE_KEYS`) | [`src/utils/storage.js`](../src/utils/storage.js) |
 | **Unit Tests (`node:test`)** | `45 / 45` passing across `9` test files | [`tests/`](../tests/) |
 | **E2E Tests (Playwright)** | `5 / 5` passing (desktop + `390×844` mobile & undo flows) | [`e2e/app.spec.js`](../e2e/app.spec.js) |
 
-### Canonical Library Distribution (`135` Movements)
-- `1_warmupAndMobility.js`: `16`
+### Canonical Library Distribution (`140` Movements)
+- `1_warmupAndMobility.js`: `19`
 - `2_squatsAndKneeFlexion.js`: `13`
 - `3_hipHingesAndGlutes.js`: `19`
 - `4_pushUpperBody.js`: `23`
 - `5_pullUpperBody.js`: `23`
 - `6_lungesAndUnilateral.js`: `14`
-- `7_coreAndSpineStability.js`: `21`
+- `7_coreAndSpineStability.js`: `23`
 - `8_conditioningAndPower.js`: `6`
 
-*(Equipment split verified via Exercise Library rules: `102` Equipment Loaded, `33` Bodyweight Only · Region split: `62` Lower Body, `53` Upper Body, `20` Core & Spine.)*
+*(Equipment split verified via Exercise Library rules: `104` Equipment Loaded, `36` Bodyweight Only · Region split: `62` Lower Body, `58` Upper Body, `20` Core & Spine.)*
 
 ---
 
@@ -70,5 +70,5 @@ Verified locally against final workspace files:
 - `npm run lint`: `Found 0 warnings and 0 errors` (`71` files via `oxlint`)
 - `npm run typecheck`: `0` errors (`tsc --noEmit`)
 - `npm test`: `45` passed, `0` failed (`9` files in `tests/`)
-- `npm run build`: `2140` modules transformed; `PWA v2.0.0` precache `145 entries (3629.67 KiB)`
+- `npm run build`: `2140` modules transformed; `PWA v2.0.0` precache `145 entries (3641.42 KiB)`
 - `npm run test:e2e`: `5` passed (`e2e/app.spec.js`, desktop + mobile `390×844`)

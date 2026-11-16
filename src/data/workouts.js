@@ -1,15 +1,23 @@
 import { EXERCISE_DATABASE } from './exerciseDatabase';
 
-// Helper to retrieve complete canonical exercise data from database
-const getEx = (id, isWarmup = false, instanceId = null) => {
+/**
+ * Retrieve complete canonical exercise data from database with phase override.
+ * @param {string} id
+ * @param {boolean | 'warmup' | 'main' | 'decompression'} [phaseOrWarmup=false]
+ * @param {string | null} [instanceId=null]
+ */
+const getEx = (id, phaseOrWarmup = false, instanceId = null) => {
   const found = EXERCISE_DATABASE.find(e => e.id === id);
   if (!found) throw new Error(`Exercise not found: ${id}`);
+  const phase = typeof phaseOrWarmup === 'string'
+    ? phaseOrWarmup
+    : (phaseOrWarmup ? 'warmup' : 'main');
   return {
     ...found,
     sourceId: id,
     id: instanceId || id,
-    phase: isWarmup ? 'warmup' : 'main',
-    isWarmup
+    phase,
+    isWarmup: phase === 'warmup'
   };
 };
 
@@ -73,6 +81,32 @@ export const INITIAL_ROUTINES = [
     exercises: [
       ...WARMUP_EXERCISES,
       ...LEG_2_MAIN
+    ]
+  },
+  {
+    id: 'posture-spine-foundation',
+    title: 'Full Body · Posture, Spine & Upper Back',
+    shortTitle: 'Posture & Spine',
+    description: 'Physiotherapy and gymnastics-inspired active postural routine pairing thoracic & hip mobility warm-ups, scapular pulling, zero-shear upper-back strength, McGill spine stability, and overhead decompression.',
+    category: 'Posture & Full Body',
+    durationMinutes: 50,
+    difficulty: 'All Levels',
+    accentColor: '#176A63',
+    equipmentTags: ['Dumbbells', 'Bench', 'Pull-Up Bar', 'Mat'],
+    exercises: [
+      getEx('wu-cat-cow-child-pose', 'warmup'),
+      getEx('wu-thoracic-open-book', 'warmup'),
+      getEx('wu-wall-angel-slides', 'warmup'),
+      getEx('wu-worlds-greatest-stretch', 'warmup'),
+      getEx('wu-scapular-pull-up', 'main'),
+      getEx('ex-dumbbell-bent-over-row', 'main'),
+      getEx('ex-push-up', 'main'),
+      getEx('ex-incline-dumbbell-ytw-raise', 'main'),
+      getEx('ex-prone-cobra-hold', 'main'),
+      getEx('ex-bird-dog', 'main'),
+      getEx('ex-hollow-body-hold', 'main'),
+      getEx('wu-passive-dead-hang', 'decompression', 'dc-passive-dead-hang'),
+      getEx('ex-decompression-brisk-walk', 'decompression')
     ]
   }
 ];
