@@ -1,6 +1,7 @@
 import { INITIAL_ROUTINES } from '../data/workouts.js';
 import { EXERCISE_DATABASE } from '../data/exerciseDatabase.js';
 import { formatLoggedSetSummary } from './workoutSets.js';
+import { applyLegWarmupAdditions } from './routineMigrations.js';
 import {
   STORAGE_KEYS,
   safeReadJson,
@@ -182,8 +183,12 @@ export function hydrateExercisesFromStorage() {
   return EXERCISE_DATABASE;
 }
 
+export { applyLegWarmupAdditions } from './routineMigrations.js';
+
 export function hydrateRoutinesFromStorage() {
   const saved = safeReadJson(STORAGE_KEYS.ROUTINES, null);
+  const alreadyAddedLegWarmups = safeReadString(STORAGE_KEYS.ADDED_LEG_WARMUPS, '') === '1';
+
   if (saved && Array.isArray(saved)) {
     try {
       const alreadyPruned = safeReadString(STORAGE_KEYS.PRUNED_EXTRA_DEFAULTS, '') === '1';
@@ -211,12 +216,19 @@ export function hydrateRoutinesFromStorage() {
           exercises: (routine.exercises || []).map((ex) => mergeMissingCanonical(ex)),
         };
       });
-      return [...mappedSaved, ...missingInitial];
+
+      const merged = [...mappedSaved, ...missingInitial];
+      if (!alreadyAddedLegWarmups) {
+        safeWriteString(STORAGE_KEYS.ADDED_LEG_WARMUPS, '1');
+        return applyLegWarmupAdditions(merged, EXERCISE_DATABASE);
+      }
+      return merged;
     } catch {
       // Fallback to initial routines
     }
   }
   safeWriteString(STORAGE_KEYS.PRUNED_EXTRA_DEFAULTS, '1');
+  safeWriteString(STORAGE_KEYS.ADDED_LEG_WARMUPS, '1');
   return INITIAL_ROUTINES;
 }
 

@@ -8,8 +8,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
-  Maximize2,
-  Minimize2,
   Link2,
   Timer,
   TimerOff,
@@ -976,7 +974,6 @@ export function ActiveWorkoutModal({
     0
   );
   const allSupersetSetsDone = supersetTotalSets > 0 && supersetDoneSets === supersetTotalSets;
-  const supersetHasAnyVisuals = supersetMembers.some((m) => Boolean(m.ex.illustration));
   const otherSupersetPartners = currentSuperset
     ? supersetMembers.filter((m) => m.mIdx !== currentIndex)
     : [];
@@ -1143,11 +1140,11 @@ export function ActiveWorkoutModal({
     return (
       <>
         <div className={`player-sets-col-heads ${colModeClass}`} aria-hidden="true">
-          <span>SET</span>
-          <span>PREVIOUS</span>
-          <span>{profile.statHeader}</span>
-          {showWeightCol && <span>{targetBodyweight ? '+KG (OPT)' : 'WEIGHT (KG)'}</span>}
-          <span>DONE</span>
+          <span className="col-head-set">SET</span>
+          <span className="col-head-prev">PREVIOUS</span>
+          <span className="col-head-stat">{profile.statHeader}</span>
+          {showWeightCol && <span className="col-head-weight">{targetBodyweight ? '+KG (OPT)' : 'WEIGHT (KG)'}</span>}
+          <span className="col-head-done">DONE</span>
         </div>
 
         <div className="player-sets-list">
@@ -1168,7 +1165,6 @@ export function ActiveWorkoutModal({
                   >
                     {set.isDropset ? 'DROP' : `${set.setNum}`}
                   </span>
-                  {isNextUp && <span className="set-next-indicator">NEXT</span>}
                 </div>
 
                 {hasPrevData ? (
@@ -1288,11 +1284,6 @@ export function ActiveWorkoutModal({
     const targetAllSetsDone = targetSets.length > 0 && targetDoneCount === targetSets.length;
     const targetMuscleName = MUSCLE_LABELS[targetEx.muscleKey] || targetEx.muscleKey;
     const targetHasImages = Boolean(targetEx.illustration || targetEx.illustrationEnd);
-    const targetHasMedia = targetHasImages || Boolean(targetEx.customVideoUrl);
-    const targetNextSet = targetSets.find((s) => !s.completed) || null;
-    const targetTimerCfg = getExerciseTimerConfig(targetEx, targetNextSet);
-    const targetTimerOn = isRestTimerEnabledForExercise(targetEx);
-    const targetDefaultRest = getEffectiveRestSeconds(targetEx);
 
     return (
       <div
@@ -1304,104 +1295,62 @@ export function ActiveWorkoutModal({
           onClick={memberMeta && !isActiveCard ? () => focusSupersetPartner(targetIdx) : undefined}
         >
           <div className="studio-hero-info">
-            {targetHasImages && targetEx.illustration && (
-              <button
-                type="button"
-                className="player-mobile-thumb-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (memberMeta && !isActiveCard) {
-                    focusSupersetPartner(targetIdx);
-                    setIsMobileDemoExpanded(true);
-                  } else {
-                    setIsMobileDemoExpanded((prev) => !prev);
-                  }
-                }}
-                title={isMobileDemoExpanded && isActiveCard ? 'Hide demo' : 'Show demo'}
-                aria-label="Toggle demonstration image"
-              >
-                <img src={targetEx.illustration} alt={targetEx.name} />
-                <span className="mobile-thumb-zoom">
-                  {isMobileDemoExpanded && isActiveCard ? <Minimize2 size={11} /> : <Maximize2 size={11} />}
-                </span>
-              </button>
-            )}
-
-            <div className="studio-header-top-row">
-              <h1 className="studio-exercise-title">{targetEx.name}</h1>
-
-              <div className="studio-header-actions">
+            <div className="studio-hero-main-row">
+              {targetHasImages && targetEx.illustration && (
                 <button
                   type="button"
-                  className="studio-header-guide-btn"
+                  className="player-mobile-thumb-btn"
                   onClick={(e) => {
                     e.stopPropagation();
-                    openGuideDrawer(memberMeta ? targetIdx : null);
+                    if (memberMeta && !isActiveCard) {
+                      focusSupersetPartner(targetIdx);
+                      setIsMobileDemoExpanded(true);
+                    } else {
+                      setIsMobileDemoExpanded((prev) => !prev);
+                    }
                   }}
-                  title={`Open Form Guide for ${targetEx.name} (G)`}
+                  title={isMobileDemoExpanded && isActiveCard ? 'Hide illustration' : 'Expand illustration'}
+                  aria-label="Toggle exercise illustration"
                 >
-                  <BookOpen size={14} />
-                  <span>Form Guide</span>
-                  {isActiveCard && <kbd className="guide-key-hint">G</kbd>}
+                  <img src={targetEx.illustration} alt={targetEx.name} />
                 </button>
-              </div>
-            </div>
+              )}
 
-            <div className="studio-header-title-row">
-              <div className="studio-prescription-row">
-                <span className="prescription-pill">
-                  <span className="prescription-type">Muscle</span>
-                  <strong className="prescription-val">{targetMuscleName}</strong>
-                </span>
-                <span className="prescription-dot">·</span>
-                <span className="prescription-pill">
-                  <span className="prescription-type">Equipment</span>
-                  <strong className="prescription-val">{targetEx.equipment || 'Bodyweight'}</strong>
-                </span>
-              </div>
-            </div>
+              <div className="studio-hero-copy">
+                <div className="studio-header-top-row">
+                  <h1 className="studio-exercise-title">{targetEx.name}</h1>
 
-            <div className="player-mobile-quick-actions">
-              <div className="mobile-compact-targets">
-                {targetTimerCfg.hasWorkTimer ? (
-                  <span>
-                    {targetTimerCfg.workShortLabel} <b>{formatTimerPresetChip(targetTimerCfg.workSeconds)}</b>
-                    {targetTimerOn && <> · Rest <b>{targetDefaultRest}s</b></>}
-                  </span>
-                ) : (
-                  <span>{targetTimerOn ? <>Rest <b>{targetDefaultRest}s</b></> : 'No rest timer'}</span>
-                )}
-              </div>
-              <div className="mobile-quick-btns">
-                {(targetHasMedia || supersetHasAnyVisuals) && (
-                  <button
-                    type="button"
-                    className={`player-mini-action-btn ${isMobileDemoExpanded && isActiveCard ? 'active' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (memberMeta && !isActiveCard) {
-                        focusSupersetPartner(targetIdx);
-                        setIsMobileDemoExpanded(true);
-                      } else {
-                        setIsMobileDemoExpanded((prev) => !prev);
-                      }
-                    }}
-                  >
-                    {isMobileDemoExpanded && isActiveCard ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-                    <span>{isMobileDemoExpanded && isActiveCard ? 'Hide' : 'Demo'}</span>
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className="player-mini-action-btn guide"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openGuideDrawer(memberMeta ? targetIdx : null);
-                  }}
-                >
-                  <BookOpen size={12} />
-                  <span>Form</span>
-                </button>
+                  <div className="studio-header-actions">
+                    <button
+                      type="button"
+                      className="studio-header-guide-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openGuideDrawer(memberMeta ? targetIdx : null);
+                      }}
+                      title={`Open Form Guide for ${targetEx.name} (G)`}
+                    >
+                      <BookOpen size={14} />
+                      <span className="guide-btn-label-desktop">Form Guide</span>
+                      <span className="guide-btn-label-mobile">Form</span>
+                      {isActiveCard && <kbd className="guide-key-hint">G</kbd>}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="studio-header-title-row">
+                  <div className="studio-prescription-row">
+                    <span className="prescription-pill">
+                      <span className="prescription-type">Muscle</span>
+                      <strong className="prescription-val">{targetMuscleName}</strong>
+                    </span>
+                    <span className="prescription-dot">·</span>
+                    <span className="prescription-pill">
+                      <span className="prescription-type">Equipment</span>
+                      <strong className="prescription-val">{targetEx.equipment || 'Bodyweight'}</strong>
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

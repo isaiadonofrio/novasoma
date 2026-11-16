@@ -14,6 +14,7 @@ export const STORAGE_KEYS = {
   PRUNED_EXTRA_DEFAULTS: 'corpo_pruned_extra_defaults_v1',
   EN_LOCALIZATION: 'corpo_en_localized_v1',
   SOUND_ENABLED: 'corpo_sound_enabled_v1',
+  ADDED_LEG_WARMUPS: 'corpo_added_leg_warmups_v1',
 };
 
 export const STORAGE_ERROR_EVENT = 'corpo-storage-error';

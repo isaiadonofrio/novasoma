@@ -17,9 +17,11 @@ const getEx = (id, isWarmup = false, instanceId = null) => {
 const WARMUP_EXERCISES = [
   getEx('wu-jump-rope', true),
   getEx('wu-banded-hip-abduction', true),
+  getEx('wu-dumbbell-glute-step-down', true),
   getEx('ex-copenhagen-plank', true, 'wu-copenhagen-plank'),
   getEx('ex-elevated-single-leg-glute-bridge', true, 'wu-elevated-single-leg-glute-bridge'),
-  getEx('wu-ankle-hip-mobility', true)
+  getEx('wu-ankle-hip-mobility', true),
+  getEx('wu-elevated-ankle-dorsiflexion', true)
 ];
 
 // Leg Workout 1 Main Exercises
@@ -47,7 +49,7 @@ export const INITIAL_ROUTINES = [
     id: 'leg-workout-1',
     title: 'Legs · Squat & Posterior Chain',
     shortTitle: 'Legs · Squat',
-    description: 'Complete lower-body session pairing a 5-exercise neuromuscular warm-up with Spanish Squat, Barbell RDL, Copenhagen Plank, Bulgarian Split Squat, Step-Ups, and Standing Calf Raises.',
+    description: 'Complete lower-body session pairing a 7-exercise neuromuscular warm-up with Spanish Squat, Barbell RDL, Copenhagen Plank, Bulgarian Split Squat, Step-Ups, and Standing Calf Raises.',
     category: 'Legs & Glutes',
     durationMinutes: 65,
     difficulty: 'Intermediate - Advanced',
@@ -62,7 +64,7 @@ export const INITIAL_ROUTINES = [
     id: 'leg-workout-2',
     title: 'Legs · Back Squat & Knee Flexion',
     shortTitle: 'Legs · Back Squat',
-    description: 'Second weekly lower-body session combining the 5-exercise warm-up with Barbell Back Squat, Single-Leg Glute Bridge, Reverse Nordic Curl, Seated Banded Leg Curl, Copenhagen Plank, and Seated Calf Raises.',
+    description: 'Second weekly lower-body session combining the 7-exercise warm-up with Barbell Back Squat, Single-Leg Glute Bridge, Reverse Nordic Curl, Seated Banded Leg Curl, Copenhagen Plank, and Seated Calf Raises.',
     category: 'Legs & Glutes',
     durationMinutes: 65,
     difficulty: 'Intermediate - Advanced',

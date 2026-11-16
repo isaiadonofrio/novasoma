@@ -298,5 +298,303 @@ export const WARMUPANDMOBILITY_EXERCISES = [
         ],
         proTip: 'Long exhalations relax high-tone paraspinal muscles and allow gentle gravitational traction across lumbar discs and the subacromial space.'
       }
+    },
+
+  {
+      id: 'wu-lateral-glute-step-down',
+      name: 'Lateral Glute Step-Down',
+      scientificName: 'Unilateral Closed-Chain Eccentric Pelvic-Leveling Step-Down — Frontal-Plane Gluteus Medius Stabilization',
+      subtitle: 'Bodyweight lateral step-down training pelvis control & stance-hip gluteus medius activation',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Step Box / Bench',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Compound',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Medius (Stance Hip)', 'Gluteus Maximus'],
+        secondary: ['Vastus Medialis & Lateralis', 'Gluteus Minimus'],
+        stabilizers: ['Quadratus Lumborum', 'Deep External Hip Rotators']
+      },
+      execution: {
+        setup: 'Stand sideways on the outer edge of a low 10–15 cm step or stable plate. Stack ribcage directly over your stance pelvis with weight centered across heel, big toe, and little toe.',
+        eccentric: 'Initiate by unlocking the stance hip backward slightly while bending the stance knee in line with the second toe; slowly lower the free heel down for 3 seconds until it lightly skims the floor without shifting weight onto it.',
+        concentric: 'Press cleanly through the stance midfoot and squeeze the stance glute to lock the pelvis level and extend smoothly back to tall standing posture.',
+        breathing: 'Inhale under controlled descent; exhale cleanly while driving upward through the stance hip.',
+        commonMistakes: [
+          'Allowing the unsupported hip to drop diagonally (Trendelenburg drop) or the stance knee to cave inward',
+          'Pushing explosively off the bottom floor foot instead of holding constant tension on the stance hip',
+          'Rounding the lower back or flexing only at the ankle without sitting slightly into the hip'
+        ],
+        proTip: 'Imagine headlights on both hip bones shining straight forward — keep them dead level while your stance glute controls every millimeter of descent.'
+      }
+    },
+
+  {
+      id: 'wu-dumbbell-glute-step-down',
+      name: 'Dumbbell Light-Loaded Glute Step-Down',
+      scientificName: 'Light-Loaded Unilateral Closed-Chain Eccentric Step-Down — Contralateral/Goblet Gluteus Medius Integration',
+      subtitle: 'Light dumbbell-loaded step-down heightening gluteus medius neuromuscular activation & pelvic stability',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Single Dumbbell',
+      isWarmup: true,
+      mechanics: 'Compound',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Medius (Stance Hip)', 'Gluteus Maximus'],
+        secondary: ['Vastus Medialis Obliquus (VMO)', 'Adductor Magnus'],
+        stabilizers: ['Contralateral Obliques', 'Quadratus Lumborum']
+      },
+      execution: {
+        setup: 'Hold a light dumbbell either in goblet position at chest height or in the hand opposite your stance leg (contralateral load increases lateral hip demand). Stand balanced near the side edge of a 10–20 cm step.',
+        eccentric: 'Keep torso upright and pelvis square; sink smoothly down over 3 seconds with knees tracking cleanly over toes until the free heel kisses the floor silently.',
+        concentric: 'Drive vertically through the working tripod foot, extending knee and hip together while pulling the lateral hip firmly over the stance femur.',
+        breathing: 'Smooth nasal inhale during the slow 3-second lowering phase; exhale softly as you rise.',
+        commonMistakes: [
+          'Using an excessively heavy dumbbell that turns neuromuscular priming into heavy fatigue',
+          'Letting the loaded side lean or twist inward around the stance hip',
+          'Heel bouncing off the ground between reps instead of silent eccentric control'
+        ],
+        proTip: 'Holding one light dumbbell on the non-working hand side amplifies frontal-plane torque cleanly—forcing the stance gluteus medius to fire aggressively right away.'
+      }
+    },
+
+  {
+      id: 'wu-kettlebell-glute-step-down',
+      name: 'Kettlebell Light-Loaded Glute Step-Down',
+      scientificName: 'Contralateral Kettlebell-Loaded Closed-Chain Step-Down — Asymmetric Frontal-Plane Hip Stabilization',
+      subtitle: 'Light kettlebell rack or suitcase-loaded step-down challenging pelvic & rotational hip control',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Kettlebell',
+      isWarmup: true,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'glutes',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Medius (Posterior Fibers)', 'Gluteus Maximus'],
+        secondary: ['Quadriceps', 'Deep External Hip Rotators'],
+        stabilizers: ['Obliques (Anti-Lateral Flexion)', 'Intrinsic Foot Arch']
+      },
+      execution: {
+        setup: 'Clean a light kettlebell into a comfortable contralateral front-rack or suitcase hold and step laterally onto a low box or stacked plates.',
+        eccentric: 'Lower the free leg slowly under steady tempo, maintaining a vertical shin-hip alignment and zero pelvic tilt toward the hanging leg.',
+        concentric: 'Push downward through the whole stance heel and outer arch to glide upright cleanly without snapping the knee back.',
+        breathing: 'Keep steady ribcage bracing with nasal inhale on lowering and controlled exhale on ascent.',
+        commonMistakes: [
+          'Swinging the bell outward to counterbalance instead of holding it still against the torso',
+          'Rotating the free hip outward to shorten step depth',
+          'Collapsing the stance medial foot arch inward'
+        ],
+        proTip: 'Pair slow timed sets with barefoot or flat-sole stance feedback to maximize intrinsic foot arch and posterior glute medius co-contraction.'
+      }
+    },
+
+  {
+      id: 'wu-banded-glute-step-down',
+      name: 'Banded Lateral Glute Step-Down',
+      scientificName: 'Closed-Chain Eccentric Step-Down With Reactive Neuromuscular Training (RNT) Medial Band Vector',
+      subtitle: 'Mini loop band cue forcing lateral hip external rotation throughout eccentric descent',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Loop Resistance Band',
+      isWarmup: true,
+      mechanics: 'Compound',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Medius', 'Gluteus Minimus'],
+        secondary: ['Gluteus Maximus (Upper Fibers)', 'Quadriceps'],
+        stabilizers: ['Deep Hip External Rotators', 'Pelvic Floor & Core']
+      },
+      execution: {
+        setup: 'Place a light mini loop band just above both knees (or attach a lateral band pulling the stance knee gently inward for RNT feedback) while standing atop a low step.',
+        eccentric: 'Actively press the stance knee outward against the elastic pull so the patella tracks over the second and third toes as you slowly descend toward a soft heel touch.',
+        concentric: 'Hold continuous outward torque on the knee while rising smoothly back to full hip extension.',
+        breathing: 'Breathe steadily while maintaining constant outward knee-to-band tension across the full interval.',
+        commonMistakes: [
+          'Allowing the band tension to win and snap the knee into valgus collapse',
+          'Rushing repetitions instead of keeping continuous 30–45s time under tension',
+          'Twisting the pelvis away from the step edge'
+        ],
+        proTip: 'Pulling a band medially ("feed the mistake" / RNT) wires reflexive gluteus medius firing faster than verbal cues alone.'
+      }
+    },
+
+  {
+      id: 'wu-elevated-ankle-dorsiflexion',
+      name: 'Elevated Ankle Dorsiflexion Mobilization',
+      scientificName: 'Closed-Chain Weight-Bearing Talocrural Dorsiflexion Mobilization (Foot-Elevated Split Stance)',
+      subtitle: 'Foot-elevated knee-over-toe talocrural glide & soleus mobilization',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Step Box / Bench',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'calves',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Ankle Dorsiflexors & Talocrural Capsule', 'Soleus'],
+        secondary: ['Gastrocnemius (Distal Myotendinous Junction)', 'Flexor Hallucis Longus'],
+        stabilizers: ['Intrinsic Foot Arch', 'Hip Flexors (Contralateral Stance)']
+      },
+      execution: {
+        setup: 'Place the working whole foot flat atop a sturdy plyo box, weight bench, or 25–40 cm step in front of you. Keep your torso tall and your rear trailing leg anchored stably behind.',
+        eccentric: 'Lean your weight smoothly forward to drive the elevated knee directly over and past the second and third toes while keeping your front heel pressed solidly down into the step.',
+        concentric: 'Hold the deepest pain-free end-range ankle flexion for 2–3 slow breaths (or oscillate smoothly in and out for the entire timed interval) before easing gently back.',
+        breathing: 'Deep, calm nasal inhales with long relaxed exhales while sinking slightly further forward over the toes.',
+        commonMistakes: [
+          'Letting the working heel peel upward off the box to fake extra knee travel',
+          'Collapsing the medial foot arch inward (pronation twist) instead of tracking over toes 2–3',
+          'Pushing aggressively into sharp front-of-ankle pinching instead of posterior calf tension'
+        ],
+        proTip: 'Keep your heel glued down with light downward fingertip pressure if needed—true talocrural dorsiflexion clears deeper squat positions immediately.'
+      }
+    },
+
+  {
+      id: 'wu-dumbbell-ankle-dorsiflexion',
+      name: 'Dumbbell Elevated Ankle Dorsiflexion Mobilization',
+      scientificName: 'Externally Loaded Closed-Chain Talocrural Dorsiflexion Mobilization (Distal Femur Dumbbell Load)',
+      subtitle: 'Foot-elevated knee-over-toe ankle stretch with light distal thigh dumbbell load',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Single Dumbbell',
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'calves',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Soleus', 'Talocrural Posterior Joint Capsule'],
+        secondary: ['Achilles Tendon', 'Gastrocnemius'],
+        stabilizers: ['Tibialis Anterior', 'Plantar Intrinsic Muscles']
+      },
+      execution: {
+        setup: 'Elevate the target foot flat on a box or bench and rest a light dumbbell vertically across the distal thigh just above the kneecap so gravity assists vertical heel compression.',
+        eccentric: 'Shift torso weight patiently forward, steering knee over middle toes as the dumbbell weight anchors the heel firmly down to deepen bent-knee soleus stretch.',
+        concentric: 'Maintain calm isometric end-range pressure or gentle rhythmic pulses throughout the timed block before lifting out cleanly.',
+        breathing: 'Slow 4-second nasal inhale followed by a long 5–6s exhale to release protective calf stretch reflex.',
+        commonMistakes: [
+          'Using a heavy dumbbell that compresses the patella uncomfortably or peels the heel off',
+          'Resting the weight directly onto the kneecap instead of the flat distal quadriceps muscle belly',
+          'Holding breath rigidly against the stretch sensation'
+        ],
+        proTip: 'Even a light 6–12 kg dumbbell over the lower thigh multiplies soleus & ankle capsule yield effortlessly compared to unweighted pushing.'
+      }
+    },
+
+  {
+      id: 'wu-kettlebell-ankle-dorsiflexion',
+      name: 'Kettlebell Elevated Ankle Dorsiflexion Mobilization',
+      scientificName: 'Externally Loaded Closed-Chain Talocrural Dorsiflexion Mobilization (Anterior Knee Kettlebell Load)',
+      subtitle: 'Foot-elevated knee-over-toe talocrural stretch weighted via resting kettlebell',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Kettlebell',
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Intermediate',
+      muscleKey: 'calves',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Soleus', 'Ankle Dorsiflexors'],
+        secondary: ['Posterior Talocrural Capsule', 'Peroneals'],
+        stabilizers: ['Tibialis Anterior (Active End-Range Pull)', 'Rear Leg Hip Flexor']
+      },
+      execution: {
+        setup: 'Plant the working foot flat on a step or low bench and balance a light-to-moderate kettlebell securely by its handle on the distal thigh just behind the knee.',
+        eccentric: 'Allow your chest and forearms to lean comfortably over the front thigh, gliding the shin diagonally forward while keeping the entire heel glued down.',
+        concentric: 'Perform short isometric tibialis "pull-in" contractions inside the stretched angle before relaxing deeper on the exhale for the timed window.',
+        breathing: 'Unrushed diaphragmatic breathing synchronized to relaxing calf guarding on every exhale.',
+        commonMistakes: [
+          'Heel lifting off the surface behind the bell load',
+          'Letting the working hip hike or rotate away from forward alignment',
+          'Forcing motion through sharp anterior bony pinching rather than easing back a few millimeters'
+        ],
+        proTip: 'After holding passive end-range for 20s, finish the last 10–15s actively pulling your shin forward with tibialis anterior for lasting active ROM retention.'
+      }
+    },
+
+  {
+      id: 'wu-banded-ankle-dorsiflexion',
+      name: 'Banded Elevated Ankle Dorsiflexion (Talar Glide)',
+      scientificName: 'Mulligan Mobilization-With-Movement (MWM) — Anterior Tibial / Posterior Talar Glide Dorsiflexion',
+      subtitle: 'Banded joint-distracted foot-elevated ankle mobilization clearing anterior impingement',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Loop Resistance Band',
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Intermediate',
+      muscleKey: 'calves',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Talocrural Joint Capsule (Posterior Glide)', 'Soleus'],
+        secondary: ['Tibialis Anterior', 'Distal Tibiofibular Ligaments'],
+        stabilizers: ['Intrinsic Foot Arch', 'Gluteus Maximus (Trailing Stabilizer)']
+      },
+      execution: {
+        setup: 'Anchor a thick resistance band low behind you and loop it strictly BELOW the ankle bones (across the talus crease, NOT high on the shin). Step that foot onto a low step/plate under brisk backward band tension.',
+        eccentric: 'Keeping the front heel glued flat, drive your knee forward over toes 2–3 while the backward elastic band draws the talus bone posteriorly to clear front-of-ankle pinching.',
+        concentric: 'Oscillate smoothly into peak painless dorsiflexion or pause 2–3 seconds per forward drive across the timed interval.',
+        breathing: 'Steady calm breathing throughout the rhythmic joint-glide waves.',
+        commonMistakes: [
+          'Placing the band too high above the malleoli on the tibia (which blocks glide instead of freeing it)',
+          'Allowing the band tension to drag your heel off the step',
+          'Using weak tension that gives zero posterior talar decompression'
+        ],
+        proTip: 'If you ever feel a sharp "pinch" at the front of the ankle during squats, keeping the band low right over the talus crease instantly restores pain-free forward shin travel.'
+      }
     }
 ];

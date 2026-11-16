@@ -95,15 +95,15 @@ test.describe('Nova Soma Critical User Flows', () => {
     await expect(page.locator('.undo-toast-pill')).toHaveCount(0);
   });
 
-  test('filters 127-movement Exercise Library by Obliques and resets cleanly', async ({ page }) => {
+  test('filters 135-movement Exercise Library by Obliques and resets cleanly', async ({ page }) => {
     await page.getByRole('button', { name: /Library/i }).click();
     await expect(page).toHaveURL(/#library/);
-    await expect(page.getByText(/Showing\s+127\s+of\s+127\s+movements/i)).toBeVisible();
+    await expect(page.getByText(/Showing\s+135\s+of\s+135\s+movements/i)).toBeVisible();
 
     await page.getByRole('button', { name: 'Obliques', exact: true }).click();
-    await expect(page.getByText(/Showing\s+7\s+of\s+127\s+movements/i)).toBeVisible();
+    await expect(page.getByText(/Showing\s+7\s+of\s+135\s+movements/i)).toBeVisible();
 
     await page.getByRole('button', { name: 'Reset', exact: true }).click();
-    await expect(page.getByText(/Showing\s+127\s+of\s+127\s+movements/i)).toBeVisible();
+    await expect(page.getByText(/Showing\s+135\s+of\s+135\s+movements/i)).toBeVisible();
   });
 });

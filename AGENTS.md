@@ -30,8 +30,8 @@ This file defines non-negotiable engineering invariants, workspace layout, and v
 - All `localStorage` keys must be declared in `STORAGE_KEYS` inside `src/utils/storage.js` and read/written through safe storage helpers (`parseBackupPayload`, `validateActiveWorkoutDraft`, etc.).
 
 ### B. Canonical Exercise Database & Assets Layout
-- `127` canonical exercises are split cleanly by movement family across `src/data/exercises/`:
-  - `1_warmupAndMobility.js` (`8`)
+- `135` canonical exercises (`127` illustrated + `8` text-only warm-up variations pending imagery) are split cleanly by movement family across `src/data/exercises/`:
+  - `1_warmupAndMobility.js` (`16`)
   - `2_squatsAndKneeFlexion.js` (`13`)
   - `3_hipHingesAndGlutes.js` (`19`)
   - `4_pushUpperBody.js` (`23`)

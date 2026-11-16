@@ -49,6 +49,14 @@ export const MOVEMENT_FAMILIES = {
     id: 'fam-hip-mobility',
     name: 'Tri-Planar Hip & Ankle Mobility'
   },
+  'fam-glute-step-down': {
+    id: 'fam-glute-step-down',
+    name: 'Lateral Pelvic-Control Glute Step-Down'
+  },
+  'fam-elevated-ankle-dorsiflexion': {
+    id: 'fam-elevated-ankle-dorsiflexion',
+    name: 'Foot-Elevated Closed-Chain Talocrural Dorsiflexion'
+  },
   'fam-thoracic-mobility': {
     id: 'fam-thoracic-mobility',
     name: 'Thoracic & Glenohumeral Mobility'
@@ -280,6 +288,102 @@ export const EXERCISE_TAXONOMY = {
     'Low-Load End-Range Articular Shear',
     'End-Range Capsular Tension',
     'Ankle Dorsiflexion + Hip Internal & External Rotation'
+  ),
+  'wu-lateral-glute-step-down': entry(
+    'Unilateral Closed-Chain Eccentric Pelvic-Leveling Step-Down — Frontal-Plane Gluteus Medius Stabilization',
+    'fam-glute-step-down',
+    'Base',
+    'Bodyweight Lateral Step-Down',
+    'Frontal / Sagittal',
+    'Closed Kinetic Chain (CKC)',
+    'Unilateral',
+    'Vertical Bodyweight Over Stance Tripod Foot',
+    'Ascending Control Through Mid-Range Knee & Hip Flexion',
+    'Pelvic Drop Control (Eccentric/Concentric Hip Abduction) + Knee Flexion'
+  ),
+  'wu-dumbbell-glute-step-down': entry(
+    'Light-Loaded Unilateral Closed-Chain Eccentric Step-Down — Contralateral/Goblet Gluteus Medius Integration',
+    'fam-glute-step-down',
+    'Equipment',
+    'Light Dumbbell Glute Step-Down',
+    'Frontal / Sagittal',
+    'Closed Kinetic Chain (CKC)',
+    'Unilateral',
+    'Axial Light Dumbbell (Contralateral / Goblet Offset)',
+    'Constant Frontal Pelvic Stabilization Torque Under Descent',
+    'Anti-Trendelenburg Hip Stabilization + Controlled Knee Flexion/Extension'
+  ),
+  'wu-kettlebell-glute-step-down': entry(
+    'Contralateral Kettlebell-Loaded Closed-Chain Step-Down — Asymmetric Frontal-Plane Hip Stabilization',
+    'fam-glute-step-down',
+    'Equipment',
+    'Light Kettlebell Offset Step-Down',
+    'Frontal / Sagittal',
+    'Closed Kinetic Chain (CKC)',
+    'Unilateral',
+    'Contralateral Asymmetric Kettlebell Moment Arm',
+    'Sustained Lateral Hip & Anti-Rotation Demand',
+    'Hip Abduction & External Rotation Stabilization + Stance Extension'
+  ),
+  'wu-banded-glute-step-down': entry(
+    'Closed-Chain Eccentric Step-Down With Reactive Neuromuscular Training (RNT) Medial Band Vector',
+    'fam-glute-step-down',
+    'Angle / Stance',
+    'RNT Banded Lateral Glute Step-Down',
+    'Frontal / Multi-Planar',
+    'Closed Kinetic Chain (CKC)',
+    'Unilateral',
+    'Vertical Body Mass + Medial Elastic Valgus Cue',
+    'Continuous Outward Torque Demand Across Full Tempo',
+    'Reactive Hip External Rotation & Abduction Against Valgus Pull'
+  ),
+  'wu-elevated-ankle-dorsiflexion': entry(
+    'Closed-Chain Weight-Bearing Talocrural Dorsiflexion Mobilization (Foot-Elevated Split Stance)',
+    'fam-elevated-ankle-dorsiflexion',
+    'Base',
+    'Foot-Elevated Bodyweight Knee-Over-Toe Stretch',
+    'Sagittal',
+    'Closed Kinetic Chain (CKC)',
+    'Unilateral',
+    'Forward Shift Body Weight With Anchored Calcaneus',
+    'End-Range Capsular & Soleus Elongation Yield',
+    'Talocrural Dorsiflexion & Anterior Tibial Translation'
+  ),
+  'wu-dumbbell-ankle-dorsiflexion': entry(
+    'Externally Loaded Closed-Chain Talocrural Dorsiflexion Mobilization (Distal Femur Dumbbell Load)',
+    'fam-elevated-ankle-dorsiflexion',
+    'Equipment',
+    'Dumbbell Knee-Loaded Ankle Dorsiflexion',
+    'Sagittal',
+    'Closed Kinetic Chain (CKC)',
+    'Unilateral',
+    'Vertical Distal Femur Dumbbell Compression Vector',
+    'Enhanced End-Range Soleus & Capsule Yield',
+    'Talocrural Dorsiflexion With Compressive Calcaneal Anchoring'
+  ),
+  'wu-kettlebell-ankle-dorsiflexion': entry(
+    'Externally Loaded Closed-Chain Talocrural Dorsiflexion Mobilization (Anterior Knee Kettlebell Load)',
+    'fam-elevated-ankle-dorsiflexion',
+    'Equipment',
+    'Kettlebell Knee-Loaded Ankle Dorsiflexion',
+    'Sagittal',
+    'Closed Kinetic Chain (CKC)',
+    'Unilateral',
+    'Vertical Distal Thigh Kettlebell Load Over Anchored Heel',
+    'Deep Bent-Knee Myotendinous & Articular Yield',
+    'Talocrural Dorsiflexion + Active End-Range Tibialis Pull'
+  ),
+  'wu-banded-ankle-dorsiflexion': entry(
+    'Mulligan Mobilization-With-Movement (MWM) — Anterior Tibial / Posterior Talar Glide Dorsiflexion',
+    'fam-elevated-ankle-dorsiflexion',
+    'Progression',
+    'Banded Posterior Talar Glide (MWM)',
+    'Sagittal',
+    'Closed Kinetic Chain (CKC)',
+    'Unilateral',
+    'Combined Anterior Tibial Shift + Posterior Elastic Talar Traction',
+    'Joint-Cleared End-Range Arthrokinematic Glide',
+    'Posterior Talar Glide With Anterior Closed-Chain Tibial Advancement'
   ),
   'wu-cat-cow-child-pose': entry(
     'Quadruped Global Spinal Flexion/Extension & Lat/Thoracic Posterior Rock-Back',

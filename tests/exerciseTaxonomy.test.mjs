@@ -17,10 +17,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-test('canonical exercise database has 127 unique exercises', () => {
-  assert.equal(ALL_RAW_EXERCISES.length, 127);
+test('canonical exercise database has 135 unique exercises', () => {
+  assert.equal(ALL_RAW_EXERCISES.length, 135);
   const ids = ALL_RAW_EXERCISES.map((ex) => ex.id);
-  assert.equal(new Set(ids).size, 127, 'All canonical exercise IDs must be unique');
+  assert.equal(new Set(ids).size, 135, 'All canonical exercise IDs must be unique');
 });
 
 test('every canonical exercise has complete standardized scientific taxonomy & biomechanics', () => {
@@ -103,7 +103,16 @@ test('all 127 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
     .map((ex) => ex.id)
     .filter((id) => !mappedIds.has(id));
 
-  assert.deepEqual(rawIdsWithoutIllustration, []);
+  assert.deepEqual(rawIdsWithoutIllustration, [
+    'wu-lateral-glute-step-down',
+    'wu-dumbbell-glute-step-down',
+    'wu-kettlebell-glute-step-down',
+    'wu-banded-glute-step-down',
+    'wu-elevated-ankle-dorsiflexion',
+    'wu-dumbbell-ankle-dorsiflexion',
+    'wu-kettlebell-ankle-dorsiflexion',
+    'wu-banded-ankle-dorsiflexion'
+  ]);
 
   for (const [id, varName] of mappedIds.entries()) {
     assert.ok(importedVars.has(varName), `Unimported variable "${varName}" referenced by "${id}"`);
@@ -125,6 +134,16 @@ test('getExerciseVariations returns sibling variations in the same family withou
     rdlSiblings.some((item) => item.id === 'ex-b-stance-rdl'),
     'Expected B-Stance RDL as a sibling variation of Barbell RDL'
   );
+
+  const stepDown = enrichedDb.find((ex) => ex.id === 'wu-dumbbell-glute-step-down');
+  assert.ok(stepDown, 'Expected wu-dumbbell-glute-step-down in database');
+  const stepDownSiblings = getExerciseVariations(stepDown, enrichedDb);
+  assert.equal(stepDownSiblings.length, 3);
+
+  const dorsiflexion = enrichedDb.find((ex) => ex.id === 'wu-elevated-ankle-dorsiflexion');
+  assert.ok(dorsiflexion, 'Expected wu-elevated-ankle-dorsiflexion in database');
+  const dorsiflexionSiblings = getExerciseVariations(dorsiflexion, enrichedDb);
+  assert.equal(dorsiflexionSiblings.length, 3);
 });
 
 test('SCIENTIFIC_SOURCES documents all 4 authoritative kinesiology and anatomy standards', () => {

@@ -44,10 +44,10 @@
 │   │   ├── player/                # PlayerHeader, PlayerQueueDrawer, PlayerGuideDrawer, FinishWorkoutModal
 │   │   └── ...                    # HomeView, StatsDashboard, YearHeatmapCard, ExerciseDatabaseView, modals
 │   ├── data/
-│   │   ├── exercises/             # 8 canonical category files + barrel index.js (127 movements)
+│   │   ├── exercises/             # 8 canonical category files + barrel index.js (135 movements)
 │   │   ├── exerciseConstants.js   # Shared sets/reps/category metadata
 │   │   ├── exerciseDatabase.js    # Re-export & curated movement utilities
-│   │   ├── exerciseMedia.js       # Static ESM import map binding all 127 exercise IDs -> assets
+│   │   ├── exerciseMedia.js       # Static ESM import map binding 127 illustrated IDs -> assets
 │   │   ├── exerciseTaxonomy.js    # Planes, chains, joint actions & 4 scientific source standards
 │   │   ├── muscleLabels.js        # Display labels & muscle mapping metadata
 │   │   └── workouts.js            # INITIAL_ROUTINES (leg-workout-1 & leg-workout-2)
@@ -74,13 +74,14 @@
 │       ├── formatting.js          # Time, volume, duration & category resolvers
 │       ├── haptics.js             # Safe guarded mobile navigator.vibrate pulses
 │       ├── migrations.js          # Legacy storage hydration, exercise merge & extra-default pruning
+│       ├── routineMigrations.js   # Pure phase-aware warm-up migration helpers
 │       ├── storage.js             # STORAGE_KEYS, safe JSON parse/save, backup export/import & draft expiry
 │       ├── useBodyScrollLock.js   # Reference-counted body scroll locking for nested modals
 │       ├── useFocusTrap.js        # Accessible modal Tab loop & Escape handling
 │       ├── useUndoToast.js        # Non-blocking 5s Undo recovery timer state hook
 │       ├── useWakeLock.js         # Screen Wake Lock API lifecycle hook for live sessions
 │       └── workoutSets.js         # Phase ordering, contiguous superset normalization, drop-sets & timer configs
-└── tests/                         # 9 *.test.mjs unit test files (44 tests)
+└── tests/                         # 9 *.test.mjs unit test files (45 tests)
 ```
 
 ---
@@ -90,7 +91,7 @@
 - **Hash Navigation (`src/App.jsx`)**:
   - `#` / empty -> `HomeView` (Hero launcher, Weekly Consistency & Year Heatmap stats, Routine Archive cards, Recent Activity)
   - `#workout/<routineId>` -> `WorkoutOverviewView` (Phase grouping, Manage/Reorder mode, In-Depth sets editor, Routine editor trigger)
-  - `#library` -> `ExerciseDatabaseView` (127-movement filterable biomechanics atlas)
+  - `#library` -> `ExerciseDatabaseView` (135-movement filterable biomechanics atlas)
 - **Single-Source State (`App.jsx`)**:
   - Holds `routines`, `exercises`, `history`, `weeklyGoal`, `activeDraft`, plus active overlay flags so modals (`ActiveWorkoutModal`, `WorkoutEditorModal`, `ExercisePickerModal`, `DataBackupModal`, `ManualWorkoutLogModal`, `WorkoutHistoryModal`, `WorkoutSummaryModal`, `ConfirmModal`) synchronize deterministically with `localStorage`.
 
@@ -103,7 +104,7 @@ All persistence uses device-local `localStorage` via safe try/catch wrappers (qu
 | `STORAGE_KEYS` Constant | Browser Key | Value & Lifecycle Role |
 | :--- | :--- | :--- |
 | `ROUTINES` | `corpo_user_routines_v7` | User's saved `Routine[]` JSON array |
-| `EXERCISES` | `corpo_user_exercises_v6` | Hydrated `Exercise[]` catalog (`127` canonical + user edits) |
+| `EXERCISES` | `corpo_user_exercises_v6` | Hydrated `Exercise[]` catalog (`135` canonical + user edits) |
 | `HISTORY` | `corpo_history` | Chronological `WorkoutSession[]` log (demo + real sessions) |
 | `THEME` | `corpo_theme` | Enforces Light theme (`'light'`) on startup |
 | `WEEKLY_GOAL` | `corpo_weekly_goal_v1` | Weekly target session goal (`1–14`) |
@@ -112,10 +113,11 @@ All persistence uses device-local `localStorage` via safe try/catch wrappers (qu
 | `PRUNED_EXTRA_DEFAULTS` | `corpo_pruned_extra_defaults_v1` | One-time migration flag pruning the 4 legacy seeded extra routines (`EXTRA_SEEDED_ROUTINE_IDS`) |
 | `EN_LOCALIZATION` | `corpo_en_localized_v1` | One-time migration flag normalizing legacy Italian titles -> English |
 | `SOUND_ENABLED` | `corpo_sound_enabled_v1` | Audio feedback toggle inside Live Player |
+| `ADDED_LEG_WARMUPS` | `corpo_added_leg_warmups_v1` | One-time migration flag appending Step-Down & Elevated Ankle Dorsiflexion warm-ups |
 
 ### Boot Hydration Flow (`src/App.jsx` -> `src/utils/migrations.js`)
 1. `hydrateExercisesFromStorage()` loads stored exercises, merges missing canonical biomechanics/media via `mergeMissingCanonical()`, appends newly added canonical exercises, and removes orphan placeholder entries.
-2. `hydrateRoutinesFromStorage(exercises)` loads saved routines, runs one-time `PRUNED_EXTRA_DEFAULTS` filter removing any untouched legacy default routine IDs (`EXTRA_SEEDED_ROUTINE_IDS`), normalizes titles, refreshes canonical illustrations/biomechanics inside routine items, and rebuilds `lastRecord` from recorded history.
+2. `hydrateRoutinesFromStorage()` loads saved routines, runs one-time `PRUNED_EXTRA_DEFAULTS` & `ADDED_LEG_WARMUPS` migrations, normalizes titles, refreshes canonical illustrations/biomechanics inside routine items via `mergeMissingCanonical()`, and merges any missing initial routines.
 3. On state changes, `registerCurrentCatalogInStorage()` keeps local backups aligned.
 
 ---
@@ -123,4 +125,4 @@ All persistence uses device-local `localStorage` via safe try/catch wrappers (qu
 ## 5. Workout Engine & Asset Splitting
 
 - **Phases & Supersets (`src/utils/workoutSets.js`)**: Every workout item resolves to `warmup`, `main`, or `decompression`. Adjacent main-block movements linked under a shared `supersetGroup` display paired indicators cleanly; moving items preserves block contiguity and dissolves orphaned single-item groups.
-- **Bundle Splitting (`vite.config.js`)**: Rollup splits vendor React (`react-vendor`), Lucide icons (`icons-vendor`), and the 127-movement biomechanics data + asset imports (`exercise-data`) into cache-friendly chunks, precached by Workbox (`maximumFileSizeToCacheInBytes: 4 MiB`).
+- **Bundle Splitting (`vite.config.js`)**: Rollup splits vendor React (`react-vendor`), Lucide icons (`icons-vendor`), and the 135-movement biomechanics data + asset imports (`exercise-data`) into cache-friendly chunks, precached by Workbox (`maximumFileSizeToCacheInBytes: 4 MiB`).

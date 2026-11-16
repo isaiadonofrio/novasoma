@@ -584,7 +584,7 @@
 .set-num-tag,
 .set-num-cell {
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 800;
   color: var(--dim);
   text-align: center;
@@ -593,16 +593,17 @@
   width: 32px;
   height: 32px;
   margin: 0 auto;
-  border-radius: 10px;
-  background: var(--raised);
+  border-radius: 9px;
+  background: var(--raised2);
   border: 1px solid var(--border);
 }
 
 .set-num-tag.active-num {
   border-color: #8C673A;
-  color: #8C673A;
-  background: rgba(140, 103, 58, 0.12);
-  font-weight: 900;
+  color: #FFFFFF;
+  background: #8C673A;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(140, 103, 58, 0.22);
 }
 
 .player-set-row.completed .set-num-tag,
@@ -2942,6 +2943,10 @@
   color: var(--text-bright);
 }
 
+.guide-btn-label-mobile {
+  display: none;
+}
+
 .guide-key-hint {
   display: inline-flex;
   align-items: center;
@@ -2970,6 +2975,21 @@
   flex-direction: column;
   gap: 4px;
   min-width: 0;
+}
+
+.studio-hero-main-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.studio-hero-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .studio-exercise-title {
@@ -3190,7 +3210,8 @@
   min-width: 44px;
   max-width: 84px;
   width: 100%;
-  font-size: 0.98rem;
+  font-size: 1.04rem;
+  font-weight: 800;
 }
 
 .studio-logger-card .player-set-check {
@@ -3660,8 +3681,16 @@
     display: flex;
   }
 
-  .studio-header-guide-btn,
   .ribbon-step-arrow {
+    display: none;
+  }
+
+  .player-header {
+    height: 56px;
+    padding: 0 14px;
+  }
+
+  .player-session-meta {
     display: none;
   }
 
@@ -3669,40 +3698,85 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 10px;
+  }
+
+  .player-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .player-elapsed-clock {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .player-finish-btn {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
   }
 
   .player-workout-ribbon {
     width: 100%;
-    padding: 6px 12px 2px;
+    padding: 8px 14px 4px;
     gap: 6px;
   }
 
   .ribbon-outline-trigger {
-    height: 32px;
-    padding: 0 9px;
+    height: 34px;
+    padding: 0 10px;
     gap: 5px;
+    border-radius: 10px;
   }
 
   .ribbon-outline-label {
     display: none;
   }
 
-  .ribbon-node-pill {
-    min-width: 46px;
-    height: 32px;
-    padding: 0 6px;
-    font-size: 0.7rem;
+  .ribbon-node-pill,
+  .ribbon-node-pill.is-superset {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: max-content;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 10px;
+    font-size: 0.72rem;
   }
 
   .ribbon-phase-tag {
     height: 22px;
-    padding: 0 6px;
-    font-size: 0.54rem;
+    padding: 0 7px;
+    font-size: 0.56rem;
   }
 
-  .ribbon-node-pill.is-superset {
-    min-width: 58px;
+  .player-mobile-thumb-btn {
+    display: block;
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+  }
+
+  .studio-header-guide-btn {
+    display: inline-flex;
+    height: 32px;
+    padding: 0 11px;
+    font-size: 0.75rem;
+  }
+
+  .guide-btn-label-desktop,
+  .guide-key-hint {
+    display: none;
+  }
+
+  .guide-btn-label-mobile {
+    display: inline;
   }
 
   .studio-grid {
@@ -3788,12 +3862,13 @@
   }
 
   .studio-console-header {
-    padding: 14px 14px 10px;
+    padding: 14px 16px 12px;
   }
 
   .studio-exercise-title {
-    font-size: 1.5rem;
-    margin-bottom: 4px;
+    font-size: 1.32rem;
+    line-height: 1.2;
+    margin: 0;
   }
 
   .studio-prescription-row {
@@ -3819,20 +3894,18 @@
   }
 
   .studio-console-card.is-superset-member-card .studio-console-header {
-    padding: 14px 14px 10px;
+    padding: 14px 16px 12px;
   }
 
   .studio-console-card.is-superset-member-card .studio-exercise-title {
-    font-size: 1.35rem;
+    font-size: 1.22rem;
   }
 
-  .studio-console-card.is-superset-member-card .studio-logger-card {
-    padding: 12px 10px;
-  }
-
+  .studio-console-card.is-superset-member-card .studio-logger-card,
   .studio-logger-card,
   .studio-console-card .studio-logger-card {
-    padding: 12px 10px;
+    padding: 12px 14px 14px;
+    gap: 10px;
   }
 
   .studio-logger-card .player-logger-header {
@@ -3849,54 +3922,110 @@
     gap: 5px;
   }
 
-  .player-sets-col-heads,
-  .player-set-row,
-  .studio-logger-card .player-sets-col-heads,
-  .studio-logger-card .player-set-row {
-    grid-template-columns: 26px minmax(34px, 0.55fr) minmax(100px, 1.3fr) minmax(100px, 1.3fr) 42px;
-    gap: 4px;
-    padding: 6px 4px;
-    height: auto;
-    min-height: 54px;
+  .player-set-adj-btn {
+    height: 32px;
+    padding: 0 11px;
+    font-size: 0.75rem;
   }
 
-  .player-sets-col-heads.no-weight-col,
-  .player-set-row.no-weight-col,
+  .studio-logger-card .player-sets-col-heads {
+    padding: 0 8px 6px;
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+  }
+
+  .studio-logger-card .player-sets-col-heads .col-head-set,
+  .studio-logger-card .player-sets-col-heads .col-head-prev,
+  .studio-logger-card .player-sets-col-heads .col-head-stat,
+  .studio-logger-card .player-sets-col-heads .col-head-weight {
+    text-align: center;
+  }
+
+  .studio-logger-card .player-sets-col-heads .col-head-done {
+    text-align: center;
+    padding-right: 0;
+  }
+
+  /* 1-input mobile exercises (timed holds / bodyweight reps) */
   .studio-logger-card .player-sets-col-heads.no-weight-col,
   .studio-logger-card .player-set-row.no-weight-col {
-    grid-template-columns: 32px minmax(64px, 0.9fr) minmax(120px, 1.4fr) 44px;
+    grid-template-columns: 34px minmax(64px, 0.85fr) minmax(132px, 1.45fr) 44px;
+    gap: 8px;
+    padding: 0 8px;
   }
 
-  .set-stepper-field,
+  .studio-logger-card .player-set-row.no-weight-col .set-stepper-field {
+    max-width: 164px;
+    margin: 0 auto;
+  }
+
+  /* 2-input weighted mobile exercises: hide PREVIOUS col so Reps & Weight steppers breathe cleanly */
+  .studio-logger-card .player-sets-col-heads.has-weight-col .col-head-prev,
+  .studio-logger-card .player-set-row.has-weight-col .set-prev-copy-btn,
+  .studio-logger-card .player-set-row.has-weight-col .set-prev-empty {
+    display: none;
+  }
+
+  .studio-logger-card .player-sets-col-heads.has-weight-col,
+  .studio-logger-card .player-set-row.has-weight-col {
+    grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1fr) 44px;
+    gap: 8px;
+    padding: 0 8px;
+  }
+
+  .studio-logger-card .player-set-row {
+    height: 54px;
+    min-height: 54px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    border-bottom-color: var(--border);
+  }
+
+  .studio-logger-card .player-set-row.next-up {
+    background: color-mix(in srgb, #8C673A 7%, var(--surface));
+    border-color: color-mix(in srgb, #8C673A 32%, var(--border));
+    box-shadow: none;
+  }
+
+  .studio-logger-card .set-num-tag {
+    width: 30px;
+    height: 30px;
+    font-size: 0.82rem;
+    border-radius: 9px;
+  }
+
   .studio-logger-card .set-stepper-field {
     max-width: none;
-    height: 44px;
+    height: 40px;
+    padding: 3px;
+    background: var(--raised);
+    border: 1px solid var(--border-hi);
   }
 
-  .set-stepper-btn,
   .studio-logger-card .set-stepper-btn {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    min-height: 36px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    background: var(--surface);
   }
 
-  .player-set-input,
   .studio-logger-card .player-set-input {
-    min-width: 24px;
-    max-width: 48px;
+    min-width: 28px;
+    max-width: 64px;
     width: 100%;
-    font-size: 0.88rem;
+    font-size: 1.05rem;
+    font-weight: 800;
   }
 
-  .player-set-check,
   .studio-logger-card .player-set-check {
-    width: 42px;
-    height: 44px;
-    min-width: 42px;
-    min-height: 44px;
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 11px;
     padding: 0;
+    justify-self: center;
   }
 
   .studio-logger-card .player-set-check span {

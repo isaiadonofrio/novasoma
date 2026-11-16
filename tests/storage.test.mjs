@@ -9,6 +9,8 @@ import {
   sanitizeMediaUrl,
   validateActiveWorkoutDraft,
 } from '../src/utils/storage.js';
+import { applyLegWarmupAdditions } from '../src/utils/routineMigrations.js';
+import { ALL_RAW_EXERCISES } from '../src/data/exercises/index.js';
 
 test('STORAGE_KEYS includes WEEKLY_GOAL and expected local keys', () => {
   assert.equal(STORAGE_KEYS.WEEKLY_GOAL, 'corpo_weekly_goal_v1');
@@ -111,4 +113,39 @@ test('validateActiveWorkoutDraft enforces routineId and 24h expiry while countDr
   };
   assert.equal(validateActiveWorkoutDraft(expiredDraft, now), null);
   assert.equal(validateActiveWorkoutDraft({ currentIndex: 0 }, now), null);
+});
+
+test('applyLegWarmupAdditions inserts step-down and ankle dorsiflexion into leg warm-ups without duplicates', () => {
+  const legacyRoutines = [
+    {
+      id: 'leg-workout-1',
+      exercises: [
+        { id: 'wu-jump-rope', phase: 'warmup', isWarmup: true },
+        { id: 'wu-banded-hip-abduction', phase: 'warmup', isWarmup: true },
+        { id: 'ex-spanish-squat', phase: 'main', isWarmup: false },
+      ],
+    },
+    {
+      id: 'custom-upper',
+      exercises: [
+        { id: 'ex-push-up', phase: 'main', isWarmup: false },
+      ],
+    },
+  ];
+
+  const migrated = applyLegWarmupAdditions(legacyRoutines, ALL_RAW_EXERCISES);
+  const leg1Ids = migrated[0].exercises.map((e) => e.id);
+  assert.deepEqual(leg1Ids, [
+    'wu-jump-rope',
+    'wu-banded-hip-abduction',
+    'wu-dumbbell-glute-step-down',
+    'wu-elevated-ankle-dorsiflexion',
+    'ex-spanish-squat',
+  ]);
+  assert.equal(migrated[0].exercises[2].phase, 'warmup');
+  assert.equal(migrated[0].exercises[3].phase, 'warmup');
+  assert.deepEqual(migrated[1].exercises.map((e) => e.id), ['ex-push-up']);
+
+  const secondPass = applyLegWarmupAdditions(migrated, ALL_RAW_EXERCISES);
+  assert.equal(secondPass[0].exercises.length, 5);
 });
