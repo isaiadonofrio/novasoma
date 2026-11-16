@@ -19,7 +19,7 @@
 | **PWA & Favicon Assets** | `favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png` | [`public/`](../public/) |
 | **Default Seeded Routines** | `3` personal routines (`leg-workout-1`, `leg-workout-2`, `posture-spine-foundation`) | [`src/data/workouts.js`](../src/data/workouts.js) |
 | **Demo Showcase History** | `14` sessions (alternating the 2 routines + 6 manual logs) | [`src/utils/demoData.js`](../src/utils/demoData.js) |
-| **Stylesheets** | `10` pruned CSS modules (`202.24 kB` built / `31.13 kB` gzip) | [`src/styles/`](../src/styles/) |
+| **Stylesheets** | `10` pruned CSS modules (`202.65 kB` built / `31.21 kB` gzip) | [`src/styles/`](../src/styles/) |
 | **Storage Keys** | `11` managed keys (`STORAGE_KEYS`) | [`src/utils/storage.js`](../src/utils/storage.js) |
 | **Unit Tests (`node:test`)** | `45 / 45` passing across `9` test files | [`tests/`](../tests/) |
 | **E2E Tests (Playwright)** | `5 / 5` passing (desktop + `390×844` mobile & undo flows) | [`e2e/app.spec.js`](../e2e/app.spec.js) |

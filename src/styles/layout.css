@@ -318,6 +318,21 @@
   color: var(--faint);
 }
 
+.footer-hub-link {
+  color: var(--dim);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--border-hi);
+  text-underline-offset: 3px;
+  transition: color 0.16s ease, text-decoration-color 0.16s ease;
+}
+
+.footer-hub-link:hover,
+.footer-hub-link:focus-visible {
+  color: var(--teal);
+  text-decoration-color: var(--teal);
+}
+
 .footer-right-group {
   display: flex;
   align-items: center;

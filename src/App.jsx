@@ -603,7 +603,17 @@ export function App() {
         <div className="gymmane-wrap footer-inner">
           <div>
             <span className="footer-brand-title">NOVA SOMA</span>
-            <p>Minimalist biomechanics & personal workout journal • A Nova Psiche project</p>
+            <p>
+              Minimalist biomechanics & personal workout journal •{' '}
+              <a
+                className="footer-hub-link"
+                href="https://www.novapsiche.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                A Nova Psiche project
+              </a>
+            </p>
           </div>
           <div className="footer-right-group">
             <span className="footer-right-note">
