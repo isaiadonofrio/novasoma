@@ -4,6 +4,8 @@ import { EXERCISE_DATABASE } from './data/exerciseDatabase';
 import { calculateSessionVolumeKg } from './utils/analytics';
 import { getRoundedDurationMinutes, getSessionDurationSeconds } from './utils/formatting';
 import { buildDemoWorkoutHistory } from './utils/demoData';
+import { haptics } from './utils/haptics';
+import { useUndoToast } from './utils/useUndoToast';
 import {
   deriveLastRecordFromSets,
   hydrateExercisesFromStorage,
@@ -29,6 +31,7 @@ import { WorkoutSummaryModal } from './components/WorkoutSummaryModal';
 import { ExerciseDatabaseView } from './components/ExerciseDatabaseView';
 import { DataBackupModal } from './components/DataBackupModal';
 import { WorkoutHistoryModal } from './components/WorkoutHistoryModal';
+import { UndoToast } from './components/UndoToast';
 import './App.css';
 
 function parseHashRoute() {
@@ -78,6 +81,14 @@ export function App() {
   const [storageWarning, setStorageWarning] = useState(null);
   const [isDataModalOpen, setIsDataModalOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const {
+    toast: undoToast,
+    showUndoToast,
+    triggerUndo,
+    dismissToast,
+    pauseTimer: pauseUndoTimer,
+    resumeTimer: resumeUndoTimer,
+  } = useUndoToast();
 
   useEffect(() => {
     const handleStorageError = (e) => {
@@ -262,23 +273,65 @@ export function App() {
   };
 
   const handleDiscardDraft = () => {
+    const previousDraft = activeDraft || readActiveWorkoutDraft();
     clearActiveWorkoutDraft();
     setActiveDraft(null);
+    if (!previousDraft) return;
+    showUndoToast('Workout draft discarded', () => {
+      safeWriteJson(STORAGE_KEYS.ACTIVE_DRAFT, previousDraft);
+      setActiveDraft(previousDraft);
+      haptics.undo();
+    });
   };
 
   const handleDeleteRoutine = (routineId) => {
+    const deletedIndex = routines.findIndex(r => r.id === routineId);
+    const deletedRoutine = deletedIndex >= 0 ? routines[deletedIndex] : null;
+    const previousDraft = activeDraft?.routineId === routineId ? activeDraft : null;
+
     setRoutines(prev => prev.filter(r => r.id !== routineId));
-    if (activeDraft?.routineId === routineId) {
+    if (previousDraft) {
       clearActiveWorkoutDraft();
       setActiveDraft(null);
     }
     if (activeRoutineId === routineId) {
       navigateToView('home', null, { scroll: false });
     }
+
+    if (deletedRoutine) {
+      showUndoToast(`Deleted "${deletedRoutine.title}"`, () => {
+        setRoutines(prev => {
+          if (prev.some(r => r.id === deletedRoutine.id)) return prev;
+          const next = [...prev];
+          next.splice(Math.min(deletedIndex, next.length), 0, deletedRoutine);
+          return next;
+        });
+        if (previousDraft) {
+          safeWriteJson(STORAGE_KEYS.ACTIVE_DRAFT, previousDraft);
+          setActiveDraft(previousDraft);
+        }
+        haptics.undo();
+      });
+    }
   };
 
   const handleDeleteWorkoutSession = (sessionId) => {
-    setWorkoutHistory(prev => prev.filter(s => (s.id || s.date) !== sessionId));
+    const deletedIndex = workoutHistory.findIndex(s => (s.id || s.date || s.completedAt) === sessionId);
+    const deletedSession = deletedIndex >= 0 ? workoutHistory[deletedIndex] : null;
+    setWorkoutHistory(prev => prev.filter(s => (s.id || s.date || s.completedAt) !== sessionId));
+
+    if (deletedSession) {
+      showUndoToast(`Removed "${deletedSession.routineTitle || 'Workout'}" log`, () => {
+        setWorkoutHistory(prev => {
+          const targetId = deletedSession.id || deletedSession.date || deletedSession.completedAt;
+          if (prev.some(s => (s.id || s.date || s.completedAt) === targetId)) return prev;
+          const next = [...prev];
+          next.splice(Math.min(deletedIndex, next.length), 0, deletedSession);
+          return next;
+        });
+        haptics.undo();
+      });
+    }
   };
 
   const handleLogManualWorkout = (sessionData) => {
@@ -536,6 +589,14 @@ export function App() {
           onClose={() => setIsHistoryOpen(false)}
         />
       )}
+
+      <UndoToast
+        toast={undoToast}
+        onUndo={triggerUndo}
+        onDismiss={dismissToast}
+        onPause={pauseUndoTimer}
+        onResume={resumeUndoTimer}
+      />
 
       {/* Minimal Footer */}
       <footer className="gymmane-footer">

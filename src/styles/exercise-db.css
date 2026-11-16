@@ -1,9 +1,6 @@
 /* ==========================================================================
    9. Exercise Database View & Scientific Detail Dialog (Fixes Screenshot 1)
    ========================================================================== */
-.gymmane-database-page {
-  padding-bottom: 64px;
-}
 
 .db-view-header {
   padding: 28px 0 24px;
@@ -27,39 +24,6 @@
   color: var(--text-bright);
 }
 
-.db-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  background: var(--raised);
-  border: 1px solid var(--border-hi);
-  color: var(--dim);
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-  transition: background-color 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease), transform 0.12s var(--ease);
-}
-
-.db-back-btn:hover {
-  color: var(--text);
-  background: var(--raised2);
-  border-color: var(--clay);
-  transform: translateX(-2px);
-}
-
-[data-theme="light"] .db-back-btn {
-  background: var(--raised);
-  border-color: var(--border-hi);
-}
-
-[data-theme="light"] .db-back-btn:hover {
-  background: var(--raised2);
-  border-color: var(--clay);
-}
-
 .db-header-stats-badge {
   display: inline-flex;
   align-items: center;
@@ -76,13 +40,6 @@
 .db-header-stats-badge b {
   color: var(--clay);
   font-weight: 800;
-}
-
-.db-nav-left-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
 /* ==========================================================================
@@ -909,20 +866,6 @@
 }
 
 /* Fast-Pill exact count badge */
-.db-pill-count {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  font-weight: 800;
-  opacity: 0.7;
-  padding: 1px 4px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.db-pill-btn.active .db-pill-count {
-  background: rgba(255, 255, 255, 0.2);
-  opacity: 1;
-}
 
 @media (max-width: 1024px) {
   .db-telemetry-bento {
@@ -1713,83 +1656,9 @@
   background: var(--ember-hover);
 }
 
-.db-card-edit-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 8px 12px;
-  border-radius: var(--radius-full);
-  background: var(--raised2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-size: 0.79rem;
-  font-weight: 700;
-}
-
-.db-card-edit-btn:hover {
-  border-color: var(--clay);
-}
-
-
 /* ==========================================================================
    12. Media Viewer & Spotlight Poses
    ========================================================================== */
-.spotlight-dual-pose-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.spotlight-dual-pose-grid.single-pose {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.spotlight-pose-panel {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background: #F6F5F2;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-[data-theme="light"] .spotlight-pose-panel {
-  background: #FFFFFF;
-}
-
-.spotlight-pose-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 2;
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  font-weight: 700;
-  padding: 3px 9px;
-  border-radius: var(--radius-full);
-  background: rgba(20, 20, 20, 0.78);
-  color: #FFFFFF;
-  backdrop-filter: blur(4px);
-}
-
-.spotlight-pose-badge.highlight {
-  background: var(--clay);
-  color: #FFFFFF;
-}
-
-.spotlight-pose-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-[data-theme="light"] .spotlight-pose-photo {
-  mix-blend-mode: multiply;
-  filter: brightness(1.04) contrast(1.04);
-}
 
 .spotlight-video-wrapper {
   width: 100%;

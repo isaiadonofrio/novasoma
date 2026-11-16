@@ -2,7 +2,7 @@
 
 > **Purpose**: Single-glance status snapshot so AI coding assistants and contributors can immediately contextualize Nova Soma's current codebase scale, active features, resolved technical debt, quality metrics, and intentionally deferred scope.
 
-**Current Stage**: `v0.4` — Foundation Hardening, Asset Organization & Documentation  
+**Current Stage**: `v0.5` — Mobile Gym Readiness, Bespoke Brand & Media Craft  
 **Theme Mode**: Light-Only (**Warm Linen Editorial**) — `0` dark-mode selectors remaining  
 **Data Mode**: `100%` Local-First PWA (`localStorage` only, zero backend/cloud calls)
 
@@ -14,14 +14,15 @@
 | :--- | :--- | :--- |
 | **Canonical Exercises** | `127` unique movements (`127/127` illustrated) | [`src/data/exercises/`](../src/data/exercises/index.js) |
 | **Movement Categories** | `8` modular files (`8 + 13 + 19 + 23 + 23 + 14 + 21 + 6`) | `src/data/exercises/1_*.js` – `8_*.js` |
-| **Illustrated Media Assets** | `127` local `.jpg` / `.webp` files | [`src/assets/exercises/`](../src/assets/exercises/) + [`exerciseMedia.js`](../src/data/exerciseMedia.js) |
-| **Brand & Anatomy Assets** | `logo-nova-soma.jpg`, `body.svg` | [`src/assets/brand/`](../src/assets/brand/), [`src/assets/anatomy/`](../src/assets/anatomy/) |
+| **Illustrated Media Assets** | `127` local `.jpg` / `.webp` files (`mcgill-curl-up.jpg` `22.4 kB`) | [`src/assets/exercises/`](../src/assets/exercises/) + [`exerciseMedia.js`](../src/data/exerciseMedia.js) |
+| **Brand & Anatomy Assets** | `logo.svg`, `logo.png`, `favicon.png`, `body.svg` | [`src/assets/brand/`](../src/assets/brand/), [`src/assets/anatomy/`](../src/assets/anatomy/) |
+| **PWA & Favicon Assets** | `favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png` | [`public/`](../public/) |
 | **Default Seeded Routines** | `2` personal routines (`leg-workout-1`, `leg-workout-2`) | [`src/data/workouts.js`](../src/data/workouts.js) |
 | **Demo Showcase History** | `14` sessions (alternating the 2 routines + 6 manual logs) | [`src/utils/demoData.js`](../src/utils/demoData.js) |
-| **Stylesheets** | `10` CSS modules anchored in `tokens.css` | [`src/styles/`](../src/styles/) |
+| **Stylesheets** | `10` pruned CSS modules (`200.21 kB` built / `30.92 kB` gzip) | [`src/styles/`](../src/styles/) |
 | **Storage Keys** | `10` managed keys (`STORAGE_KEYS`) | [`src/utils/storage.js`](../src/utils/storage.js) |
-| **Unit Tests (`node:test`)** | `41 / 41` passing across `8` test files | [`tests/`](../tests/) |
-| **E2E Tests (Playwright)** | `4 / 4` passing in Chromium against `vite preview` | [`e2e/app.spec.js`](../e2e/app.spec.js) |
+| **Unit Tests (`node:test`)** | `44 / 44` passing across `9` test files | [`tests/`](../tests/) |
+| **E2E Tests (Playwright)** | `5 / 5` passing (desktop + `390×844` mobile & undo flows) | [`e2e/app.spec.js`](../e2e/app.spec.js) |
 
 ### Canonical Library Distribution (`127` Movements)
 - `1_warmupAndMobility.js`: `8`
@@ -37,38 +38,35 @@
 
 ---
 
-## 2. Recent Architectural & Cleanup Resolutions (v0.4)
+## 2. Recent Architectural & Polish Resolutions (v0.4–v0.5)
 
-1. **Routine Focus & Cleanup**: Removed 4 extra seeded starter routines (`full-body-movement-restoration`, `bodyweight-movement-flow`, `kettlebell-functional-carry`, `mcgill-decompression-reset`); added one-time `PRUNED_EXTRA_DEFAULTS` migration in [`src/utils/migrations.js`](../src/utils/migrations.js).
-2. **Migration Extraction**: Extracted legacy catalog normalization, title migration, canonical biomechanics/media backfill, and record derivation out of [`src/App.jsx`](../src/App.jsx) into `src/utils/migrations.js`.
-3. **Asset Reorganization**: Moved `127` exercise images into `src/assets/exercises/`, `body.svg` into `src/assets/anatomy/`, and `logo-nova-soma.jpg` into `src/assets/brand/`; removed unused template `public/favicon.svg`.
-4. **Dead CSS & Token Deduplication**: Stripped `83` dead `[data-theme="dark"]` blocks across `active-workout.css`, `home-dashboard.css`, and `modals.css`; consolidated `:root` tokens into [`src/styles/tokens.css`](../src/styles/tokens.css) imported by [`src/index.css`](../src/index.css).
-5. **Memory & Resource Leak Fixes**:
-   - Web Audio oscillator/gain self-disconnect in [`src/utils/audio.js`](../src/utils/audio.js) (`osc.onended` + `dispose()`).
-   - Singleton canvas/RAF tracking & cleanup in [`src/utils/confetti.js`](../src/utils/confetti.js).
-   - Unmount-safe Blob `URL.revokeObjectURL` cleanup timer in [`src/components/DataBackupModal.jsx`](../src/components/DataBackupModal.jsx).
-6. **Intentional UI Subtraction & Motion Polish**:
-   - Removed redundant eyebrow kickers (`PERSONAL ARCHIVE`, `YOUR WEEK`), streak flame emoji, duplicate `#library` date header, and unused category filter strip on Home when `routines.length <= 2`.
-   - Added `--ease-spring` damped transitions, soft Warm-Linen tonal elevations, button tactile `:active` scale, and `@media (prefers-reduced-motion: reduce)` guards.
+1. **v0.5 Bespoke Brand & Icons**: Integrated crisp transparent vector emblem [`src/assets/brand/logo.svg`](../src/assets/brand/logo.svg) + generated `192×192` & `512×512` PWA PNG icons in [`public/`](../public/), updating [`Navbar.jsx`](../src/components/Navbar.jsx), [`index.html`](../index.html), and [`vite.config.js`](../vite.config.js).
+2. **v0.5 Mobile Gym Readiness**:
+   - Automatic Screen Wake Lock hook ([`src/utils/useWakeLock.js`](../src/utils/useWakeLock.js)) keeping screens awake while `ActiveWorkoutModal` is mounted and visible.
+   - Guarded mobile haptic pulses ([`src/utils/haptics.js`](../src/utils/haptics.js)) on set completion, timer zero (even when audio chime is muted), and Undo recovery.
+   - `390×844` mobile ergonomic polish in [`src/styles/responsive.css`](../src/styles/responsive.css) (safe-area sticky dock padding, expanded tap targets, nowrap home/library badges, zero horizontal scroll).
+3. **v0.5 Undo Recovery & Smooth Image Decode**:
+   - Non-blocking `5s` Undo toast system ([`useUndoToast.js`](../src/utils/useUndoToast.js) + [`UndoToast.jsx`](../src/components/UndoToast.jsx)) across draft discard, routine delete, session delete, and player set removal.
+   - Re-encoded `mcgill-curl-up.jpg` (`302.6 kB` -> `22.4 kB`) and added shared smooth `<FadeImage />` decode reveal in [`MediaViewer.jsx`](../src/components/MediaViewer.jsx) and [`ExerciseDatabaseView.jsx`](../src/components/ExerciseDatabaseView.jsx).
+4. **v0.5 CSS Bloat Removal**: Pruned `530` dead pre-redesign CSS rules (`321.0 KB` -> `246.5 KB` raw source CSS; built CSS down from `259.91 kB` -> `200.21 kB`) via AST-verified PostCSS audit.
+5. **v0.4 Baseline (Retained)**: Pruned extra starter routines to `leg-workout-1` & `leg-workout-2`, extracted [`migrations.js`](../src/utils/migrations.js), fixed Web Audio / Confetti RAF / Backup blob leaks, stripped `83` dead dark-mode selectors, and established docs suite.
 
 ---
 
-## 3. Known Gaps & Intentionally Deferred Scope
+## 3. Intentionally Deferred Scope (Next Roadmap Batches)
 
-- **Intentional Deferrals (Do Not Implement Without User Approval)**:
-  - Custom Exercise Creator / JSON Import UI (engine helper [`src/utils/exerciseImport.js`](../src/utils/exerciseImport.js) is already tested and ready for **v0.7**).
-  - Per-exercise PR badges & progression trend charts (scoped for **v0.6**).
-- **Upcoming Visual Polish Items**:
-  - Replace square JPEG logo [`src/assets/brand/logo-nova-soma.jpg`](../src/assets/brand/logo-nova-soma.jpg) with a bespoke transparent SVG monogram (**v0.5**).
-  - Re-compress `mcgill-curl-up.jpg` (`~303 kB` in `dist/assets/`) down to match the `~15–38 kB` range of sibling assets (**v0.5**).
+- **v0.6 — Strength Progression Intelligence** *(Deferred until user requests)*:
+  - Tactile Barbell Plate Calculator inside the live player, per-exercise PR badges, and estimated 1RM (e1RM) trend sparklines.
+- **v0.7 — Exercise Authoring & Routine Workflows**:
+  - Single-exercise JSON/form creator UI wired to [`src/utils/exerciseImport.js`](../src/utils/exerciseImport.js) and routine cloning refinements.
 
 ---
 
 ## 4. Latest Build & Quality Gate Baseline
 
 Verified locally against final workspace files:
-- `npm run lint`: `Found 0 warnings and 0 errors` (`65` files via `oxlint`)
+- `npm run lint`: `Found 0 warnings and 0 errors` (`70` files via `oxlint`)
 - `npm run typecheck`: `0` errors (`tsc --noEmit`)
-- `npm test`: `41` passed, `0` failed
-- `npm run build`: `2135` modules transformed; `PWA v2.0.0` precache `139 entries (3815.35 KiB)`
-- `npm run test:e2e`: `4` passed (`e2e/app.spec.js`)
+- `npm test`: `44` passed, `0` failed (`9` files in `tests/`)
+- `npm run build`: `2139` modules transformed; `PWA v2.0.0` precache `145 entries (3609.79 KiB)`
+- `npm run test:e2e`: `5` passed (`e2e/app.spec.js`, desktop + mobile `390×844`)

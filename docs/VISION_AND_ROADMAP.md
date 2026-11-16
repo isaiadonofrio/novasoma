@@ -37,7 +37,7 @@ Turn **Nova Soma** into a benchmark-grade, local-first athletic and biomechanica
 - Decomposed monolithic `ActiveWorkoutModal` into modular `src/components/player/` subcomponents (`PlayerHeader`, `PlayerQueueDrawer`, `PlayerGuideDrawer`, `FinishWorkoutModal`) and `OverviewExerciseRow`.
 - Added offline-first `vite-plugin-pwa` Service Worker generation, `oxlint`, TypeScript `checkJs` (`models.d.ts`), `41` unit tests (`node:test`), `4` Playwright E2E critical flow specs, and `.github/workflows/deploy.yml` CI -> GitHub Pages pipeline.
 
-#### v0.4 — Foundation Hardening, Asset Organization & Docs Architecture *(Current Release)*
+#### v0.4 — Foundation Hardening, Asset Organization & Docs Architecture *(Completed)*
 - **Personal Routine Focus**: Pruned generic extra starter routines down to the user's two personal leg routines (`leg-workout-1` & `leg-workout-2`), backed by one-time storage cleanup migration (`PRUNED_EXTRA_DEFAULTS`).
 - **Asset & Module Organization**: Separated `src/assets/` into `exercises/`, `brand/`, and `anatomy/`; removed unused template `public/favicon.svg`; extracted `src/utils/migrations.js` out of `App.jsx` (`-200+` lines).
 - **CSS & Token Hygiene**: Stripped `83` dead `[data-theme="dark"]` selectors across stylesheets and consolidated all duplicate `:root` tokens into `src/styles/tokens.css`.
@@ -45,14 +45,15 @@ Turn **Nova Soma** into a benchmark-grade, local-first athletic and biomechanica
 - **Subtraction & Motion Polish**: Removed redundant eyebrow kickers, emoji accents, duplicate `#library` date header, and unused filter bar when `<= 2` routines exist; added damped spring easing and tactile press feedback.
 - **Official Documentation**: Created `AGENTS.md`, `docs/VISION_AND_ROADMAP.md`, `docs/ARCHITECTURE.md`, and `docs/PROJECT_STATE.md`.
 
+#### v0.5 — Mobile Gym Readiness, Bespoke Brand & Media Craft *(Current Release)*
+- [x] Integrated bespoke transparent SVG Ouroboros Spine brand emblem (`logo.svg`) + crisp PNG/SVG favicons (`favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png`).
+- [x] Compressed `src/assets/exercises/mcgill-curl-up.jpg` (`1024×1024`, `302.6 kB` -> `800×800`, `22.4 kB`) and added smooth lazy-image decode transitions via shared `<FadeImage />`.
+- [x] Added automatic Screen Wake Lock (`useWakeLock`), safe mobile haptic pulses (`haptics.js`), non-blocking `5s` Undo recovery (`useUndoToast` + `<UndoToast />`), and `390×844` mobile ergonomics + Playwright mobile E2E coverage.
+- [x] Pruned `530` dead CSS rules (`~74 kB` source / `~59.7 kB` built CSS reduction) via AST-verified PostCSS cleanup across `src/styles/*.css`.
+
 ---
 
 ### Upcoming Milestones
-
-#### v0.5 — Bespoke Visual Identity & Media Optimization *(Next)*
-- [ ] Replace `src/assets/brand/logo-nova-soma.jpg` (and PWA icon) with a crisp transparent SVG vector monogram + clean favicons.
-- [ ] Audit icon weight & consistency across secondary chrome (optional custom icon refinements).
-- [ ] Optional ultra-light WebP thumbnail pass for exercise preview grids if initial bundle precache size needs further reduction (`mcgill-curl-up.jpg` currently ~303 kB vs ~15–38 kB for other JPGs/WebPs).
 
 #### v0.6 — Strength Progression Intelligence
 - [ ] Per-exercise PR detection, estimated 1RM (e1RM) trend sparklines, and session-to-session overload deltas inside Exercise Detail / Overview (scoped after foundation stabilizes).

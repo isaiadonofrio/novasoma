@@ -1,5 +1,33 @@
-import React from 'react';
+import { useState, useCallback } from 'react';
 import { Image as ImageIcon, Video } from 'lucide-react';
+
+/**
+ * Shared image renderer with smooth decode fade-in when loading lazily,
+ * while rendering immediately when already present in the browser cache.
+ */
+export function FadeImage({ src, alt = '', className = '', loading = 'lazy' }) {
+  const [loadedSrc, setLoadedSrc] = useState(null);
+  const loaded = Boolean(src && loadedSrc === src);
+
+  const handleImgRef = useCallback((node) => {
+    if (node && node.complete && node.naturalWidth > 0) {
+      setLoadedSrc(src);
+    }
+  }, [src]);
+
+  return (
+    <img
+      ref={handleImgRef}
+      src={src}
+      alt={alt}
+      loading={loading}
+      decoding="async"
+      onLoad={() => setLoadedSrc(src)}
+      onError={() => setLoadedSrc(src)}
+      className={`${className} is-fade-img ${loaded ? 'is-loaded' : ''}`}
+    />
+  );
+}
 
 export function MediaViewer({ src, alt = '', className = '', autoPlay = true }) {
   if (!src) {
@@ -64,7 +92,7 @@ export function MediaViewer({ src, alt = '', className = '', autoPlay = true }) 
 
   return (
     <div className={`media-image-frame ${className}`}>
-      <img
+      <FadeImage
         src={src}
         alt={alt}
         loading="lazy"

@@ -30,6 +30,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -40,6 +41,7 @@
     opacity: 0;
     transform: scale(0.975) translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -51,6 +53,7 @@
     opacity: 0;
     transform: translateY(5px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -61,6 +64,7 @@
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -70,6 +74,7 @@
   from {
     transform: translateX(-100%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -79,6 +84,7 @@
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -187,29 +193,23 @@
 }
 
 .brand-logo-frame {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #FFFFFF;
-  border: 1px solid var(--border);
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: transform 0.16s var(--ease), border-color 0.16s var(--ease);
+  transition: transform 0.16s var(--ease-spring);
 }
 
 .gymmane-brand:hover .brand-logo-frame {
   transform: scale(1.04);
-  border-color: var(--clay);
 }
 
 .brand-logo-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -260,31 +260,6 @@
   flex-shrink: 0;
 }
 
-.theme-toggle-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-full);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  display: grid;
-  place-items: center;
-  transition: all 0.15s var(--ease);
-}
-
-[data-theme="light"] .theme-toggle-btn {
-  background: #FFFFFF;
-  color: var(--text);
-  border-color: var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-}
-
-.theme-toggle-btn:hover {
-  color: var(--clay);
-  border-color: var(--clay);
-  background: var(--raised2);
-}
-
 .gymmane-cta-btn {
   display: inline-flex;
   align-items: center;
@@ -308,7 +283,6 @@
   opacity: 0.42;
   cursor: not-allowed;
 }
-
 
 /* ==========================================================================
    13. Minimal Footer
@@ -697,3 +671,96 @@
   }
 }
 
+/* Smooth progressive image reveal (zero jump for cached assets) */
+.is-fade-img {
+  opacity: 0;
+  transition: opacity 0.22s var(--ease), transform 0.25s var(--ease);
+}
+
+.is-fade-img.is-loaded {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-fade-img {
+    opacity: 1;
+  }
+}
+
+/* Floating Editorial Undo Notification Pill */
+.undo-toast-wrap {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 420;
+  max-width: calc(100vw - 24px);
+  pointer-events: none;
+}
+
+.undo-toast-pill {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px 9px 16px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border-hi);
+  box-shadow: var(--shadow-modal);
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 600;
+  animation: fadeUpIn 0.2s var(--ease-spring) both;
+}
+
+.undo-toast-message {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: min(320px, 56vw);
+}
+
+.undo-toast-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--ember);
+  color: var(--on-ember);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.undo-toast-action:hover {
+  background: var(--ember-hover);
+}
+
+.undo-toast-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--dim);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.undo-toast-close:hover {
+  background: var(--raised2);
+  color: var(--text);
+}
+
+@media (max-width: 960px) {
+  .undo-toast-wrap.in-player {
+    bottom: calc(134px + env(safe-area-inset-bottom, 0px));
+  }
+}

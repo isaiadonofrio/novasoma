@@ -19,6 +19,9 @@ import {
   SkipForward
 } from 'lucide-react';
 import { sounds } from '../utils/audio';
+import { haptics } from '../utils/haptics';
+import { useWakeLock } from '../utils/useWakeLock';
+import { useUndoToast } from '../utils/useUndoToast';
 import { MUSCLE_LABELS } from '../data/muscleLabels';
 import { EXERCISE_DATABASE } from '../data/exerciseDatabase';
 import { enrichExerciseWithTaxonomy, getExerciseVariations } from '../data/exerciseTaxonomy';
@@ -44,6 +47,7 @@ import { PlayerHeader } from './player/PlayerHeader';
 import { PlayerQueueDrawer } from './player/PlayerQueueDrawer';
 import { PlayerGuideDrawer } from './player/PlayerGuideDrawer';
 import { FinishWorkoutModal } from './player/FinishWorkoutModal';
+import { UndoToast } from './UndoToast';
 
 const EMPTY_EXERCISES = [];
 
@@ -117,6 +121,16 @@ export function ActiveWorkoutModal({
 }) {
   const [localExercises, setLocalExercises] = useState(() => routine?.exercises || EMPTY_EXERCISES);
   const exercises = onUpdateRoutine ? (routine?.exercises || EMPTY_EXERCISES) : localExercises;
+
+  useWakeLock(true);
+  const {
+    toast: undoToast,
+    showUndoToast,
+    triggerUndo,
+    dismissToast,
+    pauseTimer: pauseUndoTimer,
+    resumeTimer: resumeUndoTimer,
+  } = useUndoToast();
 
   const [savedDraft] = useState(() => {
     const draft = safeReadJson(STORAGE_KEYS.ACTIVE_DRAFT, null);
@@ -595,6 +609,11 @@ export function ActiveWorkoutModal({
     setLoggedSets(nextLoggedSets);
 
     if (targetSet.completed) {
+      if (fromWorkTimer) {
+        haptics.timerComplete();
+      } else {
+        haptics.setComplete();
+      }
       if (soundEnabled) {
         if (fromWorkTimer) {
           sounds.playTimerComplete();
@@ -688,6 +707,7 @@ export function ActiveWorkoutModal({
         if (!timerConfig.isRepHoldDuration && nextIncompleteSetIdx >= 0 && currentExercise) {
           toggleSetComplete(nextIncompleteSetIdx, currentExercise, { fromWorkTimer: true });
         } else {
+          haptics.timerComplete();
           if (soundEnabled) sounds.playTimerComplete();
           if (timerConfig.isRepHoldDuration) {
             resetTimer(timerConfig.workSeconds, 'work', false);
@@ -696,6 +716,7 @@ export function ActiveWorkoutModal({
         return;
       }
 
+      haptics.timerComplete();
       if (soundEnabled) sounds.playTimerComplete();
       if (timerConfig.hasWorkTimer && nextIncompleteSetIdx >= 0) {
         resetTimer(timerConfig.workSeconds, 'work', false);
@@ -820,6 +841,7 @@ export function ActiveWorkoutModal({
     const exId = targetExercise.id;
     const currentSets = loggedSets[exId] || [];
     if (currentSets.length <= 1) return;
+    const removedSet = currentSets[currentSets.length - 1];
     const nextLogged = {
       ...loggedSets,
       [exId]: currentSets.slice(0, -1)
@@ -829,6 +851,17 @@ export function ActiveWorkoutModal({
     if (targetExercise.id === currentExercise.id && !isResting) {
       cueTimerForExercise(currentIndex, nextLogged);
     }
+
+    showUndoToast(`Removed Set ${removedSet.setNum} (${targetExercise.name})`, () => {
+      setLoggedSets((prev) => {
+        const list = prev[exId] || [];
+        return {
+          ...prev,
+          [exId]: [...list, removedSet]
+        };
+      });
+      haptics.undo();
+    });
   };
 
   const formatTime = (secs) => {
@@ -1441,6 +1474,7 @@ export function ActiveWorkoutModal({
                   className="player-set-adj-btn is-subtle"
                   onClick={() => removeLastSetFromExercise(targetEx)}
                   title="Remove last set"
+                  aria-label="Remove last set"
                 >
                   −
                 </button>
@@ -2012,6 +2046,15 @@ export function ActiveWorkoutModal({
         onClose={() => setConfirmFinishOpen(false)}
         onDiscard={handleDiscardWorkout}
         onConfirmFinish={handleConfirmFinish}
+      />
+
+      <UndoToast
+        toast={undoToast}
+        onUndo={triggerUndo}
+        onDismiss={dismissToast}
+        onPause={pauseUndoTimer}
+        onResume={resumeUndoTimer}
+        inPlayer
       />
     </div>
   );

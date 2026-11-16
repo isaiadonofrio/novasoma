@@ -1,27 +1,12 @@
 /* ==========================================================================
    3. Anatomical Body Map & Compact Mini Silhouettes
    ========================================================================== */
-.mini-bodymap-wrap svg,
-.bodymap-svg-wrapper svg {
+.mini-bodymap-wrap svg {
   width: 100%;
   height: auto;
   display: block;
   outline: none !important;
   -webkit-tap-highlight-color: transparent;
-}
-
-.bodymap-svg-wrapper svg .muscle,
-.bodymap-svg-wrapper svg .muscle:focus,
-.bodymap-svg-wrapper svg .muscle:focus-visible,
-.bodymap-svg-wrapper svg .muscle path {
-  outline: none !important;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.bodymap-svg-wrapper svg .muscle:focus-visible path {
-  stroke: var(--clay);
-  stroke-width: 1.5px;
-  stroke-linejoin: round;
 }
 
 .body-base path {
@@ -96,10 +81,6 @@
   pointer-events: none;
 }
 
-.hero-mini-body {
-  width: 150px;
-}
-
 .card-mini-body {
   width: 118px;
 }
@@ -107,8 +88,3 @@
 .overview-mini-body {
   width: 136px;
 }
-
-.player-mini-body {
-  width: 114px;
-}
-

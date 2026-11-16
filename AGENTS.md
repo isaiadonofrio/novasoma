@@ -42,7 +42,7 @@ This file defines non-negotiable engineering invariants, workspace layout, and v
 - Every canonical movement must retain complete `ExerciseBiomechanics` (`plane`, `chain`, `laterality`, `loadVector`, `resistanceProfile`, `jointActions`) matching `src/data/exerciseTaxonomy.js`.
 - **Media asset separation**:
   - `src/assets/exercises/` — All `127` illustrated movement `.webp`/`.jpg` assets mapped in `src/data/exerciseMedia.js`.
-  - `src/assets/brand/` — Brand logo assets (`logo-nova-soma.jpg`).
+  - `src/assets/brand/` — Brand vector and PNG emblems (`logo.svg`, `logo.png`, `favicon.png`).
   - `src/assets/anatomy/` — Anatomical body map SVGs (`body.svg`).
 - Keep `src/data/exerciseMedia.js` free of UTF-8 BOM (`\uFEFF`) so module parsing and regex integrity tests remain clean.
 

@@ -143,22 +143,6 @@
   box-sizing: border-box;
 }
 
-.pure-date-block {
-  background: var(--raised2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.pure-date-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .pure-field-label {
   font-family: var(--mono);
   font-size: 0.82rem;
@@ -181,12 +165,6 @@
   color: var(--clay);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-}
-
-.pure-date-stepper-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .pure-date-nav-btn {

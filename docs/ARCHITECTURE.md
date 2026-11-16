@@ -28,13 +28,16 @@
 ├── e2e/
 │   └── app.spec.js                # End-to-end Playwright specs against vite preview
 ├── public/
-│   └── logo.jpg                   # PWA manifest icon asset
+│   ├── favicon.svg              # Vector browser tab icon
+│   ├── favicon.png              # PNG browser favicon
+│   ├── logo-192.png             # PWA manifest 192x192 icon
+│   └── logo-512.png             # PWA manifest 512x512 maskable & iOS touch icon
 ├── src/
 │   ├── App.jsx                    # Top-level hash router, modal orchestrator & global keyboard guards
 │   ├── App.css / index.css        # Core styles + token import (@import './styles/tokens.css')
 │   ├── assets/
 │   │   ├── anatomy/               # body.svg interactive/mini anatomy diagram
-│   │   ├── brand/                 # logo-nova-soma.jpg
+│   │   ├── brand/                 # logo.svg, logo.png, favicon.png
 │   │   └── exercises/             # 127 illustrated exercise assets (.jpg / .webp)
 │   ├── components/
 │   │   ├── overview/              # OverviewExerciseRow.jsx (table/cards inside routine overview)
@@ -69,12 +72,15 @@
 │       ├── demoData.js            # 14-session showcase generator anchored cleanly around personal routines
 │       ├── exerciseImport.js      # Single-exercise JSON parser & validator (reserved for v0.7 UI)
 │       ├── formatting.js          # Time, volume, duration & category resolvers
+│       ├── haptics.js             # Safe guarded mobile navigator.vibrate pulses
 │       ├── migrations.js          # Legacy storage hydration, exercise merge & extra-default pruning
 │       ├── storage.js             # STORAGE_KEYS, safe JSON parse/save, backup export/import & draft expiry
 │       ├── useBodyScrollLock.js   # Reference-counted body scroll locking for nested modals
 │       ├── useFocusTrap.js        # Accessible modal Tab loop & Escape handling
+│       ├── useUndoToast.js        # Non-blocking 5s Undo recovery timer state hook
+│       ├── useWakeLock.js         # Screen Wake Lock API lifecycle hook for live sessions
 │       └── workoutSets.js         # Phase ordering, contiguous superset normalization, drop-sets & timer configs
-└── tests/                         # 8 *.test.mjs unit test files (41 tests)
+└── tests/                         # 9 *.test.mjs unit test files (44 tests)
 ```
 
 ---

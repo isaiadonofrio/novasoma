@@ -15,6 +15,7 @@ import {
 import { MUSCLE_LABELS, getMuscleRegionTone } from '../data/muscleLabels.js';
 import { getRequiresEquipment, isAnimatedGifUrl } from '../utils/exerciseImport.js';
 import { ExerciseDetailModal } from './ExerciseDetailModal.jsx';
+import { FadeImage } from './MediaViewer.jsx';
 
 const EQUIPMENT_FILTERS = [
   { label: 'All Equipment', match: () => true },
@@ -1065,7 +1066,7 @@ export function ExerciseDatabaseView({
                       title="Click to view movement guide"
                     >
                       {ex.illustration ? (
-                        <img
+                        <FadeImage
                           src={ex.illustration}
                           alt={ex.name}
                           className="db-card-cover-photo"
