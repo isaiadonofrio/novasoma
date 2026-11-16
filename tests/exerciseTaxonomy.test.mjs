@@ -77,7 +77,7 @@ test('all 127 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
   const mediaSource = fs.readFileSync(mediaFilePath, 'utf8');
 
   const importedVars = new Map();
-  const importRegex = /^import\s+(\w+)\s+from\s+'\.\.\/assets\/([^']+)';/gm;
+  const importRegex = /^import\s+(\w+)\s+from\s+'\.\.\/assets\/exercises\/([^']+)';/gm;
   for (const match of mediaSource.matchAll(importRegex)) {
     importedVars.set(match[1], match[2]);
   }
@@ -92,7 +92,7 @@ test('all 127 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
   assert.equal(mappedIds.size, 127, 'Expected 127 EXERCISE_MEDIA entries');
 
   for (const [varName, assetFilename] of importedVars.entries()) {
-    const absAssetPath = path.join(ROOT_DIR, 'src', 'assets', assetFilename);
+    const absAssetPath = path.join(ROOT_DIR, 'src', 'assets', 'exercises', assetFilename);
     assert.ok(
       fs.existsSync(absAssetPath),
       `Mapped asset file does not exist for ${varName}: ${absAssetPath}`

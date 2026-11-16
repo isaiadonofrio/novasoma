@@ -9,7 +9,6 @@ import {
   RotateCcw,
   ChevronDown,
   Check,
-  Calendar,
   Layers,
   SlidersHorizontal
 } from 'lucide-react';
@@ -115,24 +114,6 @@ export function ExerciseDatabaseView({
   const [isLevelMenuOpen, setIsLevelMenuOpen] = useState(false);
   const [showMobileInsights, setShowMobileInsights] = useState(false);
   const [activeExerciseDetail, setActiveExerciseDetail] = useState(null);
-
-  const [now, setNow] = useState(() => new Date());
-
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        setNow(new Date());
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => document.removeEventListener('visibilitychange', handleVisibility);
-  }, []);
-
-  const todayDisplay = now.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric'
-  });
 
   const equipMenuRef = useRef(null);
   const mechMenuRef = useRef(null);
@@ -488,11 +469,8 @@ export function ExerciseDatabaseView({
       <section className="db-view-header">
         <div className="gymmane-wrap">
           <div className="hero-clean-header-row db-top-nav-row">
-            <div className="hero-brand-date-box" title="Today">
-              <div className="hero-date-icon-frame">
-                <Calendar size={16} />
-              </div>
-              <span className="home-date-kicker">TODAY · {todayDisplay}</span>
+            <div className="hero-brand-date-box">
+              <h1 className="db-page-title">Exercise Library</h1>
             </div>
 
             <div className="db-header-stats-badge">

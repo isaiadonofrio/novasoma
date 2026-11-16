@@ -78,7 +78,7 @@ export function StatsDashboard({
   const isGoalMet = streak.activeDaysThisWeek >= goalTarget;
 
   const captionText = isGoalMet
-    ? `Weekly target reached — ${streak.activeDaysThisWeek} active days logged! 🔥`
+    ? `Weekly target reached — ${streak.activeDaysThisWeek} active days logged`
     : streak.activeDaysThisWeek > 0
     ? `${goalTarget - streak.activeDaysThisWeek} more session${goalTarget - streak.activeDaysThisWeek === 1 ? '' : 's'} to hit your ${goalTarget}-day target`
     : `Complete your first session to kick off this week's rhythm`;
@@ -87,7 +87,6 @@ export function StatsDashboard({
     <section className="consistency-card" aria-label="Weekly consistency">
       <div className="consistency-top-row">
         <div className="consistency-title-block">
-          <span className="consistency-kicker">YOUR WEEK</span>
           <h3 className="consistency-heading">Weekly Consistency</h3>
         </div>
 

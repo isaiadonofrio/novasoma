@@ -42,14 +42,13 @@ function formatCompactReps(reps) {
     .trim();
 }
 
-const CATEGORIES = [
-  'All',
+const CATEGORY_FILTER_MATCHERS = [
   'Legs',
   'Upper Body',
   'Push',
   'Pull',
   'Full Body',
-  'Core & Functional'
+  'Core & Functional',
 ];
 
 function getCategoryToneClass(category = '') {
@@ -72,14 +71,6 @@ function getCategoryToneClass(category = '') {
   return 'category-tone-default';
 }
 
-function getDifficultyTone(difficulty = '') {
-  const norm = String(difficulty || '').toLowerCase();
-  if (norm.includes('advanced')) return 'tier-advanced';
-  if (norm.includes('intermediate')) return 'tier-intermediate';
-  if (norm.includes('beginner')) return 'tier-beginner';
-  return 'tier-intermediate';
-}
-
 export function RoutinesSection({
   routines = [],
   onSelectRoutineToView,
@@ -91,6 +82,15 @@ export function RoutinesSection({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [pendingDeleteRoutine, setPendingDeleteRoutine] = useState(null);
+
+  const availableCategories = useMemo(() => {
+    const present = CATEGORY_FILTER_MATCHERS.filter((cat) =>
+      routines.some((r) => (r.category || '').toLowerCase().includes(cat.toLowerCase()))
+    );
+    return ['All', ...present];
+  }, [routines]);
+
+  const showToolbar = routines.length > 2 || Boolean(searchQuery.trim());
 
   const filteredRoutines = useMemo(() => {
     return routines.filter((r) => {
@@ -125,12 +125,9 @@ export function RoutinesSection({
     <section className="home-routines-catalog-section" aria-label="Your Workouts">
       <div className="gymmane-wrap">
         <div className="home-routines-divider-header">
-          <div>
-            <span className="home-date-kicker">PERSONAL ARCHIVE</span>
-            <div className="home-routines-title-row">
-              <h2 className="home-routines-section-title">Your Workouts</h2>
-              <span className="home-routines-count-pill">{filteredRoutines.length}</span>
-            </div>
+          <div className="home-routines-title-row">
+            <h2 className="home-routines-section-title">Your Workouts</h2>
+            <span className="home-routines-count-pill">{filteredRoutines.length}</span>
           </div>
 
           {onOpenCreateWorkout && (
@@ -145,37 +142,41 @@ export function RoutinesSection({
           )}
         </div>
 
-        <div className="home-toolbar-strip">
-          <div className="toolbar-controls-grid">
-            <div className="search-box-home">
-              <Search size={16} className="search-icon-muted" />
-              <input
-                id="routines-search-input"
-                name="routines-search"
-                type="text"
-                placeholder="Search workouts or exercises..."
-                aria-label="Search workouts or exercises"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input-field"
-              />
-            </div>
+        {showToolbar && (
+          <div className="home-toolbar-strip">
+            <div className="toolbar-controls-grid">
+              <div className="search-box-home">
+                <Search size={16} className="search-icon-muted" />
+                <input
+                  id="routines-search-input"
+                  name="routines-search"
+                  type="text"
+                  placeholder="Search workouts or exercises..."
+                  aria-label="Search workouts or exercises"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input-field"
+                />
+              </div>
 
-            <div className="category-chips-list" role="group" aria-label="Filter by category">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  className={`category-chip ${selectedCategory === cat ? 'active' : ''}`}
-                  aria-pressed={selectedCategory === cat}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
+              {availableCategories.length > 2 && (
+                <div className="category-chips-list" role="group" aria-label="Filter by category">
+                  {availableCategories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`category-chip ${selectedCategory === cat ? 'active' : ''}`}
+                      aria-pressed={selectedCategory === cat}
+                      onClick={() => setSelectedCategory(cat)}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
 
         {routines.length === 0 ? (
           <div className="empty-routines-box">
@@ -214,16 +215,14 @@ export function RoutinesSection({
               const exercises = routine.exercises || [];
               const hasExercises = exercises.length > 0;
               const categoryTone = getCategoryToneClass(routine.category);
-              const difficultyTone = getDifficultyTone(routine.difficulty);
               const totalSets = exercises.reduce(
                 (sum, ex) => sum + (parseInt(ex.defaultSets, 10) || 3),
                 0
               );
-              const warmupCount = exercises.filter((ex) => ex.isWarmup).length;
               const mainExercises = exercises.filter((ex) => !ex.isWarmup);
               const previewExercises = (mainExercises.length > 0 ? mainExercises : exercises).slice(0, 3);
               const remainingCount = Math.max(0, exercises.length - previewExercises.length);
-              const visibleMuscles = primaryKeys.slice(0, 4);
+              const visibleMuscles = primaryKeys.slice(0, 3);
               const extraMusclesCount = Math.max(0, primaryKeys.length - visibleMuscles.length);
 
               return (
@@ -246,12 +245,6 @@ export function RoutinesSection({
                       <span className={`routine-folder-tab ${categoryTone}`}>
                         {routine.category || 'Workout'}
                       </span>
-                      {routine.difficulty && (
-                        <span className="routine-level-pill">
-                          <span className={`routine-level-pip ${difficultyTone}`} />
-                          <span>{routine.difficulty}</span>
-                        </span>
-                      )}
                     </div>
                     <div className="routine-card-top-actions">
                       {onDuplicateRoutine && (
@@ -362,19 +355,8 @@ export function RoutinesSection({
                         </div>
 
                         <div className="routine-preview-footer">
-                          <span className="routine-phase-summary">
-                            {warmupCount > 0 && mainExercises.length > 0 ? (
-                              <>
-                                <span className="phase-pill-mini warmup">● {warmupCount} warm-up</span>
-                                <span className="phase-dot-sep">·</span>
-                                <span className="phase-pill-mini main">▲ {mainExercises.length} main</span>
-                              </>
-                            ) : (
-                              `${exercises.length} ${exercises.length === 1 ? 'exercise' : 'exercises'} planned`
-                            )}
-                          </span>
                           <span className="routine-preview-more">
-                            {remainingCount > 0 ? `+${remainingCount} more` : 'View workout'}
+                            {remainingCount > 0 ? `+${remainingCount} more exercises` : 'View routine'}
                             <ChevronRight size={13} />
                           </span>
                         </div>

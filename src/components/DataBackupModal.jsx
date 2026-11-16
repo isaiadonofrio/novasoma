@@ -24,6 +24,7 @@ export function DataBackupModal({
   onClose,
 }) {
   const fileInputRef = useRef(null);
+  const revokeTimerRef = useRef(null);
   const trapRef = useFocusTrap(true);
   const [status, setStatus] = useState(null); // { type: 'success' | 'error', message: string }
   const [draftDismissed, setDraftDismissed] = useState(false);
@@ -44,7 +45,12 @@ export function DataBackupModal({
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (revokeTimerRef.current) {
+        clearTimeout(revokeTimerRef.current);
+      }
+    };
   }, [onClose]);
 
   const handleExport = () => {
@@ -67,7 +73,11 @@ export function DataBackupModal({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      if (revokeTimerRef.current) clearTimeout(revokeTimerRef.current);
+      revokeTimerRef.current = setTimeout(() => {
+        URL.revokeObjectURL(url);
+        revokeTimerRef.current = null;
+      }, 1000);
 
       setStatus({
         type: 'success',

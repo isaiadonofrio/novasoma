@@ -3,7 +3,21 @@
  * Respects 'prefers-reduced-motion'.
  */
 
-const COLORS = ['#ea580c', '#f97316', '#22c55e', '#3b82f6', '#eab308', '#a855f7', '#ec4899'];
+const COLORS = ['#9B6C34', '#166B6D', '#C89B5E', '#4A636E', '#135355'];
+
+let activeRafId = null;
+let activeCanvas = null;
+
+function cleanupConfetti() {
+  if (activeRafId !== null) {
+    cancelAnimationFrame(activeRafId);
+    activeRafId = null;
+  }
+  if (activeCanvas && activeCanvas.parentNode) {
+    activeCanvas.parentNode.removeChild(activeCanvas);
+  }
+  activeCanvas = null;
+}
 
 export function triggerConfettiBurst() {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -13,7 +27,10 @@ export function triggerConfettiBurst() {
     return;
   }
 
+  cleanupConfetti();
+
   const canvas = document.createElement('canvas');
+  activeCanvas = canvas;
   canvas.style.position = 'fixed';
   canvas.style.top = '0';
   canvas.style.left = '0';
@@ -65,7 +82,7 @@ export function triggerConfettiBurst() {
   function render(now) {
     const elapsed = now - startTime;
     if (elapsed > maxDuration) {
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      cleanupConfetti();
       return;
     }
 
@@ -96,11 +113,11 @@ export function triggerConfettiBurst() {
     }
 
     if (activeCount > 0) {
-      requestAnimationFrame(render);
-    } else if (canvas.parentNode) {
-      canvas.parentNode.removeChild(canvas);
+      activeRafId = requestAnimationFrame(render);
+    } else {
+      cleanupConfetti();
     }
   }
 
-  requestAnimationFrame(render);
+  activeRafId = requestAnimationFrame(render);
 }

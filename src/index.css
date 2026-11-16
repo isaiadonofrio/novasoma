@@ -1,97 +1,6 @@
-/* GymMane Essential Design System (Teal + Bronze Dual Signature) */
-:root,
-[data-theme="light"] {
-  /* Warm Linen Light Palette */
-  --page: #F7F5F0;
-  --bg: #FFFEFD;
-  --surface: #FFFFFF;
-  --raised: #FFFFFF;
-  --raised2: #ECE8E3;
-  --raised3: #E0DBD5;
+@import './styles/tokens.css';
 
-  --border: #E0DBD5;
-  --border-hi: #CFC8BF;
-  --border-active: #9B6C34;
-
-  --text: #171E1E;
-  --text-bright: #0A0A0A;
-  --dim: #546060;
-  --faint: #818D8D;
-  --dot-grid: rgba(22, 107, 109, 0.05);
-
-  /* Ember: Primary CTA */
-  --ember: #135355;
-  --ember-hover: #0E3E40;
-  --ember-soft: rgba(19, 83, 85, 0.08);
-  --on-ember: #FFFFFF;
-
-  /* Compatibility aliases */
-  --accent: var(--ember);
-  --accent-hover: var(--ember-hover);
-  --accent-fg: var(--on-ember);
-  --accent-soft: rgba(19, 83, 85, 0.08);
-  --accent-glow: rgba(19, 83, 85, 0.16);
-
-  /* Bronze: Brand Identity, Vertebrae Core & Primary Agonist Highlights */
-  --bronze: #9B6C34;
-  --clay: #9B6C34;
-  --clay-hover: #835B29;
-  --clay-soft: rgba(155, 108, 52, 0.13);
-  --clay-glow: rgba(155, 108, 52, 0.22);
-  --on-clay: #FFFFFF;
-  --brass: #825A27;
-
-  /* Teal: Brand Ouroboros, Synergist Muscles & Training Circuits */
-  --teal: #166B6D;
-  --teal-deep: #0E4244;
-  --sage: #166B6D;
-  --sage-soft: rgba(22, 107, 109, 0.14);
-  --sage-glow: rgba(22, 107, 109, 0.24);
-  --signal: #166B6D;
-
-  /* Cool Architectural Slate: Core & Spine, Full-Body, Decompression & Stabilizers */
-  --slate: #4A636E;
-  --slate-deep: #354952;
-  --slate-soft: rgba(74, 99, 110, 0.12);
-  --slate-border: rgba(74, 99, 110, 0.28);
-
-  /* Unified Semantic Anatomical Region Palette */
-  --region-lower: var(--clay);
-  --region-upper: var(--teal);
-  --region-core: var(--slate);
-
-  /* Graduated Weekly Muscle Hit Frequency Scale (Sand -> Bronze -> Teal) */
-  --hit-1: #C89B5E;
-  --hit-2: #9B6C34;
-  --hit-3: #166B6D;
-
-  /* Semantic Status */
-  --info: #166B6D;
-  --warn: #9B6C34;
-  --danger: #C0392B;
-
-  /* Folder-Stack Pastel Routine Tabs */
-  --tab-1: #C2D8E6;
-  --tab-2: #D4CDE9;
-  --tab-3: #E7CFC1;
-  --tab-4: #C7DEC9;
-  --tab-5: #EAE0C4;
-  --tab-6: #E7CBD1;
-
-  --display: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --body: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-
-  --maxw: 1400px;
-  --player-maxw: 1240px;
-  --ease: cubic-bezier(.22, .61, .36, 1);
-  --transition-fast: 0.15s cubic-bezier(.22, .61, .36, 1);
-  --radius-sm: 12px;
-  --radius-md: 18px;
-  --radius-lg: 24px;
-  --radius-full: 999px;
-}
-
+/* Nova Soma Base Layer & Motion System */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -128,7 +37,17 @@ button {
   cursor: pointer;
   border: none;
   background: none;
-  transition: all 0.18s var(--ease);
+  transition:
+    background-color 0.18s var(--ease-spring),
+    border-color 0.18s var(--ease-spring),
+    color 0.18s var(--ease-spring),
+    box-shadow 0.22s var(--ease-spring),
+    transform 0.16s var(--ease-spring),
+    opacity 0.16s var(--ease);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.975);
 }
 
 input, select, textarea {
@@ -160,4 +79,13 @@ input, select, textarea {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

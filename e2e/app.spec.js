@@ -15,7 +15,7 @@ test.describe('Nova Soma Critical User Flows', () => {
     await expect(page.getByRole('heading', { name: 'Data & Backup' })).toBeVisible();
 
     await page.getByRole('button', { name: 'Load Demo Data' }).click();
-    await expect(page.getByText(/Loaded 15 sample sessions/i)).toBeVisible();
+    await expect(page.getByText(/Loaded 14 sample sessions/i)).toBeVisible();
 
     await page.getByRole('button', { name: 'Clear Demo Data' }).click();
     await expect(page.getByText(/Sample demo sessions removed cleanly/i)).toBeVisible();

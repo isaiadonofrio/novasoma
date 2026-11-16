@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 import { HardDrive, AlertTriangle, X } from 'lucide-react';
-import { INITIAL_ROUTINES } from './data/workouts';
 import { EXERCISE_DATABASE } from './data/exerciseDatabase';
 import { calculateSessionVolumeKg } from './utils/analytics';
-import { formatLoggedSetSummary } from './utils/workoutSets';
 import { getRoundedDurationMinutes, getSessionDurationSeconds } from './utils/formatting';
 import { buildDemoWorkoutHistory } from './utils/demoData';
+import {
+  deriveLastRecordFromSets,
+  hydrateExercisesFromStorage,
+  hydrateRoutinesFromStorage,
+  normalizeRoutineTitle,
+  registerCurrentCatalogInStorage,
+} from './utils/migrations';
 import {
   STORAGE_KEYS,
   STORAGE_ERROR_EVENT,
@@ -13,7 +18,6 @@ import {
   safeReadJson,
   safeWriteJson,
   safeWriteString,
-  safeRemoveItem,
   readActiveWorkoutDraft,
   clearActiveWorkoutDraft,
 } from './utils/storage';
@@ -53,217 +57,19 @@ function buildHashRoute(view, routineId) {
 const ROUTINES_STORAGE_KEY = STORAGE_KEYS.ROUTINES;
 const EXERCISES_STORAGE_KEY = STORAGE_KEYS.EXERCISES;
 const HISTORY_STORAGE_KEY = STORAGE_KEYS.HISTORY;
-const SEEDED_CANONICAL_KEY = STORAGE_KEYS.SEEDED_CANONICAL;
-const EN_LOCALIZATION_KEY = STORAGE_KEYS.EN_LOCALIZATION;
 const CANONICAL_EXERCISE_IDS = new Set(EXERCISE_DATABASE.map((ex) => ex.id));
-
-function deriveLastRecordFromSets(sets, exercise = null) {
-  if (!Array.isArray(sets)) return null;
-  const completed = sets.filter((s) => s.completed);
-  if (completed.length === 0) return null;
-
-  let best = completed[completed.length - 1];
-  const hasPositiveWeight = completed.some((s) => {
-    const w = parseFloat(String(s.weight ?? '').replace(',', '.'));
-    return Number.isFinite(w) && w > 0;
-  });
-
-  if (hasPositiveWeight) {
-    let maxWeight = -1;
-    completed.forEach((s) => {
-      const w = parseFloat(String(s.weight ?? '').replace(',', '.'));
-      if (Number.isFinite(w) && w >= maxWeight) {
-        maxWeight = w;
-        best = s;
-      }
-    });
-  } else {
-    let maxReps = -1;
-    completed.forEach((s) => {
-      const r = parseFloat(String(s.reps ?? '').replace(',', '.'));
-      if (Number.isFinite(r) && r >= maxReps) {
-        maxReps = r;
-        best = s;
-      }
-    });
-  }
-
-  const formatted = formatLoggedSetSummary(best, exercise);
-  return formatted && formatted !== '-' ? formatted : null;
-}
-
-const LEGACY_ROUTINE_TITLES = {
-  'Leg Workout 1 (Focus Squat & Catena Posteriore)': 'Legs · Squat & Posterior Chain',
-  'Leg Workout 2 (Focus Squat Pesante & Flessione Ginocchio)': 'Legs · Back Squat & Knee Flexion',
-  'Leg Workout 1': 'Legs · Squat & Posterior Chain',
-  'Leg Workout 2': 'Legs · Back Squat & Knee Flexion',
-  'Full Body Movement & Health Restoration': 'Full Body · Movement Restoration',
-  'Zero-Equipment Bodyweight & Movement Flow': 'Full Body · Calisthenics Flow',
-  'Minimalist Kettlebell & Loaded Carry Framework': 'Full Body · Kettlebell & Carry',
-  'McGill Big 3 & Spinal Decompression Reset': 'Core · McGill Spine Decompression',
-};
-
-function normalizeRoutineTitle(title) {
-  return LEGACY_ROUTINE_TITLES[title] || title;
-}
-
-function normalizeRepUnits(reps) {
-  if (!reps) return reps;
-  return String(reps)
-    .replace(/\/lato\b|per lato/gi, '/side')
-    .replace(/\/gamba\b|per gamba/gi, '/leg')
-    .replace(/secondi/gi, 'sec')
-    .trim();
-}
-
-const LEGACY_REPLACED_EXERCISES = {
-  'wu-side-plank-leg-raise': {
-    canonicalId: 'ex-copenhagen-plank',
-    warmupId: 'wu-copenhagen-plank'
-  },
-  'wu-feet-elevated-glute-bridge': {
-    canonicalId: 'ex-elevated-single-leg-glute-bridge',
-    warmupId: 'wu-elevated-single-leg-glute-bridge'
-  }
-};
-
-function mergeMissingCanonical(ex) {
-  const legacyReplacement = LEGACY_REPLACED_EXERCISES[ex.id];
-  if (legacyReplacement) {
-    const replacement = EXERCISE_DATABASE.find(c => c.id === legacyReplacement.canonicalId);
-    if (replacement) {
-      return {
-        ...replacement,
-        sourceId: replacement.id,
-        id: ex.isWarmup ? legacyReplacement.warmupId : replacement.id,
-        phase: ex.isWarmup ? 'warmup' : 'main',
-        isWarmup: Boolean(ex.isWarmup)
-      };
-    }
-  }
-  const lookupId = ex.sourceId || ex.id;
-  const canonical = EXERCISE_DATABASE.find(c => c.id === lookupId);
-  if (!canonical) return ex;
-  return {
-    ...canonical,
-    ...ex,
-    // Canonical data from code always takes precedence for reference guide content:
-    name: canonical.name,
-    subtitle: canonical.subtitle,
-    scientificName: canonical.scientificName,
-    pattern: canonical.pattern,
-    equipment: canonical.equipment,
-    requiresEquipment: typeof canonical.requiresEquipment === 'boolean' ? canonical.requiresEquipment : (typeof ex.requiresEquipment === 'boolean' ? ex.requiresEquipment : true),
-    mechanics: canonical.mechanics,
-    level: canonical.level,
-    muscleKey: canonical.muscleKey,
-    targetMuscles: canonical.targetMuscles,
-    execution: canonical.execution,
-    illustration: canonical.illustration,
-    rpe: canonical.rpe,
-    familyId: canonical.familyId,
-    familyName: canonical.familyName,
-    variationType: canonical.variationType,
-    variationLabel: canonical.variationLabel,
-    biomechanics: canonical.biomechanics,
-    customVideoUrl: canonical.customVideoUrl || ex.customVideoUrl,
-    // Workout composition fields preserved from user planning:
-    id: ex.id || canonical.id,
-    sourceId: canonical.id,
-    phase: ex.phase || (canonical.isWarmup ? 'warmup' : 'main'),
-    isWarmup: typeof ex.isWarmup === 'boolean' ? ex.isWarmup : Boolean(canonical.isWarmup),
-    defaultSets: ex.defaultSets ?? canonical.defaultSets ?? 3,
-    defaultReps: ex.defaultReps ? normalizeRepUnits(ex.defaultReps) : (canonical.defaultReps || '8-12'),
-    defaultRestSeconds: ex.defaultRestSeconds ?? canonical.defaultRestSeconds ?? 90,
-    defaultDropSets: ex.defaultDropSets ?? 0,
-    supersetGroup: ex.supersetGroup ?? null,
-    lastRecord: ex.lastRecord ?? null
-  };
-}
 
 export function App() {
   // Initial cleanup of legacy keys and current catalog registration
   useEffect(() => {
-    try {
-      [
-        'corpo_routines',
-        'corpo_routines_v1',
-        'corpo_routines_v2',
-        'corpo_routines_v3',
-        'corpo_routines_v4',
-        'corpo_user_routines_v5',
-        'corpo_user_routines_v6',
-        'corpo_custom_database',
-        'corpo_custom_database_v1',
-        'corpo_custom_database_v2',
-        'corpo_custom_database_v3',
-        'corpo_custom_database_v4',
-        'corpo_user_exercises_v5',
-        'corpo_user_routines_clean'
-      ].forEach(k => safeRemoveItem(k));
-
-      const prevSeeded = safeReadJson(SEEDED_CANONICAL_KEY, []);
-      const mergedSeeded = Array.from(new Set([
-        ...(Array.isArray(prevSeeded) ? prevSeeded : []),
-        ...EXERCISE_DATABASE.map(e => e.id)
-      ]));
-      safeWriteJson(SEEDED_CANONICAL_KEY, mergedSeeded);
-      safeWriteString(EN_LOCALIZATION_KEY, '1');
-    } catch {
-      // Ignore storage restrictions
-    }
+    registerCurrentCatalogInStorage();
   }, []);
 
   // Canonical exercise database, hydrated with user updates / custom exercises from storage
-  const [exerciseDatabase, setExerciseDatabase] = useState(() => {
-    const saved = safeReadJson(EXERCISES_STORAGE_KEY, null);
-    if (saved && Array.isArray(saved) && saved.length > 0) {
-      const savedMap = new Map(saved.map(ex => [ex.id, ex]));
-      const mergedCanonical = EXERCISE_DATABASE.map(canEx => {
-        const savedEx = savedMap.get(canEx.id);
-        if (!savedEx) return canEx;
-        savedMap.delete(canEx.id);
-        return {
-          ...savedEx,
-          ...canEx,
-          lastRecord: savedEx.lastRecord || canEx.lastRecord,
-          customVideoUrl: canEx.customVideoUrl || savedEx.customVideoUrl || '',
-        };
-      });
-      const customExercises = Array.from(savedMap.values());
-      return [...mergedCanonical, ...customExercises];
-    }
-    return EXERCISE_DATABASE;
-  });
+  const [exerciseDatabase, setExerciseDatabase] = useState(() => hydrateExercisesFromStorage());
 
-  // User workout routines
-  const [routines, setRoutines] = useState(() => {
-    const saved = safeReadJson(ROUTINES_STORAGE_KEY, null);
-    if (saved && Array.isArray(saved)) {
-      try {
-        const savedIds = new Set(saved.map(r => r.id));
-        const missingInitial = INITIAL_ROUTINES.filter(initR => !savedIds.has(initR.id));
-        const mappedSaved = saved.map(routine => {
-          const canonicalRoutine = INITIAL_ROUTINES.find(r => r.id === routine.id);
-          const normalizedTitle = normalizeRoutineTitle(routine.title);
-          return {
-            ...routine,
-            title: normalizedTitle,
-            shortTitle: normalizedTitle,
-            category: canonicalRoutine ? canonicalRoutine.category : routine.category,
-            difficulty: canonicalRoutine ? canonicalRoutine.difficulty : routine.difficulty,
-            equipmentTags: canonicalRoutine ? canonicalRoutine.equipmentTags : routine.equipmentTags,
-            description: canonicalRoutine ? canonicalRoutine.description : routine.description,
-            exercises: (routine.exercises || []).map(ex => mergeMissingCanonical(ex))
-          };
-        });
-        return [...mappedSaved, ...missingInitial];
-      } catch {
-        // Fallback to initial routines
-      }
-    }
-    return INITIAL_ROUTINES;
-  });
+  // User workout routines (two core leg routines by default + user custom workouts)
+  const [routines, setRoutines] = useState(() => hydrateRoutinesFromStorage());
 
   const [weeklyGoal, setWeeklyGoal] = useState(() => {
     const savedGoal = Number(safeReadString(STORAGE_KEYS.WEEKLY_GOAL, '4'));

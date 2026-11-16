@@ -29,6 +29,10 @@ class SoundManager {
       gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
+      osc.onended = () => {
+        osc.disconnect();
+        gain.disconnect();
+      };
       osc.start();
       osc.stop(this.ctx.currentTime + 0.12);
     } catch {
@@ -54,6 +58,10 @@ class SoundManager {
       
       osc.connect(gain);
       gain.connect(this.ctx.destination);
+      osc.onended = () => {
+        osc.disconnect();
+        gain.disconnect();
+      };
       osc.start(now);
       osc.stop(now + 0.45);
     } catch {
@@ -77,10 +85,21 @@ class SoundManager {
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
+      osc.onended = () => {
+        osc.disconnect();
+        gain.disconnect();
+      };
       osc.start(now);
       osc.stop(now + 0.35);
     } catch {
       // Ignore
+    }
+  }
+
+  dispose() {
+    if (this.ctx && typeof this.ctx.close === 'function') {
+      this.ctx.close().catch(() => {});
+      this.ctx = null;
     }
   }
 }

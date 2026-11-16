@@ -63,10 +63,33 @@
   --warn: #9B6C34;
   --danger: #C0392B;
 
+  --accent: var(--ember);
+  --accent-hover: var(--ember-hover);
+  --accent-fg: var(--on-ember);
+  --accent-soft: rgba(19, 83, 85, 0.08);
+  --accent-glow: rgba(19, 83, 85, 0.16);
+
+  /* Soft Warm-Linen Tonal Elevation */
+  --shadow-card: 0 2px 10px rgba(26, 23, 19, 0.035), 0 1px 2px rgba(26, 23, 19, 0.025);
+  --shadow-card-hover: 0 10px 28px rgba(26, 23, 19, 0.07), 0 2px 6px rgba(26, 23, 19, 0.03);
+  --shadow-modal: 0 24px 60px rgba(23, 30, 30, 0.14), 0 4px 16px rgba(23, 30, 30, 0.06);
+
+  --tab-1: #C2D8E6;
+  --tab-2: #D4CDE9;
+  --tab-3: #E7CFC1;
+  --tab-4: #C7DEC9;
+  --tab-5: #EAE0C4;
+  --tab-6: #E7CBD1;
+
+  --display: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --body: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
   --maxw: 1400px;
   --player-maxw: 1240px;
   --ease: cubic-bezier(.22, .61, .36, 1);
-  --transition-fast: 0.15s cubic-bezier(.22, .61, .36, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-fast: 0.16s var(--ease);
   --radius-sm: 12px;
   --radius-md: 18px;
   --radius-lg: 24px;

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import bodySvgRaw from '../assets/body.svg?raw';
+import bodySvgRaw from '../assets/anatomy/body.svg?raw';
 
 /**
  * Compact front/back muscle map preview used in routine cards,

@@ -1,72 +1,72 @@
 # NOVA SOMA
 
-> **Minimalist Biomechanics & Somatic Training Engine**  
+> **Minimalist Biomechanics & Somatic Training Studio**  
 > *A Nova Psiche Project* • [www.novapsiche.com](https://www.novapsiche.com)
 
-Nova Soma is a high-performance, distraction-free home workout and biomechanics web application. Designed around the classical Greek concept of **Sōma** (Σῶμα — *the physical body and its vitality*), it is built to operate 100% locally and offline on your device with zero cloud tracking, zero account walls, and complete personal data privacy.
+Nova Soma is a calm, editorial, 100% local-first home strength training and biomechanics Progressive Web App. Grounded in the classical Greek concept of **Sōma** (Σῶμα — *the physical body and its vitality*), it runs entirely offline in your browser with zero cloud tracking, zero account walls, and complete data sovereignty.
 
 ---
 
 ## Key Features
 
-* **Studio Workout Player**: Centered 2-column studio layout optimized across desktop, tablet, and mobile with sticky quick-complete HUD.
-* **Pre-Planned Supersets & Drop Sets**: Clean visual cues for paired exercises, automatic 20% drop set load calculations, and seamless transitions.
-* **Intelligent Timers**: Wall-clock timestamp tracking for both rest countdowns and session elapsed time with zero drift during backgrounding or mobile screen locks.
-* **Somatic Exercise Library**: Interactive muscle map, movement patterns, form cues, and equipment tagging with lightweight local WebP assets.
-* **100% Offline-First PWA Architecture**: Installable Progressive Web App with Workbox asset precaching and local-only `localStorage` persistence. Zero telemetry, zero account walls, and zero remote database transmissions.
-* **One-Click Portable Backups & Showcase Demo Mode**: Export and import your entire workout history as a portable JSON file across devices, or load 5 weeks of realistic sample sessions in one click from **Local Data & Backup**.
+* **Studio Workout Player**: Centered 2-column Warm Linen studio layout across desktop, tablet, and mobile with sticky quick-complete HUD, form cues, and progression drawers.
+* **Contiguous Supersets & Auto Drop Sets**: Paired main-block movements, automatic `-20%` drop-set load calculations, and automatic phase grouping (`Warm-Up`, `Workout`, `Decompression`).
+* **Drift-Free Wall-Clock Timers**: Rest countdowns and session elapsed time track wall-clock `Date.now()` timestamps accurately even through mobile screen locks or backgrounding.
+* **127-Movement Biomechanics Library**: Filterable exercise atlas across 8 movement families with interactive SVG muscle maps, kinesiological metadata (plane, chain, laterality, load vector, resistance profile, joint actions), and 127/127 local illustrations.
+* **Offline-First PWA & Portable JSON Backups**: Installable Workbox PWA with local-only `localStorage` persistence, one-click portable JSON export/import, and 14-session demo mode.
 
 ---
 
 ## Tech Stack
 
 * **Framework**: React 19 + Vite 8 + `vite-plugin-pwa`
-* **Styling**: Pure CSS Architecture (Warm Linen editorial Light theme)
+* **Styling**: Layered Pure CSS Architecture anchored in `src/styles/tokens.css` (Warm Linen Light theme)
 * **Icons**: Lucide React
 * **Type Checking & Linting**: TypeScript (`tsc --noEmit` via `checkJs` + JSDoc models) & Oxlint
 * **Testing**: Node Test Runner (`node:test`) + Playwright E2E (`playwright test`)
-* **Deployment**: GitHub Actions CI/CD (`lint` → `typecheck` → `test` → `build` → `test:e2e`) to GitHub Pages
+* **Deployment**: GitHub Actions CI/CD (`lint` → `typecheck` → `test` → `build` → `test:e2e`) → GitHub Pages
 
 ---
 
-## Architecture Overview
+## Architecture & Project Documentation
 
 ```text
-src/
-├── components/
-│   ├── player/        # Modular Studio Player (PlayerHeader, PlayerQueueDrawer, PlayerGuideDrawer, FinishWorkoutModal)
-│   ├── overview/      # Routine Builder & In-Depth Sets Editor (OverviewExerciseRow)
-│   └── ...            # HomeView, StatsDashboard, YearHeatmapCard, ExerciseDatabaseView, DataBackupModal
-├── data/
-│   ├── exercises/     # 127 canonical movements across 8 biomechanical categories (127/127 illustrated)
-│   └── exerciseTaxonomy.js
-├── types/             # Shared TypeScript domain definitions (models.d.ts)
-└── utils/             # Analytics, set/superset engine, wall-clock timers, demoData, safe localStorage
+├── docs/
+│   ├── VISION_AND_ROADMAP.md   # Product objectives, design pillars & version timeline
+│   ├── ARCHITECTURE.md         # Module map, storage schema & workout engine flow
+│   └── PROJECT_STATE.md        # Live verified metrics & snapshot for AI/contributors
+├── AGENTS.md                   # Engineering invariants & verification checklist
+├── src/
+│   ├── assets/                 # brand/, anatomy/, exercises/ (127 .webp/.jpg assets)
+│   ├── components/             # player/, overview/, HomeView, StatsDashboard, Library & Modals
+│   ├── data/                   # 127 canonical exercises (8 category modules) & 2 personal routines
+│   ├── styles/                 # tokens.css + modular editorial Light stylesheets
+│   ├── types/                  # Shared TypeScript definitions (models.d.ts)
+│   └── utils/                  # analytics, audio, confetti, demoData, migrations, storage, workoutSets
+├── tests/                      # Unit test suites (node:test)
+└── e2e/                        # Critical user flow tests (Playwright)
 ```
+
+* **[Vision & Roadmap](docs/VISION_AND_ROADMAP.md)** — Product objectives, design rules, completed milestones & upcoming releases
+* **[System Architecture](docs/ARCHITECTURE.md)** — File tree, storage keys, migration lifecycle & bundle splitting
+* **[Live Project State](docs/PROJECT_STATE.md)** — Current test counts, catalog coverage & latest build stats
+* **[AI & Contributor Guide](AGENTS.md)** — Structural invariants & mandatory verification gate
 
 ---
 
 ## Local Development
 
 ```bash
-# Clone the repository
-git clone https://github.com/isaiadonofrio/novasoma.git
-cd novasoma
-
 # Install dependencies
 npm install
 
 # Start local development server
 npm run dev
 
-# Run linter & TypeScript typecheck
+# Verification gate
 npm run lint
 npm run typecheck
-
-# Run unit tests
 npm test
-
-# Build production PWA bundle & run Playwright E2E suite
 npm run build
 npm run test:e2e
 ```
@@ -75,9 +75,7 @@ npm run test:e2e
 
 ## Privacy & Data Sovereignty
 
-Nova Soma does not track, send, or store your personal training data on external cloud servers. All routines, weights, repetitions, and history are kept exclusively on your device.
-
----
+Nova Soma never sends personal training data to external servers. All routines, logged sets, notes, and history remain exclusively on your device.
 
 ## License
 

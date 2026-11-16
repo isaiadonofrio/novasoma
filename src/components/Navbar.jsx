@@ -1,6 +1,6 @@
 import React from 'react';
 import { Play, BookOpen, Home } from 'lucide-react';
-import logoImg from '../assets/logo nova soma.jpg';
+import logoImg from '../assets/brand/logo-nova-soma.jpg';
 
 export function Navbar({
   currentView = 'home',

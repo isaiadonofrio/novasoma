@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
   WEEKLY_GOAL: 'corpo_weekly_goal_v1',
   ACTIVE_DRAFT: 'corpo_active_draft_v1',
   SEEDED_CANONICAL: 'corpo_seeded_canonical_v1',
+  PRUNED_EXTRA_DEFAULTS: 'corpo_pruned_extra_defaults_v1',
   EN_LOCALIZATION: 'corpo_en_localized_v1',
   SOUND_ENABLED: 'corpo_sound_enabled_v1',
 };
