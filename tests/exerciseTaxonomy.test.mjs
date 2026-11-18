@@ -72,7 +72,7 @@ test('every canonical exercise has complete standardized scientific taxonomy & b
   }
 });
 
-test('all 127 illustrated exercises have valid EXERCISE_MEDIA mappings and existing files on disk', () => {
+test('all 139 illustrated exercises have valid EXERCISE_MEDIA mappings and existing files on disk', () => {
   const mediaFilePath = path.join(ROOT_DIR, 'src', 'data', 'exerciseMedia.js');
   const mediaSource = fs.readFileSync(mediaFilePath, 'utf8');
 
@@ -88,8 +88,8 @@ test('all 127 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
     mappedIds.set(match[1], match[2]);
   }
 
-  assert.equal(importedVars.size, 127, 'Expected 127 imported exercise asset files');
-  assert.equal(mappedIds.size, 127, 'Expected 127 EXERCISE_MEDIA entries');
+  assert.equal(importedVars.size, 139, 'Expected 139 imported exercise asset files');
+  assert.equal(mappedIds.size, 139, 'Expected 139 EXERCISE_MEDIA entries');
 
   for (const [varName, assetFilename] of importedVars.entries()) {
     const absAssetPath = path.join(ROOT_DIR, 'src', 'assets', 'exercises', assetFilename);
@@ -104,19 +104,7 @@ test('all 127 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
     .filter((id) => !mappedIds.has(id));
 
   assert.deepEqual(rawIdsWithoutIllustration, [
-    'wu-lateral-glute-step-down',
-    'wu-dumbbell-glute-step-down',
-    'wu-kettlebell-glute-step-down',
-    'wu-banded-glute-step-down',
-    'wu-elevated-ankle-dorsiflexion',
-    'wu-dumbbell-ankle-dorsiflexion',
-    'wu-kettlebell-ankle-dorsiflexion',
-    'wu-banded-ankle-dorsiflexion',
-    'wu-thoracic-open-book',
-    'wu-wall-angel-slides',
-    'wu-scapular-pull-up',
-    'ex-prone-cobra-hold',
-    'ex-jefferson-curl'
+    'wu-banded-ankle-dorsiflexion'
   ]);
 
   for (const [id, varName] of mappedIds.entries()) {

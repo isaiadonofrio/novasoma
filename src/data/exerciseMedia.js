@@ -5,6 +5,7 @@ import bStanceRdl from '../assets/exercises/b-stance-rdl.jpg';
 import backSquat from '../assets/exercises/back-squat.webp';
 import bandedBicepCurl from '../assets/exercises/banded-bicep-curl.jpg';
 import bandedChestFly from '../assets/exercises/banded-chest-fly.jpg';
+import bandedGluteStepDown from '../assets/exercises/banded-glute-step-down.jpg';
 import bandedHipAbduction from '../assets/exercises/banded-hip-abduction.webp';
 import bandedLateralWalk from '../assets/exercises/banded-lateral-walk.jpg';
 import bandedPallofPress from '../assets/exercises/banded-pallof-press.jpg';
@@ -34,12 +35,14 @@ import copenhagenPlank from '../assets/exercises/copenhagen-plank.webp';
 import cossackSquat from '../assets/exercises/cossack-squat.webp';
 import declinePushUp from '../assets/exercises/decline-push-up.jpg';
 import decompressionBriskWalk from '../assets/exercises/decompression-brisk-walk.jpg';
+import dumbbellAnkleDorsiflexion from '../assets/exercises/dumbbell-ankle-dorsiflexion.jpg';
 import dumbbellBentOverRow from '../assets/exercises/dumbbell-bent-over-row.webp';
 import dumbbellBicepCurl from '../assets/exercises/dumbbell-bicep-curl.webp';
 import dumbbellChestFly from '../assets/exercises/dumbbell-chest-fly.webp';
 import dumbbellConcentrationCurl from '../assets/exercises/dumbbell-concentration-curl.jpg';
 import dumbbellCyclistSquat from '../assets/exercises/dumbbell-cyclist-squat.jpg';
 import dumbbellFloorPress from '../assets/exercises/dumbbell-floor-press.webp';
+import dumbbellGluteStepDown from '../assets/exercises/dumbbell-glute-step-down.jpg';
 import dumbbellGobletSquat from '../assets/exercises/dumbbell-goblet-squat.webp';
 import dumbbellHammerCurl from '../assets/exercises/dumbbell-hammer-curl.webp';
 import dumbbellLateralRaise from '../assets/exercises/dumbbell-lateral-raise.webp';
@@ -50,6 +53,7 @@ import dumbbellRomanianDeadlift from '../assets/exercises/dumbbell-romanian-dead
 import dumbbellWristCurl from '../assets/exercises/dumbbell-wrist-curl.jpg';
 import dumbbellWristExtension from '../assets/exercises/dumbbell-wrist-extension.jpg';
 import dumbbellZottmanCurl from '../assets/exercises/dumbbell-zottman-curl.jpg';
+import elevatedAnkleDorsiflexion from '../assets/exercises/elevated-ankle-dorsiflexion.jpg';
 import elevatedSingleLegGluteBridge from '../assets/exercises/elevated-single-leg-glute-bridge.webp';
 import farmersCarry from '../assets/exercises/farmers-carry.jpg';
 import forearmPlank from '../assets/exercises/forearm-plank.webp';
@@ -65,13 +69,16 @@ import inclineDumbbellBenchPress from '../assets/exercises/incline-dumbbell-benc
 import inclineDumbbellChestFly from '../assets/exercises/incline-dumbbell-chest-fly.jpg';
 import inclineDumbbellYtwRaise from '../assets/exercises/incline-dumbbell-ytw-raise.jpg';
 import inclinePushUp from '../assets/exercises/incline-push-up.jpg';
+import jeffersonCurl from '../assets/exercises/jefferson-curl.jpg';
 import jumpRope from '../assets/exercises/jump-rope.webp';
+import kettlebellAnkleDorsiflexion from '../assets/exercises/kettlebell-ankle-dorsiflexion.jpg';
 import kettlebellBicepCurl from '../assets/exercises/kettlebell-bicep-curl.jpg';
 import kettlebellBottomsUpCarry from '../assets/exercises/kettlebell-bottoms-up-carry.jpg';
 import kettlebellFloorPress from '../assets/exercises/kettlebell-floor-press.jpg';
 import kettlebellFloorSkullcrusher from '../assets/exercises/kettlebell-floor-skullcrusher.jpg';
 import kettlebellForwardLunge from '../assets/exercises/kettlebell-forward-lunge.jpg';
 import kettlebellFrontRackCarry from '../assets/exercises/kettlebell-front-rack-carry.jpg';
+import kettlebellGluteStepDown from '../assets/exercises/kettlebell-glute-step-down.jpg';
 import kettlebellGobletLunge from '../assets/exercises/kettlebell-goblet-lunge.webp';
 import kettlebellGobletSquat from '../assets/exercises/kettlebell-goblet-squat.jpg';
 import kettlebellGorillaRow from '../assets/exercises/kettlebell-gorilla-row.jpg';
@@ -83,6 +90,7 @@ import kettlebellSingleLegCalfRaise from '../assets/exercises/kettlebell-single-
 import kettlebellSuitcaseCarry from '../assets/exercises/kettlebell-suitcase-carry.jpg';
 import kettlebellSumoDeadlift from '../assets/exercises/kettlebell-sumo-deadlift.webp';
 import kettlebellWindmill from '../assets/exercises/kettlebell-windmill.jpg';
+import lateralGluteStepDown from '../assets/exercises/lateral-glute-step-down.jpg';
 import lyingDumbbellTricepsExtension from '../assets/exercises/lying-dumbbell-triceps-extension.webp';
 import mcgillCurlUp from '../assets/exercises/mcgill-curl-up.jpg';
 import medicineBallRussianTwist from '../assets/exercises/medicine-ball-russian-twist.webp';
@@ -99,12 +107,14 @@ import pistolSquat from '../assets/exercises/pistol-squat.webp';
 import plankJack from '../assets/exercises/plank-jack.jpg';
 import poliquinStepDown from '../assets/exercises/poliquin-step-down.jpg';
 import proneBandedLegCurl from '../assets/exercises/prone-banded-leg-curl.jpg';
+import proneCobraHold from '../assets/exercises/prone-cobra-hold.jpg';
 import pullUp from '../assets/exercises/pull-up.webp';
 import pushUp from '../assets/exercises/push-up.webp';
 import quadrupedBandedGluteKickback from '../assets/exercises/quadruped-banded-glute-kickback.jpg';
 import reverseNordicCurl from '../assets/exercises/reverse-nordic-curl.webp';
 import reverseSnowAngel from '../assets/exercises/reverse-snow-angel.webp';
 import romanianDeadlift from '../assets/exercises/romanian-deadlift.webp';
+import scapularPullUp from '../assets/exercises/scapular-pull-up.jpg';
 import seatedBandedLegCurl from '../assets/exercises/seated-banded-leg-curl.webp';
 import seatedCalfRaise from '../assets/exercises/seated-calf-raise.webp';
 import seatedDumbbellOverheadPress from '../assets/exercises/seated-dumbbell-overhead-press.webp';
@@ -118,10 +128,12 @@ import sphinxPushUp from '../assets/exercises/sphinx-push-up.jpg';
 import standingDumbbellCalfRaise from '../assets/exercises/standing-dumbbell-calf-raise.webp';
 import stepUp from '../assets/exercises/step-up.webp';
 import supermanHold from '../assets/exercises/superman-hold.webp';
+import thoracicOpenBook from '../assets/exercises/thoracic-open-book.jpg';
 import tricepsChairDip from '../assets/exercises/triceps-chair-dip.webp';
 import underhandBarbellRow from '../assets/exercises/underhand-barbell-row.jpg';
 import verticalJump from '../assets/exercises/vertical-jump.jpg';
 import walkingLunge from '../assets/exercises/walking-lunge.webp';
+import wallAngelSlides from '../assets/exercises/wall-angel-slides.jpg';
 import wallSit from '../assets/exercises/wall-sit.webp';
 import wallTibialisRaise from '../assets/exercises/wall-tibialis-raise.jpg';
 import worldsGreatestStretch from '../assets/exercises/worlds-greatest-stretch.jpg';
@@ -136,6 +148,16 @@ export const EXERCISE_MEDIA = {
   'wu-worlds-greatest-stretch': worldsGreatestStretch,
   'wu-kettlebell-halo': kettlebellHalo,
   'wu-passive-dead-hang': passiveDeadHang,
+  'wu-lateral-glute-step-down': lateralGluteStepDown,
+  'wu-dumbbell-glute-step-down': dumbbellGluteStepDown,
+  'wu-kettlebell-glute-step-down': kettlebellGluteStepDown,
+  'wu-banded-glute-step-down': bandedGluteStepDown,
+  'wu-elevated-ankle-dorsiflexion': elevatedAnkleDorsiflexion,
+  'wu-dumbbell-ankle-dorsiflexion': dumbbellAnkleDorsiflexion,
+  'wu-kettlebell-ankle-dorsiflexion': kettlebellAnkleDorsiflexion,
+  'wu-thoracic-open-book': thoracicOpenBook,
+  'wu-wall-angel-slides': wallAngelSlides,
+  'wu-scapular-pull-up': scapularPullUp,
 
   // === 2. SQUATS & KNEE FLEXION ===
   'ex-spanish-squat': spanishSquat,
@@ -256,6 +278,8 @@ export const EXERCISE_MEDIA = {
   'ex-bicycle-crunch': bicycleCrunch,
   'ex-medicine-ball-russian-twist': medicineBallRussianTwist,
   'ex-superman-hold': supermanHold,
+  'ex-prone-cobra-hold': proneCobraHold,
+  'ex-jefferson-curl': jeffersonCurl,
   'ex-farmers-carry': farmersCarry,
   'ex-kettlebell-suitcase-carry': kettlebellSuitcaseCarry,
   'ex-kettlebell-front-rack-carry': kettlebellFrontRackCarry,

@@ -12,9 +12,9 @@
 
 | Domain | Verified State | Location |
 | :--- | :--- | :--- |
-| **Canonical Exercises** | `140` unique movements (`127` illustrated, `13` pending images) | [`src/data/exercises/`](../src/data/exercises/index.js) |
+| **Canonical Exercises** | `140` unique movements (`139` illustrated, `1` pending image: `wu-banded-ankle-dorsiflexion`) | [`src/data/exercises/`](../src/data/exercises/index.js) |
 | **Movement Categories** | `8` modular files (`19 + 13 + 19 + 23 + 23 + 14 + 23 + 6`) | `src/data/exercises/1_*.js` – `8_*.js` |
-| **Illustrated Media Assets** | `127` local `.jpg` / `.webp` files (`mcgill-curl-up.jpg` `22.4 kB`) | [`src/assets/exercises/`](../src/assets/exercises/) + [`exerciseMedia.js`](../src/data/exerciseMedia.js) |
+| **Illustrated Media Assets** | `139` local `.jpg` / `.webp` files (`800×800`, `~20–28 kB`) | [`src/assets/exercises/`](../src/assets/exercises/) + [`exerciseMedia.js`](../src/data/exerciseMedia.js) |
 | **Brand & Anatomy Assets** | `logo.svg`, `logo.png`, `favicon.png`, `body.svg` | [`src/assets/brand/`](../src/assets/brand/), [`src/assets/anatomy/`](../src/assets/anatomy/) |
 | **PWA & Favicon Assets** | `favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png` | [`public/`](../public/) |
 | **Default Seeded Routines** | `3` personal routines (`leg-workout-1`, `leg-workout-2`, `posture-spine-foundation`) | [`src/data/workouts.js`](../src/data/workouts.js) |
