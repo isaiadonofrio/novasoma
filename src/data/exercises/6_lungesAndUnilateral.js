@@ -511,5 +511,41 @@ export const LUNGESANDUNILATERAL_EXERCISES = [
         ],
         proTip: 'Tibialis anterior acts as the knee’s primary decelerating brake upon foot strike; building high-rep tib endurance markedly reduces shin splints and anterior knee impact load.'
       }
+    },
+
+  {
+      id: 'ex-weighted-poliquin-step-down',
+      name: 'Dumbbell Weighted Poliquin Step-Down',
+      scientificName: 'Dumbbell-Loaded Slant-Board Unilateral Eccentric Terminal Knee Extension Step-Down',
+      subtitle: 'Loaded heel-elevated VMO & patellar tendon strength progression on box wedge',
+      pattern: MOVEMENT_PATTERNS.LUNGE,
+      equipment: 'Dumbbells & Step Box / Wedge',
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'quads',
+      defaultSets: 3,
+      defaultReps: '10-12/side',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Vastus Medialis Obliquus (VMO)', 'Quadriceps'],
+        secondary: ['Gluteus Medius', 'Soleus'],
+        stabilizers: ['Forearm Flexors (Grip)', 'Lumbo-Pelvic Core', 'Tibialis Anterior']
+      },
+      execution: {
+        setup: 'Stand on a sturdy low box with your working heel elevated on a slant wedge, holding two dumbbells at your sides and keeping your free leg straight in front with toes dorsiflexed upward.',
+        eccentric: 'Keeping torso tall and working knee tracking cleanly over toes 2–3, lower slowly over 3 seconds until your free heel lightly kisses the floor or box edge.',
+        concentric: 'Drive smoothly through the ball and heel of the working foot to extend the knee cleanly back to lockout without pushing off the free foot.',
+        breathing: 'Inhale steadily during the 3-second lowering phase; exhale on the quad-driven press back up.',
+        commonMistakes: [
+          'Bouncing off the non-working heel at the bottom instead of feather-light touch',
+          'Letting the working knee collapse inward toward midline',
+          'Hinging forward excessively at the hips instead of staying upright'
+        ],
+        proTip: 'Keep the free foot’s toes pulled firmly toward your shin—this guarantees you cannot cheat by pushing off the ground.'
+      }
     }
 ];

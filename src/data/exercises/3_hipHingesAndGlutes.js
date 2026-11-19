@@ -692,5 +692,153 @@ export const HIPHINGESANDGLUTES_EXERCISES = [
         ],
         proTip: 'Stop hip extension as soon as your femur reaches horizontal inline with your torso—going higher produces lumbar extension, not extra glute recruitment.'
       }
+    },
+
+  {
+      id: 'ex-prone-alternating-hip-extension',
+      name: 'Prone Alternating Straight-Leg Hip Extension',
+      scientificName: 'Prone Open-Chain Unilateral Straight-Leg Hip Extension With Neutral Pelvis Lock',
+      subtitle: 'Targeted glute-maximus isolation teaching pure hip extension without lumbar arch',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 3,
+      defaultReps: '12-15/side',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Maximus'],
+        secondary: ['Hamstrings (Proximal Extensors)'],
+        stabilizers: ['Transverse Abdominis', 'Contralateral Lumbar Erectors']
+      },
+      execution: {
+        setup: 'Lie prone on a mat with arms extended softly overhead or folded under your forehead, legs straight, and pelvis anchored gently with a subtle posterior tilt.',
+        eccentric: 'Lower the lifted straight leg slowly back to the mat over 2 seconds without relaxing your hip bones.',
+        concentric: 'Keeping the knee straight and both hip bones glued to the mat, squeeze one glute to lift that entire leg 10–15 cm off the floor; pause 1 second and alternate.',
+        breathing: 'Exhale smoothly on each controlled leg lift; inhale as you lower.',
+        commonMistakes: [
+          'Lifting the leg excessively high by twisting the pelvis and arching the lower back',
+          'Bending the knee instead of extending cleanly from the hip joint',
+          'Rushing alternating reps with momentum'
+        ],
+        proTip: 'Imagine lengthening your heel backward toward the far wall before lifting—axial length keeps the work 100% in your glute instead of your low back.'
+      }
+    },
+
+  {
+      id: 'ex-side-lying-unilateral-leg-lift',
+      name: 'Side-Lying Unilateral Leg Lift',
+      scientificName: 'Side-Lying Open-Chain Frontal-Plane Hip Abduction Raise',
+      subtitle: 'Strict glute medius & lateral-hip endurance isolation on the mat',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 3,
+      defaultReps: '15-20/side',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Medius', 'Gluteus Minimus'],
+        secondary: ['Tensor Fasciae Latae', 'Obliques'],
+        stabilizers: ['Quadratus Lumborum', 'Bottom Hip Stabilizers']
+      },
+      execution: {
+        setup: 'Lie on your side in one straight line with your bottom leg slightly bent for stability, top hip stacked vertically directly over the bottom hip, and top leg extended long.',
+        eccentric: 'Lower the top leg slowly over 2–3 seconds stopping just before resting weight back onto the bottom leg.',
+        concentric: 'Lead with your heel (toes neutral or slightly angled down) and raise the top leg ~35–45° smoothly without letting the top hip roll backward.',
+        breathing: 'Exhale on the controlled abduction lift; inhale on the descent.',
+        commonMistakes: [
+          'Rolling the pelvis backward and turning toes up toward the ceiling (shifts load to hip flexors)',
+          'Hiking the top hip toward the ribs to manufacture fake height',
+          'Swinging the leg rapidly past 45°'
+        ],
+        proTip: 'Press your top hip gently away from your ribs to create a tiny "mouse house" space under your bottom waist—this locks pure glute medius recruitment.'
+      }
+    },
+
+  {
+      id: 'ex-straight-leg-lateral-abduction',
+      name: 'Standing Straight-Leg Lateral Abduction Raise',
+      scientificName: 'Standing Open-Chain Unilateral Frontal-Plane Hip Abduction With Stance Pelvic Stabilization',
+      subtitle: 'Upright hip-abductor strength training both moving and stance-leg glute medius',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 3,
+      defaultReps: '12-15/side',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Medius (Working & Stance Side)', 'Gluteus Minimus'],
+        secondary: ['Tensor Fasciae Latae', 'Obliques'],
+        stabilizers: ['Stance Foot Tripod', 'Lumbo-Pelvic Core']
+      },
+      execution: {
+        setup: 'Stand tall on one grounded leg with light fingertip balance if needed, torso completely upright and working leg straight with toes pointing forward.',
+        eccentric: 'Lower the raised leg slowly back toward midline without dropping weight onto the floor between reps.',
+        concentric: 'Sweep the straight leg cleanly out to the side (and ~10° back) without tilting your torso away from the working leg; pause 1 second at peak.',
+        breathing: 'Exhale while abducting the leg smoothly outward; inhale on the controlled return.',
+        commonMistakes: [
+          'Leaning the entire torso sharply sideways to lift the foot higher',
+          'Turning the foot outward so the quads and hip flexors take over',
+          'Letting the stance hip drop out laterally'
+        ],
+        proTip: 'You should feel intense activation in your standing glute too—that isometric pelvic stabilization directly transfers to running and single-leg squats.'
+      }
+    },
+
+  {
+      id: 'ex-supine-to-seated-hip-extension',
+      name: 'Supine-to-Seated Reverse Tabletop Hip Extension',
+      scientificName: 'Closed-Chain Reverse Tabletop Bilateral Hip Extension & Anterior Shoulder Opener',
+      subtitle: 'Full posterior-chain bridge opening tight chest & shoulders while firing glutes',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 3,
+      defaultReps: '10-12',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Maximus', 'Hamstrings'],
+        secondary: ['Posterior Deltoids', 'Triceps Brachii', 'Pectoralis Major (Stretched)'],
+        stabilizers: ['Thoracic Erectors', 'Scapular Retractors']
+      },
+      execution: {
+        setup: 'Sit on the mat with knees bent, feet planted hip-width flat, and palms planted behind your hips with fingers pointing outward or slightly back.',
+        eccentric: 'Lower your hips smoothly back down toward the mat with control without collapsing your shoulders forward.',
+        concentric: 'Press firmly through both heels and hands to lift your pelvis cleanly into a flat reverse tabletop inline from knees to shoulders; pause 2 seconds.',
+        breathing: 'Exhale as you drive hips into tabletop extension; inhale on the controlled descent.',
+        commonMistakes: [
+          'Letting the head drop uncontrollably backward instead of keeping gaze diagonal/neutral',
+          'Hyperextending the lower back while hips stay sagged below knee height',
+          'Shrugging shoulders tightly into the ears'
+        ],
+        proTip: 'Think about pushing your knees forward over your toes as your glutes lift—this aligns the shins vertically and opens tight anterior shoulders cleanly.'
+      }
     }
 ];

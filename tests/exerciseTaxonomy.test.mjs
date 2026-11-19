@@ -17,10 +17,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
-test('canonical exercise database has 140 unique exercises', () => {
-  assert.equal(ALL_RAW_EXERCISES.length, 140);
+test('canonical exercise database has 185 unique exercises', () => {
+  assert.equal(ALL_RAW_EXERCISES.length, 185);
   const ids = ALL_RAW_EXERCISES.map((ex) => ex.id);
-  assert.equal(new Set(ids).size, 140, 'All canonical exercise IDs must be unique');
+  assert.equal(new Set(ids).size, 185, 'All canonical exercise IDs must be unique');
 });
 
 test('every canonical exercise has complete standardized scientific taxonomy & biomechanics', () => {
@@ -72,7 +72,7 @@ test('every canonical exercise has complete standardized scientific taxonomy & b
   }
 });
 
-test('all 139 illustrated exercises have valid EXERCISE_MEDIA mappings and existing files on disk', () => {
+test('all 184 illustrated exercises have valid EXERCISE_MEDIA mappings and existing files on disk', () => {
   const mediaFilePath = path.join(ROOT_DIR, 'src', 'data', 'exerciseMedia.js');
   const mediaSource = fs.readFileSync(mediaFilePath, 'utf8');
 
@@ -88,8 +88,8 @@ test('all 139 illustrated exercises have valid EXERCISE_MEDIA mappings and exist
     mappedIds.set(match[1], match[2]);
   }
 
-  assert.equal(importedVars.size, 139, 'Expected 139 imported exercise asset files');
-  assert.equal(mappedIds.size, 139, 'Expected 139 EXERCISE_MEDIA entries');
+  assert.equal(importedVars.size, 184, 'Expected 184 imported exercise asset files');
+  assert.equal(mappedIds.size, 184, 'Expected 184 EXERCISE_MEDIA entries');
 
   for (const [varName, assetFilename] of importedVars.entries()) {
     const absAssetPath = path.join(ROOT_DIR, 'src', 'assets', 'exercises', assetFilename);

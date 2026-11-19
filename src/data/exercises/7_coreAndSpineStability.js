@@ -842,5 +842,523 @@ export const COREANDSPINESTABILITY_EXERCISES = [
         ],
         proTip: 'Never load this heavy—a light 4–6 kg weight acts simply as gentle traction teaching healthy segmental spine control and hamstring tolerance.'
       }
+    },
+
+  {
+      id: 'ex-butterfly-sit-up-extension',
+      name: 'Butterfly Sit-Up to Leg Extension',
+      scientificName: 'Supine Abducted-Hip Spinal Flexion Sit-Up Transitioning Into Extended-Lever Core Hold',
+      subtitle: 'Dynamic anterior-core curl pairing butterfly hip abduction with extended-leg control',
+      pattern: MOVEMENT_PATTERNS.CORE_ROTATION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '10-12',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis', 'Transverse Abdominis'],
+        secondary: ['Iliopsoas (Controlled Extension)', 'Obliques'],
+        stabilizers: ['Deep Cervical Flexors', 'Hip Adductors']
+      },
+      execution: {
+        setup: 'Lie supine on a mat with soles of feet together and knees fallen open (butterfly position) to quiet excessive hip-flexor takeover.',
+        eccentric: 'Unroll vertebra by vertebra back toward the mat while smoothly extending your legs long into controlled low hover tension.',
+        concentric: 'Draw ribs firmly toward pelvis to curl smoothly up to seated while drawing soles back into butterfly compression.',
+        breathing: 'Exhale decisively on the curl up; inhale smoothly as you unroll and extend.',
+        commonMistakes: [
+          'Whipping the arms violently upward to yank off the floor',
+          'Letting the lower back arch off the mat during the leg extension phase',
+          'Tucking chin aggressively into chest'
+        ],
+        proTip: 'Slow down the unrolling eccentric to 3 full seconds—controlled segmental lowering develops far stronger anterior core control than fast reps.'
+      }
+    },
+
+  {
+      id: 'ex-forearm-plank-single-arm-slide',
+      name: 'Forearm Plank Single-Arm Reach Slide',
+      scientificName: 'Tri-Point Closed-Chain Anti-Extension & Anti-Rotation Forearm Plank With Unilateral Reach',
+      subtitle: 'Anti-rotation plank progression challenging obliques & shoulder stability',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isometric',
+      level: 'Intermediate',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '8-10/side',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis', 'Internal & External Obliques', 'Transverse Abdominis'],
+        secondary: ['Serratus Anterior (Support Arm)', 'Anterior Deltoid'],
+        stabilizers: ['Gluteus Maximus', 'Quadriceps']
+      },
+      execution: {
+        setup: 'Set a crisp forearm plank with feet slightly wider than hip width for anti-rotation leverage, glutes engaged, and ribs tucked.',
+        eccentric: 'Glide the reaching hand smoothly back underneath your shoulder while keeping both hip bones perfectly level to the floor.',
+        concentric: 'Brace deeply through your obliques and slide one arm straight forward overhead along the mat (or hovering 2 cm above it); pause 2 seconds and alternate.',
+        breathing: 'Exhale steadily during each forward arm reach; inhale as you replant.',
+        commonMistakes: [
+          'Rotating the pelvis sharply toward the reaching side',
+          'Sagging through the lower back or letting the support shoulder collapse',
+          'Rushing side-to-side transfers without pausing'
+        ],
+        proTip: 'Imagine balancing a full cup of coffee on your sacrum—widening your feet slightly gives you the base to keep the pelvis 100% frozen.'
+      }
+    },
+
+  {
+      id: 'ex-high-plank-leg-lift',
+      name: 'High Plank Alternating Leg Lift',
+      scientificName: 'Tri-Point High-Plank Anti-Extension & Glute-Driven Alternating Hip Extension',
+      subtitle: 'Straight-arm plank variation integrating core anti-extension with glute activation',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Beginner',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '10-12/side',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis', 'Transverse Abdominis', 'Gluteus Maximus'],
+        secondary: ['Serratus Anterior', 'Obliques', 'Hamstrings'],
+        stabilizers: ['Anterior Deltoids', 'Triceps Brachii']
+      },
+      execution: {
+        setup: 'Assume a tall high plank with hands directly beneath shoulders, shoulder blades slightly protracted, and body aligned straight from crown to heels.',
+        eccentric: 'Return the lifted foot softly to the mat without shifting weight unevenly across your hands.',
+        concentric: 'Keeping lower ribs tucked so the lumbar spine cannot dip, squeeze one glute to float that straight leg 15–20 cm off the floor; pause 1 second and switch.',
+        breathing: 'Exhale cleanly on each leg lift; inhale as the foot returns.',
+        commonMistakes: [
+          'Kicking the leg high while letting the lower back sag into hyperextension',
+          'Twisting the hips open sideways',
+          'Piking hips high into a downward dog'
+        ],
+        proTip: 'Keep the lift deliberately modest—true glute extension stops well before your lower back wants to arch.'
+      }
+    },
+
+  {
+      id: 'ex-hollow-body-rock',
+      name: 'Hollow Body Rock',
+      scientificName: 'Dynamic Supine Gymnastics Hollow-Body Posterior-Pelvic-Tilt Oscillatory Rock',
+      subtitle: 'Gold-standard gymnastics core tension drill building unbreakable anterior bracing',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '12-16 rocks',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis', 'Transverse Abdominis'],
+        secondary: ['Internal & External Obliques', 'Iliopsoas', 'Quadriceps'],
+        stabilizers: ['Latissimus Dorsi (Overhead Reach)', 'Deep Cervical Flexors']
+      },
+      execution: {
+        setup: 'Lie supine, press your lower back firmly into the mat (zero gap), extend legs straight together with pointed toes hovering low, and stretch arms overhead beside ears.',
+        eccentric: 'Initiate a tiny smooth rocking wave backward toward your upper shoulder blades without losing the tight C-curve shape.',
+        concentric: 'Rock cleanly forward onto your lower sacrum like a rigid wooden rocking chair—arms, ribs, and legs moving together as one single piece.',
+        breathing: 'Short, rhythmic pressurized breaths behind a locked abdominal wall.',
+        commonMistakes: [
+          'Allowing the lower back to arch off the floor (breaking the hollow shape)',
+          'Flapping legs or arms independently instead of rocking as a unified arc',
+          'Straining the neck forward without lifting shoulder blades off the mat'
+        ],
+        proTip: 'If your low back lifts even a millimeter, raise your legs higher or tuck one knee in until you own a completely silent, smooth rock.'
+      }
+    },
+
+  {
+      id: 'ex-hollow-tuck-to-v-sit',
+      name: 'Hollow Body Tuck to V-Sit',
+      scientificName: 'Dynamic Supine-to-Seated Hip-Compression & Trunk-Flexion V-Sit Transition',
+      subtitle: 'Dynamic gymnastics compression building explosive abs & hip-flexor control',
+      pattern: MOVEMENT_PATTERNS.CORE_ROTATION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Advanced',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '8-12',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis', 'Iliopsoas', 'Rectus Femoris'],
+        secondary: ['Transverse Abdominis', 'Obliques'],
+        stabilizers: ['Anterior Deltoids', 'Deep Cervical Flexors']
+      },
+      execution: {
+        setup: 'Begin in a tight hollow-body hold on a mat with lower back glued down, shoulder blades lifted, and feet hovering cleanly off the floor.',
+        eccentric: 'Unfold smoothly back from the balanced V-sit into your braced hollow-body hold over 2–3 seconds without letting heels touch the mat.',
+        concentric: 'Snap torso and legs simultaneously upward into a balanced seated V-sit (or tucked V-sit) reaching fingertips toward your shins; pause 1 second on your sit-bones.',
+        breathing: 'Exhale forcefully as you compress into the V-sit; inhale as you open cleanly back to hollow.',
+        commonMistakes: [
+          'Collapsing the lower back flat to the mat with an audible thud',
+          'Swinging the heels off the ground between every repetition',
+          'Hunching the shoulders tightly into the ears at the top'
+        ],
+        proTip: 'Pause a full 1-second balance at the top V-sit on every rep—controlling the apex eliminates momentum cheating.'
+      }
+    },
+
+  {
+      id: 'ex-hollow-to-superman-roll',
+      name: 'Hollow-to-Superman Axial Roll',
+      scientificName: 'Continuous 180° Longitudinal Axial Roll Transitioning Anterior Hollow to Posterior Arch',
+      subtitle: '360° gymnastics trunk-integration roll linking anterior and posterior core chains',
+      pattern: MOVEMENT_PATTERNS.CORE_ROTATION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'obliques',
+      defaultSets: 3,
+      defaultReps: '6-8/dir',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Internal & External Obliques', 'Rectus Abdominis', 'Erector Spinae'],
+        secondary: ['Gluteus Maximus', 'Quadratus Lumborum', 'Latissimus Dorsi'],
+        stabilizers: ['Transverse Abdominis', 'Scapular Stabilizers']
+      },
+      execution: {
+        setup: 'Start in a crisp supine hollow hold with arms extended overhead and feet hovering 15 cm off a wide mat.',
+        eccentric: 'Keeping arms and legs off the floor at all times, initiate a smooth 180° log roll strictly through your torso until you land cleanly in a braced prone Superman arch.',
+        concentric: 'Hold the Superman arch for 1–2 seconds, then reverse the roll seamlessly back to your hollow hold without letting hands or feet touch down.',
+        breathing: 'Steady controlled exhale during each transitional roll phase.',
+        commonMistakes: [
+          'Kicking a foot or slapping a hand onto the floor to push through the roll',
+          'Bending elbows or knees wildly mid-turn',
+          'Forgetting to pause and own both the hollow and Superman end positions'
+        ],
+        proTip: 'Rolling smoothly without touching the floor forces your entire 360° abdominal cylinder—front, sides, and back—to hand off tension seamlessly.'
+      }
+    },
+
+  {
+      id: 'ex-inverted-plank-single-arm-hip',
+      name: 'Inverted Plank Single-Arm Hip Balance',
+      scientificName: 'Supine Reverse-Plank Unilateral Shoulder-Support Anti-Rotation & Posterior-Chain Hold',
+      subtitle: 'Reverse-plank balance strengthening posterior chain, obliques & shoulder stability',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_LATERAL,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isometric',
+      level: 'Advanced',
+      muscleKey: 'glutes',
+      defaultSets: 3,
+      defaultReps: '15-25s/side',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Gluteus Maximus', 'Hamstrings', 'Posterior Deltoids (Support Arm)'],
+        secondary: ['Obliques (Anti-Rotation)', 'Erector Spinae', 'Triceps Brachii'],
+        stabilizers: ['Scapular Stabilizers', 'Transverse Abdominis']
+      },
+      execution: {
+        setup: 'Press up into a tall straight-leg reverse plank with heels grounded, glutes lifted cleanly inline, and hands beneath shoulders.',
+        eccentric: 'Return the free hand softly back beneath your shoulder with zero hip drop before switching sides.',
+        concentric: 'Shift weight smoothly over one sturdy support arm and float the opposite hand cleanly onto your hip or skyward while keeping both hip bones level.',
+        breathing: 'Calm, controlled breaths keeping the chest open and support shoulder packed down.',
+        commonMistakes: [
+          'Letting the hips sag down toward the floor when lifting one hand',
+          'Hyperextending the support elbow passively without muscular lock',
+          'Dropping the head back uncontrollably'
+        ],
+        proTip: 'Press your heels firmly down into the floor to keep the posterior chain firing—active hamstrings prevent the pelvis from twisting.'
+      }
+    },
+
+  {
+      id: 'ex-leg-scissors-floor',
+      name: 'Supine Floor Leg Scissors',
+      scientificName: 'Supine Alternating Straight-Leg Sagittal Anti-Extension Scissor Kicks',
+      subtitle: 'Lower-abdominal endurance drill resisting lumbar arch under alternating leg levers',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Beginner',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis', 'Transverse Abdominis'],
+        secondary: ['Iliopsoas', 'Rectus Femoris', 'Internal Obliques'],
+        stabilizers: ['Lumbo-Pelvic Floor', 'Deep Cervical Flexors']
+      },
+      execution: {
+        setup: 'Lie supine on a mat, press your lower back firmly flat into the floor, extend both legs straight, and rest hands comfortably beside your hips.',
+        eccentric: 'Lower one straight leg smoothly toward a low hover (10–15 cm above the floor) while raising the opposite leg cleanly upward.',
+        concentric: 'Alternate smoothly in a rhythmic vertical or crisp crisscross scissor pattern without ever letting your lower back peel off the mat.',
+        breathing: 'Even, steady rhythmic breathing—never hold your breath during flutter/scissor sets.',
+        commonMistakes: [
+          'Letting the lower back arch high off the mat as the heels drop low',
+          'Bending the knees lazily instead of keeping crisp long levers',
+          'Straining the neck upward if head is lifted'
+        ],
+        proTip: 'Raise the working angle of both legs slightly higher toward 45° whenever you feel your lower back start to peel off the mat.'
+      }
+    },
+
+  {
+      id: 'ex-plank-body-saw-to-pike',
+      name: 'Plank Body-Saw to Pike',
+      scientificName: 'Forearm-Plank Long-Lever Anti-Extension Body-Saw Transitioning Into Active Hip Pike',
+      subtitle: 'High-tension anterior-core progression combining long-lever saw & pike compression',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '8-12',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis', 'Transverse Abdominis', 'Serratus Anterior'],
+        secondary: ['Internal & External Obliques', 'Anterior Deltoids', 'Hip Flexors'],
+        stabilizers: ['Latissimus Dorsi', 'Quadriceps']
+      },
+      execution: {
+        setup: 'Start in a strict forearm plank with elbows stacked under shoulders, ribs tucked down, and feet grounded on toes (or on sliders/socks).',
+        eccentric: 'Glide your entire straight body smoothly backward behind your elbows (body-saw) to dramatically lengthen the abdominal lever without letting hips sag.',
+        concentric: 'Pull smoothly forward through plank and drive hips high into a tight abdominal pike while pressing firmly through forearms; pause 1 second and reset.',
+        breathing: 'Inhale on the lengthened backward body-saw; exhale forcefully while compressing into the pike.',
+        commonMistakes: [
+          'Allowing the lumbar spine to collapse during the backward body-saw',
+          'Shrugging shoulders into the ears during the pike',
+          'Rushing the transition instead of owning the stretched saw hold'
+        ],
+        proTip: 'Even 5–8 cm of backward shoulder travel behind your elbows multiplies rectus abdominis EMG activation dramatically—prioritize zero lumbar sag over huge distance.'
+      }
+    },
+
+  {
+      id: 'ex-prone-back-extension',
+      name: 'Prone Back Extensions',
+      scientificName: 'Prone Floor Bilateral Spinal Erector & Posterior-Chain Extension Raises',
+      subtitle: 'Dynamic floor spinal-extensor strengthening building resilient lower & mid-back endurance',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 3,
+      defaultReps: '12-15',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Erector Spinae (Thoracic & Lumbar)', 'Multifidus'],
+        secondary: ['Gluteus Maximus', 'Middle & Lower Trapezius', 'Hamstrings'],
+        stabilizers: ['Deep Cervical Flexors', 'Transverse Abdominis']
+      },
+      execution: {
+        setup: 'Lie prone on a mat with legs straight, toes anchored gently on the floor, and hands resting lightly beside your temples or folded under your chin.',
+        eccentric: 'Lower your torso slowly back toward the mat over 2–3 seconds maintaining long spinal alignment.',
+        concentric: 'Engage your glutes lightly to protect the pelvis and smoothly lift your chest and ribs off the floor using your back extensors; pause 1–2 seconds at top.',
+        breathing: 'Exhale gently on the lift; inhale smoothly as you lower.',
+        commonMistakes: [
+          'Whipping upward with momentum and jamming the lumbar spine',
+          'Cranking the neck backward to look up at the wall instead of gazing at the mat',
+          'Letting the feet fly wildly off the ground'
+        ],
+        proTip: 'Keep your gaze aimed down at the mat right beneath your nose so your cervical spine remains an unbroken extension of your thoracic back.'
+      }
+    },
+
+  {
+      id: 'ex-seated-bent-knee-hip-lift',
+      name: 'Seated Bent-Knee Hip Flexion Lift',
+      scientificName: 'Seated Closed-Hand-Support Bilateral Hip-Flexor & Lower-Core Compression Lift',
+      subtitle: 'Gymnastics L-sit compression prerequisite building hip-flexor & lower-ab strength',
+      pattern: MOVEMENT_PATTERNS.CORE_ROTATION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '10-12',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Iliopsoas', 'Rectus Abdominis (Lower Compression)'],
+        secondary: ['Rectus Femoris', 'Transverse Abdominis'],
+        stabilizers: ['Thoracic Erectors', 'Triceps & Scapular Depressors (Hand Support)']
+      },
+      execution: {
+        setup: 'Sit on a mat with knees bent, feet resting lightly on the floor, and palms planted smoothly behind or beside your hips to maintain an open, controlled torso angle.',
+        eccentric: 'Lower both feet slowly back toward a feather-light touch over 2 seconds without slumping your chest.',
+        concentric: 'Brace your lower abs firmly and draw both bent knees cleanly upward toward your chest until shins float parallel; pause 1–2 seconds at peak compression.',
+        breathing: 'Exhale crisply while compressing knees upward; inhale on the controlled descent.',
+        commonMistakes: [
+          'Leaning far backward to make the lift effortless',
+          'Dropping the heels heavily onto the floor between reps',
+          'Shrugging shoulders up around the ears'
+        ],
+        proTip: 'Walking your hands slightly further forward toward your thighs progressively turns this into a direct precursor for full floor L-sits.'
+      }
+    },
+
+  {
+      id: 'ex-staggered-side-lying-hip-arm-lift',
+      name: 'Staggered Side-Lying Hip & Arm Balance',
+      scientificName: 'Side-Lying Unilateral Lateral-Chain Elevation & Scapular-Propped Oblique Hold',
+      subtitle: 'Lateral-chain oblique & shoulder balance drill sculpting frontal-plane core stability',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_LATERAL,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isometric',
+      level: 'Intermediate',
+      muscleKey: 'obliques',
+      defaultSets: 3,
+      defaultReps: '20-30s/side',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Internal & External Obliques', 'Quadratus Lumborum'],
+        secondary: ['Gluteus Medius', 'Hip Adductors', 'Serratus Anterior (Support Arm)'],
+        stabilizers: ['Latissimus Dorsi', 'Deep Cervical Flexors']
+      },
+      execution: {
+        setup: 'Lie on your side propped cleanly on your bottom hand with arm extended diagonally, top arm extended along your flank, and legs staggered neatly straight.',
+        eccentric: 'Lower legs and lateral ribs slowly back to the mat with complete control before switching sides.',
+        concentric: 'Press cleanly through your grounded hand, tighten your lateral core, and float both straight legs cleanly off the mat while extending your top arm long in balance.',
+        breathing: 'Calm, controlled lateral rib breaths while holding crisp frontal-plane alignment.',
+        commonMistakes: [
+          'Collapsing the grounded shoulder upward into the ear',
+          'Rolling backward onto the glutes instead of staying cleanly side-lying',
+          'Holding breath during the lateral balance'
+        ],
+        proTip: 'Actively push the floor away with your support hand to pack the shoulder blade—this connects your lat directly into your lateral oblique sling.'
+      }
+    },
+
+  {
+      id: 'ex-superman-rock-side-turn',
+      name: 'Superman Rock & Side Turn',
+      scientificName: 'Prone Dynamic Posterior-Chain Arch Rock With Controlled Transverse Side-Turn Transition',
+      subtitle: 'Dynamic posterior-chain arch rock integrating spinal extensors, glutes & obliques',
+      pattern: MOVEMENT_PATTERNS.CORE_ROTATION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'back',
+      defaultSets: 3,
+      defaultReps: '8-10/side',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Erector Spinae', 'Gluteus Maximus', 'Obliques'],
+        secondary: ['Hamstrings', 'Posterior Deltoids', 'Middle & Lower Trapezius'],
+        stabilizers: ['Transverse Abdominis', 'Deep Cervical Flexors']
+      },
+      execution: {
+        setup: 'Lie prone on a mat and lift smoothly into a controlled Superman arch with arms extended overhead, chest open, and straight legs hovering off the floor.',
+        eccentric: 'Maintain unified posterior-chain tension as you rock gently forward/back and rotate slightly onto one lateral hip edge without letting limbs touch down.',
+        concentric: 'Control the side turn smoothly through your obliques and return cleanly to centered Superman arch before turning to the opposite side.',
+        breathing: 'Steady controlled breaths—avoid holding breath during arch oscillations.',
+        commonMistakes: [
+          'Hyperextending the neck by craning the head up',
+          'Flopping onto the side with bent knees and collapsed shoulders',
+          'Using jerky momentum instead of smooth rhythmic arcs'
+        ],
+        proTip: 'Keep legs glued tightly together and arms reaching long—the tighter your whole-body shape, the smoother the rock and side transition feels.'
+      }
+    },
+
+  {
+      id: 'ex-supine-neck-ribcage-tuck',
+      name: 'Supine Neck-Stabilized Ribcage Tuck',
+      scientificName: 'Supine Deep-Cervical-Flexor Stabilized Thoracic Curl & Rib-to-Pelvis Brace',
+      subtitle: 'Clinical upper-core curl syncing deep neck flexors with crisp ribcage depression',
+      pattern: MOVEMENT_PATTERNS.CORE_ANTI_EXTENSION,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'abdomen',
+      defaultSets: 3,
+      defaultReps: '10-12 (3s hold)',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rectus Abdominis (Upper Fibers)', 'Transverse Abdominis', 'Deep Cervical Flexors'],
+        secondary: ['Internal & External Obliques'],
+        stabilizers: ['Pelvic Floor', 'Diaphragm']
+      },
+      execution: {
+        setup: 'Lie supine on a mat with knees bent, feet planted flat, and lower back resting neutrally against the floor.',
+        eccentric: 'Unroll your upper shoulder blades and head slowly back to the mat over 2–3 seconds while keeping your chin gently nodded.',
+        concentric: 'Exhale to draw your front lower ribs smoothly down toward your pelvis and lift strictly your head and upper shoulder blades cleanly off the mat with a soft chin tuck; hold 3 seconds.',
+        breathing: 'Long deliberate exhale through pursed lips during the ribcage tuck hold; inhale as you lower.',
+        commonMistakes: [
+          'Jutting the chin toward the ceiling and straining the front neck muscles',
+          'Yanking the head up with the hands',
+          'Flattening or tilting the pelvis aggressively instead of curling cleanly from the ribcage'
+        ],
+        proTip: 'Think of gently holding a soft peach between your chin and collarbone—this engages your deep neck flexors so neck fatigue disappears during core work.'
+      }
     }
 ];

@@ -222,5 +222,42 @@ export const CONDITIONINGANDPOWER_EXERCISES = [
         ],
         proTip: 'Imagine balancing a flat wooden plank across your lower sacrum—only your legs glide laterally like scissors while the entire spine stays rock steady.'
       }
+    },
+
+  {
+      id: 'ex-inverted-plank-crab-walk',
+      name: 'Inverted Plank Crab Walk',
+      scientificName: 'Supine Quadrupedal Contralateral Locomotive Conditioning — Posterior Chain & Shoulder Stability',
+      subtitle: 'Locomotive full-body conditioning firing glutes, triceps, shoulders & contralateral core',
+      pattern: MOVEMENT_PATTERNS.CARDIO_PLYO,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Intermediate',
+      muscleKey: 'triceps',
+      defaultSets: 3,
+      defaultReps: '20-30s',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Triceps Brachii', 'Posterior Deltoids', 'Gluteus Maximus'],
+        secondary: ['Hamstrings', 'Anterior Core', 'Scapular Stabilizers'],
+        stabilizers: ['Forearm Wrists', 'Obliques (Contralateral Gait)']
+      },
+      execution: {
+        setup: 'Sit on the floor with knees bent, feet planted hip-width, and hands grounded behind your hips with fingers angled slightly outward. Lift hips cleanly into a low reverse tabletop.',
+        eccentric: 'Step opposite hand and foot simultaneously with small, quiet, controlled placements keeping hips elevated.',
+        concentric: 'Travel smoothly forward and backward across your space while keeping chest proud, shoulders packed down, and pelvis steady.',
+        breathing: 'Steady rhythmic aerobic breathing matched to your contralateral stride.',
+        commonMistakes: [
+          'Letting the hips drag low toward the floor while shuffling',
+          'Taking oversized steps that torque the wrists or shoulders',
+          'Shrugging shoulders tightly into the ears'
+        ],
+        proTip: 'Take crisp 15 cm contralateral steps (right hand + left foot together) to turn Crab Walks into an unbeatable metabolic finisher and anterior-shoulder opener.'
+      }
     }
 ];

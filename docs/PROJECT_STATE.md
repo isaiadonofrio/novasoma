@@ -12,9 +12,9 @@
 
 | Domain | Verified State | Location |
 | :--- | :--- | :--- |
-| **Canonical Exercises** | `140` unique movements (`139` illustrated, `1` pending image: `wu-banded-ankle-dorsiflexion`) | [`src/data/exercises/`](../src/data/exercises/index.js) |
-| **Movement Categories** | `8` modular files (`19 + 13 + 19 + 23 + 23 + 14 + 23 + 6`) | `src/data/exercises/1_*.js` – `8_*.js` |
-| **Illustrated Media Assets** | `139` local `.jpg` / `.webp` files (`800×800`, `~20–28 kB`) | [`src/assets/exercises/`](../src/assets/exercises/) + [`exerciseMedia.js`](../src/data/exerciseMedia.js) |
+| **Canonical Exercises** | `185` unique movements (`184` illustrated, `1` pending image: `wu-banded-ankle-dorsiflexion`) | [`src/data/exercises/`](../src/data/exercises/index.js) |
+| **Movement Categories** | `8` modular files (`36 + 15 + 23 + 26 + 26 + 15 + 37 + 7`) | `src/data/exercises/1_*.js` – `8_*.js` |
+| **Illustrated Media Assets** | `184` local `.jpg` / `.webp` files (`800×800`, `~19–28 kB`) | [`src/assets/exercises/`](../src/assets/exercises/) + [`exerciseMedia.js`](../src/data/exerciseMedia.js) |
 | **Brand & Anatomy Assets** | `logo.svg`, `logo.png`, `favicon.png`, `body.svg` | [`src/assets/brand/`](../src/assets/brand/), [`src/assets/anatomy/`](../src/assets/anatomy/) |
 | **PWA & Favicon Assets** | `favicon.svg`, `favicon.png`, `logo-192.png`, `logo-512.png` | [`public/`](../public/) |
 | **Default Seeded Routines** | `3` personal routines (`leg-workout-1`, `leg-workout-2`, `posture-spine-foundation`) | [`src/data/workouts.js`](../src/data/workouts.js) |
@@ -24,15 +24,15 @@
 | **Unit Tests (`node:test`)** | `45 / 45` passing across `9` test files | [`tests/`](../tests/) |
 | **E2E Tests (Playwright)** | `5 / 5` passing (desktop + `390×844` mobile & undo flows) | [`e2e/app.spec.js`](../e2e/app.spec.js) |
 
-### Canonical Library Distribution (`140` Movements)
-- `1_warmupAndMobility.js`: `19`
-- `2_squatsAndKneeFlexion.js`: `13`
-- `3_hipHingesAndGlutes.js`: `19`
-- `4_pushUpperBody.js`: `23`
-- `5_pullUpperBody.js`: `23`
-- `6_lungesAndUnilateral.js`: `14`
-- `7_coreAndSpineStability.js`: `23`
-- `8_conditioningAndPower.js`: `6`
+### Canonical Library Distribution (`185` Movements)
+- `1_warmupAndMobility.js`: `36`
+- `2_squatsAndKneeFlexion.js`: `15`
+- `3_hipHingesAndGlutes.js`: `23`
+- `4_pushUpperBody.js`: `26`
+- `5_pullUpperBody.js`: `26`
+- `6_lungesAndUnilateral.js`: `15`
+- `7_coreAndSpineStability.js`: `37`
+- `8_conditioningAndPower.js`: `7`
 
 *(Equipment split verified via Exercise Library rules: `104` Equipment Loaded, `36` Bodyweight Only · Region split: `62` Lower Body, `58` Upper Body, `20` Core & Spine.)*
 

@@ -709,5 +709,649 @@ export const WARMUPANDMOBILITY_EXERCISES = [
         ],
         proTip: 'Every strong pull-up and healthy overhead shoulder starts from this first 5 cm of active scapular depression.'
       }
+    },
+
+  {
+      id: 'wu-bench-thoracic-extension',
+      name: 'Bench-Supported Thoracic Extension & Shoulder Opener',
+      scientificName: 'Kneeling Closed-Chain Thoracic Sagittal Extension & Lat-Glenohumeral Overhead Flexion Stretch',
+      subtitle: 'Bench-supported upper-back extension & overhead lat mobility opener',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Flat Bench',
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 2,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Thoracic Spine Extensors', 'Latissimus Dorsi (Lengthened)'],
+        secondary: ['Pectoralis Minor', 'Triceps Long Head', 'Serratus Anterior'],
+        stabilizers: ['Anterior Core (Lumbar Rib-Down Brace)', 'Gluteus Maximus']
+      },
+      execution: {
+        setup: 'Kneel facing a flat bench at hip distance and rest both elbows and forearms shoulder-width apart on the bench pad.',
+        eccentric: 'Keeping lower ribs gently tucked so the lumbar spine stays neutral, sink your sternum smoothly downward between your upper arms.',
+        concentric: 'Hold the comfortable end-range stretch for 2–3 slow breaths, then lightly press elbows into the bench to rise out with control.',
+        breathing: 'Inhale into the upper back ribs; exhale slowly to allow the chest to melt deeper toward the floor.',
+        commonMistakes: [
+          'Dumping into lower-back hyperextension instead of moving through the mid-back',
+          'Forcing sharp front-shoulder pinching by shrugging traps toward ears',
+          'Holding breath instead of relaxing into long exhales'
+        ],
+        proTip: 'Lightly press your elbows down into the bench for 5 seconds (PAILs) before exhaling deeper into thoracic extension.'
+      }
+    },
+
+  {
+      id: 'wu-cervical-rotations-nods',
+      name: 'Cervical Rotations & Controlled Nods',
+      scientificName: 'Standing Open-Chain Cervical Axial Rotation & Upper-Cervical Flexion-Extension Articulation',
+      subtitle: 'Gentle neck joint-capsule priming across rotation and sagittal nods',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'trapezius',
+      defaultSets: 2,
+      defaultReps: '6-8/dir',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Deep Cervical Flexors', 'Suboccipitals', 'Sternocleidomastoid'],
+        secondary: ['Upper Trapezius', 'Levator Scapulae', 'Splenius Capitis'],
+        stabilizers: ['Thoracic Erectors', 'Scapular Depressors']
+      },
+      execution: {
+        setup: 'Stand tall with shoulders relaxed down away from ears and gaze level on the horizon.',
+        eccentric: 'Slowly rotate your chin cleanly toward one shoulder without twisting the torso, then trace gentle yes-nods through pain-free range.',
+        concentric: 'Return smoothly through tall neutral alignment and repeat symmetrically to the opposite side.',
+        breathing: 'Calm, slow nasal breathing throughout each controlled cervical sweep.',
+        commonMistakes: [
+          'Crunching the back of the neck by forcing aggressive extension',
+          'Letting shoulders shrug or ribcage twist along with the head',
+          'Moving too fast through tight end-ranges'
+        ],
+        proTip: 'Keep the movement slow and silent—imagine drawing a level horizon line with the tip of your nose.'
+      }
+    },
+
+  {
+      id: 'wu-standing-cervical-chin-glides',
+      name: 'Standing Cervical Chin Glides (Retractions)',
+      scientificName: 'Standing Horizontal Cervical Retraction (Upper-Cervical Flexion / Lower-Cervical Extension)',
+      subtitle: 'Postural deep neck flexor activation correcting forward-head drift',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'trapezius',
+      defaultSets: 2,
+      defaultReps: '10-12',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Deep Cervical Flexors (Longus Colli & Capitis)'],
+        secondary: ['Suboccipitals (Decompressed)', 'Lower Cervical Extensors'],
+        stabilizers: ['Thoracic Erectors', 'Lower Trapezius']
+      },
+      execution: {
+        setup: 'Stand upright with chest open, jaw relaxed, and eyes fixed straight ahead on a horizontal point.',
+        eccentric: 'Allow the chin to glide gently forward only a few centimeters while keeping the head level.',
+        concentric: 'Draw the chin straight backward horizontally as if making a gentle double chin while lengthening the crown of the head upward; pause 2 seconds.',
+        breathing: 'Exhale smoothly during each horizontal retraction hold; inhale on the soft release.',
+        commonMistakes: [
+          'Tipping the head up or down instead of sliding straight horizontally',
+          'Clenching the jaw or shrugging the shoulders',
+          'Forcing aggressive neck tension rather than gentle axial elongation'
+        ],
+        proTip: 'Place two fingers lightly on your chin as a spatial cue so you feel the head glide straight backward away from your fingertips.'
+      }
+    },
+
+  {
+      id: 'wu-upper-arm-circles',
+      name: 'Standing Upper-Arm Glenohumeral Circles',
+      scientificName: 'Standing Open-Chain Glenohumeral Circumduction (Shoulder CARs)',
+      subtitle: 'Full-circumference shoulder capsule lubrication and scapular rhythm priming',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'shoulders',
+      defaultSets: 2,
+      defaultReps: '6-8/dir',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Rotator Cuff Complex', 'Deltoids (Anterior, Lateral, Posterior)'],
+        secondary: ['Serratus Anterior', 'Trapezius (Upper, Middle, Lower)'],
+        stabilizers: ['Anterior Core (Anti-Flare Brace)', 'Glutes']
+      },
+      execution: {
+        setup: 'Stand tall with feet hip-width apart, ribs stacked cleanly over pelvis, and arms extended long with straight elbows.',
+        eccentric: 'Trace the largest smooth pain-free circle possible overhead and behind you, rotating the humerus smoothly as you pass top end-range.',
+        concentric: 'Complete full forward and backward revolutions without letting your ribcage flare or torso twist.',
+        breathing: 'Steady rhythmic breathing maintaining gentle abdominal tension.',
+        commonMistakes: [
+          'Arching the lower back to fake extra overhead shoulder flexion',
+          'Swinging arms loosely with momentum instead of controlled capsular tension',
+          'Bending the elbows to bypass tight arcs'
+        ],
+        proTip: 'Imagine moving your arms slowly through thick honey—30% muscular irradiation wakes up the rotator cuff far better than fast swings.'
+      }
+    },
+
+  {
+      id: 'wu-kneeling-hip-flexor-quad-stretch',
+      name: 'Half-Kneeling Hip Flexor & Quad Stretch',
+      scientificName: 'Half-Kneeling Biarticular Iliopsoas & Rectus Femoris Extension Stretch With Posterior Pelvic Tilt',
+      subtitle: 'Deep anterior hip capsule & quad opener countering prolonged sitting',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'quads',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Iliopsoas', 'Rectus Femoris (Lengthened)'],
+        secondary: ['Tensor Fasciae Latae', 'Sartorius'],
+        stabilizers: ['Trailing Gluteus Maximus', 'Anterior Core']
+      },
+      execution: {
+        setup: 'Adopt a tall half-kneeling 90/90 lunge on a mat with your back knee cushioned and torso upright.',
+        eccentric: 'Squeeze your rear glute firmly to tuck your tailbone underneath (posterior pelvic tilt), then glide the hips only a few centimeters forward until a deep front-hip stretch emerges.',
+        concentric: 'Optionally elevate the rear foot gently to deepen the rectus femoris bias while keeping ribs stacked directly over hips.',
+        breathing: 'Long 4-second exhales while keeping the rear glute lightly engaged (reciprocal inhibition).',
+        commonMistakes: [
+          'Lunging excessively far forward while overarching the lower back',
+          'Leaving the rear glute completely passive so the pelvis dumps anteriorly',
+          'Leaning torso forward onto the front knee'
+        ],
+        proTip: 'A crisp posterior pelvic tilt doubles the hip-flexor stretch at half the forward lunge distance while keeping your lumbar spine 100% protected.'
+      }
+    },
+
+  {
+      id: 'wu-quadruped-frog-hip-compression',
+      name: 'Quadruped Frog Hip Compression & Adductor Rock',
+      scientificName: 'Quadruped Wide-Abducted Bilateral Hip Flexion & Adductor End-Range Mobilization',
+      subtitle: 'Deep groin, inner-thigh & hip-socket mobility rock for cleaner squat depth',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 2,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Hip Adductors (Magnus, Longus, Brevis, Gracilis)', 'Inferior Hip Capsule'],
+        secondary: ['Deep Hip External Rotators', 'Pelvic Floor'],
+        stabilizers: ['Serratus Anterior (Forearm Support)', 'Lumbar Neutral Core']
+      },
+      execution: {
+        setup: 'Rest on forearms and knees on a soft mat, widening your knees comfortably apart with shins parallel and inner edges of feet grounded.',
+        eccentric: 'Maintaining a flat neutral lower back, slowly rock your hips backward toward your heels until you meet a steady adductor stretch.',
+        concentric: 'Pause 2–3 seconds in the back end-range, then glide gently forward to reset tension before the next slow rock.',
+        breathing: 'Slow exhales as hips glide back to quiet adductor stretch reflexes.',
+        commonMistakes: [
+          'Rounding the lower back heavily as hips shift backward',
+          'Forcing knees painfully wide before the hip joints warm up',
+          'Bouncing aggressively into the groin stretch'
+        ],
+        proTip: 'Press your inner knees lightly into the mat for 4 seconds at the back position, then relax on an exhale to immediately gain comfortable hip depth.'
+      }
+    },
+
+  {
+      id: 'wu-quadruped-thoracic-tailbone-tilt',
+      name: 'Quadruped Thoracic & Tailbone Articulation',
+      scientificName: 'Quadruped Segmental Lumbo-Pelvic & Thoracic Flexion-Extension Mobilization',
+      subtitle: 'Controlled vertebral segmentation isolating pelvic tilt and mid-back motion',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 2,
+      defaultReps: '8-10',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Thoracic & Lumbar Erector Spinae', 'Transverse Abdominis'],
+        secondary: ['Serratus Anterior', 'Rhomboids', 'Pelvic Rotators'],
+        stabilizers: ['Scapular Stabilizers', 'Hip Flexors & Glutes']
+      },
+      execution: {
+        setup: 'Start in a crisp four-point quadruped stance with wrists stacked directly beneath shoulders and knees directly beneath hips.',
+        eccentric: 'Initiate strictly from the tailbone, tipping the pelvis anteriorly and letting a smooth wave of extension ripple upward vertebra by vertebra into the upper back.',
+        concentric: 'Reverse from the tailbone first, tucking the pelvis underneath and flexing segmentally upward while pushing the floor gently away.',
+        breathing: 'Inhale smoothly into extension; exhale steadily through segmental flexion.',
+        commonMistakes: [
+          'Hinging exclusively in the lower back while the thoracic spine stays rigid',
+          'Bending the elbows or shifting hips back and forth',
+          'Whipping the neck up instead of letting gaze follow the chest'
+        ],
+        proTip: 'Slow down by 50% through your mid-back—the stiffest vertebrae benefit most from deliberate millimeter-by-millimeter focus.'
+      }
+    },
+
+  {
+      id: 'wu-seated-straddle-external-rotation',
+      name: 'Seated Straddle External-Rotation Hip Openers',
+      scientificName: 'Seated Wide-Straddle Active Femoral External Rotation & Adductor End-Range Control',
+      subtitle: 'Active hip-socket rotation strengthening end-range straddle posture',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Intermediate',
+      muscleKey: 'glutes',
+      defaultSets: 2,
+      defaultReps: '8-10/side',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Deep Hip External Rotators', 'Gluteus Medius & Maximus'],
+        secondary: ['Hip Adductors (Active Lengthening)', 'Quadriceps'],
+        stabilizers: ['Lumbar Erectors', 'Anterior Core']
+      },
+      execution: {
+        setup: 'Sit tall on a mat in a comfortable wide straddle with legs straight, hands lightly supporting behind or beside your hips to keep your pelvis upright.',
+        eccentric: 'Allow one thigh to roll gently inward with control without slumping your lower back.',
+        concentric: 'Actively rotate the femur outward from deep inside the hip socket, pointing toes and kneecap up and slightly back; pause 2 seconds.',
+        breathing: 'Exhale while squeezing into active external rotation; inhale on the controlled return.',
+        commonMistakes: [
+          'Rolling only the ankle instead of rotating the entire femur inside the hip socket',
+          'Slumping backward onto the tailbone instead of sitting tall on the sit-bones',
+          'Forcing a painfully wide straddle that locks the pelvis'
+        ],
+        proTip: 'Sit on a folded towel or yoga block if your lower back rounds—an upright pelvis immediately unlocks cleaner femoral rotation.'
+      }
+    },
+
+  {
+      id: 'wu-seated-straddle-pancake-press',
+      name: 'Seated Straddle Pancake Knee Press',
+      scientificName: 'Seated Wide-Straddle Anterior Pelvic Hinge & Active Quad-Engaged Pancake Compression',
+      subtitle: 'Gymnastics pancake mobility drill lengthening hamstrings & adductors cleanly',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Intermediate',
+      muscleKey: 'hamstrings',
+      defaultSets: 2,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Hamstrings', 'Hip Adductors (Gracilis & Adductor Magnus)'],
+        secondary: ['Quadriceps (Active Knee-Lock Extension)', 'Hip Flexors'],
+        stabilizers: ['Thoracic & Lumbar Erectors']
+      },
+      execution: {
+        setup: 'Sit tall in a wide straddle with kneecaps and toes pointing vertically toward the ceiling and hands resting lightly on thighs or floor.',
+        eccentric: 'Engage your quads to gently press the backs of your knees flat toward the floor, then hinge forward from the hip crease with a long proud spine.',
+        concentric: 'Hold the active forward hinge for steady breaths before pressing smoothly back to upright posture.',
+        breathing: 'Inhale to lengthen the spine tall; exhale to hinge a few millimeters deeper from the hips.',
+        commonMistakes: [
+          'Rounding the upper back aggressively to reach the head down while the pelvis stays tilted backward',
+          'Letting knees roll inward and bend',
+          'Holding breath under stretch tension'
+        ],
+        proTip: 'Think "belly button toward the floor between your thighs," not "forehead to the floor"—true pancake mobility comes from anterior pelvic tilt.'
+      }
+    },
+
+  {
+      id: 'wu-single-leg-bench-hamstring-stretch',
+      name: 'Bench-Elevated Single-Leg Hamstring Stretch',
+      scientificName: 'Standing Unilateral Elevated-Heel Anterior-Pelvic-Tilt Hamstring Lengthening',
+      subtitle: 'Neutral-spine posterior-chain opener isolating hamstring length safely',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Flat Bench',
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'hamstrings',
+      defaultSets: 2,
+      defaultReps: '30-45s/side',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Hamstrings (Biceps Femoris, Semitendinosus, Semimembranosus)'],
+        secondary: ['Gastrocnemius & Posterior Capsule', 'Gluteus Maximus'],
+        stabilizers: ['Stance Quadriceps', 'Lumbar Erectors']
+      },
+      execution: {
+        setup: 'Stand tall facing a flat bench and place one heel comfortably on top of the bench with hips squared forward and a soft micro-unlock in the knee if needed.',
+        eccentric: 'Keeping your chest tall and spine completely neutral, tip your pelvis slightly forward until a clean stretch appears in the mid-belly of the hamstring.',
+        concentric: 'Optionally press your elevated heel gently downward into the bench for 5 seconds (isometric contract-relax) before exhaling into deeper ease.',
+        breathing: 'Calm, rhythmic nasal breaths relaxing posterior-chain guarding.',
+        commonMistakes: [
+          'Rounding the lower back aggressively to touch the toes',
+          'Opening the elevated hip sideways instead of keeping both hip bones squared',
+          'Choosing a bench height so tall that the standing knee buckles'
+        ],
+        proTip: 'Gentle ankle dorsiflexion (pulling toes back slightly) biases the calf and sciatic tension; neutral toes isolate pure hamstring length.'
+      }
+    },
+
+  {
+      id: 'wu-single-leg-pendulum-swing',
+      name: 'Standing Single-Leg Pendulum Swing',
+      scientificName: 'Standing Dynamic Open-Chain Sagittal Hip Flexion-Extension Pendulum Mobilization',
+      subtitle: 'Dynamic rhythmic hip-capsule warm-up priming hamstrings, hip flexors & stance balance',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'hamstrings',
+      defaultSets: 2,
+      defaultReps: '10-12/side',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Hip Flexors', 'Hamstrings (Dynamic Reciprocal Stretch)', 'Gluteus Maximus'],
+        secondary: ['Stance Gluteus Medius', 'Intrinsic Foot Stabilizers'],
+        stabilizers: ['Lumbo-Pelvic Core', 'Torso Anti-Rotation Stabilizers']
+      },
+      execution: {
+        setup: 'Stand tall on one grounded foot with light fingertip support against a wall or rack if needed, bracing your torso upright.',
+        eccentric: 'Swing the free leg smoothly forward into controlled hip flexion without letting your lower back round.',
+        concentric: 'Let gravity carry the leg cleanly backward through upright posture into glute-driven hip extension without overarching your lumbar spine.',
+        breathing: 'Smooth, unforced breathing matched to the relaxed pendulum rhythm.',
+        commonMistakes: [
+          'Kicking violently high and collapsing the spine forward to reach toe height',
+          'Twisting the pelvis wildly on the backswing',
+          'Letting the stance knee collapse inward'
+        ],
+        proTip: 'Start with small easy arcs for the first 4 swings and gradually expand amplitude only as far as your pelvis stays completely quiet.'
+      }
+    },
+
+  {
+      id: 'wu-standing-pelvic-bucket-circles',
+      name: 'Standing Pelvic Bucket Circles',
+      scientificName: 'Standing Closed-Chain 360° Lumbo-Pelvic & Hip-Socket Circumduction Mobilization',
+      subtitle: 'Smooth 360° pelvic control warming lower back, SI joints & hip capsules',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'glutes',
+      defaultSets: 2,
+      defaultReps: '8-10/dir',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Lumbo-Pelvic Stabilizers', 'Hip Capsule Rotators'],
+        secondary: ['Obliques', 'Gluteus Medius', 'Quadratus Lumborum'],
+        stabilizers: ['Transverse Abdominis', 'Foot Tripod Stabilizers']
+      },
+      execution: {
+        setup: 'Stand with feet slightly wider than hip width, knees softly unlocked, and hands resting comfortably on your iliac crests (pelvic rim).',
+        eccentric: 'Trace a smooth, continuous circular path with your pelvis—anterior tilt, right lateral glide, posterior tuck, and left lateral glide.',
+        concentric: 'Keep shoulders and head relatively calm above your center of mass while completing slow circles in both directions.',
+        breathing: 'Relaxed continuous diaphragmatic breathing throughout both directions.',
+        commonMistakes: [
+          'Locking knees rigid and whipping the upper torso around instead of moving the pelvis',
+          'Rushing past stiff corners of the circle rather than smoothing them out',
+          'Holding tension in the jaw or lower back'
+        ],
+        proTip: 'Picture your pelvis as a wide bucket of water—tilt it smoothly around the entire 360° rim without skipping the posterior tuck.'
+      }
+    },
+
+  {
+      id: 'wu-standing-overhead-hip-hinge',
+      name: 'Standing Overhead-Arm Hip Hinge',
+      scientificName: 'Long-Lever Bilateral Overhead-Arm Bodyweight Hip Hinge & Thoracic Extension Drill',
+      subtitle: 'Bodyweight hinge pattern teaching flat-back mechanics & overhead thoracic control',
+      pattern: MOVEMENT_PATTERNS.HIP_HINGE,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'hamstrings',
+      defaultSets: 2,
+      defaultReps: '8-10',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Hamstrings', 'Thoracic Erector Spinae', 'Gluteus Maximus'],
+        secondary: ['Lower Trapezius', 'Serratus Anterior', 'Lumbar Erectors'],
+        stabilizers: ['Anterior Core (Rib-Down Brace)', 'Posterior Deltoids']
+      },
+      execution: {
+        setup: 'Stand hip-width apart with knees softly unlocked and extend both arms straight overhead in line with your ears, palms facing inward.',
+        eccentric: 'Push your hips smoothly straight backward while keeping your arms aligned tightly beside your ears and your spine arrow-straight until torso approaches horizontal.',
+        concentric: 'Drive through midfoot and squeeze glutes cleanly to stand tall without dropping your arms below your ear line.',
+        breathing: 'Inhale and brace ribs before hinging; exhale as you return upright.',
+        commonMistakes: [
+          'Letting arms droop downward as torso folds forward',
+          'Turning the hinge into a knee-forward squat',
+          'Overarching the lower back to compensate for tight shoulders'
+        ],
+        proTip: 'Extending the arms overhead triples the postural demand on your thoracic erectors—a brilliant zero-equipment primer before deadlifts or squats.'
+      }
+    },
+
+  {
+      id: 'wu-prone-pelvic-tilt',
+      name: 'Prone Pelvic Tilt & Lumbar Decompression',
+      scientificName: 'Prone Unloaded Posterior-to-Anterior Pelvic Tilt & Deep Core Motor Control',
+      subtitle: 'Floor-grounded pelvic awareness drill decompressing lumbar tension',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'abdomen',
+      defaultSets: 2,
+      defaultReps: '10-12',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Transverse Abdominis', 'Gluteus Maximus (Gentle Posterior Tilt)'],
+        secondary: ['Multifidus', 'Pelvic Floor'],
+        stabilizers: ['Hamstrings (Relaxed Control)', 'Diaphragm']
+      },
+      execution: {
+        setup: 'Lie face down on a mat with legs extended comfortably behind you and forehead resting relaxed on stacked hands.',
+        eccentric: 'Relax your hips softly into the floor allowing natural gentle lumbar curve.',
+        concentric: 'Exhale and gently press your pubic bone into the mat while lightly drawing your lower belly inward and engaging glutes to flatten the lower back; hold 3 seconds.',
+        breathing: 'Exhale calmly into each gentle posterior pelvic tilt; inhale to soften.',
+        commonMistakes: [
+          'Lifting the hips high off the floor instead of subtle pure pelvic rotation',
+          'Straining the neck or clenching the shoulders',
+          'Holding breath during the tilt'
+        ],
+        proTip: 'This subtle drill teaches you exactly how to keep your lower back protected during Superman holds, prone cobras, and overhead presses.'
+      }
+    },
+
+  {
+      id: 'wu-prone-upper-thoracic-extension',
+      name: 'Prone Sphinx Upper-Thoracic Extension',
+      scientificName: 'Prone Forearm-Supported Gentle Thoracic Extension & Anterior Chest Elongation',
+      subtitle: 'Supportive sphinx posture restoring gentle spinal extension after desk work',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 2,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 20,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Thoracic Erector Spinae', 'Anterior Longitudinal Chain (Decompressed)'],
+        secondary: ['Lower Trapezius', 'Serratus Anterior'],
+        stabilizers: ['Gluteus Maximus (Light Pelvic Anchor)', 'Deep Cervical Flexors']
+      },
+      execution: {
+        setup: 'Lie prone on a mat and prop yourself comfortably onto your forearms with elbows directly beneath shoulders and palms flat.',
+        eccentric: 'Keep shoulders depressed away from your ears and gently pull the floor backward with your forearms to glide your sternum forward and up.',
+        concentric: 'Maintain calm breathing with a long neck and relaxed glutes/pelvis grounded smoothly onto the mat.',
+        breathing: 'Slow, deep diaphragmatic breaths feeling the ribs expand evenly.',
+        commonMistakes: [
+          'Collapsing shoulders up toward the ears',
+          'Cranking the chin high upward and compressing the cervical spine',
+          'Forcing painful compression in the lower back'
+        ],
+        proTip: 'Gently "pull the mat toward your hips" with your forearms without moving them—this instantly shifts extension up into the stiff thoracic spine.'
+      }
+    },
+
+  {
+      id: 'wu-prone-core-resisted-thoracic-lift',
+      name: 'Prone Core-Resisted Upper-Thoracic Hover',
+      scientificName: 'Prone Posterior-Pelvic-Tilt Isolated Upper-Thoracic Extension Hover',
+      subtitle: 'Strict mid-back postural lift isolating thoracic erectors with zero lumbar dump',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Isometric',
+      level: 'Intermediate',
+      muscleKey: 'back',
+      defaultSets: 2,
+      defaultReps: '8-10 (3s hold)',
+      defaultRestSeconds: 30,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Thoracic Erector Spinae', 'Middle & Lower Trapezius'],
+        secondary: ['Rhomboids', 'Deep Cervical Flexors'],
+        stabilizers: ['Transverse Abdominis (Rib-Pelvis Lock)', 'Gluteus Maximus']
+      },
+      execution: {
+        setup: 'Lie prone on a mat with forearms bent beside your chest, pubic bone anchored gently via a slight posterior pelvic tilt, and chin tucked smoothly.',
+        eccentric: 'Lower your sternum slowly back toward the mat while keeping the lower ribs lightly braced.',
+        concentric: 'Without pushing heavily through your hands, lift strictly your upper chest and head a few centimeters off the floor using mid-back muscles; hold 3 seconds.',
+        breathing: 'Exhale lightly during the upper-thoracic hover; inhale as you lower.',
+        commonMistakes: [
+          'Pushing up high with the arms instead of using thoracic extensors',
+          'Compressing the lower back by letting the belly sag into the mat',
+          'Looking forward and hyperextending the neck'
+        ],
+        proTip: 'Keep your lower ribs touching the mat throughout—the movement is intentionally small because pure thoracic extension happens strictly between the shoulder blades.'
+      }
+    },
+
+  {
+      id: 'wu-shoulder-stand-hip-bend',
+      name: 'Shoulder Stand Hip-Bend Articulation',
+      scientificName: 'Inverted Scapular-Supported Posterior-Chain & Hip-Flexion Decompression Pose',
+      subtitle: 'Inverted gymnastics decompression articulating hip hinge and spinal flexion',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      isWarmup: true,
+      mechanics: 'Mobility',
+      level: 'Advanced',
+      muscleKey: 'back',
+      defaultSets: 2,
+      defaultReps: '20-30s',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Thoracic & Lumbar Erectors (Lengthened)', 'Hamstrings'],
+        secondary: ['Anterior Core (Inverted Control)', 'Hip Flexors'],
+        stabilizers: ['Upper Back & Shoulders (Weight-Bearing Shelf)', 'Triceps']
+      },
+      execution: {
+        setup: 'Lie supine on a padded mat with arms pressed firmly beside your torso. Roll smoothly onto your upper shoulder shelf—never onto your neck—and support your hips if needed.',
+        eccentric: 'Keeping weight strictly across your upper shoulder blades and gaze fixed straight up, fold gently at the hips to lower straight legs smoothly overhead.',
+        concentric: 'Hold calmly within pain-free range, then slowly roll down one vertebra at a time using deep abdominal control.',
+        breathing: 'Calm, quiet nasal breaths without straining the throat or neck.',
+        commonMistakes: [
+          'Turning the head sideways while inverted (never rotate the neck under load)',
+          'Placing weight directly onto the cervical vertebrae instead of the upper shoulders',
+          'Dropping rapidly out of the roll without spinal control'
+        ],
+        proTip: 'Skip this movement if you have cervical sensitivity; when cleared, keep a thin folded blanket under the upper shoulders so your neck remains completely uncompressed.'
+      }
     }
 ];

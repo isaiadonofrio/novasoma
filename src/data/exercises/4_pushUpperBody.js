@@ -838,5 +838,114 @@ export const PUSHUPPERBODY_EXERCISES = [
         ],
         proTip: 'Walking feet subtly closer toward hands shortens the lever; stepping hands slightly further ahead of your face dramatically amplifies triceps torque.'
       }
+    },
+
+  {
+      id: 'ex-kneeling-knuckle-push-up',
+      name: 'Kneeling Knuckle Push-Up',
+      scientificName: 'Kneeling Closed-Chain Neutral-Wrist Horizontal Press — Radiocarpal Conditioning',
+      subtitle: 'Wrist-neutral push-up regression conditioning straight-wrist alignment & chest control',
+      pattern: MOVEMENT_PATTERNS.HORIZONTAL_PUSH,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Beginner',
+      muscleKey: 'chest',
+      defaultSets: 3,
+      defaultReps: '10-15',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Pectoralis Major', 'Triceps Brachii', 'Anterior Deltoids'],
+        secondary: ['Serratus Anterior', 'Forearm Wrist Stabilizers'],
+        stabilizers: ['Anterior Core', 'Gluteus Maximus']
+      },
+      execution: {
+        setup: 'Assume a straight-line kneeling plank on a padded mat resting squarely on the flat front knuckles of your index and middle fingers with wrists locked perfectly neutral.',
+        eccentric: 'Lower your chest smoothly toward the mat over 2–3 seconds with elbows tucked ~45° from your ribs.',
+        concentric: 'Press cleanly back to full elbow lockout while keeping wrists straight and glutes gently braced.',
+        breathing: 'Inhale on the controlled descent; exhale during the press.',
+        commonMistakes: [
+          'Rolling weight onto the outer ring/pinky knuckles so the wrist buckles sideways',
+          'Letting the hips lag high or sag down out of plank alignment',
+          'Flaring elbows straight out to 90°'
+        ],
+        proTip: 'Always stack force directly down the forearm bones into your first two knuckles—zero wrist flexion makes this ideal when flat-palm push-ups irritate the wrists.'
+      }
+    },
+
+  {
+      id: 'ex-weighted-parallel-bar-dip',
+      name: 'Weighted Parallel Bar Dip',
+      scientificName: 'Suspended Loaded Closed-Chain Vertical-Decline Press (Dip Belt Overload)',
+      subtitle: 'Heavy upper-body compound pressing building lower chest, anterior delts & triceps mass',
+      pattern: MOVEMENT_PATTERNS.HORIZONTAL_PUSH,
+      equipment: 'Dip Bars & Weight Belt',
+      mechanics: 'Compound',
+      level: 'Advanced',
+      muscleKey: 'chest',
+      defaultSets: 4,
+      defaultReps: '6-10',
+      defaultRestSeconds: 120,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Pectoralis Major (Costal/Lower Head)', 'Triceps Brachii'],
+        secondary: ['Anterior Deltoids', 'Pectoralis Minor'],
+        stabilizers: ['Lower Trapezius', 'Serratus Anterior', 'Anterior Core']
+      },
+      execution: {
+        setup: 'Secure a weight plate or kettlebell cleanly to a dip belt, grip parallel bars firmly, lock elbows out tall with shoulders depressed away from ears, and angle torso slightly forward.',
+        eccentric: 'Lower smoothly over 2–3 seconds until upper arms reach roughly parallel to the floor (clean stretch without anterior shoulder roll).',
+        concentric: 'Drive forcefully straight upward through the bars to full controlled lockout without swinging the suspended load.',
+        breathing: 'Inhale and brace core before descending; exhale forcefully past the sticking point.',
+        commonMistakes: [
+          'Dropping past comfortable shoulder extension and rolling humeral heads forward',
+          'Swinging the weight plate like a pendulum during reps',
+          'Shrugging shoulders up toward the ears at the bottom'
+        ],
+        proTip: 'Keep legs slightly crossed behind you and engage your abs gently to pin the hanging weight completely still from rep one to lock-out.'
+      }
+    },
+
+  {
+      id: 'ex-plate-front-raise',
+      name: 'Standing Two-Handed Plate Front Raise',
+      scientificName: 'Standing Bilateral Open-Chain Glenohumeral Sagittal Flexion Raise (Weight Plate)',
+      subtitle: 'Strict anterior deltoid & upper-chest isolation with two-handed plate control',
+      pattern: MOVEMENT_PATTERNS.SHOULDER_ABDUCTION,
+      equipment: 'Weight Plate',
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'shoulders',
+      defaultSets: 3,
+      defaultReps: '12-15',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Anterior Deltoid'],
+        secondary: ['Clavicular Pectoralis Major', 'Serratus Anterior', 'Lateral Deltoid'],
+        stabilizers: ['Anterior Core (Anti-Extension Brace)', 'Upper & Lower Trapezius']
+      },
+      execution: {
+        setup: 'Stand tall holding a weight plate at the 3- and 9-o’clock positions in front of your thighs with arms nearly straight and ribs locked over pelvis.',
+        eccentric: 'Lower the plate slowly over 2–3 seconds back toward your thighs without letting momentum pull your shoulders forward.',
+        concentric: 'Raise the plate smoothly forward in a clean arc to shoulder height (90° flexion), pausing 1 second while keeping traps relaxed.',
+        breathing: 'Exhale while lifting the plate to shoulder level; inhale smoothly on the lowering phase.',
+        commonMistakes: [
+          'Leaning backward and arching the lower back to swing heavy plates upward',
+          'Shrugging the upper traps heavily toward the ears',
+          'Dropping the plate rapidly without eccentric control'
+        ],
+        proTip: 'Stop right at eye/shoulder height with a crisp 1-second isometric pause—that peak 90° horizontal lever puts maximum tension directly across the anterior delts.'
+      }
     }
 ];

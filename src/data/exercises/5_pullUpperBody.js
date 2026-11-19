@@ -833,5 +833,115 @@ export const PULLUPPERBODY_EXERCISES = [
         ],
         proTip: 'Strengthening wrist extensors balances heavy barbell gripping volume and serves as direct tendon prehabilitation against lateral epicondylitis ("tennis elbow").'
       }
+    },
+
+  {
+      id: 'ex-prone-scapular-external-rotation',
+      name: 'Prone Scapular Retraction & External Rotation Hold',
+      scientificName: 'Prone Open-Chain Scapular Retraction, Shoulder Extension & Humeral External Rotation',
+      subtitle: 'Postural upper-back & rotator-cuff endurance hold countering rounded shoulders',
+      pattern: MOVEMENT_PATTERNS.HORIZONTAL_PULL,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Isometric',
+      level: 'Beginner',
+      muscleKey: 'back',
+      defaultSets: 3,
+      defaultReps: '20-30s',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Middle & Lower Trapezius', 'Rhomboids', 'Infraspinatus & Teres Minor'],
+        secondary: ['Posterior Deltoids', 'Thoracic Erector Spinae'],
+        stabilizers: ['Deep Cervical Flexors', 'Gluteus Maximus']
+      },
+      execution: {
+        setup: 'Lie prone on a mat with legs extended, chin lightly tucked, and arms long beside your hips with palms rotated outward/upward.',
+        eccentric: 'Lower arms and upper chest smoothly back to the mat between sets without letting shoulder heads slump forward.',
+        concentric: 'Hover your upper chest slightly off the floor, squeeze shoulder blades back and down toward your back pockets, and externally rotate thumbs/palms outward; hold cleanly.',
+        breathing: 'Steady calm breathing throughout the isometric hold.',
+        commonMistakes: [
+          'Shrugging the upper traps toward the ears instead of depressing scapulae downward',
+          'Cranking the chin up and looking forward',
+          'Overarching the lower back rather than lifting through the mid-back'
+        ],
+        proTip: 'Actively reach your fingertips backward toward your heels while rolling thumbs outward—this double cue instantly activates lower traps and external rotators.'
+      }
+    },
+
+  {
+      id: 'ex-plate-supine-neck-curl',
+      name: 'Plate-Weighted Supine Neck Curl',
+      scientificName: 'Supine Bench-Edge Loaded Cervical Flexion — Sternocleidomastoid & Deep Flexor Overload',
+      subtitle: 'Controlled light-plate anterior neck strengthening for cervical resilience',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Flat Bench & Light Weight Plate',
+      mechanics: 'Isolation',
+      level: 'Intermediate',
+      muscleKey: 'trapezius',
+      defaultSets: 3,
+      defaultReps: '12-15',
+      defaultRestSeconds: 60,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Sternocleidomastoid', 'Deep Cervical Flexors (Longus Colli & Capitis)'],
+        secondary: ['Anterior Scalenes'],
+        stabilizers: ['Thoracic Erectors', 'Anterior Core']
+      },
+      execution: {
+        setup: 'Lie supine on a flat bench with your head and neck extending cleanly past the edge. Place a folded towel on your forehead and steady a very light weight plate (2.5–5 kg) gently with both hands.',
+        eccentric: 'Lower your head slowly over 2–3 seconds into a comfortable, pain-free neutral-to-slight extension without dropping aggressively.',
+        concentric: 'Initiate with a gentle chin tuck and curl your chin smoothly toward your sternum over 2 seconds; pause briefly at top.',
+        breathing: 'Exhale smoothly on the curl upward; inhale gently on the lowering phase.',
+        commonMistakes: [
+          'Loading too heavy before cervical tissues adapt over several weeks',
+          'Jutting the chin forward instead of maintaining a clean chin-tuck curl',
+          'Using rapid jerky reps'
+        ],
+        proTip: 'Start bodyweight-only for 2 weeks before introducing a light 2.5 kg plate—high-control 15-rep sets build safe, resilient cervical strength.'
+      }
+    },
+
+  {
+      id: 'ex-seated-neck-extension',
+      name: 'Seated Cervical Neck Extension',
+      scientificName: 'Seated Controlled Posterior Cervical Extension — Splenius & Upper-Trapezius Control',
+      subtitle: 'Controlled posterior-neck strengthening balancing anterior flexors & posture',
+      pattern: MOVEMENT_PATTERNS.WARMUP_MOBILITY,
+      equipment: 'Bodyweight (Bench / Chair)',
+      requiresEquipment: false,
+      mechanics: 'Isolation',
+      level: 'Beginner',
+      muscleKey: 'trapezius',
+      defaultSets: 3,
+      defaultReps: '12-15',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Splenius Capitis & Cervicis', 'Semispinalis Capitis', 'Upper Trapezius'],
+        secondary: ['Levator Scapulae', 'Suboccipitals'],
+        stabilizers: ['Thoracic Erectors', 'Deep Cervical Flexors']
+      },
+      execution: {
+        setup: 'Sit tall on a bench or chair with chest lifted, shoulders relaxed down, and spine neutral (optionally adding light manual fingertip resistance behind the head).',
+        eccentric: 'Lower your chin smoothly downward toward your chest over 2–3 seconds keeping your upper back completely still.',
+        concentric: 'Extend your head smoothly back to tall upright neutral alignment—stopping short of crunching the back of the neck—and hold 1–2 seconds.',
+        breathing: 'Exhale smoothly as you extend upright; inhale calmly as you flex forward.',
+        commonMistakes: [
+          'Tipping the head far backward and jamming cervical facet joints',
+          'Rounding or arching the entire torso to help the neck move',
+          'Moving fast instead of smooth slow tempo'
+        ],
+        proTip: 'Pair Seated Cervical Neck Extension with Supine Neck Curls to build balanced 360° cervical posture and upper-spine support.'
+      }
     }
 ];

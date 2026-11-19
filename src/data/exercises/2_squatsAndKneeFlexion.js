@@ -478,5 +478,79 @@ export const SQUATSANDKNEEFLEXION_EXERCISES = [
         ],
         proTip: 'Loading the kettlebell on the arm opposite your lead leg demands extra oblique and glute medius stability to prevent hip shift.'
       }
+    },
+
+  {
+      id: 'ex-deep-squat-isometric-bounce',
+      name: 'Deep Squat Isometric Bounce Hold',
+      scientificName: 'Deep Closed-Chain Full-Flexion Squat Isometric With Low-Amplitude End-Range Pulses',
+      subtitle: 'Full-depth quad, glute & ankle tolerance drill building bottom-position control',
+      pattern: MOVEMENT_PATTERNS.SQUAT,
+      equipment: 'Bodyweight',
+      requiresEquipment: false,
+      mechanics: 'Isometric',
+      level: 'Beginner',
+      muscleKey: 'quads',
+      defaultSets: 3,
+      defaultReps: '30-45s',
+      defaultRestSeconds: 45,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps', 'Gluteus Maximus'],
+        secondary: ['Hip Adductors', 'Soleus & Ankle Dorsiflexors'],
+        stabilizers: ['Thoracic Erectors', 'Anterior Core']
+      },
+      execution: {
+        setup: 'Stand at your comfortable squat stance with toes slightly turned out and sink smoothly into a deep bottom squat with heels planted flat.',
+        eccentric: 'Maintain active muscular tension just above passive collapse so knees track cleanly over toes 2–3.',
+        concentric: 'Perform tiny, controlled 3–5 cm rhythmic pulses or hold an active isometric hover in the deep pocket for the full interval.',
+        breathing: 'Steady controlled breathing maintaining a gentle core brace.',
+        commonMistakes: [
+          'Letting heels lift off the floor during pulses',
+          'Bouncing passively off the knee ligaments instead of keeping quads engaged',
+          'Collapsing the chest completely onto the thighs'
+        ],
+        proTip: 'Holding active tension 2 cm above rock bottom transforms a resting squat into potent lengthened-range quad and glute hypertrophy work.'
+      }
+    },
+
+  {
+      id: 'ex-rolling-pistol-squat',
+      name: 'Rolling Pistol Squat',
+      scientificName: 'Dynamic Momentum-Assisted Unilateral Full-Depth Single-Leg Squat (Deck Squat Transition)',
+      subtitle: 'Dynamic gymnastics pistol progression linking supine roll momentum to single-leg ascent',
+      pattern: MOVEMENT_PATTERNS.SQUAT,
+      equipment: 'Bodyweight (Mat)',
+      requiresEquipment: false,
+      mechanics: 'Compound',
+      level: 'Advanced',
+      muscleKey: 'quads',
+      defaultSets: 3,
+      defaultReps: '5-8/side',
+      defaultRestSeconds: 75,
+      rpe: '',
+      lastRecord: '',
+      illustration: '',
+      mediaType: 'image',
+      targetMuscles: {
+        primary: ['Quadriceps', 'Gluteus Maximus'],
+        secondary: ['Hip Flexors (Extended Leg)', 'Anterior Core', 'Soleus'],
+        stabilizers: ['Gluteus Medius', 'Intrinsic Foot Arch']
+      },
+      execution: {
+        setup: 'Start at the bottom of a tuck or stand upright on a padded mat; roll smoothly backward onto your rounded upper back while keeping one knee hugged tight.',
+        eccentric: 'Absorb the controlled backward roll smoothly along your rounded spine without slamming the lower back.',
+        concentric: 'Whip your arms forward and plant one foot flat close to your glutes while keeping the opposite leg extended straight out, driving powerfully up to standing on one leg.',
+        breathing: 'Exhale forcefully as you plant the foot and drive upward to full lock-out.',
+        commonMistakes: [
+          'Planting the working foot too far forward so center of mass stays stuck behind the heel',
+          'Slamming onto a flat lower back instead of rolling softly through a tucked curve',
+          'Letting the stance knee cave inward on ascent'
+        ],
+        proTip: 'Reach both arms aggressively forward toward your extended toes the instant your working heel plants—forward counterbalance makes the stand-up effortless.'
+      }
     }
 ];

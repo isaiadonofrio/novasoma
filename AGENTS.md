@@ -31,18 +31,18 @@ This file defines non-negotiable engineering invariants, workspace layout, and v
 - All `localStorage` keys must be declared in `STORAGE_KEYS` inside `src/utils/storage.js` and read/written through safe storage helpers (`parseBackupPayload`, `validateActiveWorkoutDraft`, etc.).
 
 ### B. Canonical Exercise Database & Assets Layout
-- `140` canonical exercises (`127` illustrated + `13` text-only warm-up/posture variations pending imagery) are split cleanly by movement family across `src/data/exercises/`:
-  - `1_warmupAndMobility.js` (`19`)
-  - `2_squatsAndKneeFlexion.js` (`13`)
-  - `3_hipHingesAndGlutes.js` (`19`)
-  - `4_pushUpperBody.js` (`23`)
-  - `5_pullUpperBody.js` (`23`)
-  - `6_lungesAndUnilateral.js` (`14`)
-  - `7_coreAndSpineStability.js` (`23`)
-  - `8_conditioningAndPower.js` (`6`)
+- `185` canonical exercises (`184` illustrated + `1` text-only warm-up variation pending imagery: `wu-banded-ankle-dorsiflexion`) are split cleanly by movement family across `src/data/exercises/`:
+  - `1_warmupAndMobility.js` (`36`)
+  - `2_squatsAndKneeFlexion.js` (`15`)
+  - `3_hipHingesAndGlutes.js` (`23`)
+  - `4_pushUpperBody.js` (`26`)
+  - `5_pullUpperBody.js` (`26`)
+  - `6_lungesAndUnilateral.js` (`15`)
+  - `7_coreAndSpineStability.js` (`37`)
+  - `8_conditioningAndPower.js` (`7`)
 - Every canonical movement must retain complete `ExerciseBiomechanics` (`plane`, `chain`, `laterality`, `loadVector`, `resistanceProfile`, `jointActions`) matching `src/data/exerciseTaxonomy.js`.
 - **Media asset separation**:
-  - `src/assets/exercises/` — All `127` illustrated movement `.webp`/`.jpg` assets mapped in `src/data/exerciseMedia.js`.
+  - `src/assets/exercises/` — All `184` illustrated movement `.webp`/`.jpg` assets mapped in `src/data/exerciseMedia.js`.
   - `src/assets/brand/` — Brand vector and PNG emblems (`logo.svg`, `logo.png`, `favicon.png`).
   - `src/assets/anatomy/` — Anatomical body map SVGs (`body.svg`).
 - Keep `src/data/exerciseMedia.js` free of UTF-8 BOM (`\uFEFF`) so module parsing and regex integrity tests remain clean.
